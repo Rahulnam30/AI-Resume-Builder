@@ -1,14 +1,26 @@
-# AI-Resume-Builder
-**#18/12/25**
-Research on how the AI will work
-Research on how the ui will look like 
-Research on how the backend will work
-**19/12/25**
-Prepare document on how the AI will work
-Prepare document on how the ui will look like 
-Prepare document on how the backend will work
-**20/12/25**
-integrating AI in resume builder and what are the files required for backend
-work on the figma login and admin section
-Frontend and Backend structure
-create mongoDB & connection strings
+# AI Resume Builder Project Timeline
+
+---
+
+### **December 18, 2025**
+- Research AI functionality for resume building.
+- Explore and plan the user interface design.
+- Investigate backend architecture and requirements.
+
+---
+
+### **December 19, 2025**
+- Prepare technical documentation on AI implementation.
+- Create a document for the UI workflow and layout.
+- Draft backend design and specifications.
+
+---
+
+### **December 20, 2025**
+- Begin integration of AI features into the resume builder.
+- Identify and list backend files needed for implementation.
+- Work on Figma designs for login and admin sections.
+- Establish frontend and backend project structure.
+- Set up MongoDB and configure connection strings.
+
+---
