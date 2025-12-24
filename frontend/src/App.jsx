@@ -1,7 +1,8 @@
 import { useState } from 'react'
 import LandingPage from './pages/LandingPage'
 import './App.css'
-
+import Login from './components/Login'
+import {BrowserRouter as Router, Routes, Route} from "react-router-dom";
 function App() {
   const [currentPage, setCurrentPage] = useState('home')
 
@@ -56,8 +57,16 @@ function App() {
           </section>
         </div>
       )}
+      {/* LOGIN PAGE */}
+      
+        <Router>
+          <Routes>
+            <Route path="/" element={<LandingPage />} />
+            <Route path="/login" element={<Login />} />
+          </Routes>
+        </Router>
+      
     </div>
   )
 }
-
 export default App
