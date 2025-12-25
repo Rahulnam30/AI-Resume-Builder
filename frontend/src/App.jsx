@@ -1,15 +1,16 @@
 import React from "react";
-import AdminHome from "./components/admin/AdminHome";
 import { Routes, Route } from "react-router-dom";
+import AdminHome from "./components/admin/AdminHome";
+import AdminUsers from "./components/admin/AdminUsers";
 import LandingPage from "./pages/Landingpage";
+
 const App = () => {
   return (
-    <>
-      <Routes>
-        <Route path="/admin" element={<AdminHome />} />
-        <Route path="/" element={<LandingPage />} />
-      </Routes>
-    </>
+    <Routes>
+      <Route path="/" element={<LandingPage />} />
+      <Route path="/admin" element={<AdminHome />} />
+      <Route path="/admin/users" element={<AdminUsers />} />
+    </Routes>
   );
 };
 
