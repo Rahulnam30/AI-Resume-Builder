@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-function TemplatesPage({ onSelectTemplate, onNavigateHome }) {
+function TemplatesPage({ onSelectTemplate, onNavigateHome, onNavigateToBuilder, onNavigateToLogin }) {
   const [selectedCategory, setSelectedCategory] = useState("all");
 
   /* =========================
@@ -9,10 +9,10 @@ function TemplatesPage({ onSelectTemplate, onNavigateHome }) {
   const templates = [
     {
       id: 1,
-      name: "Chronoloical",
+      name: "Chronological",
       category: "traditional",
       desc: "Traditional timeline format",
-      image: "templates/chronological.png", // ✅ LOCAL IMAGE
+      image: "/templates/chronological.png",
       color: "from-blue-500 to-blue-600",
       features: ["Clean layout", "Experience focused", "ATS friendly"],
     },
@@ -21,7 +21,7 @@ function TemplatesPage({ onSelectTemplate, onNavigateHome }) {
       name: "Functional",
       category: "modern",
       desc: "Skills-based layout",
-      image: "/templates/chronological.png", // placeholder until you add more images
+      image: "/templates/functional.png",
       color: "from-purple-500 to-purple-600",
       features: ["Skills focused", "Modern design", "Career switch friendly"],
     },
@@ -30,7 +30,7 @@ function TemplatesPage({ onSelectTemplate, onNavigateHome }) {
       name: "Creative",
       category: "creative",
       desc: "Bold and unique design",
-      image: "/templates/chronological.png",
+      image: "/templates/creative.png",
       color: "from-pink-500 to-pink-600",
       features: ["Eye-catching", "Design showcase", "Creative roles"],
     },
@@ -39,7 +39,7 @@ function TemplatesPage({ onSelectTemplate, onNavigateHome }) {
       name: "Modern",
       category: "modern",
       desc: "Contemporary professional",
-      image: "/templates/chronological.png",
+      image: "/templates/modern.png",
       color: "from-cyan-500 to-cyan-600",
       features: ["Minimalist", "Professional", "Clean UI"],
     },
@@ -48,7 +48,7 @@ function TemplatesPage({ onSelectTemplate, onNavigateHome }) {
       name: "Minimalist",
       category: "traditional",
       desc: "Clean and simple",
-      image: "/templates/chronological.png",
+      image: "/templates/minimalist.png",
       color: "from-gray-500 to-gray-600",
       features: ["Ultra clean", "Simple design", "Fast loading"],
     },
@@ -57,7 +57,7 @@ function TemplatesPage({ onSelectTemplate, onNavigateHome }) {
       name: "Executive",
       category: "executive",
       desc: "Senior-level format",
-      image: "/templates/chronological.png",
+      image: "/templates/executive.png",
       color: "from-amber-700 to-amber-800",
       features: ["Leadership focused", "Executive summary", "Premium look"],
     },
@@ -68,6 +68,18 @@ function TemplatesPage({ onSelectTemplate, onNavigateHome }) {
       ? templates
       : templates.filter((t) => t.category === selectedCategory);
 
+  const handleCreateResume = (template) => {
+    // Store selected template if needed
+    if (onSelectTemplate) {
+      onSelectTemplate(template);
+    }
+    
+    // Redirect to login page
+    if (onNavigateToLogin) {
+      onNavigateToLogin(template);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#0a1628] via-[#0f1f3d] to-[#1a2e52] text-white flex flex-col">
       {/* NAVBAR */}
@@ -75,14 +87,14 @@ function TemplatesPage({ onSelectTemplate, onNavigateHome }) {
         <div className="max-w-[1400px] mx-auto px-8 flex items-center justify-between">
           <button
             onClick={onNavigateHome}
-            className="text-2xl font-extrabold tracking-wide font-['Space_Grotesk'] hover:opacity-80"
+            className="text-2xl font-extrabold tracking-wide font-['Space_Grotesk'] hover:opacity-80 transition-opacity"
           >
             UPTO<span className="text-[#00d9ff]">SKILLS</span>
           </button>
 
           <button
             onClick={onNavigateHome}
-            className="flex items-center gap-2 px-6 py-3 border border-[#00d9ff] text-[#00d9ff] rounded-lg font-semibold hover:bg-[#00d9ff]/10"
+            className="flex items-center gap-2 px-6 py-3 border border-[#00d9ff] text-[#00d9ff] rounded-lg font-semibold hover:bg-[#00d9ff]/10 transition-all duration-300"
           >
             ← Back Home
           </button>
@@ -129,20 +141,28 @@ function TemplatesPage({ onSelectTemplate, onNavigateHome }) {
             {filteredTemplates.map((template) => (
               <div
                 key={template.id}
-                className="group bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl overflow-hidden hover:border-[#00d9ff] transition-all duration-300 hover:-translate-y-2"
+                className="group bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl overflow-hidden hover:border-[#00d9ff] transition-all duration-300 hover:-translate-y-2 hover:shadow-[0_10px_40px_rgba(0,217,255,0.3)]"
               >
                 {/* IMAGE SECTION */}
-                <div className={`h-64 bg-gradient-to-br ${template.color} p-3`}>
+                <div className={`h-64 bg-gradient-to-br ${template.color} p-3 relative overflow-hidden`}>
                   <img
                     src={template.image}
                     alt={template.name}
                     className="w-full h-full object-cover rounded-xl shadow-lg"
+                    onError={(e) => {
+                      e.target.style.display = 'none';
+                      e.target.parentElement.classList.add('flex', 'items-center', 'justify-center');
+                      const fallback = document.createElement('div');
+                      fallback.className = 'text-white/50 text-sm font-semibold';
+                      fallback.textContent = template.name;
+                      e.target.parentElement.appendChild(fallback);
+                    }}
                   />
                 </div>
 
                 {/* INFO */}
                 <div className="p-6">
-                  <h3 className="text-2xl font-bold mb-2">
+                  <h3 className="text-2xl font-bold mb-2 text-white">
                     {template.name}
                   </h3>
                   <p className="text-gray-400 mb-4">
@@ -161,10 +181,11 @@ function TemplatesPage({ onSelectTemplate, onNavigateHome }) {
                   </div>
 
                   <button
-                    onClick={() => onSelectTemplate(template)}
-                    className="w-full px-6 py-3 bg-gradient-to-r from-[#ff6b3d] to-[#ff5722] text-white font-bold rounded-lg hover:shadow-lg hover:-translate-y-1 transition-all duration-300"
+                    onClick={() => handleCreateResume(template)}
+                    className="w-full px-6 py-3 bg-gradient-to-r from-[#ff6b3d] to-[#ff5722] text-white font-bold rounded-lg hover:shadow-lg hover:-translate-y-1 transition-all duration-300 flex items-center justify-center gap-2"
                   >
-                    Create Resume →
+                    Create Resume
+                    <span>→</span>
                   </button>
                 </div>
               </div>

@@ -29,12 +29,42 @@ function LandingPage({ onNavigateToTemplates }) {
   }, [])
 
   const templates = [
-    { name: "Chronological", desc: "Traditional timeline format", image: "C:/Users/Admin/AI-Resume-Builder/frontend/public/templates/chronological.png" },
-    { name: "Functional", desc: "Skills-based layout", image: "C:/Users/Admin/AI-Resume-Builder/frontend/public/templates/functional.png" },
-    { name: "Creative", desc: "Bold and unique design", image: "C:/Users/Admin/AI-Resume-Builder/frontend/public/templates/creative.png" },
-    { name: "Modern", desc: "Contemporary professional", image: "C:/Users/Admin/AI-Resume-Builder/frontend/public/templates/modern.png" },
-    { name: "Minimalist", desc: "Clean and simple", image: "C:/Users/Admin/AI-Resume-Builder/frontend/public/templates/minimalist.png" },
-    { name: "Executive", desc: "Senior-level format", image: "C:/Users/Admin/AI-Resume-Builder/frontend/public/templates/executive.png" },
+    { 
+      name: "Chronological", 
+      desc: "Traditional timeline format", 
+      image: "/templates/chronological.png",
+      bgColor: "from-blue-500 to-cyan-500"
+    },
+    { 
+      name: "Functional", 
+      desc: "Skills-based layout", 
+      image: "/templates/functional.png",
+      bgColor: "from-purple-500 to-pink-500"
+    },
+    { 
+      name: "Creative", 
+      desc: "Bold and unique design", 
+      image: "/templates/creative.png",
+      bgColor: "from-orange-500 to-red-500"
+    },
+    { 
+      name: "Modern", 
+      desc: "Contemporary professional", 
+      image: "/templates/modern.png",
+      bgColor: "from-green-500 to-teal-500"
+    },
+    { 
+      name: "Minimalist", 
+      desc: "Clean and simple", 
+      image: "/templates/minimalist.png",
+      bgColor: "from-indigo-500 to-blue-500"
+    },
+    { 
+      name: "Executive", 
+      desc: "Senior-level format", 
+      image: "/templates/executive.png",
+      bgColor: "from-yellow-500 to-orange-500"
+    },
   ]
 
   const toggleMobileMenu = () => {
@@ -254,9 +284,9 @@ function LandingPage({ onNavigateToTemplates }) {
             </div>
           </div>
 
-          {/* RIGHT SIDE - Templates Preview */}
+          {/* RIGHT SIDE - Templates Preview WITH IMAGES */}
           <div className="flex flex-col gap-8 order-1 lg:order-2">
-            <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-3xl p-6 overflow-hidden">
+            <div className="bg-[#1e2a3f]/80 backdrop-blur-md border border-white/10 rounded-3xl p-6 overflow-hidden shadow-2xl">
               <div className="flex justify-between items-center mb-6 pb-4 border-b border-white/10">
                 <span className="text-sm font-extrabold text-[#ff6b3d] tracking-widest">UPTOSKILLS</span>
                 <span className="text-sm font-semibold text-white">Top Resume Templates</span>
@@ -267,17 +297,50 @@ function LandingPage({ onNavigateToTemplates }) {
                   <div 
                     key={index}
                     onClick={onNavigateToTemplates}
-                    className="cursor-pointer bg-white/[0.03] border border-white/5 rounded-xl p-4 transition-all duration-300 hover:bg-white/[0.06] hover:border-[#00d9ff] hover:-translate-y-1"
+                    className="group cursor-pointer bg-[#2a3548] border border-white/10 rounded-xl p-3 transition-all duration-300 hover:bg-[#344054] hover:border-[#00d9ff] hover:-translate-y-2 hover:shadow-[0_10px_30px_rgba(0,217,255,0.3)] relative overflow-hidden"
                   >
-                    <div className="flex flex-col items-center gap-2 mb-3">
-                      <div className="w-10 h-10 bg-gradient-to-br from-[#00d9ff] to-[#4c7fff] rounded-full border-2 border-white/20"></div>
-                      <div className="text-xs font-semibold text-white text-center">{template.name}</div>
+                    {/* Template Image Container */}
+                    <div className="relative aspect-[3/4] rounded-lg overflow-hidden mb-3 bg-white">
+                      {/* Actual Image - will show when available */}
+                      <img 
+                        src={template.image} 
+                        alt={template.name}
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          // Fallback to gradient if image doesn't load
+                          e.target.style.display = 'none';
+                          e.target.nextElementSibling.style.display = 'flex';
+                        }}
+                      />
+                      
+                      {/* Fallback Gradient Preview (shows if image fails to load) */}
+                      <div className={`absolute inset-0 bg-gradient-to-br ${template.bgColor} opacity-20 hidden items-center justify-center`}>
+                        <div className="w-full h-full p-4 flex flex-col gap-2">
+                          {/* Mock resume content */}
+                          <div className="w-12 h-12 bg-white/30 rounded-full mx-auto"></div>
+                          <div className="h-2 bg-white/40 rounded w-3/4 mx-auto"></div>
+                          <div className="h-2 bg-white/30 rounded w-1/2 mx-auto"></div>
+                          <div className="mt-2 space-y-1.5">
+                            <div className="h-1.5 bg-white/40 rounded w-full"></div>
+                            <div className="h-1.5 bg-white/30 rounded w-5/6"></div>
+                            <div className="h-1.5 bg-white/30 rounded w-4/6"></div>
+                            <div className="h-1.5 bg-white/30 rounded w-full mt-3"></div>
+                            <div className="h-1.5 bg-white/30 rounded w-3/4"></div>
+                            <div className="h-1.5 bg-white/30 rounded w-2/3"></div>
+                          </div>
+                        </div>
+                      </div>
                     </div>
-                    <div className="flex flex-col gap-2">
-                      <div className="h-1 bg-white/10 rounded-full w-full"></div>
-                      <div className="h-1 bg-white/10 rounded-full w-4/5"></div>
-                      <div className="h-1 bg-white/10 rounded-full w-3/5"></div>
+                    
+                    {/* Template Name */}
+                    <div className="text-center">
+                      <div className="text-xs font-bold text-white uppercase tracking-wide">
+                        {template.name}
+                      </div>
                     </div>
+                    
+                    {/* Hover Accent Line */}
+                    <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#00d9ff] to-[#ff6b3d] opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                   </div>
                 ))}
               </div>
@@ -457,21 +520,6 @@ function LandingPage({ onNavigateToTemplates }) {
             <h4 className="text-white text-lg font-bold mb-4">Product</h4>
             <ul className="flex flex-col gap-3">
               <li className="text-gray-400 cursor-pointer transition-all duration-300 hover:text-[#00d9ff] hover:translate-x-1 text-sm">
-                Privacy
-              </li>
-              <li className="text-gray-400 cursor-pointer transition-all duration-300 hover:text-[#00d9ff] hover:translate-x-1 text-sm">
-                Terms
-              </li>
-              <li className="text-gray-400 cursor-pointer transition-all duration-300 hover:text-[#00d9ff] hover:translate-x-1 text-sm">
-                Contact
-              </li>
-            </ul>
-          </div>
-
-          <div>
-            <h4 className="text-white text-lg font-bold mb-4">Features</h4>
-            <ul className="flex flex-col gap-3">
-              <li className="text-gray-400 cursor-pointer transition-all duration-300 hover:text-[#00d9ff] hover:translate-x-1 text-sm">
                 Features
               </li>
               <li className="text-gray-400 cursor-pointer transition-all duration-300 hover:text-[#00d9ff] hover:translate-x-1 text-sm">
@@ -494,6 +542,21 @@ function LandingPage({ onNavigateToTemplates }) {
               </li>
               <li className="text-gray-400 cursor-pointer transition-all duration-300 hover:text-[#00d9ff] hover:translate-x-1 text-sm">
                 Careers
+              </li>
+            </ul>
+          </div>
+
+          <div>
+            <h4 className="text-white text-lg font-bold mb-4">Resources</h4>
+            <ul className="flex flex-col gap-3">
+              <li className="text-gray-400 cursor-pointer transition-all duration-300 hover:text-[#00d9ff] hover:translate-x-1 text-sm">
+                Help Center
+              </li>
+              <li className="text-gray-400 cursor-pointer transition-all duration-300 hover:text-[#00d9ff] hover:translate-x-1 text-sm">
+                Tutorials
+              </li>
+              <li className="text-gray-400 cursor-pointer transition-all duration-300 hover:text-[#00d9ff] hover:translate-x-1 text-sm">
+                Community
               </li>
             </ul>
           </div>
