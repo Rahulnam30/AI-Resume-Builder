@@ -23,10 +23,15 @@ export default {
         space: ['Space Grotesk', 'sans-serif'],
       },
       animation: {
+        'marquee': 'marquee 28s linear infinite',
         'scroll': 'scroll 30s linear infinite',
         'fade-in': 'fadeIn 0.5s ease',
       },
       keyframes: {
+        marquee: {
+          '0%': { transform: 'translateX(0)' },
+          '100%': { transform: 'translateX(-50%)' },
+        },
         scroll: {
           '0%': { transform: 'translateX(0)' },
           '100%': { transform: 'translateX(-50%)' },
