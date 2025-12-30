@@ -24,3 +24,27 @@
 - Set up MongoDB and configure connection strings.
 
 ---
+### **December 22–24, 2025**
+- Work on frontend pages:
+  - Landing page
+  - User page
+  - Admin page
+  - Login/Register page
+
+---
+### **December 23–24, 2025**
+- Work on frontend pages(updating):
+  - Landing page
+  - User page
+  - Admin page
+  - Login/Register page
+
+---
+### **December 24–24, 2025**
+- Work on frontend pages(updating):
+  - Landing page
+  - User page
+  - Admin page
+  - Login/Register page
+
+---

@@ -10,6 +10,7 @@ function App() {
     setCurrentPage(pageId)
   }
 
+function App() {
   return (
     <div className="app">
       {/* HOME PAGE */}
