@@ -25,44 +25,60 @@
   margin-bottom: 24px;
 }
 
-.page-header h1 {
-  font-size: 28px;
-  font-weight: 700;
-  color: #1a1a2e;
-  margin: 0 0 8px 0;
-}
-
-.page-header p {
-  font-size: 14px;
-  color: #6b7280;
-  margin: 0;
-}
-
-/* Stat Card */
 .stat-card {
-  background: #fff;
-  border-radius: 12px;
-  padding: 20px;
+  background: #ffffff; /* card background color */
+  border-radius: 16px;
+  padding: 16px 18px;
   display: flex;
   align-items: center;
-  gap: 16px;
-  border: 1px solid #e5e7eb;
+  justify-content: flex-start;
+  gap: 12px;
+  border: 1px solid rgba(15,23,36,0.06);
+  min-height: 80px;
+ }
+
+.stat-info { display: flex; flex-direction: column; gap: 6px; }
+.stat-label.small { font-size: 13px; color: var(--muted); font-weight: 600; }
+
+.stat-value { font-size: 36px; font-weight: 900; color: var(--text); margin-top: 6px; }
+
+.stat-badge {
+  width: 80px;
+  height: 80px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  background: rgba(255,255,255,0.6);
 }
 
-.stat-icon {
-  width: 50px;
-  height: 50px;
+.stat-badge-inner {
+  width: 56px;
+  height: 56px;
   border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 24px;
+  background: rgba(255,255,255,0.98);
+  box-shadow: 0 12px 30px rgba(2,6,23,0.06);
 }
 
-.stat-icon.blue { background: #dbeafe; }
-.stat-icon.green { background: #d1fae5; }
-.stat-icon.purple { background: #ede9fe; }
-.stat-icon.orange { background: #ffedd5; }
+.stat-badge-icon img { width: 28px; height: 28px; display: block; }
+
+.stat-badge.blue { background: linear-gradient(135deg, rgba(91,140,255,0.12), rgba(123,179,255,0.04)); }
+.stat-badge.green { background: linear-gradient(135deg, rgba(125,227,199,0.12), rgba(125,227,199,0.04)); }
+.stat-badge.purple { background: linear-gradient(135deg, rgba(139,92,246,0.08), rgba(221,214,255,0.03)); }
+.stat-badge.orange { background: linear-gradient(135deg, rgba(255,198,127,0.12), rgba(255,229,179,0.03)); }
+
+.stat-badge-icon { font-size: 20px; }
+
+.stat-badge img { display: block; }
+
+.stat-badge.blue { background: linear-gradient(180deg,#e6f0ff,#dbeafe); color: #1e3a8a; }
+.stat-badge.green { background: linear-gradient(180deg,#eaf9f1,#d1fae5); color: #065f46; }
+.stat-badge.purple { background: linear-gradient(180deg,#f3efff,#ede9fe); color: #6b21a8; }
+.stat-badge.orange { background: linear-gradient(180deg,#fff6ee,#ffedd5); color: #92400e; }
 
 .stat-info {
   display: flex;
@@ -70,15 +86,50 @@
 }
 
 .stat-value {
-  font-size: 24px;
-  font-weight: 700;
-  color: #1a1a2e;
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--text);
+}
+.stat-badge.blue { background: none; color: #1e3a8a; }
+.stat-badge.green { background: none; color: #065f46; }
+.stat-badge.purple { background: none; color: #6b21a8; }
+.stat-badge.orange { background: none; color: #92400e; }
+/* Glyph-only stat icon (no colored box) */
+.stat-glyph {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+}
+.stat-glyph img {
+  width: 28px;
+  height: 28px;
+  display: block;
+}
+.stat-icon-left {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+}
+.stat-icon-left img {
+  width: 28px;
+  height: 28px;
+  display: block;
+  color: #000;
 }
 
-.stat-label {
-  font-size: 13px;
-  color: #6b7280;
+.stat-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  justify-content: center; /* vertically center label+value with icon */
+  align-items: flex-start;
 }
+.stat-label.small { font-size: 13px; color: rgba(0,0,0,0.75); margin: 0; }
+.stat-value { font-size: 28px; font-weight: 800; margin: 0; line-height: 1; }
 
 /* ATS Badge */
 .ats-badge {

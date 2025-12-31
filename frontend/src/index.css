@@ -1,3 +1,7 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 * {
   margin: 0;
   padding: 0;
@@ -40,3 +44,6 @@ button {
 input, textarea {
   font-family: inherit;
 }
+
+/* small icon helper */
+.icon-sm { width: 20px; height: 20px; display: inline-block; vertical-align: middle; }
