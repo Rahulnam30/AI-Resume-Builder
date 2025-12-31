@@ -1,0 +1,42 @@
+/* Animations for sidebar labels: fade + typing-like reveal */
+.sb-label {
+  display: inline-block;
+  overflow: hidden;
+  white-space: nowrap;
+  vertical-align: middle;
+  opacity: 0;
+  max-width: 0ch;
+  transform: translateY(0);
+  transition: opacity 180ms ease, max-width 320ms cubic-bezier(.2,.9,.2,1), transform 200ms ease;
+}
+
+.sb-label.show {
+  opacity: 1;
+  /* allow up to 24 characters to reveal - adjusts to content */
+  max-width: 24ch;
+}
+
+/* Typing-like step reveal (optional) */
+@keyframes sb-typing {
+  from { max-width: 0ch; }
+  to   { max-width: 24ch; }
+}
+.sb-label.typing {
+  animation: sb-typing 420ms steps(18,end) forwards;
+}
+
+/* reverse typing animation for closing */
+@keyframes sb-typing-reverse {
+  from { max-width: 24ch; }
+  to   { max-width: 0ch; }
+}
+.sb-label.typing-reverse {
+  animation: sb-typing-reverse 260ms steps(18,end) forwards;
+}
+
+/* Small fade when collapsing */
+.sb-label.hide {
+  opacity: 0;
+  max-width: 0ch;
+  transform: translateY(-4px) translateX(-2px);
+}

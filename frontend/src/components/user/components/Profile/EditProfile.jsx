@@ -6,7 +6,7 @@ const EditProfile = ({ user }) => {
   return (
     <div className="profile-page">
       <div className="page-header">
-        <h1>⚙️ Edit Profile</h1>
+        <h1>Edit Profile</h1>
         <p>Manage your account settings</p>
       </div>
 
@@ -39,7 +39,7 @@ const EditProfile = ({ user }) => {
           </div>
 
           <div className="profile-actions">
-            <button className="save-profile-btn">💾 Save Changes</button>
+            <button className="save-profile-btn">Save Changes</button>
             <button className="cancel-btn">Cancel</button>
           </div>
         </div>

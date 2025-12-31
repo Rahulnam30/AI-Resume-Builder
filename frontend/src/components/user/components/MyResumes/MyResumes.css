@@ -1,127 +1,243 @@
-/* My Resumes Page */
-.my-resumes-page {
-  padding: 10px;
+.myresumes-wrapper {
+  background: #f8fafc;
+  min-height: 100vh;
+  padding: 24px 32px;
+  font-family: Inter, system-ui, sans-serif;
+  color: #0f172a;
 }
 
-.resumes-toolbar {
+/* Topbar */
+.topbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 24px;
 }
 
-.search-box {
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+/* Search */
+.search-wrapper {
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 10px 16px;
-  background: #fff;
-  border: 1px solid #e5e7eb;
+  width: 420px;
+  padding: 10px 14px;
+  border: 1px solid #e2e8f0;
   border-radius: 8px;
-  width: 300px;
+  background: #fff;
 }
 
-.search-box input {
+.search-wrapper input {
   border: none;
   outline: none;
-  flex: 1;
+  width: 100%;
   font-size: 14px;
+  color: #0f172a;
 }
 
-.new-resume-btn {
-  padding: 12px 20px;
-  background: #667eea;
+.search-wrapper input::placeholder {
+  color: #94a3b8;
+}
+
+/* Icons */
+.icon {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: #64748b;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* Bell Button */
+.icon-btn {
+  border: 1px solid #e2e8f0;
+  background: #fff;
+  padding: 8px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.icon-btn:hover {
+  background: #f1f5f9;
+}
+
+/* Profile */
+.profile {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.profile img {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+}
+
+/* Breadcrumb */
+.breadcrumb {
+  font-size: 14px;
+  color: #64748b;
+  margin-bottom: 16px;
+}
+
+.breadcrumb span {
+  color: #0f172a;
+  font-weight: 500;
+}
+
+/* Header */
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.page-header h1 {
+  margin: 0;
+  font-size: 28px;
+}
+
+.page-header p {
+  margin-top: 4px;
+  color: #64748b;
+}
+
+.create-btn {
+  background: #0f172a;
   color: #fff;
   border: none;
-  border-radius: 8px;
-  font-size: 14px;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.new-resume-btn:hover {
-  background: #5a67d8;
-}
-
-.resumes-list {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.resume-card-item {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  padding: 20px;
-  background: #fff;
-  border: 1px solid #e5e7eb;
-  border-radius: 12px;
-  transition: all 0.2s;
-}
-
-.resume-card-item:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-}
-
-.resume-preview-thumb {
-  width: 60px;
-  height: 80px;
-  background: #f3f4f6;
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 32px;
-}
-
-.resume-details {
-  flex: 1;
-}
-
-.resume-details h4 {
-  font-size: 16px;
-  font-weight: 600;
-  color: #1a1a2e;
-  margin: 0 0 8px 0;
-}
-
-.resume-meta {
-  display: flex;
-  gap: 16px;
-  font-size: 13px;
-  color: #6b7280;
-}
-
-.ats-score-tag {
-  padding: 2px 8px;
-  background: #d1fae5;
-  color: #065f46;
+  padding: 12px 18px;
   border-radius: 8px;
   font-weight: 500;
 }
 
-.resume-actions-btns {
-  display: flex;
-  gap: 8px;
-}
-
-.action-icon-btn {
-  width: 40px;
-  height: 40px;
-  border: 1px solid #e5e7eb;
+/* Card */
+.card {
   background: #fff;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+}
+
+/* Filters */
+.filter-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.filter-input {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 60%;
+  border: 1px solid #e2e8f0;
+  padding: 10px 12px;
   border-radius: 8px;
+}
+
+.filter-input input {
+  border: none;
+  outline: none;
+  width: 100%;
+}
+
+/* Table */
+.resume-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.resume-table thead th {
+  font-size: 13px;
+  color: #64748b;
+  text-align: left;
+  padding-bottom: 12px;
+}
+
+.resume-table tbody td {
+  padding: 14px 0;
+  border-top: 1px solid #e2e8f0;
+  font-size: 14px;
+}
+
+/* Scores */
+.score.green { color: #22c55e; font-weight: 600; }
+.score.blue { color: #3b82f6; font-weight: 600; }
+.score.orange { color: #f97316; font-weight: 600; }
+
+/* Actions */
+.actions {
+  display: flex;
+  gap: 12px;
   font-size: 16px;
+}
+
+/* Bottom */
+.table-bottom {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 16px;
+  font-size: 13px;
+  color: #64748b;
+}
+
+.pagination button {
+  border: 1px solid #e2e8f0;
+  background: #fff;
+  padding: 6px 10px;
+  border-radius: 6px;
+}
+
+.pagination .active {
+  background: #0f172a;
+  color: #fff;
+}
+
+/* Footer */
+.footer {
+  margin-top: 32px;
+  text-align: center;
+  font-size: 13px;
+  color: #64748b;
+}
+
+
+.actions {
+  display: flex;
+  gap: 12px;
+}
+
+.action-btn {
+  background: none;
+  border: none;
+  padding: 6px;
   cursor: pointer;
-  transition: all 0.2s;
+  color: #4b5563; /* gray */
+  transition: color 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
 }
 
-.action-icon-btn:hover {
-  background: #f3f4f6;
+.action-btn:hover {
+  color: #2563eb; /* blue */
+  background-color: #e0e7ff;
 }
 
-.action-icon-btn.delete:hover {
-  background: #fee2e2;
-  border-color: #fecaca;
+.action-btn .icon {
+  width: 20px;
+  height: 20px;
+  stroke-width: 2.2;
 }

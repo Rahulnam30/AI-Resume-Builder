@@ -12,9 +12,8 @@ import './UserPage.css';
 const UserPage = () => {
   const { user, logout } = useAuth();
   const [activePage, setActivePage] = useState('dashboard');
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false); // Always starts expanded
   const [selectedTemplate, setSelectedTemplate] = useState(1);
-  const [showProfileDropdown, setShowProfileDropdown] = useState(false);
 
   const [formData, setFormData] = useState({
     fullName: user?.name || '',
@@ -108,37 +107,6 @@ const UserPage = () => {
       />
       
       <main className="main-content">
-        <div className="top-bar">
-          <div className="profile-dropdown-container">
-            <button 
-              className="profile-icon-btn" 
-              onClick={() => setShowProfileDropdown(!showProfileDropdown)}
-            >
-              <div className="profile-avatar-small">{user?.name?.charAt(0) || 'U'}</div>
-            </button>
-            {showProfileDropdown && (
-              <div className="profile-dropdown">
-                <div className="dropdown-header">
-                  <div className="dropdown-avatar">{user?.name?.charAt(0) || 'U'}</div>
-                  <div className="dropdown-user-info">
-                    <span className="dropdown-name">{user?.name || 'User'}</span>
-                    <span className="dropdown-email">{user?.email || 'user@email.com'}</span>
-                  </div>
-                </div>
-                <div className="dropdown-divider"></div>
-                <button 
-                  className="dropdown-item" 
-                  onClick={() => { setActivePage('profile'); setShowProfileDropdown(false); }}
-                >
-                  <span>⚙️</span> Edit Profile
-                </button>
-                <button className="dropdown-item logout" onClick={logout}>
-                  <span>🚪</span> Logout
-                </button>
-              </div>
-            )}
-          </div>
-        </div>
         {renderPageContent()}
       </main>
     </div>

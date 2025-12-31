@@ -15,9 +15,11 @@ frontend/src/components/user/
     ├── Dashboard/
     │   ├── Dashboard.jsx
     │   ├── Dashboard.css
-    │   ├── StatCard.jsx
-    │   ├── RecentResumes.jsx
-    │   └── QuickActions.jsx
+    │   ├── IssuesBox.jsx
+    │   ├── ResumeCard.jsx
+    |   |__ SmartVersions.jsx
+    |   |__ TopBar.jsx
+    │   └── TopCards.jsx
     ├── ResumeBuilder/
     │   ├── ResumeBuilder.jsx
     │   ├── ResumeBuilder.css
