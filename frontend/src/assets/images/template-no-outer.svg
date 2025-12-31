@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="128" height="128" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+  <!-- Orange pastel middle rounded square -->
+  <rect x="8" y="8" width="48" height="48" rx="10" fill="#FFF6EE" />
+  <!-- Inner white rounded square -->
+  <rect x="18" y="18" width="28" height="28" rx="6" fill="#FFFFFF" />
+  <!-- Template lines icon -->
+  <rect x="26" y="26" width="12" height="1.8" rx="0.9" fill="#FFB66B"/>
+  <rect x="26" y="30" width="8" height="1.8" rx="0.9" fill="#FFB66B"/>
+  <rect x="26" y="34" width="10" height="1.8" rx="0.9" fill="#FFB66B"/>
+</svg>

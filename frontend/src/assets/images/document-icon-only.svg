@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="128" height="128" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <!-- Transparent background, only the document icon -->
+  <defs>
+    <linearGradient id="g" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0%" stop-color="#E9F5FF"/>
+      <stop offset="100%" stop-color="#D6EFFF"/>
+    </linearGradient>
+  </defs>
+  <!-- Main rounded document -->
+  <rect x="16" y="10" width="32" height="44" rx="4" fill="#FFFFFF" stroke="#E6F2FF" stroke-width="0"/>
+  <!-- Folded corner (subtle) -->
+  <path d="M44 10v10a2 2 0 0 0 2 2h10" fill="none"/>
+  <path d="M44 10h-6a2 2 0 0 0-2 2v6" fill="none"/>
+  <!-- Small folded corner triangle -->
+  <path d="M44 10 L52 18 L44 18 Z" fill="#EAF6FF"/>
+
+  <!-- Inner detail lines (representing text) -->
+  <rect x="22" y="22" width="20" height="2.6" rx="1" fill="#9EC8FF"/>
+  <rect x="22" y="28" width="14" height="2.6" rx="1" fill="#9EC8FF"/>
+  <rect x="22" y="34" width="18" height="2.6" rx="1" fill="#9EC8FF"/>
+
+  <!-- Tiny rounded square center accent (optional) -->
+  <rect x="28" y="14" width="8" height="6" rx="1.2" fill="#F4FAFF"/>
+</svg>

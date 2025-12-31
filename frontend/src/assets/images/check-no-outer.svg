@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="128" height="128" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+  <!-- Green pastel middle rounded square -->
+  <rect x="8" y="8" width="48" height="48" rx="10" fill="#E9FBF0" />
+  <!-- Inner white rounded square -->
+  <rect x="18" y="18" width="28" height="28" rx="6" fill="#FFFFFF" />
+  <!-- Check mark icon centered -->
+  <path d="M24 33l4 4 12-12" stroke="#2EBF73" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+</svg>

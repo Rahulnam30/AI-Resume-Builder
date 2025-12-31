@@ -1,4 +1,8 @@
 import StatCard from './StatCard';
+import docIcon from '../../../../assets/images/doc-glyph.svg';
+import checkIcon from '../../../../assets/images/check-glyph.svg';
+import downloadIcon from '../../../../assets/images/download-glyph.svg';
+import templateIcon from '../../../../assets/images/template-glyph.svg';
 import RecentResumes from './RecentResumes';
 import QuickActions from './QuickActions';
 import './Dashboard.css';
@@ -13,25 +17,25 @@ const Dashboard = ({ user, resumes, setActivePage }) => {
       
       <div className="dashboard-stats">
         <StatCard 
-          icon="📄" 
+          iconSrc={docIcon}
           value={resumes.length} 
           label="Resumes Created" 
           colorClass="blue" 
         />
         <StatCard 
-          icon="✅" 
+          iconSrc={checkIcon}
           value="92%" 
           label="Avg ATS Score" 
           colorClass="green" 
         />
         <StatCard 
-          icon="📥" 
+          iconSrc={downloadIcon}
           value="12" 
           label="Downloads" 
           colorClass="purple" 
         />
         <StatCard 
-          icon="📄" 
+          iconSrc={templateIcon}
           value="5" 
           label="Templates Used" 
           colorClass="orange" 

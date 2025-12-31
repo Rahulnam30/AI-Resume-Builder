@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="128" height="128" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+  <!-- Purple pastel middle rounded square -->
+  <rect x="8" y="8" width="48" height="48" rx="10" fill="#F5F3FF" />
+  <!-- Inner white rounded square -->
+  <rect x="18" y="18" width="28" height="28" rx="6" fill="#FFFFFF" />
+  <!-- Download arrow icon -->
+  <path d="M32 24v8" stroke="#7B61FF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  <path d="M24 32l8 8 8-8" stroke="#7B61FF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+</svg>

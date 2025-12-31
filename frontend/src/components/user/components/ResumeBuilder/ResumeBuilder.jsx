@@ -15,7 +15,6 @@ import TemplatesPage from '../Templates/TemplatesPage';
 import './ResumeBuilder.css';
 
 const ResumeBuilder = ({ 
-  user, 
   formData, 
   setFormData, 
   templates, 

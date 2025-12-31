@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="128" height="128" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+  <!-- Transparent background; removed the largest outer rounded box -->
+  <!-- Middle pastel rounded square -->
+  <rect x="8" y="8" width="48" height="48" rx="10" fill="#E9F6FF" />
+  <!-- Inner white rounded square -->
+  <rect x="18" y="18" width="28" height="28" rx="6" fill="#FFFFFF" />
+
+  <!-- Document icon centered inside inner square -->
+  <rect x="26" y="22" width="12" height="16" rx="2" fill="#F8FBFF" stroke="#E6F2FF" stroke-width="0"/>
+  <path d="M34 22 L34 26 L38 26" fill="none" stroke="#D0E8FF" stroke-width="0.8"/>
+  <rect x="28" y="26.5" width="8" height="1.8" rx="0.9" fill="#AED0FF" />
+  <rect x="28" y="30" width="5" height="1.8" rx="0.9" fill="#AED0FF" />
+  <rect x="28" y="33.5" width="7.5" height="1.8" rx="0.9" fill="#AED0FF" />
+</svg>
