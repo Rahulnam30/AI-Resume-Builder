@@ -8,7 +8,7 @@
   flex-direction: column;
   position: fixed;
   height: 100vh;
-  overflow: hidden;
+  overflow-y: auto;
   transition: all 0.3s ease;
   z-index: 100;
 }
@@ -100,6 +100,10 @@
 .sidebar.collapsed .logout-btn .sidebar-logout-icon { width: 18px; height: 18px; }
 
 .sidebar-toggle {
+  position: absolute;
+  top: 12px;
+  left: 16px;
+  transform: none;
   width: 36px;
   height: 36px;
   border: none;
@@ -107,11 +111,11 @@
   border-radius: 8px;
   font-size: 16px;
   cursor: pointer;
-  display: inline-flex;
+  display: flex;
   align-items: center;
   justify-content: center;
   transition: all 0.2s;
-  margin-right: 12px; /* gap between toggle and brand text */
+  z-index: 120;
 }
 
 .sidebar-toggle:hover {
@@ -132,19 +136,8 @@
 .sidebar-toggle.open .bar.bar3 { transform: translateY(-5px) rotate(-45deg); }
 
 .sidebar.collapsed .sidebar-toggle {
-  transform: rotate(0deg);
-}
-
-.sidebar-brand {
-  display: flex;
-  align-items: center;
-  gap: 16px; /* slightly larger gap between brand and toggle */
-  justify-content: flex-start;
-}
-
-/* when collapsed keep toggle and icon centered */
-.sidebar.collapsed .sidebar-brand .sidebar-toggle {
-  margin-right: 0;
+  left: 16px;
+  transform: none;
 }
 
 /* Give main nav fixed top spacing so toggle does not shift the nav */
@@ -163,11 +156,11 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  margin-top: 12px;
+  margin-top: 40px;
 }
 
 .sidebar.collapsed .sidebar-brand {
-  justify-content: left;
+  justify-content: center;
   font-size: 28px;
   padding: 0 0 20px;
 }
@@ -176,17 +169,50 @@
   font-size: 24px;
 }
 
-.brand-text {
-  font-size: 18px;
-  font-weight: 800;
-  color: #0f172a;
-  text-align: left;
-   margin-left: 0;
+/* Sidebar User */
+.sidebar-user {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 12px;
+  background: #f3f4f6;
+  border-radius: 12px;
+  margin-bottom: 20px;
 }
 
+.sidebar.collapsed .sidebar-user {
+  justify-content: center;
+  padding: 12px;
+}
 
-/* Sidebar User */
-/* avatar removed from sidebar */
+.user-avatar {
+  width: 40px;
+  height: 40px;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.user-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.user-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1a1a2e;
+}
+
+.user-email {
+  font-size: 11px;
+  color: #6b7280;
+}
 
 /* Sidebar Nav Main */
 .sidebar-nav-main {
@@ -272,102 +298,78 @@
   color: #9ca3af;
 }
 
-/* Sidebar Footer (social + logout) */
-.sidebar-footer {
+/* AI Tip Box */
+.ai-tip-box {
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: 10px;
+  padding: 14px;
   margin-top: auto;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  padding-top: 12px;
-  align-items: center; /* center footer content horizontally */
-  padding-bottom: 28px; /* add bottom spacing so icons sit above bottom edge */
 }
 
-.social-media-section {
+.ai-tip-header {
   display: flex;
-  flex-direction: column;
-  gap: 8px;
   align-items: center;
-  text-align: center;
-}
-
-.social-title {
+  gap: 8px;
   font-size: 13px;
-  color: #6b7280;
-  margin: 0 0 6px 0;
   font-weight: 600;
+  color: #166534;
+  margin-bottom: 8px;
 }
 
-.social-links {
-  display: flex;
-  gap: 8px;
-  justify-content: center;
+.ai-tip-icon {
+  font-size: 16px;
 }
 
-.social-icon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 34px;
-  height: 34px;
-  border-radius: 8px;
-  color: #111827; /* icon color, no background */
-  text-decoration: none;
-  font-weight: 700;
-  font-size: 13px;
-  background: transparent;
-  transition: transform 0.12s ease, opacity 0.12s ease, color 0.12s ease;
+.ai-tip-box p {
+  font-size: 12px;
+  color: #15803d;
+  margin: 0;
+  line-height: 1.5;
 }
-
-.social-icon:hover { transform: translateY(-2px); opacity: 0.95; }
-
-/* Hover color per platform */
-.social-icon.linkedin:hover { color: #0A66C2; }
-.social-icon.instagram:hover { color: #E1306C; }
-.social-icon.youtube:hover { color: #FF0000; }
 
 /* Logout Button */
 .logout-btn {
-  background: transparent;
-  border: none;
-  color: #ef4444;
-  font-size: 15px;
-  font-weight: 700;
+  margin-top: 16px;
+  padding: 12px;
+  background: #fee2e2;
+  border: 1px solid #fecaca;
+  border-radius: 10px;
+  color: #dc2626;
+  font-size: 14px;
+  font-weight: 500;
   cursor: pointer;
-  display: inline-flex;
+  display: flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  padding: 8px 12px;
-  transition: all 0.12s ease;
-}
-
-.logout-icon {
-  width: 18px;
-  height: 18px;
-}
-
-.logout-text {
-  display: inline;
-}
-
-.logout-btn:hover {
-  opacity: 0.8;
-  transform: translateY(-1px);
+  transition: all 0.2s;
 }
 
 .logout-btn img { display: inline-block; }
 .sidebar:not(.collapsed) .logout-btn img { margin-right: 8px; }
 
 .sidebar.collapsed .logout-btn {
-  flex-direction: column;
-  padding: 12px 8px;
-  font-size: 18px;
-  gap: 4px;
+  margin-top: 8px;
+  padding: 8px;
+  width: 56px;
+  height: 56px;
+  border-radius: 10px;
+  justify-content: center;
 }
 
-.sidebar.collapsed .logout-btn .logout-text {
-  display: none;
+.sidebar.collapsed .nav-icon img,
+.sidebar.collapsed .logout-btn img {
+  margin: 0;
+}
+
+/* Tighten collapsed nav stacking */
+.sidebar.collapsed .sidebar-nav-main { gap: 0; }
+
+.sidebar-logout-icon { width: 18px; height: 18px; display: block; }
+
+.logout-btn:hover {
+  background: #fecaca;
 }
 
 @media (max-width: 768px) {
@@ -381,32 +383,4 @@
   .sidebar.open {
     left: 0;
   }
-}
-
-/* ================================
-   AI TIP BOX (GREEN - ABOVE SOCIAL)
-================================ */
-
-.ai-tip-box {
-  background: #ecfdf5;
-  border: 1px solid #a7f3d0;
-  border-radius: 0.75rem;
-  padding: 0.75rem;
-  margin-bottom: 1rem;
-}
-
-.ai-tip-title {
-  font-size: 0.75rem;
-  font-weight: 700;
-  color: #065f46;
-  display: block;
-  margin-bottom: 0.25rem;
-  text-transform: uppercase;
-}
-
-.ai-tip-text {
-  font-size: 0.75rem;
-  color: #047857;
-  line-height: 1.4;
-  margin: 0;
 }

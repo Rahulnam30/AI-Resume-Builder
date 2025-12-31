@@ -10,7 +10,7 @@ import {
   X,
 } from 'lucide-react'
 
-const SidebarItem = ({ label, active, isOpen, onClick }) => {
+const SidebarItem = ({ Icon, label, active, isOpen, onClick }) => {
   const containerClasses = isOpen
     ? 'flex flex-row items-center gap-4 px-3 py-2 justify-start w-full transition-all duration-300'
     : 'flex flex-col items-center gap-1 px-1 py-2 justify-center w-full transition-all duration-300'
@@ -88,4 +88,3 @@ const SidebarTailwind = ({ sidebarCollapsed, setSidebarCollapsed, activePage, se
 }
 
 export default SidebarTailwind
-

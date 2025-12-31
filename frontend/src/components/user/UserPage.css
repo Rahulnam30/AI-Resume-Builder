@@ -1,7 +1,7 @@
 .user-page {
   display: flex;
   min-height: 100vh;
-  background: #f5f7fa;
+  background: #f8f9fa;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   transition: all 0.3s ease;
 }
@@ -14,10 +14,9 @@
 .main-content {
   flex: 1;
   margin-left: 260px;
-  padding: 0;
+  padding: 24px 32px;
   display: flex;
   flex-direction: column;
-  background-color: #f5f7fa;
 }
 
 /* Page Header */

@@ -3,13 +3,12 @@ import {
   FileText, 
   FolderOpen, 
   CheckCircle, 
-  Files,
-  LogOut
+  Files
 } from 'lucide-react';
-import { FaLinkedin, FaInstagram, FaYoutube } from 'react-icons/fa';
 import './UserSidebar.css';
 
 const UserSidebar = ({ 
+  user, 
   activePage, 
   setActivePage, 
   sidebarCollapsed, 
@@ -26,22 +25,23 @@ const UserSidebar = ({
 
   return (
     <aside className={`sidebar ${sidebarCollapsed ? 'collapsed' : ''}`}>
+      <button className="sidebar-toggle" onClick={() => setSidebarCollapsed(!sidebarCollapsed)}>
+        {sidebarCollapsed ? '☰' : '✕'}
+      </button>
+      
       <div className="sidebar-brand">
-        <button
-          className="sidebar-toggle"
-          onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-          title={sidebarCollapsed ? 'Expand' : 'Collapse'}
-        >
-          ☰
-        </button>
-        {sidebarCollapsed ? (
-          '📝'
-        ) : (
-          <span className="brand-text">AI RESUME</span>
-        )}
+        {sidebarCollapsed ? '📝' : <><span className="brand-icon">📝</span> ResumeAI</>}
       </div>
 
-      
+      <div className="sidebar-user">
+        <div className="user-avatar">{user?.name?.charAt(0) || 'U'}</div>
+        {!sidebarCollapsed && (
+          <div className="user-info">
+            <span className="user-name">{user?.name || 'User'}</span>
+            <span className="user-email">{user?.email || 'user@email.com'}</span>
+          </div>
+        )}
+      </div>
       
       <nav className="sidebar-nav-main">
         {sidebarNav.map((item) => (
@@ -62,62 +62,16 @@ const UserSidebar = ({
         ))}
       </nav>
       
-    <div className="sidebar-footer">
-  {!sidebarCollapsed && (
-    <>
-      {/* AI TIP BOX (ABOVE CONNECT WITH US) */}
-      <div className="ai-tip-box">
-        <span className="ai-tip-title">AI Tip✨</span>
-        <p className="ai-tip-text">
-          Use keywords from the job description to boost your ATS score.
-        </p>
-      </div>
-
-      <div className="social-media-section">
-        <p className="social-title">Connect With Us</p>
-        <div className="social-links">
-          <FaLinkedin
-            size={20}
-            className="social-icon linkedin"
-            onClick={() =>
-              window.open(
-                "https://www.linkedin.com/company/uptoskills/posts/?feedView=all",
-                "_blank"
-              )
-            }
-          />
-          <FaInstagram
-            size={20}
-            className="social-icon instagram"
-            onClick={() =>
-              window.open("https://www.instagram.com/uptoskills", "_blank")
-            }
-          />
-          <FaYoutube
-            size={20}
-            className="social-icon youtube"
-            onClick={() =>
-              window.open(
-                "https://youtube.com/@uptoskills9101?si=YvRk51dq0exU-zLv",
-                "_blank"
-              )
-            }
-          />
+      {!sidebarCollapsed && (
+        <div className="ai-tip-box">
+          <div className="ai-tip-header"><span className="ai-tip-icon">💡</span><span>AI Tip</span></div>
+          <p>Use action verbs and quantify your achievements for better ATS compatibility.</p>
         </div>
-      </div>
-    </>
-  )}
-
-  <button
-    className="logout-btn"
-    onClick={logout}
-    title={sidebarCollapsed ? "Logout" : ""}
-  >
-    <LogOut className="logout-icon" />
-    {!sidebarCollapsed && <span className="logout-text">Log Out</span>}
-  </button>
-</div>
-
+      )}
+      
+      <button className="logout-btn" onClick={logout} title={sidebarCollapsed ? 'Logout' : ''}>
+        🚪 {!sidebarCollapsed && 'Logout'}
+      </button>
     </aside>
   );
 };
