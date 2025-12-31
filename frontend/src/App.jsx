@@ -26,47 +26,63 @@
 //         {/* /admin/dashboard */}
 //         {/* Add other admin pages here */}
 //       </Route>
-//     </Routes>
-//   );
-// };
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
 
-// export default App;
+// Public pages
+import Home from './pages/Home'
+import TemplatesPage from './pages/TemplatesPage'
+import BuilderPage from './pages/Builder'
+import LoginPage from './pages/login'
+import RegisterPage from './pages/Register'
+import ForgotPasswordPage from './pages/ForgotPassword'
+import TemplateEditor from './pages/TemplateEditor'
+import NotFound from './pages/NotFound'
+import Contact from './pages/Contact'
+import HelpCenter from './pages/HelpCenter'
 
-import React from "react";
-import { Routes, Route } from "react-router-dom";
+// Admin area
+import AdminLayout from './components/admin/AdminLayout'
+import AdminDashboard from './components/admin/AdminDashboard/AdminDashboard'
+import TemplateDocs from './components/admin/AdminCreateTemplates/TemplateDocs'
+import Resume from './components/admin/resume'
+import AdminUsers from './components/admin/AdminUser/AdminUsers'
+import AdminSubscription from './components/admin/AdminSubscription/AdminSubscription'
+import AdminAcceptUser from './components/admin/AdminAcceptUserTemplate/AdminAcceptUser'
+import AdminAnalytics from './components/admin/AdminAnalytics/AdminAnalytics'
 
-import LandingPage from "./pages/Landingpage";
-
-import AdminLayout from "./components/admin/AdminLayout";
-
-import AdminDashboard from "./components/admin/AdminDashboard/AdminDashboard";
-import AdminCreateTemplate from "./components/admin/AdminCreateTemplates/AdminCreateTemplate";
-import AdminUsers from "./components/admin/AdminUser/AdminUsers";
-import Resume from "./components/admin/resume";
-import AdminSubscription from "./components/admin/AdminSubscription/AdminSubscription";
-import AdminAcceptUser from "./components/admin/AdminAcceptUserTemplate/AdminAcceptUser";
-import AdminAnalytics from "./components/admin/AdminAnalytics/AdminAnalytics";
-import TemplateDocs from "./components/admin/AdminCreateTemplates/TemplateDocs";
-
-const App = () => {
+function App() {
   return (
-    <Routes>
-      {/* Public route */}
-      <Route path="/" element={<LandingPage />} />
+    <BrowserRouter>
+      <div className="min-h-screen flex flex-col">
+        <Routes>
+          {/* Public routes */}
+          <Route path="/" element={<Home />} />
+          <Route path="/templates" element={<TemplatesPage />} />
+          <Route path="/templates/:id" element={<TemplateEditor />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/register" element={<RegisterPage />} />
+          <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+          <Route path="/builder" element={<BuilderPage />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/help-center" element={<HelpCenter />} />
 
-      {/* Admin routes */}
-      <Route path="/admin" element={<AdminLayout />}>
-        <Route index element={<AdminDashboard />} /> {/* /admin */}
-        <Route path="create-templates" element={<TemplateDocs />} />
-        <Route path="templates" element={<Resume />} />
-        <Route path="users" element={<AdminUsers />} /> {/* ✅ FIXED */}
-        <Route path="templates" element={<Resume />} />
-        <Route path="subscription" element={<AdminSubscription />} />
-        <Route path="/admin/template-requests" element={<AdminAcceptUser />} />
-        <Route path="/admin/analytics" element={<AdminAnalytics />} />
-      </Route>
-    </Routes>
-  );
-};
+          {/* Admin routes with layout */}
+          <Route path="/admin" element={<AdminLayout />}>
+            <Route index element={<AdminDashboard />} />
+            <Route path="create-templates" element={<TemplateDocs />} />
+            <Route path="templates" element={<Resume />} />
+            <Route path="users" element={<AdminUsers />} />
+            <Route path="subscription" element={<AdminSubscription />} />
+            <Route path="template-requests" element={<AdminAcceptUser />} />
+            <Route path="analytics" element={<AdminAnalytics />} />
+          </Route>
 
-export default App;
+          {/* Fallback */}
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </div>
+    </BrowserRouter>
+  )
+}
+
+export default App
