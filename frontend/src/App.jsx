@@ -11,6 +11,7 @@ import TemplateEditor from "./pages/TemplateEditor";
 import Contact from "./pages/Contact";
 import HelpCenter from "./pages/HelpCenter";
 import NotFound from "./pages/NotFound";
+import UserHome from "./pages/UserHome";
 
 function App() {
   return (
@@ -27,6 +28,7 @@ function App() {
           <Route path="/forgot-password" element={<ForgotPasswordPage />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/help-center" element={<HelpCenter />} />
+          <Route path="/userhome" element={<UserHome />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </div>
@@ -35,3 +37,4 @@ function App() {
 }
 
 export default App;
+

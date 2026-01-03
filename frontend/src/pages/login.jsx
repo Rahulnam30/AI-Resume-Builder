@@ -26,7 +26,8 @@ export default function Login() {
     if (!validate()) return;
     setLoading(true);
     try {
-      const response = await axios.post("http://localhost:5000/api/login", {
+      const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+      const response = await axios.post(`${API_URL}/api/login`, {
         email: emailtext,
         password: passwordtext,
       });
@@ -127,11 +128,10 @@ export default function Login() {
                 type="submit"
                 disabled={loading}
                 className={`w-full py-2 rounded-lg text-white text-sm font-medium transition mt-3
-                ${
-                  loading
+                ${loading
                     ? "bg-blue-400 cursor-not-allowed"
                     : "bg-blue-600 hover:bg-blue-700"
-                }
+                  }
               `}
               >
                 {loading ? "Signing in..." : "Sign In"}
