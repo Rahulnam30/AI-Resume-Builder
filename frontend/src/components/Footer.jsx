@@ -1,69 +1,70 @@
-import { useNavigate } from 'react-router-dom';
-import UpToSkillsImg from '../assets/UptoSkills.webp';
+import React from 'react';
+import { Link } from 'react-router-dom';
 
-function Footer() {
-  const navigate = useNavigate();
+const Footer = () => {
+    return (
+        <footer className="bg-surface-light dark:bg-surface-dark/50 border-t border-slate-200 dark:border-slate-800 pt-16 pb-8">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-8 mb-12">
+                    {/* Brand Column */}
+                    <div className="col-span-2 lg:col-span-2">
+                        <div className="flex items-center gap-2 mb-4">
+                            <div className="size-8 rounded-lg bg-primary flex items-center justify-center text-white">
+                                <span className="material-symbols-outlined text-xl">description</span>
+                            </div>
+                            <span className="text-xl font-bold text-slate-900 dark:text-white">Resume<span className="text-primary-hover">AI</span></span>
+                        </div>
+                        <p className="text-sm text-slate-500 dark:text-slate-400 max-w-xs mb-6">
+                            The #1 AI-powered resume builder designed to help you land more interviews and get hired faster.
+                        </p>
+                        <div className="flex gap-4">
+                            <a className="text-slate-400 hover:text-primary transition-colors" href="#"><span className="material-symbols-outlined">public</span></a>
+                            <a className="text-slate-400 hover:text-primary transition-colors" href="#"><span className="material-symbols-outlined">alternate_email</span></a>
+                            <a className="text-slate-400 hover:text-primary transition-colors" href="#"><span className="material-symbols-outlined">rss_feed</span></a>
+                        </div>
+                    </div>
 
-  return (
-    <footer className="px-8 pt-20 pb-10 bg-white border-t border-gray-100">
-      <div className="max-w-[1400px] mx-auto grid md:grid-cols-4 gap-12 mb-16">
-        <div className="col-span-1 md:col-span-1">
-          <img 
-            src={UpToSkillsImg} 
-            alt="Logo" 
-            className="w-40 mb-6 cursor-pointer" 
-            onClick={() => navigate('/')}
-          />
-          <p className="text-sm leading-relaxed text-gray-500">
-            The ultimate AI-powered toolkit for job seekers to build professional resumes and land dream roles.
-          </p>
-        </div>
-        <div>
-          <h4 className="mb-6 font-bold">Quick Links</h4>
-          <ul className="space-y-4 text-sm text-gray-500">
-            <li 
-              onClick={() => navigate('/templates')}
-              className="hover:text-[#0077cc] cursor-pointer"
-            >
-              Templates
-            </li>
-            <li className="hover:text-[#0077cc] cursor-pointer">AI Resume Checker</li>
-            <li className="hover:text-[#0077cc] cursor-pointer">Job Tracker</li>
-          </ul>
-        </div>
-        <div>
-          <h4 className="mb-6 font-bold">Company</h4>
-          <ul className="space-y-4 text-sm text-gray-500">
-            <li className="hover:text-[#0077cc] cursor-pointer">About Us</li>
-            <li className="hover:text-[#0077cc] cursor-pointer">Careers</li>
-            <li className="hover:text-[#0077cc] cursor-pointer">Blog</li>
-          </ul>
-        </div>
-        <div>
-          <h4 className="mb-6 font-bold">Support</h4>
-          <ul className="space-y-4 text-sm text-gray-500">
-            <li 
-              onClick={() => navigate('/help-center')}
-              className="hover:text-[#0077cc] cursor-pointer"
-            >
-              Help Center
-            </li>
-            <li className="hover:text-[#0077cc] cursor-pointer">Privacy Policy</li>
-            <li className="hover:text-[#0077cc] cursor-pointer">Terms of Service</li>
-            <li 
-              onClick={() => navigate('/contact')}
-              className="hover:text-[#0077cc] cursor-pointer"
-            >
-              Contact Us
-            </li>
-          </ul>
-        </div>
-      </div>
-      <div className="max-w-[1400px] mx-auto pt-8 border-t border-gray-50 text-center text-gray-400 text-xs">
-        © {new Date().getFullYear()} UptoSkills. All rights reserved.
-      </div>
-    </footer>
-  );
-}
+                    {/* Links */}
+                    <div>
+                        <h4 className="font-bold text-slate-900 dark:text-white mb-4">Product</h4>
+                        <ul className="space-y-2 text-sm text-slate-600 dark:text-slate-400">
+                            <li><a className="hover:text-primary" href="#">Features</a></li>
+                            <li><a className="hover:text-primary" href="#">Pricing</a></li>
+                            <li><a className="hover:text-primary" href="#">Templates</a></li>
+                            <li><a className="hover:text-primary" href="#">Examples</a></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 className="font-bold text-slate-900 dark:text-white mb-4">Resources</h4>
+                        <ul className="space-y-2 text-sm text-slate-600 dark:text-slate-400">
+                            <li><a className="hover:text-primary" href="#">Blog</a></li>
+                            <li><a className="hover:text-primary" href="#">Career Advice</a></li>
+                            <li><a className="hover:text-primary" href="#">Resume Guide</a></li>
+                            <li><a class="hover:text-primary" href="#">Help Center</a></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 className="font-bold text-slate-900 dark:text-white mb-4">Company</h4>
+                        <ul className="space-y-2 text-sm text-slate-600 dark:text-slate-400">
+                            <li><Link className="hover:text-primary" to="/about">About Us</Link></li>
+                            <li><Link className="hover:text-primary" to="/contact">Contact</Link></li>
+                            <li><a className="hover:text-primary" href="#">Privacy Policy</a></li>
+                            <li><a className="hover:text-primary" href="#">Terms of Service</a></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div className="border-t border-slate-200 dark:border-slate-800 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+                    <p className="text-sm text-slate-500">© 2026 AI Resume Builder. All rights reserved.</p>
+                    <div className="flex gap-6 text-sm text-slate-500">
+                        <a className="hover:text-slate-900 dark:hover:text-white" href="#">Privacy</a>
+                        <a className="hover:text-slate-900 dark:hover:text-white" href="#">Terms</a>
+                        <a className="hover:text-slate-900 dark:hover:text-white" href="#">Cookies</a>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    );
+};
 
 export default Footer;

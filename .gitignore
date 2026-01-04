@@ -12,9 +12,6 @@ dist
 dist-ssr
 *.local
 
-# Ignore environment files
-.env
-
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
@@ -25,3 +22,6 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Documentation
+# MD files/
