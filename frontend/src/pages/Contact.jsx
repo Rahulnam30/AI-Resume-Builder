@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import UpToSkillsImg from '../assets/UptoSkills.webp';
+import Footer from '../components/Footer';
 
 function ContactUs() {
   const navigate = useNavigate();
@@ -81,13 +82,7 @@ function ContactUs() {
               </div>
             </div>
 
-            <button
-              onClick={() => navigate('/')}
-              className="group flex items-center gap-2 px-5 py-2.5 text-gray-700 font-semibold rounded-full hover:bg-gray-50 transition-all duration-300"
-            >
-              <i className="fas fa-arrow-left text-sm group-hover:-translate-x-1 transition-transform duration-300"></i>
-              <span>Back to Home</span>
-            </button>
+            
           </div>
         </div>
       </nav>
@@ -291,49 +286,7 @@ function ContactUs() {
         </div>
       </section>
 
-      {/* FOOTER */}
-      <footer className="px-6 lg:px-8 pt-20 pb-10 bg-white border-t border-gray-100">
-        <div className="max-w-[1400px] mx-auto grid md:grid-cols-4 gap-12 mb-16">
-          <div className="col-span-1">
-            <div onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} className="cursor-pointer">
-              <img src={UpToSkillsImg} alt="UpToSkills Logo" className="w-[150px]" />
-            </div>
-            <p className="text-sm leading-relaxed text-gray-500">
-              Build professional, ATS-optimized resumes with our AI-powered platform.
-            </p>
-          </div>
-          <div>
-            <h4 className="font-bold text-gray-900 mb-6">Resources</h4>
-            <ul className="space-y-4 text-sm text-gray-600">
-              <li onClick={() => navigate('/templates')} className="hover:text-[#0077cc] cursor-pointer transition-colors">Resume Templates</li>
-              <li className="hover:text-[#0077cc] cursor-pointer transition-colors">Resume Examples</li>
-              <li className="hover:text-[#0077cc] cursor-pointer transition-colors">Cover Letter Builder</li>
-              <li className="hover:text-[#0077cc] cursor-pointer transition-colors">Career Guides</li>
-            </ul>
-          </div>
-          <div>
-            <h4 className="font-bold text-gray-900 mb-6">Help Center</h4>
-            <ul className="space-y-4 text-sm text-gray-600">
-              <li onClick={() => navigate('/help-center')} className="hover:text-[#0077cc] cursor-pointer transition-colors">Getting Started</li>
-              <li onClick={() => navigate('/help-center')} className="hover:text-[#0077cc] cursor-pointer transition-colors">FAQs</li>
-              <li onClick={() => navigate('/help-center')} className="hover:text-[#0077cc] cursor-pointer transition-colors">Troubleshooting</li>
-              <li onClick={() => navigate('/contact-us')} className="hover:text-[#0077cc] cursor-pointer transition-colors">Contact Support</li>
-            </ul>
-          </div>
-          <div>
-            <h4 className="font-bold text-gray-900 mb-6">Company</h4>
-            <ul className="space-y-4 text-sm text-gray-600">
-              <li className="hover:text-[#0077cc] cursor-pointer transition-colors">About Us</li>
-              <li className="hover:text-[#0077cc] cursor-pointer transition-colors">Careers</li>
-              <li className="hover:text-[#0077cc] cursor-pointer transition-colors">Privacy Policy</li>
-              <li className="hover:text-[#0077cc] cursor-pointer transition-colors">Terms of Service</li>
-            </ul>
-          </div>
-        </div>
-        <div className="max-w-[1400px] mx-auto pt-8 border-t border-gray-100 text-center text-gray-400 text-xs">
-          © {new Date().getFullYear()} UptoSkills. All rights reserved.
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }

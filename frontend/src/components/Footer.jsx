@@ -3,6 +3,7 @@ import UpToSkillsImg from '../assets/UptoSkills.webp';
 
 function Footer() {
   const navigate = useNavigate();
+  const isLoggedIn = typeof window !== 'undefined' && !!localStorage.getItem('token');
 
   return (
     <footer className="px-8 pt-20 pb-10 bg-white border-t border-gray-100">
@@ -21,22 +22,39 @@ function Footer() {
         <div>
           <h4 className="mb-6 font-bold">Quick Links</h4>
           <ul className="space-y-4 text-sm text-gray-500">
+            <li onClick={() => navigate('/')} className="hover:text-[#0077cc] cursor-pointer">Home</li>
             <li 
               onClick={() => navigate('/templates')}
               className="hover:text-[#0077cc] cursor-pointer"
             >
               Templates
             </li>
-            <li className="hover:text-[#0077cc] cursor-pointer">AI Resume Checker</li>
-            <li className="hover:text-[#0077cc] cursor-pointer">Job Tracker</li>
+            <li onClick={() => { navigate('/'); setTimeout(() => document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' }), 80); }} className="hover:text-[#0077cc] cursor-pointer">Features</li>
+            <li 
+              onClick={() => navigate('/resume-checker')}
+              className="hover:text-[#0077cc] cursor-pointer"
+            >
+              AI Resume Checker
+            </li>
+            {isLoggedIn && (
+              <li 
+                onClick={() => navigate('/job-tracker')}
+                className="hover:text-[#0077cc] cursor-pointer"
+              >
+                Job Tracker
+              </li>
+            )}
+            <li>
+              
+            </li>
           </ul>
         </div>
         <div>
           <h4 className="mb-6 font-bold">Company</h4>
           <ul className="space-y-4 text-sm text-gray-500">
-            <li className="hover:text-[#0077cc] cursor-pointer">About Us</li>
-            <li className="hover:text-[#0077cc] cursor-pointer">Careers</li>
-            <li className="hover:text-[#0077cc] cursor-pointer">Blog</li>
+            <li onClick={() => navigate('/about')} className="hover:text-[#0077cc] cursor-pointer">About Us</li>
+            <li onClick={() => navigate('/careers')} className="hover:text-[#0077cc] cursor-pointer">Careers</li>
+            <li onClick={() => navigate('/blog')} className="hover:text-[#0077cc] cursor-pointer">Blog</li>
           </ul>
         </div>
         <div>
@@ -48,8 +66,8 @@ function Footer() {
             >
               Help Center
             </li>
-            <li className="hover:text-[#0077cc] cursor-pointer">Privacy Policy</li>
-            <li className="hover:text-[#0077cc] cursor-pointer">Terms of Service</li>
+            <li onClick={() => navigate('/privacy-policy')} className="hover:text-[#0077cc] cursor-pointer">Privacy Policy</li>
+            <li onClick={() => navigate('/terms')} className="hover:text-[#0077cc] cursor-pointer">Terms of Service</li>
             <li 
               onClick={() => navigate('/contact')}
               className="hover:text-[#0077cc] cursor-pointer"

@@ -3,6 +3,7 @@ import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
 import { toast, Toaster } from "react-hot-toast";
 import images from "../assets";
+import NavBar from "../components/NavBar";
 
 export default function Register() {
   const [usernametext, setUserNameText] = useState("");
@@ -49,7 +50,9 @@ export default function Register() {
   return (
     <>
       <Toaster position="top-right" reverseOrder={false} />
-      <div className="h-screen flex items-center justify-center bg-gradient-to-br from-blue-950 to-slate-900 px-4 select-none overflow-hidden">
+      <NavBar />
+      <div className="fixed inset-0 pt-20 flex items-center justify-center bg-gradient-to-br from-blue-950 to-slate-900 px-4 select-none overflow-hidden">
+
         <div className="w-full max-w-5xl grid grid-cols-1 md:grid-cols-2 bg-white rounded-3xl overflow-hidden shadow-2xl max-h-[95vh]">
           {/* Left Form Section */}
           <div className="flex flex-col justify-center px-6 md:px-10 py-6 overflow-y-auto">

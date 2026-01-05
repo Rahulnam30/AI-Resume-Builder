@@ -1,4 +1,5 @@
 import "./myresumes.css";
+import Footer from "../../Footer";
 
 export default function MyResumes() {
   return (
@@ -251,10 +252,7 @@ export default function MyResumes() {
         </div>
       </div>
 
-      {/* Footer */}
-      <footer className="footer">
-        © 2023 ResumeAI Inc. All rights reserved.
-      </footer>
+      <Footer />
 
     </div>
   );

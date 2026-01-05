@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 import images from '../assets'
+import NavBar from '../components/NavBar' 
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState('');
@@ -26,7 +27,11 @@ export default function ForgotPassword() {
   };
 
   return (
-    <div className="flex items-center justify-center w-full h-screen p-4 md:p-8 lg:p-10 bg-blue-950">
+    <>
+      <NavBar />
+      <div className="fixed inset-x-0 top-16 bottom-0 flex items-center justify-center w-full p-4 md:p-8 lg:p-10 bg-blue-950 overflow-hidden">
+
+
       <div className="flex w-full h-full mx-auto overflow-hidden bg-white rounded-lg shadow-lg">
         <div className="hidden w-1/2 lg:block">
           <img
@@ -78,5 +83,6 @@ export default function ForgotPassword() {
         </div>
       </div>
     </div>
+    </>
   );
 }

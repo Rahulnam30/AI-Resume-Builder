@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import UpToSkillsImg from "../assets/UptoSkills.webp";
+import NavBar from "../components/NavBar";
+import Footer from "../components/Footer";
 
 function TemplatesPage() {
   const navigate = useNavigate();
@@ -36,23 +37,7 @@ function TemplatesPage() {
 
   return (
     <div className="min-h-screen bg-white">
-      {/* NAVBAR */}
-      <nav className="bg-white border-b border-gray-200 sticky top-0 z-50 py-4 shadow-sm">
-        <div className="max-w-7xl mx-auto px-8 flex items-center justify-between">
-          <button onClick={() => navigate("/")} className="hover:opacity-80 transition-opacity">
-            <img src={UpToSkillsImg} alt="UptoSkills" className="h-10" />
-          </button>
-
-          <div>
-            <button
-              onClick={() => navigate("/")}
-              className="flex items-center gap-2 px-5 py-2.5 border-2 border-gray-300 text-gray-700 rounded-lg font-semibold hover:border-gray-400 hover:text-gray-800 transition-all duration-300"
-            >
-              ← Back Home
-            </button>
-          </div>
-        </div>
-      </nav>
+      <NavBar />
 
       {/* MAIN CONTENT */}
       <section className="px-8 py-12">
@@ -137,12 +122,7 @@ function TemplatesPage() {
         </div>
       </section>
 
-      {/* FOOTER */}
-      <footer className="bg-gray-50 border-t border-gray-200 px-8 py-8 mt-16">
-        <div className="max-w-7xl mx-auto text-center text-gray-600 text-sm">
-          <p>© {new Date().getFullYear()} UptoSkills. All rights reserved.</p>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }

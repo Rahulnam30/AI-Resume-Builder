@@ -3,6 +3,7 @@ import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
 import { toast, Toaster } from "react-hot-toast";
 import images from "../assets";
+import NavBar from "../components/NavBar";
 
 export default function Login() {
   const [emailtext, setEmailText] = useState("");
@@ -32,6 +33,13 @@ export default function Login() {
         password: passwordtext,
       });
 
+      const { token, userID } = response.data || {};
+      if (token) {
+        localStorage.setItem('token', token);
+      }
+      if (userID) {
+        localStorage.setItem('userID', userID);
+      }
       const username = emailtext.split("@")[0];
       toast.success(`Welcome back, ${username}!`);
       setTimeout(() => navigate("/userhome"), 1200);
@@ -48,9 +56,10 @@ export default function Login() {
   return (
     <>
       <Toaster position="top-right" reverseOrder={false} />
+      <NavBar />
 
-      <div className="h-screen flex items-center justify-center bg-gradient-to-br from-blue-950 to-slate-900 px-4 select-none overflow-hidden">
-        <div className="w-full max-w-5xl grid grid-cols-1 md:grid-cols-2 rounded-3xl overflow-hidden shadow-2xl bg-white max-h-[95vh]">
+      <div className="fixed inset-0 pt-20 flex items-center justify-center bg-gradient-to-br from-blue-950 to-slate-900 px-4 select-none overflow-hidden">
+        <div className="w-full max-w-4xl grid grid-cols-1 md:grid-cols-2 rounded-3xl overflow-hidden shadow-2xl bg-white max-h-[85vh]">
           <div className="hidden md:block">
             <Link to="/">
               <img

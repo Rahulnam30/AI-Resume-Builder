@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import UpToSkillsImg from '../assets/UptoSkills.webp';
+import Footer from "../components/Footer";
 
 function HelpCenter() {
     const navigate = useNavigate();
@@ -8,6 +9,8 @@ function HelpCenter() {
     const [expandedFAQ, setExpandedFAQ] = useState(null);
     const [searchQuery, setSearchQuery] = useState('');
     const [expandedArticle, setExpandedArticle] = useState(null);
+
+    useEffect(() => { window.scrollTo({ top: 0, behavior: 'smooth' }); }, []);
 
     const guides = [
         {
@@ -227,13 +230,7 @@ function HelpCenter() {
                             </div>
                         </div>
 
-                        <button
-                            onClick={() => navigate('/')}
-                            className="group flex items-center gap-2 px-5 py-2.5 text-gray-700 font-semibold rounded-full hover:bg-gray-50 transition-all duration-300"
-                        >
-                            <i className="fas fa-arrow-left text-sm group-hover:-translate-x-1 transition-transform duration-300"></i>
-                            <span>Back to Home</span>
-                        </button>
+                        
                     </div>
                 </div>
             </nav>
