@@ -1,24 +1,22 @@
-const express = require('express');
-const cors = require('cors');
-const mongoose = require('mongoose');
-const userRoutes = require('./controllers/User');
-const dotenv = require('dotenv');
-const app = express();
+import express from "express";
+import dotenv from "dotenv";
 dotenv.config();
-app.use(express.json()); 
-app.use(cors(
-    {origin: 'http://localhost:5173', credentials: true}
-));
+import connetDB from "./config/db.js";
+import cors from "cors";
+import authRouter from "./routers/auth.router.js";
+import cookieParser from "cookie-parser";
 
-mongoose.connect(process.env.MONGO_DB_URL)
-    .then(() => console.log('MongoDB connected'))
-    .catch(err => console.log(err));
-app.use('/api', userRoutes);
-const PORT = 5000;
+const app = express();
 
-app.get('/',(req,res)=>{
-    res.send('Hello from backend');
-})
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+app.use(express.json());
+
+const port = process.env.PORT || 5000;
+app.use(cors({ origin: "http://localhost:5173", credentials: true }));
+app.use(cookieParser());
+
+app.use("/api/auth", authRouter);
+
+app.listen(port, () => {
+  connetDB();
+  console.log(`Server Running at ${port}`);
 });

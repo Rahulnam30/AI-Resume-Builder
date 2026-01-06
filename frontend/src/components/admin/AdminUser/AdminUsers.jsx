@@ -1,216 +1,174 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Pencil, Trash2, Check, X } from "lucide-react";
 import AdminNavbar from "../AdminNavBar/AdminNavBar";
 
-export default function AdminUsers({head}) {
-  const navigate = useNavigate();
-
-  // 🔹 Example Users Data
+export default function AdminUsers({ head = "Manage Users" }) {
   const [users, setUsers] = useState([
     {
       id: 1,
-      name: "Rahul Sharma",
-      email: "rahul@gmail.com",
+      name: "John Doe",
+      email: "john.d@example.com",
       role: "User",
       status: "Active",
       plan: "Pro",
+      date: "Nov 14, 2023",
     },
     {
       id: 2,
-      name: "Ananya Singh",
-      email: "ananya@gmail.com",
+      name: "Sarah Smith",
+      email: "sarah.s@example.com",
       role: "Admin",
-      status: "Active",
+      status: "Pending",
       plan: "Enterprise",
+      date: "Nov 13, 2023",
     },
     {
       id: 3,
-      name: "Vikram Rao",
-      email: "vikram@gmail.com",
-      role: "User",
-      status: "Inactive",
-    },
-    {
-      id: 4,
-      name: "Pooja Verma",
-      email: "pooja@gmail.com",
-      role: "User",
+      name: "Michael Johnson",
+      email: "mj.dev@example.com",
+      role: "Editor",
       status: "Active",
-    },
-    {
-      id: 5,
-      name: "Aman Khan",
-      email: "aman@gmail.com",
-      role: "Moderator",
-      status: "Inactive",
+      plan: "Free",
+      date: "Nov 12, 2023",
     },
   ]);
 
-  const [isDeleting, setIsDeleting] = useState(null);
-  const [isUpdating, setIsUpdating] = useState(null);
+  const [editId, setEditId] = useState(null);
+  const [tempStatus, setTempStatus] = useState("");
 
-  // ❌ DELETE USER
-  const handleDelete = async (id) => {
-    const user = users.find((u) => u.id === id);
-    if (!window.confirm(`Are you sure you want to delete ${user.name}?`)) return;
-
-    try {
-      setIsDeleting(id);
-      await new Promise((resolve) => setTimeout(resolve, 800));
-      setUsers((prev) => prev.filter((u) => u.id !== id));
-    } catch (err) {
-      alert("Failed to delete user");
-    } finally {
-      setIsDeleting(null);
-    }
+  /* ================= START EDIT ================= */
+  const startEdit = (user) => {
+    setEditId(user.id);
+    setTempStatus(user.status);
   };
 
-  // 🔁 ACTIVATE / DEACTIVATE
-  const handleDeactivate = async (id, currentStatus) => {
-    const user = users.find((u) => u.id === id);
-    const newStatus = currentStatus === "Active" ? "Inactive" : "Active";
+  /* ================= SAVE ================= */
+  const saveEdit = (id) => {
+    setUsers((prev) =>
+      prev.map((u) => (u.id === id ? { ...u, status: tempStatus } : u))
+    );
+    setEditId(null);
+  };
 
-    if (
-      !window.confirm(
-        `Are you sure you want to change the status of ${user.name} to "${newStatus}"?`
-      )
-    )
-      return;
-
-    try {
-      setIsUpdating(id);
-      await new Promise((resolve) => setTimeout(resolve, 800));
-      setUsers((prev) =>
-        prev.map((u) =>
-          u.id === id ? { ...u, status: newStatus } : u
-        )
-      );
-    } catch (err) {
-      alert("Failed to update user status");
-    } finally {
-      setIsUpdating(null);
+  /* ================= DELETE ================= */
+  const deleteUser = (id) => {
+    if (window.confirm("Are you sure?")) {
+      setUsers((prev) => prev.filter((u) => u.id !== id));
     }
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-gray-900 text-white">
-      {/* Navbar */}
-      <div className="sticky top-0 z-40">
-        <AdminNavbar onLogout={() => navigate("/")} />
-      </div>
+    <div className="min-h-screen bg-gray-50">
+      <AdminNavbar />
 
-      {/* Content */}
-      <main className="flex-1 p-6 sm:p-10">
-        <h1 className="text-4xl font-bold mb-2">User Management</h1>
-        <p className="text-gray-400 mb-8">Manage users</p>
+      <div className="p-6">
+        <h1 className="text-2xl font-bold mb-6 text-gray-800">{head}</h1>
 
-        {/* Table */}
-        <div className="overflow-x-auto rounded-xl border border-gray-700 bg-gray-800">
-          <table className="w-full text-left">
-            <thead className="bg-gray-700 text-gray-300 uppercase text-sm">
+        <div className="bg-white border rounded-xl overflow-hidden shadow-sm">
+          <table className="w-full text-sm">
+            <thead className="bg-gray-50 text-gray-500">
               <tr>
-                <th className="px-6 py-4">Name</th>
-                <th className="px-6 py-4">Email</th>
-                <th className="px-6 py-4">Role</th>
-                <th className="px-6 py-4">Plan</th>
-                <th className="px-6 py-4">Status</th>
+                <th className="px-6 py-4 text-left">User</th>
+                <th className="px-6 py-4 text-center">Role</th>
+                <th className="px-6 py-4 text-center">Status</th>
+                <th className="px-6 py-4 text-center">Plan</th>
+                <th className="px-6 py-4 text-center">Date</th>
                 <th className="px-6 py-4 text-center">Actions</th>
               </tr>
             </thead>
 
-            <tbody>
-              {users.map((user) => {
-                const isActive = user.status === "Active";
+            <tbody className="divide-y">
+              {users.map((u) => (
+                <tr key={u.id} className="hover:bg-gray-50">
+                  {/* USER */}
+                  <td className="px-6 py-4 flex items-center gap-3">
+                    <div className="w-9 h-9 rounded-full bg-indigo-100 text-indigo-700 flex items-center justify-center font-semibold">
+                      {u.name.charAt(0)}
+                    </div>
+                    <div>
+                      <p className="font-medium">{u.name}</p>
+                      <p className="text-xs text-gray-500">{u.email}</p>
+                    </div>
+                  </td>
 
-                return (
-                  <tr
-                    key={user.id}
-                    className="border-t border-gray-700 hover:bg-gray-700 transition"
-                  >
-                    <td className="px-6 py-4 font-semibold">{user.name}</td>
-                    <td className="px-6 py-4 text-gray-400">{user.email}</td>
-                    <td className="px-6 py-4">{user.role}</td>
+                  <td className="px-6 py-4 text-center">{u.role}</td>
 
-                    <td className="px-6 py-4">
+                  {/* STATUS INLINE EDIT */}
+                  <td className="px-6 py-4 text-center">
+                    {editId === u.id ? (
+                      <select
+                        value={tempStatus}
+                        onChange={(e) => setTempStatus(e.target.value)}
+                        className="border px-2 py-1 rounded-md text-sm"
+                      >
+                        <option>Active</option>
+                        <option>Pending</option>
+                        <option>Banned</option>
+                      </select>
+                    ) : (
                       <span
                         className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                          isActive
-                            ? "bg-green-100 text-green-800"
-                            : "bg-yellow-100 text-yellow-800"
+                          u.status === "Active"
+                            ? "bg-green-100 text-green-700"
+                            : u.status === "Pending"
+                            ? "bg-yellow-100 text-yellow-700"
+                            : "bg-red-100 text-red-700"
                         }`}
                       >
-                        {user.status}
+                        {u.status}
                       </span>
-                    </td>
+                    )}
+                  </td>
 
-                    {/* Fixed-size buttons */}
-                    <td className="px-6 py-4">
-                      <div className="flex justify-center gap-3">
-                        {/* Activate / Deactivate */}
+                  <td className="px-6 py-4 text-center">{u.plan}</td>
+                  <td className="px-6 py-4 text-center text-gray-500">
+                    {u.date}
+                  </td>
+
+                  {/* ACTIONS */}
+                  <td className="px-6 py-4 flex justify-center gap-2">
+                    {editId === u.id ? (
+                      <>
                         <button
-                          onClick={() =>
-                            handleDeactivate(user.id, user.status)
-                          }
-                          disabled={isUpdating === user.id}
-                          className={`inline-flex items-center justify-center 
-                            w-32 px-4 py-2 rounded-lg font-semibold text-sm transition-colors
-                            ${
-                              isUpdating === user.id
-                                ? "bg-blue-300 text-blue-800 cursor-not-allowed"
-                                : "bg-blue-500 text-white hover:bg-blue-600"
-                            }`}
+                          onClick={() => saveEdit(u.id)}
+                          title="Save"
+                          className="p-2 rounded-lg hover:bg-green-100 text-green-600"
                         >
-                          {isUpdating === user.id
-                            ? "Updating..."
-                            : isActive
-                            ? "Deactivate"
-                            : "Activate"}
+                          <Check size={16} />
                         </button>
-
-                        {/* Delete */}
                         <button
-                          onClick={() => handleDelete(user.id)}
-                          disabled={isDeleting === user.id}
-                          className={`inline-flex items-center justify-center 
-                            w-28 px-4 py-2 rounded-lg font-semibold text-sm transition-colors
-                            ${
-                              isDeleting === user.id
-                                ? "bg-red-300 text-red-800 cursor-not-allowed"
-                                : "bg-red-500 text-white hover:bg-red-600"
-                            }`}
+                          onClick={() => setEditId(null)}
+                          title="Cancel"
+                          className="p-2 rounded-lg hover:bg-gray-100"
                         >
-                          {isDeleting === user.id
-                            ? "Deleting..."
-                            : "Delete"}
+                          <X size={16} />
                         </button>
-                      </div>
-                    </td>
-                  </tr>
-                );
-              })}
-
-              {users.length === 0 && (
-                <tr>
-                  <td
-                    colSpan="5"
-                    className="text-center py-10 text-gray-400"
-                  >
-                    No users found
+                      </>
+                    ) : (
+                      <>
+                        <button
+                          onClick={() => startEdit(u)}
+                          title="Edit Status"
+                          className="p-2 rounded-lg hover:bg-gray-100"
+                        >
+                          <Pencil size={16} />
+                        </button>
+                        <button
+                          onClick={() => deleteUser(u.id)}
+                          title="Delete User"
+                          className="p-2 rounded-lg hover:bg-red-100 text-red-500"
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                      </>
+                    )}
                   </td>
                 </tr>
-              )}
+              ))}
             </tbody>
           </table>
         </div>
-
-        {/* Back */}
-        <button
-          onClick={() => navigate("/admin")}
-          className="mt-8 px-6 py-3 rounded-lg bg-indigo-600 hover:bg-indigo-700 transition font-semibold"
-        >
-          ← Back to Dashboard
-        </button>
-      </main>
+      </div>
     </div>
   );
 }

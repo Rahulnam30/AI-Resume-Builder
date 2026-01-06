@@ -26,15 +26,30 @@ export default function Login() {
     if (!validate()) return;
     setLoading(true);
     try {
-      const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
-      const response = await axios.post(`${API_URL}/api/login`, {
-        email: emailtext,
-        password: passwordtext,
-      });
+      const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
+      const response = await axios.post(
+        `${API_URL}/api/auth/login`,
+        {
+          email: emailtext,
+          password: passwordtext,
+        },
+        { withCredentials: true } // Important if backend sets cookies
+      );
 
-      const username = emailtext.split("@")[0];
-      toast.success(`Welcome back, ${username}!`);
-      setTimeout(() => navigate("/userhome"), 1200);
+      console.log("Login response:", response.data);
+
+      // Save token in localStorage
+      localStorage.setItem("token", response.data.token);
+
+      // Redirect based on isAdmin
+      if (response.data.isAdmin) {
+        toast.success("Welcome Admin!");
+        setTimeout(() => navigate("/admin"), 1200);
+      } else {
+        const username = emailtext.split("@")[0];
+        toast.success(`Welcome back, ${username}!`);
+        setTimeout(() => navigate("/userhome"), 1200);
+      }
     } catch (error) {
       console.log(error);
       toast.error(
@@ -48,7 +63,6 @@ export default function Login() {
   return (
     <>
       <Toaster position="top-right" reverseOrder={false} />
-
       <div className="h-screen flex items-center justify-center bg-gradient-to-br from-blue-950 to-slate-900 px-4 select-none overflow-hidden">
         <div className="w-full max-w-5xl grid grid-cols-1 md:grid-cols-2 rounded-3xl overflow-hidden shadow-2xl bg-white max-h-[95vh]">
           <div className="hidden md:block">
@@ -127,12 +141,11 @@ export default function Login() {
               <button
                 type="submit"
                 disabled={loading}
-                className={`w-full py-2 rounded-lg text-white text-sm font-medium transition mt-3
-                ${loading
+                className={`w-full py-2 rounded-lg text-white text-sm font-medium transition mt-3 ${
+                  loading
                     ? "bg-blue-400 cursor-not-allowed"
                     : "bg-blue-600 hover:bg-blue-700"
-                  }
-              `}
+                }`}
               >
                 {loading ? "Signing in..." : "Sign In"}
               </button>
