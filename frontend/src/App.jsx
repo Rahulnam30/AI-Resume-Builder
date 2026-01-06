@@ -16,12 +16,13 @@ import NotFound from "./pages/NotFound";
 
 import AdminLayout from "./components/admin/AdminLayout";
 import AdminDashboard from "./components/admin/AdminDashboard/AdminDashboard";
-import TemplateDocs from "./components/admin/AdminCreateTemplates/TemplateDocs";
+// import TemplateDocs from "./components/admin/AdminCreateTemplates/TemplateDocs";
 import Resume from "./components/admin/resume";
 import AdminUsers from "./components/admin/AdminUser/AdminUsers";
 import AdminSubscription from "./components/admin/AdminSubscription/AdminSubscription";
 import AdminAcceptUser from "./components/admin/AdminAcceptUserTemplate/AdminAcceptUser";
 import AdminAnalytics from "./components/admin/AdminAnalytics/AdminAnalytics";
+import AdminTemplates from "./components/admin/AdminCreateTemplates/Template";
 
 function App() {
   return (
@@ -43,7 +44,7 @@ function App() {
           {/* Admin routes */}
           <Route path="/admin" element={<AdminLayout />}>
             <Route index element={<AdminDashboard />} />
-            <Route path="create-templates" element={<TemplateDocs />} />
+            <Route path="create-templates" element={<AdminTemplates />} />
             <Route path="templates" element={<Resume />} />
             <Route path="users" element={<AdminUsers />} />
             <Route path="subscription" element={<AdminSubscription />} />

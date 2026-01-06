@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import {
   LayoutDashboard,
-  FileText,
   ChevronLeft,
   ChevronRight,
   Menu,
@@ -11,9 +10,10 @@ import {
   User,
   Drone,
   BarChart,
+  LogOut,
 } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 
 export default function AdminSidebar({ isCollapsed, setIsCollapsed }) {
   const [isMobileOpen, setIsMobileOpen] = useState(false);
@@ -28,17 +28,10 @@ export default function AdminSidebar({ isCollapsed, setIsCollapsed }) {
       label: "Dashboard",
       path: "/admin",
     },
-
-    {
-      id: "resumes",
-      icon: FileText,
-      label: "Resumes",
-      path: "/admin/templates",
-    },
     {
       id: "create",
       icon: Plus,
-      label: "Create Template",
+      label: "Templates",
       path: "/admin/create-templates",
     },
     {
@@ -47,26 +40,22 @@ export default function AdminSidebar({ isCollapsed, setIsCollapsed }) {
       label: "Subscription",
       path: "/admin/subscription",
     },
+    { id: "users", icon: User, label: "Users", path: "/admin/users" },
     {
-      id: "users", // ✅ FIXED
-      icon: User,
-      label: "Users",
-      path: "/admin/users", // ✅ FIXED
-    },
-    {
-      id: "Accepttemplate",
+      id: "accept",
       icon: Drone,
       label: "Accept User Template",
       path: "/admin/template-requests",
     },
     {
-      id: "Analysis",
+      id: "analytics",
       icon: BarChart,
       label: "Analytics",
       path: "/admin/analytics",
     },
   ];
 
+  // Navigate to page
   const handleNavigate = (path) => {
     navigate(path);
     setIsMobileOpen(false);
@@ -74,70 +63,110 @@ export default function AdminSidebar({ isCollapsed, setIsCollapsed }) {
 
   return (
     <>
-      {/* Mobile Toggle */}
-      <div className="md:hidden fixed top-4 left-4 z-[60]">
+      {/* Toggle Buttons */}
+      <div className="fixed top-4 left-4 z-[60] flex gap-2">
+        {/* Mobile menu toggle */}
         <button
           onClick={() => setIsMobileOpen(!isMobileOpen)}
-          className="p-2 rounded-md bg-slate-900 text-white"
+          className="md:hidden p-2"
         >
           {isMobileOpen ? <X /> : <Menu />}
         </button>
+
+        {/* Collapse toggle for desktop */}
+        <button
+          onClick={() => setIsCollapsed(!isCollapsed)}
+          className="hidden md:flex p-2"
+        >
+          {isCollapsed ? <ChevronRight /> : <ChevronLeft />}
+        </button>
       </div>
 
-      {/* Mobile Overlay */}
+      {/* Overlay for mobile */}
       {isMobileOpen && (
         <div
           onClick={() => setIsMobileOpen(false)}
-          className="fixed inset-0 bg-black/50 z-40 md:hidden"
+          className="fixed inset-0 bg-black/30 z-40 md:hidden"
         />
       )}
 
       {/* Sidebar */}
       <motion.aside
-        className="fixed top-16 left-0 z-40 flex flex-col bg-slate-900 border-r border-slate-700"
-        style={{
-          width: isCollapsed ? 80 : 256,
-          height: "calc(100vh - 4rem)",
-        }}
-        animate={{
-          x: isMobileOpen || window.innerWidth >= 768 ? 0 : "-100%",
-        }}
-        transition={{ type: "spring", stiffness: 200 }}
+        className="fixed top-16 left-0 z-40 bg-white border-r border-slate-200 flex flex-col"
+        style={{ width: isCollapsed ? 80 : 256, height: "calc(100vh - 4rem)" }}
+        animate={{ x: isMobileOpen || window.innerWidth >= 768 ? 0 : "-100%" }}
+        transition={{ type: "spring", stiffness: 220, damping: 25 }}
       >
-        {/* Header */}
-        <div className="h-16 flex items-center justify-between px-3 border-b border-slate-700">
-          <button
-            onClick={() => setIsCollapsed(!isCollapsed)}
-            className="hidden md:block p-1.5 hover:bg-slate-800 rounded-lg"
-          >
-            {isCollapsed ? <ChevronRight /> : <ChevronLeft />}
-          </button>
-        </div>
-
         {/* Menu */}
-        <nav className="flex-1 p-3 space-y-1">
+        <nav className="p-3 space-y-2 mt-3 flex-1">
           {menuItems.map((item) => {
             const Icon = item.icon;
-            const active = location.pathname.startsWith(item.path); // ✅ improved
+            // ✅ Fix: exact match for Dashboard, startsWith for others
+            const active =
+              item.path === "/admin"
+                ? location.pathname === "/admin"
+                : location.pathname.startsWith(item.path);
 
             return (
-              <button
-                key={item.id}
-                onClick={() => handleNavigate(item.path)}
-                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg
-                  transition-colors
-                  ${
-                    active
-                      ? "bg-slate-800 text-white"
-                      : "text-slate-400 hover:bg-slate-800 hover:text-white"
-                  }`}
-              >
-                <Icon size={20} />
-                {!isCollapsed && <span>{item.label}</span>}
-              </button>
+              <div key={item.id} className="relative group">
+                <button
+                  onClick={() => handleNavigate(item.path)}
+                  className={`w-full flex items-center rounded-xl transition-all
+                    ${isCollapsed ? "justify-center px-0" : "gap-3 px-4"} py-3
+                    ${
+                      active
+                        ? "bg-blue-50 text-blue-600 font-semibold"
+                        : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+                    }`}
+                >
+                  <Icon size={22} />
+                  {!isCollapsed && (
+                    <span className="whitespace-nowrap">{item.label}</span>
+                  )}
+                </button>
+
+                {/* Tooltip when collapsed */}
+                <AnimatePresence>
+                  {isCollapsed && (
+                    <motion.div
+                      initial={{ opacity: 0, x: -6 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: -6 }}
+                      className="absolute left-full ml-3 top-1/2 -translate-y-1/2 hidden group-hover:flex z-50"
+                    >
+                      <div className="bg-slate-900 text-white text-sm px-3 py-1.5 rounded-lg shadow-lg whitespace-nowrap">
+                        {item.label}
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
             );
           })}
         </nav>
+
+        {/* Logout Button */}
+        <div className="p-3 border-t border-slate-200">
+          <div className="relative group">
+            <button
+              onClick={() => navigate("/login")}
+              className={`w-full flex items-center rounded-xl transition-all text-red-500 hover:bg-red-50
+                ${isCollapsed ? "justify-center px-0" : "gap-3 px-4"} py-3`}
+            >
+              <LogOut size={22} />
+              {!isCollapsed && <span>Logout</span>}
+            </button>
+
+            {/* Tooltip when collapsed */}
+            {isCollapsed && (
+              <div className="absolute left-[90px] top-1/2 -translate-y-1/2 hidden group-hover:flex z-50">
+                <div className="bg-slate-900 text-white text-sm px-3 py-1.5 rounded-lg shadow-lg">
+                  Logout
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
       </motion.aside>
     </>
   );
