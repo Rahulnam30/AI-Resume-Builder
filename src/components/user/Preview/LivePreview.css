@@ -1,0 +1,156 @@
+/* Live Preview */
+.live-preview {
+  background: #fff;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  padding: 20px;
+  height: fit-content;
+  position: sticky;
+  top: 24px;
+}
+
+.preview-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.preview-header h3 {
+  font-size: 15px;
+  font-weight: 600;
+  color: #1a1a2e;
+  margin: 0;
+}
+
+.preview-template-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.current-template {
+  font-size: 12px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.complete-badge {
+  padding: 4px 10px;
+  background: #d1fae5;
+  color: #065f46;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.preview-document {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 24px;
+  min-height: 400px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  border-top: 3px solid #2563eb;
+}
+
+.preview-name {
+  font-size: 22px;
+  font-weight: 700;
+  color: #1a1a2e;
+  text-align: center;
+  margin-bottom: 8px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid #e5e7eb;
+}
+
+.preview-contact {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  font-size: 11px;
+  color: #6b7280;
+  margin-bottom: 16px;
+}
+
+.preview-section {
+  margin-bottom: 16px;
+}
+
+.preview-section-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: #1a1a2e;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.preview-section p {
+  font-size: 11px;
+  color: #4b5563;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.preview-skills {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.preview-skill-category {
+  margin-bottom: 8px;
+}
+
+.skill-label {
+  font-size: 10px;
+  font-weight: 600;
+  color: #6b7280;
+  display: block;
+  margin-bottom: 6px;
+}
+
+.skill-bars {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.skill-bar-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 10px;
+  color: #374151;
+}
+
+.skill-bar-item span {
+  width: 60px;
+  flex-shrink: 0;
+}
+
+.skill-bar {
+  flex: 1;
+  height: 6px;
+  background: #e5e7eb;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.skill-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #10b981, #34d399);
+  border-radius: 3px;
+}
+
+@media (max-width: 1200px) {
+  .live-preview {
+    position: static;
+  }
+}

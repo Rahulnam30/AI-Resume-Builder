@@ -1,0 +1,149 @@
+/* ATS Checker Page */
+.ats-checker-page {
+  padding: 10px;
+}
+
+.ats-upload-section {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin-bottom: 24px;
+}
+
+.upload-box {
+  background: #fff;
+  border: 2px dashed #d1d5db;
+  border-radius: 12px;
+  padding: 40px;
+  text-align: center;
+  transition: all 0.2s;
+}
+
+.upload-box:hover {
+  border-color: #667eea;
+  background: #f9fafb;
+}
+
+.upload-icon {
+  font-size: 48px;
+  margin-bottom: 16px;
+}
+
+.upload-box h3 {
+  font-size: 18px;
+  color: #1a1a2e;
+  margin: 0 0 8px 0;
+}
+
+.upload-box p {
+  font-size: 14px;
+  color: #6b7280;
+  margin: 0 0 16px 0;
+}
+
+.upload-btn {
+  display: inline-block;
+  padding: 12px 24px;
+  background: #667eea;
+  color: #fff;
+  border-radius: 8px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.upload-btn:hover {
+  background: #5a67d8;
+}
+
+.file-types {
+  display: block;
+  margin-top: 12px;
+  font-size: 12px;
+  color: #9ca3af;
+}
+
+.job-description-box {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 24px;
+}
+
+.job-description-box h3 {
+  font-size: 16px;
+  color: #1a1a2e;
+  margin: 0 0 12px 0;
+}
+
+.job-description-box textarea {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 14px;
+  resize: vertical;
+  margin-bottom: 16px;
+  box-sizing: border-box;
+}
+
+.analyze-btn {
+  width: 100%;
+  padding: 14px;
+  background: #1a1a2e;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.analyze-btn:hover {
+  background: #2d2d44;
+}
+
+.ats-tips {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 24px;
+}
+
+.ats-tips h3 {
+  font-size: 16px;
+  color: #1a1a2e;
+  margin: 0 0 16px 0;
+}
+
+.ats-tips ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.ats-tips li {
+  padding: 10px 0;
+  border-bottom: 1px solid #f3f4f6;
+  font-size: 14px;
+  color: #4b5563;
+  padding-left: 24px;
+  position: relative;
+}
+
+.ats-tips li::before {
+  content: '✓';
+  position: absolute;
+  left: 0;
+  color: #10b981;
+}
+
+.ats-tips li:last-child {
+  border-bottom: none;
+}
+
+@media (max-width: 768px) {
+  .ats-upload-section {
+    grid-template-columns: 1fr;
+  }
+}

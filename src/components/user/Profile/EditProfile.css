@@ -1,0 +1,160 @@
+/* Profile Page */
+.profile-page {
+  padding: 10px;
+}
+
+.profile-content {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.profile-avatar-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 32px;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+}
+
+.avatar-large {
+  width: 100px;
+  height: 100px;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 40px;
+  font-weight: 700;
+}
+
+.change-avatar-btn {
+  padding: 10px 20px;
+  background: #f3f4f6;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 14px;
+  color: #374151;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.change-avatar-btn:hover {
+  background: #e5e7eb;
+}
+
+.profile-form {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 24px;
+}
+
+.profile-form .form-grid {
+  margin-bottom: 20px;
+}
+
+.profile-form textarea {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 14px;
+  resize: vertical;
+  box-sizing: border-box;
+}
+
+.profile-form textarea:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.profile-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.save-profile-btn {
+  padding: 12px 24px;
+  background: #667eea;
+  border: none;
+  border-radius: 8px;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.save-profile-btn:hover {
+  background: #5a67d8;
+}
+
+.cancel-btn {
+  padding: 12px 24px;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  color: #374151;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.cancel-btn:hover {
+  background: #f3f4f6;
+}
+
+.danger-zone {
+  background: #fff;
+  border: 1px solid #fecaca;
+  border-radius: 12px;
+  padding: 24px;
+}
+
+.danger-zone h3 {
+  font-size: 16px;
+  font-weight: 600;
+  color: #dc2626;
+  margin: 0 0 8px 0;
+}
+
+.danger-zone p {
+  font-size: 14px;
+  color: #6b7280;
+  margin: 0 0 16px 0;
+}
+
+.delete-account-btn {
+  padding: 12px 24px;
+  background: #fee2e2;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  color: #dc2626;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.delete-account-btn:hover {
+  background: #fecaca;
+}
+
+@media (max-width: 768px) {
+  .profile-actions {
+    flex-direction: column;
+  }
+  
+  .save-profile-btn,
+  .cancel-btn {
+    width: 100%;
+  }
+}
