@@ -39,16 +39,18 @@ export default function Login() {
 
       console.log("Login response:", response.data);
 
-      const { token, userID } = response.data || {};
-      if (token) {
-        localStorage.setItem('token', token);
+      // Save token in localStorage
+      localStorage.setItem("token", response.data.token);
+
+      // Redirect based on isAdmin
+      if (response.data.isAdmin) {
+        toast.success("Welcome Admin!");
+        setTimeout(() => navigate("/admin"), 1200);
+      } else {
+        const username = emailtext.split("@")[0];
+        toast.success(`Welcome back, ${username}!`);
+        setTimeout(() => navigate("/user"), 1200);
       }
-      if (userID) {
-        localStorage.setItem('userID', userID);
-      }
-      const username = emailtext.split("@")[0];
-      toast.success(`Welcome back, ${username}!`);
-      setTimeout(() => navigate("/userhome"), 1200);
     } catch (error) {
       console.log(error);
       toast.error(

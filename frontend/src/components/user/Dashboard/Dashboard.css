@@ -3,7 +3,7 @@
   max-width: 1100px;
   margin: 0 auto;
   padding: 20px 30px 40px;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   color: #1a1a2e;
 }
 
@@ -71,7 +71,7 @@
   background: #fff;
   border-radius: 14px;
   padding: 28px 32px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
   border: none;
 }
 
@@ -171,7 +171,7 @@
   background: #fff;
   border-radius: 14px;
   padding: 28px 24px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
   display: flex;
   flex-direction: column;
   gap: 16px;
@@ -218,7 +218,7 @@
   .dashboard-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .dashboard-stats {
     flex-direction: column;
     gap: 18px;
@@ -229,9 +229,177 @@
   .dashboard-page {
     padding: 15px 20px;
   }
-  
+
   .dashboard-stats > div {
     font-size: 1rem;
     padding: 14px 18px;
   }
+}
+
+/* ===============================
+   TOP BAR
+================================ */
+.dashboard-topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 26px;
+}
+
+/* Search bar */
+.search-box input {
+  width: 340px;
+  padding: 11px 16px;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  font-size: 0.95rem;
+  background: #ffffff;
+  transition: border 0.2s ease, box-shadow 0.2s ease;
+}
+
+.search-box input:focus {
+  outline: none;
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+}
+
+/* ===============================
+   PROFILE AREA
+================================ */
+.profile-area {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 14px;
+  background: #ffffff;
+  border-radius: 14px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+  cursor: pointer;
+  position: relative;
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.profile-area:hover {
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.12);
+  transform: translateY(-1px);
+}
+
+.profile-area img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+/* Profile text */
+.profile-info {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.15;
+}
+
+.profile-info .name {
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: #111827;
+}
+
+.profile-info .email {
+  font-size: 0.75rem;
+  color: #6b7280;
+}
+
+/* ===============================
+   PROFILE DROPDOWN
+================================ */
+.profile-dropdown {
+  position: absolute;
+  right: 0;
+  top: 56px;
+  width: 190px;
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 8px;
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.15);
+  z-index: 100;
+  animation: dropdownFade 0.15s ease;
+}
+
+@keyframes dropdownFade {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.profile-dropdown button {
+  width: 100%;
+  padding: 10px 12px;
+  background: none;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.profile-dropdown button:hover {
+  background: #f3f4f6;
+}
+
+.profile-dropdown .danger {
+  color: #dc2626;
+}
+
+@media (max-width: 768px) {
+  .dashboard-topbar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 16px;
+  }
+
+  .search-box input {
+    width: 100%;
+  }
+
+  .profile-area {
+    justify-content: center;
+  }
+}
+
+.profile-initials {
+  width: 40px;
+  height: 40px;
+  background-color: #6366f1; /* Primary color */
+  color: #fff;
+  font-weight: 600;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  text-transform: uppercase;
+}
+
+.profile-initials-circle {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: #2563eb; /* Blue circle, change color if you want */
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 16px;
+  cursor: pointer;
+}
+.stat-icon {
+  font-size: 28px;
+  margin-bottom: 8px;
 }

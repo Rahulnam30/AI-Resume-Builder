@@ -1,19 +1,24 @@
-/* Animations for sidebar labels: fade + typing-like reveal */
+/* ===============================
+   SIDEBAR LABELS - always visible
+=============================== */
 .sb-label {
   display: inline-block;
   overflow: hidden;
   white-space: nowrap;
   vertical-align: middle;
-  opacity: 0;
-  max-width: 0ch;
+
+  /* Visible by default */
+  opacity: 1;
+  max-width: 100ch; /* enough to fit content */
   transform: translateY(0);
+  
   transition: opacity 180ms ease, max-width 320ms cubic-bezier(.2,.9,.2,1), transform 200ms ease;
 }
 
+/* Optional: fade-in animation when you want */
 .sb-label.show {
   opacity: 1;
-  /* allow up to 24 characters to reveal - adjusts to content */
-  max-width: 24ch;
+  max-width: 100ch;
 }
 
 /* Typing-like step reveal (optional) */
@@ -25,7 +30,7 @@
   animation: sb-typing 420ms steps(18,end) forwards;
 }
 
-/* reverse typing animation for closing */
+/* Reverse typing animation (optional) */
 @keyframes sb-typing-reverse {
   from { max-width: 24ch; }
   to   { max-width: 0ch; }
@@ -34,9 +39,9 @@
   animation: sb-typing-reverse 260ms steps(18,end) forwards;
 }
 
-/* Small fade when collapsing */
+/* Small fade for collapsing (optional) */
 .sb-label.hide {
-  opacity: 0;
-  max-width: 0ch;
-  transform: translateY(-4px) translateX(-2px);
+  opacity: 1; /* keep visible */
+  max-width: 100ch; /* keep content visible */
+  transform: translateY(0); /* no movement */
 }

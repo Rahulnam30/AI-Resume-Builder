@@ -1,14 +1,10 @@
-const StatCard = ({ icon, iconSrc, value, label, colorClass }) => {
-  const imgSrc = iconSrc || null;
+const StatCard = ({ icon, value, label, colorClass }) => {
   return (
-    <div className="stat-card">
-      <div className="stat-icon-left" aria-hidden>
-        {imgSrc ? <img src={imgSrc} alt="" /> : icon}
-      </div>
-
+    <div className={`stat-card ${colorClass}`}>
+      <div className="stat-icon">{icon}</div>
       <div className="stat-info">
-        <span className="stat-label small">{label}</span>
-        <span className="stat-value">{value}</span>
+        <h2>{value}</h2>
+        <p>{label}</p>
       </div>
     </div>
   );

@@ -1,4 +1,4 @@
-const ResumeUpload = ({ onUpload, onBack }) => {
+const ResumeUpload = ({ onUpload }) => {
   const handleFileChange = (e) => {
     if (e.target.files[0]) {
       onUpload(e.target.files[0]);

@@ -32,6 +32,8 @@ import AdminSubscription from "./components/admin/AdminSubscription/AdminSubscri
 import AdminAcceptUser from "./components/admin/AdminAcceptUserTemplate/AdminAcceptUser";
 import AdminAnalytics from "./components/admin/AdminAnalytics/AdminAnalytics";
 import AdminTemplates from "./components/admin/AdminCreateTemplates/Template";
+// User routes
+import UserRoutes from "./pages/UserRoutes";
 
 function App() {
   return (
@@ -42,21 +44,11 @@ function App() {
           {/* Public routes */}
           <Route path="/" element={<Home />} />
           <Route path="/templates" element={<TemplatesPage />} />
-          <Route path="/templates/:id" element={<TemplateEditor />} />
-          <Route path="/builder" element={<BuilderPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
-          <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-          <Route path="/contact" element={<Contact />} />
-          <Route path="/help-center" element={<HelpCenter />} />          <Route path="/about" element={<About />} />
-          <Route path="/blog" element={<BlogPage />} />
-          <Route path="/careers" element={<CareersPage />} />
-          <Route path="/job-tracker" element={<RequireAuth><JobTrackerPro /></RequireAuth>} />
-          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-          <Route path="/resume-checker" element={<ResumeChecker />} />
-          <Route path="/terms" element={<Terms />} />          {/* <Route path="/userhome" element={<UserHome />} /> */}
-          <Route path="/help-center" element={<HelpCenter />} />
-          <Route path="*" element={<NotFound />} />
+
+          {/* USER ROUTES */}
+          <Route path="/user/*" element={<UserRoutes />} />
 
           {/* Admin routes */}
           <Route path="/admin" element={<AdminLayout />}>
@@ -69,7 +61,7 @@ function App() {
             <Route path="analytics" element={<AdminAnalytics />} />
           </Route>
 
-          {/* Fallback */}
+          {/* 404 */}
           <Route path="*" element={<NotFound />} />
         </Routes>
       </div>

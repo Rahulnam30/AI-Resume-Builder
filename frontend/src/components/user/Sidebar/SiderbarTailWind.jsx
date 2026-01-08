@@ -1,4 +1,5 @@
-import React from 'react'
+import React from 'react';
+import "./UserSidebar";
 import {
   Grid,
   FileText,
@@ -9,27 +10,15 @@ import {
   Menu,
   X,
 } from 'lucide-react'
-
 const SidebarItem = ({ label, active, isOpen, onClick }) => {
-  const containerClasses = isOpen
-    ? 'flex flex-row items-center gap-4 px-3 py-2 justify-start w-full transition-all duration-300'
-    : 'flex flex-col items-center gap-1 px-1 py-2 justify-center w-full transition-all duration-300'
-
-  const activeClasses = active ? (isOpen ? 'bg-purple-600 text-white rounded-lg' : '') : 'hover:bg-gray-50'
-
   return (
-    <button onClick={onClick} className={`${containerClasses} ${activeClasses}`}>
-      <span
-        className={`flex items-center justify-center ${isOpen ? 'w-10 h-10' : 'w-9 h-9'} ${
-          !isOpen && active ? 'bg-purple-600 text-white rounded-md' : ''
-        }`}
-      >
-        <Icon className={`w-5 h-5 ${active && isOpen ? 'text-white' : 'text-gray-700'}`} />
-      </span>
-
-      <span className={`${isOpen ? 'text-sm font-medium text-gray-800' : 'text-[10px] font-medium text-gray-700 mt-1'}`}>
-        {label}
-      </span>
+    <button
+      onClick={onClick}
+      className={`flex items-center gap-3 px-3 py-2 w-full rounded-md transition-all duration-300
+        ${active ? 'bg-purple-600 text-white' : 'hover:bg-gray-100'}`}
+    >
+      <Icon className={`w-5 h-5 ${active ? 'text-white' : 'text-gray-700'}`} />
+      {isOpen && <span className="text-sm font-medium">{label}</span>}
     </button>
   )
 }
@@ -87,4 +76,4 @@ const SidebarTailwind = ({ sidebarCollapsed, setSidebarCollapsed, activePage, se
   )
 }
 
-export default SidebarTailwind
+export default SidebarTailwind;

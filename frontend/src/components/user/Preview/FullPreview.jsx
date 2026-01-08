@@ -1,5 +1,6 @@
 import { FileText, Palette, Download, Share2 } from 'lucide-react';
 import ResumeDocument from './ResumeDocument';
+import './LivePreview';
 import './LivePreview.css';
 
 const FullPreview = ({ formData, currentTemplate, setActiveTab }) => {

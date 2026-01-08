@@ -11,17 +11,16 @@ import ProjectsForm from './forms/ProjectsForm';
 import CertificationsForm from './forms/CertificationsForm';
 import LivePreview from '../Preview/LivePreview';
 import FullPreview from '../Preview/FullPreview';
-import TemplatesPage from '../Templates/TemplatesPage';
+import TemplatesPage from '../Templates/TemplatesDashboardPage';
 import './ResumeBuilder.css';
 
-const ResumeBuilder = ({ 
-  formData, 
-  setFormData, 
-  templates, 
-  selectedTemplate, 
-  setSelectedTemplate,
-  setActivePage 
+const ResumeBuilder = ({
+  setActivePage = () => {}
 }) => {
+  const [formData, setFormData] = useState({});
+  const [templates] = useState([]);
+  const [selectedTemplate, setSelectedTemplate] = useState(null);
+
   const [resumeMode, setResumeMode] = useState(null);
   const [uploadedResume, setUploadedResume] = useState(null);
   const [activeTab, setActiveTab] = useState('builder');
@@ -40,7 +39,9 @@ const ResumeBuilder = ({
     setActiveTab('builder');
   };
 
-  const currentTemplate = templates.find(t => t.id === selectedTemplate);
+const currentTemplate = templates?.find(
+  (t) => t.id === selectedTemplate
+);
 
   const renderFormContent = () => {
     switch (activeSection) {

@@ -29,8 +29,8 @@ export default function Register() {
     if (!validate()) return;
     setLoading(true);
     try {
-      const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
-      await axios.post(`${API_URL}/api/register`, {
+      const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
+      await axios.post(`${API_URL}/api/auth/register`, {
         username: usernametext.trim(),
         email: emailtext.trim(),
         password: passwordtext,
@@ -52,7 +52,6 @@ export default function Register() {
       <Toaster position="top-right" reverseOrder={false} />
       <NavBar />
       <div className="fixed inset-0 pt-20 flex items-center justify-center bg-gradient-to-br from-blue-950 to-slate-900 px-4 select-none overflow-hidden">
-
         <div className="w-full max-w-5xl grid grid-cols-1 md:grid-cols-2 bg-white rounded-3xl overflow-hidden shadow-2xl max-h-[95vh]">
           {/* Left Form Section */}
           <div className="flex flex-col justify-center px-6 md:px-10 py-6 overflow-y-auto">
@@ -144,10 +143,11 @@ export default function Register() {
                 type="submit"
                 disabled={loading}
                 className={`w-full py-2 rounded-lg text-white text-sm font-medium transition mt-3
-                ${loading
+                ${
+                  loading
                     ? "bg-blue-400 cursor-not-allowed"
                     : "bg-blue-600 hover:bg-blue-700"
-                  }
+                }
               `}
               >
                 {loading ? "Creating account..." : "Sign Up"}
