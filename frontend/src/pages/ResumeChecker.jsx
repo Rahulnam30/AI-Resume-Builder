@@ -63,7 +63,7 @@ const AIResumeChecker = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 font-jakarta text-[#1a2e52]">
+    <div className="min-h-screen bg-slate-50 font-jakarta text-[#1a2e52] select-none">
       <NavBar />
       {/* --- HERO SECTION: FULL WIDTH/HEIGHT --- */}
       <section className="relative min-h-[85vh] flex items-center px-8 py-16 overflow-hidden bg-white border-b border-gray-50">
