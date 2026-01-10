@@ -13,7 +13,6 @@ import HelpCenter from "./pages/HelpCenter";
 import About from "./pages/About";
 import BlogPage from "./pages/Blogpage";
 import CareersPage from "./pages/Careerpage";
-import JobTrackerPro from "./pages/JobTracker (1)";
 import RequireAuth from "./components/RequireAuth";
 import ScrollToTop from "./components/ScrollToTop";
 import PrivacyPolicy from "./pages/Privacypolicy";
@@ -46,6 +45,21 @@ function App() {
           <Route path="/templates" element={<TemplatesPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
+          <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+
+          {/* Landing page routes */}
+          <Route path="/templates" element={<TemplatesPage />} />
+          <Route path="/templates/:id" element={<TemplateEditor />} />
+          <Route path="/builder" element={<BuilderPage />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/help-center" element={<HelpCenter />} />          
+          <Route path="/about" element={<About />} />
+          <Route path="/blog" element={<BlogPage />} />
+          <Route path="/careers" element={<CareersPage />} />
+          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+          <Route path="/resume-checker" element={<ResumeChecker />} />
+          <Route path="/terms" element={<Terms />} />
+          <Route path="/help-center" element={<HelpCenter />} />
 
           {/* USER ROUTES */}
           <Route path="/user/*" element={<UserRoutes />} />

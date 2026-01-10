@@ -132,10 +132,10 @@ const CareersPage = () => {
         
         <div className="max-w-5xl mx-auto text-center relative z-10">
           <div className="inline-block px-6 py-2 bg-white rounded-full shadow-lg mb-6">
-            <span className="text-indigo-600 font-bold">We're Hiring! 🚀</span>
+            <span className="text-indigo-600 font-bold select-none">We're Hiring! 🚀</span>
           </div>
           
-          <h1 className="text-6xl md:text-8xl font-black text-gray-900 mb-6 leading-tight">
+          <h1 className="text-6xl md:text-8xl font-black text-gray-900 mb-6 leading-tight select-none">
             Join Our
             <span className="block bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
               Mission
@@ -148,7 +148,7 @@ const CareersPage = () => {
           
           <button 
             onClick={() => document.getElementById('openings').scrollIntoView({ behavior: 'smooth' })}
-            className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-10 py-5 rounded-full font-bold text-lg hover:shadow-2xl hover:scale-105 transition-all inline-flex items-center gap-3"
+            className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-10 py-5 rounded-full font-bold text-lg hover:shadow-2xl hover:scale-105 transition-all inline-flex items-center gap-3 select-none"
           >
             View Open Positions <Briefcase className="w-5 h-5" />
           </button>
@@ -157,7 +157,7 @@ const CareersPage = () => {
 
       {/* Values Section */}
       <div className="max-w-7xl mx-auto px-6 py-20">
-        <div className="text-center mb-16">
+        <div className="text-center mb-16 select-none">
           <h2 className="text-5xl font-black text-gray-900 mb-4">Our Values</h2>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">
             These principles guide everything we do and shape how we work together
@@ -173,7 +173,7 @@ const CareersPage = () => {
                 animation: `fadeInUp 0.6s ease-out ${index * 0.1}s both`
               }}
             >
-              <div className={`inline-block p-4 bg-gradient-to-r ${value.color} rounded-2xl text-white mb-6 group-hover:scale-110 transition-transform`}>
+              <div className={`inline-block p-4 bg-gradient-to-r ${value.color} rounded-2xl text-white mb-6 group-hover:scale-110 transition-transform select-none`}>
                 {value.icon}
               </div>
               <h3 className="text-2xl font-bold text-gray-900 mb-4">{value.title}</h3>
@@ -189,7 +189,7 @@ const CareersPage = () => {
         <div className="absolute bottom-0 left-0 w-96 h-96 bg-white/10 rounded-full blur-3xl"></div>
         
         <div className="max-w-7xl mx-auto relative z-10">
-          <div className="text-center mb-16">
+          <div className="text-center mb-16 select-none">
             <h2 className="text-5xl font-black text-white mb-4">Why Work With Us</h2>
             <p className="text-xl text-white/90 max-w-2xl mx-auto">
               We believe in taking care of our team with meaningful benefits and perks
@@ -202,7 +202,7 @@ const CareersPage = () => {
                 key={index}
                 className="bg-white/10 backdrop-blur-xl p-8 rounded-2xl border border-white/20 hover:bg-white/20 transition-all duration-300 hover:scale-105"
               >
-                <div className="text-5xl mb-4">{perk.icon}</div>
+                <div className="text-5xl mb-4 select-none">{perk.icon}</div>
                 <h4 className="text-xl font-bold text-white mb-3">{perk.title}</h4>
                 <p className="text-white/80 leading-relaxed">{perk.description}</p>
               </div>
@@ -213,7 +213,7 @@ const CareersPage = () => {
 
       {/* Job Openings */}
       <div id="openings" className="max-w-6xl mx-auto px-6 py-20">
-        <div className="text-center mb-12">
+        <div className="text-center mb-12 select-none">
           <h2 className="text-5xl font-black text-gray-900 mb-4">Open Positions</h2>
           <p className="text-xl text-gray-600">Find your next opportunity and join our growing team</p>
         </div>
@@ -224,7 +224,7 @@ const CareersPage = () => {
             <button
               key={filter}
               onClick={() => setActiveFilter(filter)}
-              className={`px-6 py-3 rounded-full font-semibold transition-all duration-300 ${
+              className={`px-6 py-3 rounded-full font-semibold transition-all duration-300 select-none ${
                 activeFilter === filter
                   ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg scale-105'
                   : 'bg-white text-gray-700 hover:bg-gray-50 shadow-md hover:shadow-lg'
@@ -271,7 +271,7 @@ const CareersPage = () => {
                   </p>
                 </div>
                 
-                <button className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-8 py-4 rounded-full font-bold hover:shadow-xl hover:scale-105 transition-all whitespace-nowrap">
+                <button className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-8 py-4 rounded-full font-bold hover:shadow-xl hover:scale-105 transition-all whitespace-nowrap select-none">
                   Apply Now
                 </button>
               </div>
@@ -291,7 +291,7 @@ const CareersPage = () => {
       
 
       {/* CTA Section */}
-      <div className="max-w-5xl mx-auto px-6 py-20">
+      <div className="max-w-5xl mx-auto px-6 py-20 select-none">
         <div className="bg-gradient-to-r from-gray-900 to-gray-800 rounded-3xl p-12 text-center relative overflow-hidden">
           <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-600/20 rounded-full blur-3xl"></div>
           <div className="absolute bottom-0 left-0 w-64 h-64 bg-purple-600/20 rounded-full blur-3xl"></div>
