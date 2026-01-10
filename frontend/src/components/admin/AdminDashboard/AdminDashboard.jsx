@@ -1,41 +1,92 @@
 import React from "react";
 import { Users, FileText, CreditCard, DollarSign } from "lucide-react";
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  Cell,
+} from "recharts";
 
+import axios from "axios";
+import { useState } from "react";
+import { useEffect } from "react";
 export default function AdminDashboard() {
+  const [totalUser, setTotalUser] = useState(0);
+  const [totalUserChange, setTotalUserChange] = useState(0);
+  const [totalActiveSub, setTotalActiveSub] = useState(0);
+  const [totalActiveSubChange, setTotalActiveSubChange] = useState(0);
+  const [totalRevenue, setTotalRevenue] = useState(0);
+  const [totalRevenueChange, setTotalRevenueChange] = useState(0);
+  const [totalResumeGen, setResumeGen] = useState(0);
+  const [totalResumeGenChange, setTotalResumeGenChange] = useState(0);
+  const [resumeChart, setResumeChart] = useState([]);
+
   const stats = [
     {
       title: "Total Users",
-      value: "12,450",
-      change: "+12%",
+      value: totalUser,
+      change: `+${totalUserChange}%`,
       icon: Users,
       color: "text-blue-600",
       bg: "bg-blue-50",
     },
     {
       title: "Resumes Generated",
-      value: "45,200",
-      change: "+25%",
+      value: totalResumeGen,
+      change: `+${totalResumeGenChange}%`,
       icon: FileText,
       color: "text-indigo-600",
       bg: "bg-indigo-50",
     },
     {
       title: "Active Subscriptions",
-      value: "3,100",
-      change: "+8%",
+      value: totalActiveSub,
+      change: `+${totalActiveSubChange}%`,
       icon: CreditCard,
       color: "text-purple-600",
       bg: "bg-purple-50",
     },
     {
       title: "Total Revenue",
-      value: "$124,500",
-      change: "+18%",
+      value: `$ ${totalRevenue}`,
+      change: `+${totalRevenueChange}%`,
       icon: DollarSign,
       color: "text-green-600",
       bg: "bg-green-50",
     },
   ];
+
+  const fetchTotalUser = async () => {
+    try {
+      const result = await axios.get(
+        "http://localhost:8000/api/user/dashboard-stat",
+        {
+          withCredentials: true,
+        }
+      );
+      console.log(result);
+
+      setTotalUser(result.data.users.total);
+      setTotalUserChange(result.data.users.change);
+      setTotalActiveSub(result.data.subscriptions.total);
+      setTotalActiveSubChange(result.data.subscriptions.change);
+      setTotalRevenue(result.data.revenue.total);
+      setTotalRevenueChange(result.data.revenue.change);
+      setTotalResumeGenChange(result.data.resumes.change);
+      setResumeGen(result.data.resumes.total);
+      //for barchart
+      setResumeChart(result.data.resumeChart);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  useEffect(() => {
+    fetchTotalUser();
+  }, []);
 
   return (
     <div className="min-h-screen bg-gray-50 p-6">
@@ -82,9 +133,22 @@ export default function AdminDashboard() {
           <h2 className="text-lg font-semibold text-gray-900 mb-4">
             Resume Generation Traffic
           </h2>
-          <div className="h-64 border border-dashed border-gray-300 rounded-xl flex items-center justify-center text-gray-400">
-            Bar Chart (Recharts / Chart.js)
-          </div>
+
+          <ResponsiveContainer width="100%" height={300}>
+            <BarChart data={resumeChart}>
+              <XAxis dataKey="month" />
+              <YAxis />
+              <Tooltip />
+              <Bar dataKey="resumes" fill="#8884d8">
+                {resumeChart.map((entry, index) => (
+                  <Cell
+                    key={`cell-${index}`}
+                    fill={["#6366F1", "#EC4899", "#F59E0B"][index % 3]}
+                  />
+                ))}
+              </Bar>
+            </BarChart>
+          </ResponsiveContainer>
         </div>
 
         {/* Traffic Source */}
