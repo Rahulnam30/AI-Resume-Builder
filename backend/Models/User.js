@@ -22,6 +22,10 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       default: true,
     },
+    plan: {
+      type: String,
+      default: "Free",
+    },
   },
   { timestamps: true }
 );
