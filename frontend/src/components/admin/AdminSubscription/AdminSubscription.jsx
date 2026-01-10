@@ -137,10 +137,9 @@ const AdminSubscription = () => {
             <div className="mt-6">
               <span
                 className={`inline-block px-3 py-1 rounded-full text-xs font-medium 
-                  ${
-                    plan.active
-                      ? "bg-green-100 text-green-700"
-                      : "bg-red-100 text-red-700"
+                  ${plan.active
+                    ? "bg-green-100 text-green-700"
+                    : "bg-red-100 text-red-700"
                   }`}
               >
                 {plan.active ? "Active" : "Disabled"}
@@ -152,7 +151,7 @@ const AdminSubscription = () => {
 
       {/* Save Button */}
       <div className="mt-12 flex justify-end">
-        <button className="px-6 py-3 rounded-xl bg-blue-600 text-white font-medium hover:bg-blue-700">
+        <button className="px-6 py-3 rounded-xl bg-blue-600 text-white font-medium hover:bg-blue-700 mb-10">
           Save Changes
         </button>
       </div>

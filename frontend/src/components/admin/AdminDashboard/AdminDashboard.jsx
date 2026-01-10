@@ -59,10 +59,12 @@ export default function AdminDashboard() {
     },
   ];
 
+  const [recentUsers, setRecentUsers] = useState([]);
+
   const fetchTotalUser = async () => {
     try {
       const result = await axios.get(
-        "http://localhost:8000/api/user/dashboard-stat",
+        "http://localhost:5000/api/user/dashboard-stat",
         {
           withCredentials: true,
         }
@@ -79,6 +81,8 @@ export default function AdminDashboard() {
       setResumeGen(result.data.resumes.total);
       //for barchart
       setResumeChart(result.data.resumeChart);
+      // Recent Users
+      setRecentUsers(result.data.recentUsers || []);
     } catch (error) {
       console.error(error);
     }
@@ -189,51 +193,45 @@ export default function AdminDashboard() {
             <thead>
               <tr className="text-left text-gray-500 border-b">
                 <th className="py-3">User</th>
-                <th>Resume Title</th>
-                <th>Date</th>
-                <th>Status</th>
+                <th>Email</th>
+                <th>Date Joined</th>
+                <th>Plan</th>
               </tr>
             </thead>
 
             <tbody className="divide-y">
-              {[
-                {
-                  user: "John Doe",
-                  resume: "Software Engineer Resume",
-                  date: "Nov 14, 2023",
-                  status: "Active",
-                },
-                {
-                  user: "Sarah Smith",
-                  resume: "Marketing Manager CV",
-                  date: "Nov 13, 2023",
-                  status: "Pending",
-                },
-                {
-                  user: "Michael Johnson",
-                  resume: "Full Stack V2",
-                  date: "Nov 12, 2023",
-                  status: "Active",
-                },
-              ].map((row, i) => (
-                <tr key={i}>
-                  <td className="py-3 font-medium text-gray-900">{row.user}</td>
-                  <td className="text-gray-600">{row.resume}</td>
-                  <td className="text-gray-500">{row.date}</td>
-                  <td>
-                    <span
-                      className={`px-3 py-1 rounded-full text-xs font-medium
-                        ${
-                          row.status === "Active"
-                            ? "bg-green-100 text-green-700"
-                            : "bg-yellow-100 text-yellow-700"
-                        }`}
-                    >
-                      {row.status}
-                    </span>
+              {recentUsers.length > 0 ? (
+                recentUsers.map((user, i) => (
+                  <tr key={i}>
+                    <td className="py-3 font-medium text-gray-900">
+                      {user.username || "User"}
+                    </td>
+                    <td className="text-gray-600">{user.email}</td>
+                    <td className="text-gray-500">
+                      {user.createdAt
+                        ? new Date(user.createdAt).toLocaleDateString()
+                        : "N/A"}
+                    </td>
+                    <td>
+                      <span
+                        className={`px-3 py-1 rounded-full text-xs font-medium
+                          ${user.plan === "Pro"
+                            ? "bg-amber-100 text-amber-800"
+                            : "bg-gray-100 text-gray-700"
+                          }`}
+                      >
+                        {user.plan || "Free"}
+                      </span>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="4" className="py-4 text-center text-gray-500">
+                    No recent activity found.
                   </td>
                 </tr>
-              ))}
+              )}
             </tbody>
           </table>
         </div>
