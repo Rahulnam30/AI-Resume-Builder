@@ -11,6 +11,7 @@ import TemplateEditor from "./pages/TemplateEditor";
 import Contact from "./pages/Contact";
 import HelpCenter from "./pages/HelpCenter";
 import About from "./pages/About";
+import Pricing from "./pages/pricing";
 import BlogPage from "./pages/Blogpage";
 import CareersPage from "./pages/Careerpage";
 import RequireAuth from "./components/RequireAuth";
@@ -54,6 +55,7 @@ function App() {
           <Route path="/contact" element={<Contact />} />
           <Route path="/help-center" element={<HelpCenter />} />          
           <Route path="/about" element={<About />} />
+          <Route path="/pricing" element={<Pricing />} />
           <Route path="/blog" element={<BlogPage />} />
           <Route path="/careers" element={<CareersPage />} />
           <Route path="/privacy-policy" element={<PrivacyPolicy />} />

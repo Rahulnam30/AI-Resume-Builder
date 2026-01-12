@@ -12,27 +12,22 @@ import {
   ChevronDown,
   Info,
   ArrowRight,
-  Upload,
-  FileText,
-  Loader2,
   UploadCloud,
   X, // Added missing icon
   FileCheck, // Added missing icon
 } from "lucide-react";
-import UpToSkillsImg from "../assets/UptoSkills.webp";
 import NavBar from "../components/NavBar";
 import Footer from "../components/Footer";
-
-
-
 
 const AIResumeChecker = () => {
   const navigate = useNavigate();
   const [isUploading, setIsUploading] = useState(false);
+  const [openIndex, setOpenIndex] = useState(null);
   // --- ADDED MISSING STATE ---
   const [selectedFile, setSelectedFile] = useState(null);
   const fileInputRef = useRef(null);
-  const isLoggedIn = typeof window !== 'undefined' && !!localStorage.getItem('token');
+  const isLoggedIn =
+    typeof window !== "undefined" && !!localStorage.getItem("token");
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -67,116 +62,144 @@ const AIResumeChecker = () => {
       <NavBar />
       {/* --- HERO SECTION: FULL WIDTH/HEIGHT --- */}
       <section className="relative min-h-[85vh] flex items-center px-8 py-16 overflow-hidden bg-white border-b border-gray-50">
-  {/* Soft Background Blurs */}
-  <div className="absolute top-0 right-0 w-[40%] h-full -translate-y-1/4 translate-x-1/4 opacity-20 bg-gradient-to-bl from-blue-200 to-transparent blur-3xl"></div>
-  <div className="absolute bottom-0 left-0 bg-blue-100 rounded-full w-72 h-72 -translate-x-1/3 opacity-10 blur-3xl"></div>
+        {/* Soft Background Blurs */}
+        <div className="absolute top-0 right-0 w-[40%] h-full -translate-y-1/4 translate-x-1/4 opacity-20 bg-gradient-to-bl from-blue-200 to-transparent blur-3xl"></div>
+        <div className="absolute bottom-0 left-0 bg-blue-100 rounded-full w-72 h-72 -translate-x-1/3 opacity-10 blur-3xl"></div>
 
-  <div className="relative z-10 w-full max-w-[1400px] mx-auto">
-    <div className="grid items-center gap-16 lg:grid-cols-2">
-      
-      {/* LEFT SIDE: THE CONTENT (Text & Matter) */}
-      <div className="flex flex-col items-start text-left">
-        <span className="inline-flex items-center gap-2 px-4 py-2 mb-8 text-sm font-bold tracking-widest text-[#0077cc] uppercase bg-blue-50 rounded-full">
-          <Zap size={14} className="fill-[#0077cc]" /> AI Analysis 2.0
-        </span>
-        
-        <h1 className="mb-6 text-5xl font-black leading-[1.3] lg:text-7xl text-[#1a2e52]">
-           Is your resume 
-           <span className="block text-transparent bg-gradient-to-r from-[#0077cc] via-[#0056b3] to-[#e65100] bg-clip-text mt-8">
-              ATS-Proof?
-           </span>
-        </h1>
-        <p className="max-w-xl text-xl leading-relaxed text-gray-500">
-          Upload your resume and let our AI scan it for keywords, formatting
-          errors, and impact scores. Get hired 3x faster with a data-driven
-          resume.
-        </p>
+        <div className="relative z-10 w-full max-w-[1400px] mx-auto">
+          <div className="grid items-center gap-16 lg:grid-cols-2">
+            {/* LEFT SIDE: THE CONTENT (Text & Matter) */}
+            <div className="flex flex-col items-start text-left">
+              <span className="inline-flex items-center gap-2 px-4 py-2 mb-8 text-sm font-bold tracking-widest text-[#0077cc] uppercase bg-blue-50 rounded-full">
+                <Zap size={14} className="fill-[#0077cc]" /> AI Analysis 2.0
+              </span>
 
-        {/* Action Buttons: INCREASED MARGIN TOP (mt-14) FOR BETTER GAP */}
-        <div className="flex flex-col w-full max-w-sm gap-4 mt-14">
-          <button
-            type="button"
-            onClick={() => {
-              if (!isLoggedIn) navigate('/login');
-              else fileInputRef.current?.click();
-            }}
-            className="group relative flex items-center justify-center gap-3 px-10 py-5 text-lg font-bold text-white bg-gradient-to-br from-[#0077cc] to-[#0056b3] rounded-[1.75rem] transition-all duration-300 hover:-translate-y-1.5 hover:shadow-[0_20px_40px_rgba(0,119,204,0.3)] overflow-hidden"
-          >
-            <div className="absolute inset-0 transition-transform duration-500 translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent group-hover:-translate-x-full" />
-            <UploadCloud size={22} className="transition-transform group-hover:scale-110" />
-            Scan Resume
-          </button>
-          
-          <button
-            onClick={() => navigate("/login")}
-            className="group relative flex items-center justify-center gap-3 px-10 py-5 text-lg font-bold text-white bg-gradient-to-br from-[#f59e0b] via-[#e65100] to-[#f4511e] rounded-[1.75rem] transition-all duration-300 hover:-translate-y-1.5 hover:shadow-[0_20px_40px_rgba(230,81,0,0.3)] overflow-hidden"
-          >
-            <div className="absolute inset-0 transition-transform duration-500 translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent group-hover:-translate-x-full" />
-            <i className="text-xl fas fa-graduation-cap"></i>
-            Build from Scratch
-          </button>
-          <input ref={fileInputRef} type="file" className="hidden" accept=".pdf,.docx" onChange={handleFileChange} />
+              <h1 className="mb-6 text-5xl font-black leading-[1.3] lg:text-7xl text-[#1a2e52]">
+                Is your resume
+                <span className="block text-transparent bg-gradient-to-r from-[#0077cc] via-[#0056b3] to-[#e65100] bg-clip-text mt-8">
+                  ATS-Proof?
+                </span>
+              </h1>
+              <p className="max-w-xl text-xl leading-relaxed text-gray-500">
+                Upload your resume and let our AI scan it for keywords,
+                formatting errors, and impact scores. Get hired 3x faster with a
+                data-driven resume.
+              </p>
+
+              {/* Action Buttons: INCREASED MARGIN TOP (mt-14) FOR BETTER GAP */}
+              <div className="flex flex-col w-full max-w-sm gap-4 mt-14">
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (!isLoggedIn) navigate("/login");
+                    else navigate("/user/ats-checker");
+                  }}
+                  className="group relative flex items-center justify-center gap-3 px-10 py-5 text-lg font-bold text-white bg-gradient-to-br from-[#0077cc] to-[#0056b3] rounded-[1.75rem] transition-all duration-300 hover:-translate-y-1.5 hover:shadow-[0_20px_40px_rgba(0,119,204,0.3)] overflow-hidden"
+                >
+                  <div className="absolute inset-0 transition-transform duration-500 translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent group-hover:-translate-x-full" />
+                  <UploadCloud
+                    size={22}
+                    className="transition-transform group-hover:scale-110"
+                  />
+                  Scan Resume
+                </button>
+
+                <button
+                  onClick={() => navigate("/login")}
+                  className="group relative flex items-center justify-center gap-3 px-10 py-5 text-lg font-bold text-white bg-gradient-to-br from-[#f59e0b] via-[#e65100] to-[#f4511e] rounded-[1.75rem] transition-all duration-300 hover:-translate-y-1.5 hover:shadow-[0_20px_40px_rgba(230,81,0,0.3)] overflow-hidden"
+                >
+                  <div className="absolute inset-0 transition-transform duration-500 translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent group-hover:-translate-x-full" />
+                  <i className="text-xl fas fa-graduation-cap"></i>
+                  Build from Scratch
+                </button>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  className="hidden"
+                  accept=".pdf,.docx"
+                  onChange={handleFileChange}
+                />
+              </div>
+            </div>
+
+            {/* RIGHT SIDE: THE PILLARS (Unchanged as requested) */}
+            <div className="grid gap-6 md:grid-cols-2 lg:max-w-[850px] ml-auto">
+              {/* 1. Instant Analysis */}
+              <div className="flex flex-col items-center text-center px-10 py-8 transition-all bg-white border-2 border-gray-100 shadow-sm rounded-[2.5rem] hover:shadow-2xl hover:border-blue-400 hover:-translate-y-2 group">
+                <div className="w-16 h-16 mb-5 bg-blue-50 text-[#0077cc] rounded-2xl flex items-center justify-center group-hover:scale-110 group-hover:bg-blue-100 transition-all duration-500">
+                  <Zap size={32} />
+                </div>
+                <div>
+                  <h3 className="text-xl font-bold text-[#1a2e52] mb-2">
+                    Instant Analysis
+                  </h3>
+                  <p className="text-sm leading-relaxed text-gray-500">
+                    AI-powered{" "}
+                    <span className="text-[#0077cc] font-bold">insights</span>.
+                  </p>
+                </div>
+              </div>
+
+              {/* 2. Shadow Scan */}
+              <div className="flex flex-col items-center text-center px-10 py-8 transition-all bg-white border-2 border-gray-100 shadow-sm rounded-[2.5rem] hover:shadow-2xl hover:border-orange-400 hover:-translate-y-2 group">
+                <div className="w-16 h-16 mb-5 bg-orange-50 text-[#e65100] rounded-2xl flex items-center justify-center group-hover:scale-110 group-hover:bg-orange-100 transition-all duration-500">
+                  <FileSearch size={32} />
+                </div>
+                <div>
+                  <h3 className="text-xl font-bold text-[#1a2e52] mb-2">
+                    Keyword Optimizer
+                  </h3>
+                  <p className="text-sm leading-relaxed text-gray-500">
+                    Optimizes{" "}
+                    <span className="text-[#e65100] font-bold">
+                      ATS keywords
+                    </span>{" "}
+                    automatically.
+                  </p>
+                </div>
+              </div>
+
+              {/* 3. Skill Gap Map */}
+              <div className="flex flex-col items-center text-center px-10 py-8 transition-all bg-white border-2 border-gray-100 shadow-sm rounded-[2.5rem] hover:shadow-2xl hover:border-green-400 hover:-translate-y-2 group">
+                <div className="flex items-center justify-center w-16 h-16 mb-5 text-green-600 transition-all duration-500 bg-green-50 rounded-2xl group-hover:scale-110 group-hover:bg-green-100">
+                  <BarChart3 size={32} />
+                </div>
+                <div>
+                  <h3 className="text-xl font-bold text-[#1a2e52] mb-2">
+                    Skill Gap Map
+                  </h3>
+                  <p className="text-sm leading-relaxed text-gray-500">
+                    Find{" "}
+                    <span className="font-bold text-green-600">
+                      missing keywords
+                    </span>{" "}
+                    instantly.
+                  </p>
+                </div>
+              </div>
+
+              {/* 4. Format Fixer */}
+              <div className="flex flex-col items-center text-center px-10 py-8 transition-all bg-white border-2 border-gray-100 shadow-sm rounded-[2.5rem] hover:shadow-2xl hover:border-purple-400 hover:-translate-y-2 group">
+                <div className="flex items-center justify-center w-16 h-16 mb-5 text-purple-600 transition-all duration-500 bg-purple-50 rounded-2xl group-hover:scale-110 group-hover:bg-purple-100">
+                  <FileCheck size={32} />
+                </div>
+                <div>
+                  <h3 className="text-xl font-bold text-[#1a2e52] mb-2">
+                    Format Fixer
+                  </h3>
+                  <p className="text-sm leading-relaxed text-gray-500">
+                    Identifies{" "}
+                    <span className="font-bold text-purple-600">
+                      parsing errors
+                    </span>{" "}
+                    and layout issues.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-      </div>
-
-      {/* RIGHT SIDE: THE PILLARS (Unchanged as requested) */}
-      <div className="grid gap-6 md:grid-cols-2 lg:max-w-[850px] ml-auto">
-        {/* 1. Instant Analysis */}
-        <div className="flex flex-col items-center text-center px-10 py-8 transition-all bg-white border-2 border-gray-100 shadow-sm rounded-[2.5rem] hover:shadow-2xl hover:border-blue-400 hover:-translate-y-2 group">
-          <div className="w-16 h-16 mb-5 bg-blue-50 text-[#0077cc] rounded-2xl flex items-center justify-center group-hover:scale-110 group-hover:bg-blue-100 transition-all duration-500">
-            <Zap size={32} />
-          </div>
-          <div>
-            <h3 className="text-xl font-bold text-[#1a2e52] mb-2">Instant Analysis</h3>
-            <p className="text-sm leading-relaxed text-gray-500">
-              Results in under <span className="text-[#0077cc] font-bold">5 seconds</span>.
-            </p>
-          </div>
-        </div>
-
-        {/* 2. Shadow Scan */}
-        <div className="flex flex-col items-center text-center px-10 py-8 transition-all bg-white border-2 border-gray-100 shadow-sm rounded-[2.5rem] hover:shadow-2xl hover:border-orange-400 hover:-translate-y-2 group">
-          <div className="w-16 h-16 mb-5 bg-orange-50 text-[#e65100] rounded-2xl flex items-center justify-center group-hover:scale-110 group-hover:bg-orange-100 transition-all duration-500">
-            <FileSearch size={32} />
-          </div>
-          <div>
-            <h3 className="text-xl font-bold text-[#1a2e52] mb-2">Shadow Scan</h3>
-            <p className="text-sm leading-relaxed text-gray-500">
-              Simulates <span className="text-[#e65100] font-bold">Fortune 500 ATS</span> logic.
-            </p>
-          </div>
-        </div>
-
-        {/* 3. Skill Gap Map */}
-        <div className="flex flex-col items-center text-center px-10 py-8 transition-all bg-white border-2 border-gray-100 shadow-sm rounded-[2.5rem] hover:shadow-2xl hover:border-green-400 hover:-translate-y-2 group">
-          <div className="flex items-center justify-center w-16 h-16 mb-5 text-green-600 transition-all duration-500 bg-green-50 rounded-2xl group-hover:scale-110 group-hover:bg-green-100">
-            <BarChart3 size={32} />
-          </div>
-          <div>
-            <h3 className="text-xl font-bold text-[#1a2e52] mb-2">Skill Gap Map</h3>
-            <p className="text-sm leading-relaxed text-gray-500">
-              Find <span className="font-bold text-green-600">missing keywords</span> instantly.
-            </p>
-          </div>
-        </div>
-
-        {/* 4. Format Fixer */}
-        <div className="flex flex-col items-center text-center px-10 py-8 transition-all bg-white border-2 border-gray-100 shadow-sm rounded-[2.5rem] hover:shadow-2xl hover:border-purple-400 hover:-translate-y-2 group">
-          <div className="flex items-center justify-center w-16 h-16 mb-5 text-purple-600 transition-all duration-500 bg-purple-50 rounded-2xl group-hover:scale-110 group-hover:bg-purple-100">
-            <FileCheck size={32} />
-          </div>
-          <div>
-            <h3 className="text-xl font-bold text-[#1a2e52] mb-2">Format Fixer</h3>
-            <p className="text-sm leading-relaxed text-gray-500">
-              Identifies <span className="font-bold text-purple-600">parsing errors</span> and layout issues.
-            </p>
-          </div>
-        </div>
-      </div>
-      
-    </div>
-  </div>
-</section>
+      </section>
 
       {/* --- HOW IT WORKS / ANALYSIS PREVIEW --- */}
       <section className="px-8 py-24 mx-auto max-w-7xl">
@@ -230,14 +253,8 @@ const AIResumeChecker = () => {
                 </span>
               </div>
               <div className="space-y-4">
-                <div className="flex items-center justify-between p-4 border rounded-2xl bg-white/5 border-white/10">
-                  <span className="flex items-center gap-2">
-                    <CheckCircle2 className="text-green-400" size={16} />{" "}
-                    Contact Info
-                  </span>
-                  <span className="text-sm font-bold">10/10</span>
-                </div>
-                <div className="flex items-center justify-between p-4 border rounded-2xl bg-white/5 border-white/10">
+
+                 <div className="flex items-center justify-between p-4 border rounded-2xl bg-white/5 border-white/10">
                   <span className="flex items-center gap-2">
                     <AlertCircle className="text-orange-400" size={16} />{" "}
                     Keyword Density
@@ -246,6 +263,7 @@ const AIResumeChecker = () => {
                     6/10
                   </span>
                 </div>
+
                 <div className="flex items-center justify-between p-4 border rounded-2xl bg-white/5 border-white/10">
                   <span className="flex items-center gap-2">
                     <CheckCircle2 className="text-green-400" size={16} />{" "}
@@ -253,7 +271,32 @@ const AIResumeChecker = () => {
                   </span>
                   <span className="text-sm font-bold">9/10</span>
                 </div>
+
+                <div className="flex items-center justify-between p-4 border rounded-2xl bg-white/5 border-white/10">
+                  <span className="flex items-center gap-2">
+                    <CheckCircle2 className="text-green-400" size={16} />{" "}
+                    Contact Info
+                  </span>
+                  <span className="text-sm font-bold">10/10</span>
+                </div>
+               
+                <div className="flex items-center justify-between p-4 border rounded-2xl bg-white/5 border-white/10">
+                  <span className="flex items-center gap-2">
+                    <CheckCircle2 className="text-green-400" size={16} />{" "}
+                    Work Experience Relevance
+                  </span>
+                  <span className="text-sm font-bold">8/10</span>
+                </div>
+
+                <div className="flex items-center justify-between p-4 border rounded-2xl bg-white/5 border-white/10">
+                  <span className="flex items-center gap-2">
+                    <CheckCircle2 className="text-green-400" size={16} />{" "}
+                    Consistency Check
+                  </span>
+                  <span className="text-sm font-bold">9/10</span>
+                </div>
               </div>
+
               <div className="pt-6 text-center">
                 <div className="text-5xl font-black text-[#0077cc] mb-2">
                   82%
@@ -262,6 +305,7 @@ const AIResumeChecker = () => {
                   Overall Resume Score
                 </p>
               </div>
+
             </div>
           </div>
         </div>
@@ -269,77 +313,99 @@ const AIResumeChecker = () => {
 
       {/* --- BEFORE VS AFTER --- */}
       <section className="relative px-8 py-24 overflow-hidden text-white bg-slate-900">
-  {/* Background Decorative Blur */}
-  <div className="absolute top-0 left-0 w-64 h-64 bg-blue-600/10 blur-[120px] -z-10"></div>
-  
-  <div className="mx-auto max-w-7xl">
-    <div className="mb-16 text-center">
-      <h2 className="mb-4 text-4xl font-bold">
-        See the <span className="text-[#0077cc]">AI Difference</span>
-      </h2>
-      <p className="text-gray-400">
-        How we transform a basic resume into a recruiter magnet.
-      </p>
-    </div>
+        {/* Background Decorative Blur */}
+        <div className="absolute top-0 left-0 w-64 h-64 bg-blue-600/10 blur-[120px] -z-10"></div>
 
-    <div className="grid gap-8 md:grid-cols-2">
-      {/* BEFORE CARD: Red Glow & Subtle Shake */}
-      <div className="p-8 rounded-[2rem] bg-white/5 border border-white/10 opacity-70 transition-all duration-500 hover:opacity-100 hover:border-red-500/30 hover:shadow-[0_0_30px_rgba(239,68,68,0.1)] hover:-translate-y-2 group cursor-default">
-        <h4 className="flex items-center gap-2 mb-4 text-xs font-bold tracking-widest text-red-400 uppercase transition-colors group-hover:text-red-500">
-          <AlertCircle size={16} className="group-hover:animate-pulse" /> Before UptoSkills
-        </h4>
-        
-        <div className="space-y-3 blur-[1px] group-hover:blur-0 transition-all duration-500">
-          <div className="w-3/4 h-4 rounded bg-white/10 group-hover:bg-white/20"></div>
-          <div className="w-full h-4 rounded bg-white/10 group-hover:bg-white/20"></div>
-          <div className="w-5/6 h-4 rounded bg-white/10 group-hover:bg-white/20"></div>
+        <div className="mx-auto max-w-7xl">
+          <div className="mb-16 text-center">
+            <h2 className="mb-4 text-4xl font-bold">
+              See the <span className="text-[#0077cc]">AI Difference</span>
+            </h2>
+            <p className="text-gray-400">
+              How we transform a basic resume into a recruiter magnet.
+            </p>
+          </div>
+
+          <div className="grid gap-8 md:grid-cols-2">
+            {/* BEFORE CARD: Red Glow & Subtle Shake */}
+            <div className="p-8 rounded-[2rem] bg-white/5 border border-white/10 opacity-70 transition-all duration-500 hover:opacity-100 hover:border-red-500/30 hover:shadow-[0_0_30px_rgba(239,68,68,0.1)] hover:-translate-y-2 group cursor-default">
+              <span className="flex items-center gap-2 mb-4 text-lg font-bold tracking-widest text-red-400 uppercase transition-colors group-hover:text-red-500">
+                <AlertCircle size={16} className="group-hover:animate-pulse" />{" "}
+                Before UptoSkills
+              </span>
+              {/* Before AI Scan Points */}
+              <div className="space-y-3">
+                <ul className="space-y-3 text-gray-400 text-sm leading-relaxed list-disc ml-7">
+                  <li>
+                    Generic job descriptions with no role-specific keywords
+                  </li>
+                  <li>Weak summary that doesn't highlight skills or impact</li>
+                  <li>Poor formatting that breaks in ATS systems</li>
+                  <li>No measurable achievements or action verbs</li>
+                  <li>Skills listed without relevance to the job role</li>
+                </ul>
+              </div>
+
+              <p className="mt-6 text-sm text-gray-400 transition-colors group-hover:text-gray-300">
+                Vague descriptions, missing keywords, and poor formatting that
+                ATS bots reject instantly.
+              </p>
+            </div>
+
+            {/* AFTER CARD: Blue Glow & Scaling */}
+            <div className="p-8 rounded-[2rem] bg-[#0077cc]/10 border border-[#0077cc]/30 relative overflow-hidden transition-all duration-500 hover:scale-[1.03] hover:border-[#0077cc] hover:shadow-[0_0_40px_rgba(0,119,204,0.3)] group cursor-default">
+              {/* Animated Background Shine */}
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full group-hover:animate-[shimmer_2s_infinite] pointer-events-none"></div>
+
+              <div className="absolute top-0 right-0 bg-[#0077cc] text-white text-[10px] font-bold px-4 py-1 rounded-bl-xl uppercase shadow-lg z-10">
+                Optimized
+              </div>
+
+              <span className="flex items-center gap-2 mb-4 text-lg font-bold tracking-widest text-green-400 uppercase">
+                <CheckCircle2
+                  size={16}
+                  className="transition-transform group-hover:scale-110"
+                />{" "}
+                After AI Scan
+              </span>
+
+              {/* After AI Scan Points */}
+              <div className="relative space-y-3">
+                <ul className="space-y-4 text-gray-200 text-sm leading-relaxed list-disc ml-7">
+                  <li>Role-specific keywords automatically added</li>
+                  <li>
+                    AI-generated summary highlighting strengths and experience
+                  </li>
+                  <li>ATS-friendly formatting and clear content hierarchy</li>
+                  <li>Skills prioritized based on job description</li>
+                  <li>Action-oriented bullet points with measurable impact</li>
+                </ul>
+              </div>
+
+              <p className="mt-6 text-sm text-gray-200 transition-colors group-hover:text-white">
+                High keyword density, punchy action verbs, and clear hierarchy
+                that ranks you
+              </p>
+            </div>
+          </div>
         </div>
 
-        <p className="mt-6 text-sm text-gray-400 transition-colors group-hover:text-gray-300">
-          Vague descriptions, missing keywords, and poor formatting that
-          ATS bots reject instantly.
-        </p>
-      </div>
-
-      {/* AFTER CARD: Blue Glow & Scaling */}
-      <div className="p-8 rounded-[2rem] bg-[#0077cc]/10 border border-[#0077cc]/30 relative overflow-hidden transition-all duration-500 hover:scale-[1.03] hover:border-[#0077cc] hover:shadow-[0_0_40px_rgba(0,119,204,0.3)] group cursor-default">
-        {/* Animated Background Shine */}
-        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full group-hover:animate-[shimmer_2s_infinite] pointer-events-none"></div>
-
-        <div className="absolute top-0 right-0 bg-[#0077cc] text-white text-[10px] font-bold px-4 py-1 rounded-bl-xl uppercase shadow-lg z-10">
-          Optimized
-        </div>
-        
-        <h4 className="flex items-center gap-2 mb-4 text-xs font-bold tracking-widest text-green-400 uppercase">
-          <CheckCircle2 size={16} className="transition-transform group-hover:scale-110" /> After AI Scan
-        </h4>
-
-        <div className="relative space-y-3">
-          <div className="w-3/4 h-4 transition-all border rounded bg-green-400/20 border-green-400/30 group-hover:bg-green-400/30 group-hover:border-green-400/50"></div>
-          <div className="w-full h-4 transition-all border rounded bg-green-400/20 border-green-400/30 group-hover:bg-green-400/30 group-hover:border-green-400/50"></div>
-          <div className="w-5/6 h-4 transition-all border rounded bg-green-400/20 border-green-400/30 group-hover:bg-green-400/30 group-hover:border-green-400/50"></div>
-        </div>
-
-        <p className="mt-6 text-sm text-gray-200 transition-colors group-hover:text-white">
-          High keyword density, punchy action verbs, and clear hierarchy
-          that ranks you #1.
-        </p>
-      </div>
-    </div>
-  </div>
-
-  {/* CSS for Shimmer Animation - Add this to your global CSS or a style tag */}
-  <style dangerouslySetInnerHTML={{ __html: `
+        {/* CSS for Shimmer Animation - Add this to your global CSS or a style tag */}
+        <style
+          dangerouslySetInnerHTML={{
+            __html: `
     @keyframes shimmer {
       100% { transform: translateX(100%); }
     }
-  `}} />
-</section>
+  `,
+          }}
+        />
+      </section>
 
       {/* --- EXPERT TIPS --- */}
       <section className="px-8 py-24 mx-auto max-w-7xl">
         <div className="flex flex-col items-end justify-between gap-6 mb-12 md:flex-row">
-          <div className="max-w-xl">
+          <div className="w-full text-center">
             <h2 className="mb-4 text-4xl italic font-bold">
               Resume <span className="text-[#0077cc]">Power Tips</span>
             </h2>
@@ -347,12 +413,17 @@ const AIResumeChecker = () => {
               Expert-backed advice to pair with our AI analysis.
             </p>
           </div>
-          <button className="flex items-center gap-2 font-bold text-[#0077cc] hover:gap-3 transition-all">
-            View All Guides <ArrowRight size={18} />
-          </button>
         </div>
         <div className="grid gap-6 md:grid-cols-3">
           {[
+            {
+              title: "Keyword Alignment",
+              desc: "Mirror keywords from the job description to improve ATS visibility and relevance.",
+            },
+            {
+              title: "Strong Summary First",
+              desc: "Start with a focused summary that highlights your core skills and career direction.",
+            },
             {
               title: "The 6-Second Rule",
               desc: "Recruiters spend 6 seconds on average. We help you put the most important info in the top third.",
@@ -362,15 +433,19 @@ const AIResumeChecker = () => {
               desc: "Replace 'Responsible for' with 'Spearheaded' or 'Executed' to show impact.",
             },
             {
-              title: "Quantify Success",
-              desc: "Always include numbers (e.g., 'Increased revenue by 20%') to provide concrete proof.",
+              title: "Clear Section Headings",
+              desc: "Use standard headings like Experience, Skills, and Education to ensure ATS compatibility.",
+            },
+            {
+              title: "Avoid Personal Pronouns",
+              desc: "Remove \"I\", \"me\", and \"my\" to keep the resume concise and professional.",
             },
           ].map((tip, i) => (
             <div
               key={i}
               className="p-8 bg-white border border-gray-100 rounded-[2rem] hover:shadow-xl transition-all group"
             >
-              <div className="mb-4 text-[#e65100] group-hover:scale-110 transition-transform">
+              <div className="mb-4 text-[#e65100]">
                 <Star size={24} />
               </div>
               <h4 className="mb-2 text-xl font-bold">{tip.title}</h4>
@@ -402,23 +477,52 @@ const AIResumeChecker = () => {
                 a: "It's a measurement of how well your resume matches common applicant tracking system algorithms.",
               },
               {
-                q: "How many times can I scan?",
-                a: "Free users get 3 scans per month. Pro users get unlimited access and deep-keyword analysis.",
+                q: "How long should my resume be?",
+                a: "For most professionals, a one-page resume is ideal. Senior roles may extend to two pages if the experience is highly relevant.",
               },
-            ].map((faq, i) => (
-              <div
-                key={i}
-                className="py-6 border-b border-gray-100 cursor-pointer group"
-              >
-                <div className="flex items-center justify-between mb-2">
-                  <h5 className="font-bold text-lg group-hover:text-[#0077cc] transition-colors">
-                    {faq.q}
-                  </h5>
-                  <ChevronDown size={18} className="text-gray-400" />
+              {
+                q: "Can I use the same resume for different roles?",
+                a: "You can, but optimizing it for each role improves relevance and increases interview chances.",
+              },
+              {
+                q: "How often should I update my resume?",
+                a: "Update your resume every 3-6 months or whenever you gain new skills, projects, or achievements.",
+              },
+            ].map((faq, i) => {
+              const isOpen = openIndex === i;
+              return (
+                <div
+                  key={i}
+                  className="py-6 border-b border-gray-100 cursor-pointer group"
+                  onClick={() => setOpenIndex(isOpen ? null : i)}
+                >
+                  <div className="flex items-center justify-between">
+                    <h5 className="font-bold text-lg group-hover:text-[#0077cc] transition-colors">
+                      {faq.q}
+                    </h5>
+                    <ChevronDown
+                      size={18}
+                      className={`text-gray-400 transition-transform duration-300 ${
+                        isOpen ? "rotate-180" : ""
+                      }`}
+                    />
+                  </div>
+                  <div
+                    className={`grid transition-all duration-300 ease-in-out ${
+                      isOpen
+                        ? "grid-rows-[1fr] opacity-100 mt-2"
+                        : "grid-rows-[0fr] opacity-0"
+                    }`}
+                  >
+                    <div className="overflow-hidden">
+                      <p className="text-sm text-gray-500 max-w-[650px] break-words whitespace-normal">
+                        {faq.a}
+                      </p>
+                    </div>
+                  </div>
                 </div>
-                <p className="text-sm text-gray-500">{faq.a}</p>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </section>

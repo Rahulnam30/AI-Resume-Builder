@@ -10,6 +10,80 @@ const getLastMonthDate = () => {
   return date;
 };
 
+// -------------------- GET ALL USERS --------------------
+export const getAllUsers = async (req, res) => {
+  try {
+    const users = await User.find({}, { password: 0 }); // Exclude password
+    res.status(200).json(users);
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Something went wrong", error: error.message });
+  }
+};
+
+// -------------------- UPDATE USER --------------------
+export const updateUser = async (req, res) => {
+  try {
+    const { username, email, isAdmin, isActive } = req.body;
+    const userId = req.params.id;
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Check if email is being changed and if it already exists
+    if (email && email !== user.email) {
+      const existingUser = await User.findOne({ email });
+      if (existingUser) {
+        return res.status(400).json({ message: "Email already exists" });
+      }
+    }
+
+    user.username = username || user.username;
+    user.email = email || user.email;
+    if (typeof isAdmin === "boolean") {
+      user.isAdmin = isAdmin;
+    }
+    if (typeof isActive === "boolean") {
+      user.isActive = isActive;
+    }
+    if (req.body.createdAt) {
+      user.createdAt = req.body.createdAt;
+    }
+    if (req.body.plan) {
+      user.plan = req.body.plan;
+    }
+
+    await user.save();
+
+    res.status(200).json({ message: "User updated successfully", user });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Something went wrong", error: error.message });
+  }
+};
+
+// -------------------- DELETE USER --------------------
+export const deleteUser = async (req, res) => {
+  try {
+    const userId = req.params.id;
+    const user = await User.findByIdAndDelete(userId);
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.status(200).json({ message: "User deleted successfully" });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Something went wrong", error: error.message });
+  }
+};
+
 export const getAdminDashboardStats = async (req, res) => {
   try {
     const lastMonth = getLastMonthDate();
@@ -103,6 +177,12 @@ export const getAdminDashboardStats = async (req, res) => {
       { month: "march", resumes: 2 },
     ];
 
+    // ---------- RECENT USERS ----------
+    const recentUsers = await User.find({})
+      .sort({ createdAt: -1 })
+      .limit(5)
+      .select("username email createdAt plan");
+
     // ---------- FINAL RESPONSE ----------
     res.status(200).json({
       users: {
@@ -122,6 +202,7 @@ export const getAdminDashboardStats = async (req, res) => {
         change: Number(revenueChange.toFixed(1)),
       },
       resumeChart,
+      recentUsers,
     });
   } catch (error) {
     console.error(error);

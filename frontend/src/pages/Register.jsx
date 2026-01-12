@@ -50,7 +50,6 @@ export default function Register() {
   return (
     <>
       <Toaster position="top-right" reverseOrder={false} />
-      <NavBar />
       <div className="fixed inset-0 pt-20 flex items-center justify-center bg-gradient-to-br from-blue-950 to-slate-900 px-4 select-none overflow-hidden">
         <div className="w-full max-w-5xl grid grid-cols-1 md:grid-cols-2 bg-white rounded-3xl overflow-hidden shadow-2xl max-h-[95vh]">
           {/* Left Form Section */}
