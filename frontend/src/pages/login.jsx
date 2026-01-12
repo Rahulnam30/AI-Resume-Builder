@@ -3,7 +3,6 @@ import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
 import { toast, Toaster } from "react-hot-toast";
 import images from "../assets";
-import NavBar from "../components/NavBar";
 
 export default function Login() {
   const [emailtext, setEmailText] = useState("");
@@ -64,7 +63,6 @@ export default function Login() {
   return (
     <>
       <Toaster position="top-right" reverseOrder={false} />
-      <NavBar />
 
       <div className="fixed inset-0 pt-20 flex items-center justify-center bg-gradient-to-br from-blue-950 to-slate-900 px-4 select-none overflow-hidden">
         <div className="w-full max-w-4xl grid grid-cols-1 md:grid-cols-2 rounded-3xl overflow-hidden shadow-2xl bg-white max-h-[85vh]">
