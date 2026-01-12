@@ -177,7 +177,6 @@ export const getAdminDashboardStats = async (req, res) => {
       { month: "march", resumes: 2 },
     ];
 
-   
     // ---------- SUBSCRIPTION DISTRIBUTION ----------
     const subscriptionDistribution = await Subscription.aggregate([
       {
