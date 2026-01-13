@@ -27,7 +27,7 @@ export default function Login() {
     if (!validate()) return;
     setLoading(true);
     try {
-      const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+      const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
       const response = await axios.post(
         `${API_URL}/api/auth/login`,
         {

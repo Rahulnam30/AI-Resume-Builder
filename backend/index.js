@@ -1,11 +1,12 @@
 import express from "express";
 import dotenv from "dotenv";
 dotenv.config();
-import connetDB from "./config/db.js";
+
 import cors from "cors";
 import authRouter from "./routers/auth.router.js";
 import cookieParser from "cookie-parser";
 import userRouter from "./routers/user.router.js";
+import connectDB from "./config/db.js";
 
 const app = express();
 
@@ -19,6 +20,6 @@ app.use("/api/auth", authRouter);
 app.use("/api/user", userRouter);
 
 app.listen(port, () => {
-  connetDB();
+  connectDB();
   console.log(`Server Running at ${port}`);
 });
