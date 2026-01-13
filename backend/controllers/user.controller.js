@@ -10,6 +10,80 @@ const getLastMonthDate = () => {
   return date;
 };
 
+// -------------------- GET ALL USERS --------------------
+export const getAllUsers = async (req, res) => {
+  try {
+    const users = await User.find({}, { password: 0 }); // Exclude password
+    res.status(200).json(users);
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Something went wrong", error: error.message });
+  }
+};
+
+// -------------------- UPDATE USER --------------------
+export const updateUser = async (req, res) => {
+  try {
+    const { username, email, isAdmin, isActive } = req.body;
+    const userId = req.params.id;
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Check if email is being changed and if it already exists
+    if (email && email !== user.email) {
+      const existingUser = await User.findOne({ email });
+      if (existingUser) {
+        return res.status(400).json({ message: "Email already exists" });
+      }
+    }
+
+    user.username = username || user.username;
+    user.email = email || user.email;
+    if (typeof isAdmin === "boolean") {
+      user.isAdmin = isAdmin;
+    }
+    if (typeof isActive === "boolean") {
+      user.isActive = isActive;
+    }
+    if (req.body.createdAt) {
+      user.createdAt = req.body.createdAt;
+    }
+    if (req.body.plan) {
+      user.plan = req.body.plan;
+    }
+
+    await user.save();
+
+    res.status(200).json({ message: "User updated successfully", user });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Something went wrong", error: error.message });
+  }
+};
+
+// -------------------- DELETE USER --------------------
+export const deleteUser = async (req, res) => {
+  try {
+    const userId = req.params.id;
+    const user = await User.findByIdAndDelete(userId);
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.status(200).json({ message: "User deleted successfully" });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Something went wrong", error: error.message });
+  }
+};
+
 export const getAdminDashboardStats = async (req, res) => {
   try {
     const lastMonth = getLastMonthDate();
@@ -103,6 +177,79 @@ export const getAdminDashboardStats = async (req, res) => {
       { month: "march", resumes: 2 },
     ];
 
+    // ---------- SUBSCRIPTION DISTRIBUTION ----------
+    const subscriptionDistribution = await Subscription.aggregate([
+      {
+        $match: { status: "active" },
+      },
+      {
+        $group: {
+          _id: "$plan",
+          count: { $sum: 1 },
+        },
+      },
+    ]);
+
+    // const subscriptionSplit = subscriptionDistribution.map((item) => ({
+    //   name: item._id.charAt(0).toUpperCase() + item._id.slice(1),
+    //   value: item.count,
+    // }));
+    const subscriptionSplit = [
+      { name: "Free", value: 80 },
+      { name: "Basic", value: 20 },
+      { name: "Pro", value: 20 },
+    ];
+
+    // ---------- USER GROWTH (LAST 6 MONTHS) ----------
+    const userGrowthAgg = await User.aggregate([
+      {
+        $group: {
+          _id: {
+            year: { $year: "$createdAt" },
+            month: { $month: "$createdAt" },
+          },
+          total: { $sum: 1 },
+        },
+      },
+      { $sort: { "_id.year": 1, "_id.month": 1 } },
+      { $limit: 6 },
+    ]);
+
+    const userGrowth = userGrowthAgg.map((item) => ({
+      month: new Date(item._id.year, item._id.month - 1).toLocaleString(
+        "default",
+        { month: "short" }
+      ),
+      users: item.total,
+    }));
+
+    // ---------- DAILY ACTIVE USERS (LAST 7 DAYS) ----------
+    const last7Days = new Date();
+    last7Days.setDate(last7Days.getDate() - 7);
+
+    const dailyActiveUsersAgg = await User.aggregate([
+      {
+        $match: {
+          updatedAt: { $gte: last7Days },
+        },
+      },
+      {
+        $group: {
+          _id: {
+            day: { $dayOfWeek: "$updatedAt" },
+          },
+          users: { $sum: 1 },
+        },
+      },
+    ]);
+
+    const daysMap = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
+    const dailyActiveUsers = dailyActiveUsersAgg.map((item) => ({
+      day: daysMap[item._id.day - 1],
+      users: item.users,
+    }));
+
     // ---------- FINAL RESPONSE ----------
     res.status(200).json({
       users: {
@@ -122,6 +269,9 @@ export const getAdminDashboardStats = async (req, res) => {
         change: Number(revenueChange.toFixed(1)),
       },
       resumeChart,
+      subscriptionSplit,
+      userGrowth,
+      dailyActiveUsers,
     });
   } catch (error) {
     console.error(error);
