@@ -177,11 +177,78 @@ export const getAdminDashboardStats = async (req, res) => {
       { month: "march", resumes: 2 },
     ];
 
-    // ---------- RECENT USERS ----------
-    const recentUsers = await User.find({})
-      .sort({ createdAt: -1 })
-      .limit(5)
-      .select("username email createdAt plan");
+    // ---------- SUBSCRIPTION DISTRIBUTION ----------
+    const subscriptionDistribution = await Subscription.aggregate([
+      {
+        $match: { status: "active" },
+      },
+      {
+        $group: {
+          _id: "$plan",
+          count: { $sum: 1 },
+        },
+      },
+    ]);
+
+    // const subscriptionSplit = subscriptionDistribution.map((item) => ({
+    //   name: item._id.charAt(0).toUpperCase() + item._id.slice(1),
+    //   value: item.count,
+    // }));
+    const subscriptionSplit = [
+      { name: "Free", value: 80 },
+      { name: "Basic", value: 20 },
+      { name: "Pro", value: 20 },
+    ];
+
+    // ---------- USER GROWTH (LAST 6 MONTHS) ----------
+    const userGrowthAgg = await User.aggregate([
+      {
+        $group: {
+          _id: {
+            year: { $year: "$createdAt" },
+            month: { $month: "$createdAt" },
+          },
+          total: { $sum: 1 },
+        },
+      },
+      { $sort: { "_id.year": 1, "_id.month": 1 } },
+      { $limit: 6 },
+    ]);
+
+    const userGrowth = userGrowthAgg.map((item) => ({
+      month: new Date(item._id.year, item._id.month - 1).toLocaleString(
+        "default",
+        { month: "short" }
+      ),
+      users: item.total,
+    }));
+
+    // ---------- DAILY ACTIVE USERS (LAST 7 DAYS) ----------
+    const last7Days = new Date();
+    last7Days.setDate(last7Days.getDate() - 7);
+
+    const dailyActiveUsersAgg = await User.aggregate([
+      {
+        $match: {
+          updatedAt: { $gte: last7Days },
+        },
+      },
+      {
+        $group: {
+          _id: {
+            day: { $dayOfWeek: "$updatedAt" },
+          },
+          users: { $sum: 1 },
+        },
+      },
+    ]);
+
+    const daysMap = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
+    const dailyActiveUsers = dailyActiveUsersAgg.map((item) => ({
+      day: daysMap[item._id.day - 1],
+      users: item.users,
+    }));
 
     // ---------- FINAL RESPONSE ----------
     res.status(200).json({
@@ -202,7 +269,9 @@ export const getAdminDashboardStats = async (req, res) => {
         change: Number(revenueChange.toFixed(1)),
       },
       resumeChart,
-      recentUsers,
+      subscriptionSplit,
+      userGrowth,
+      dailyActiveUsers,
     });
   } catch (error) {
     console.error(error);
