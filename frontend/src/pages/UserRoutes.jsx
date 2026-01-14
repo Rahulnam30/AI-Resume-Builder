@@ -1,3 +1,5 @@
+import Downloads from "./Downloads";
+
 // src/pages/UserRoutes.jsx
 import { Routes, Route, Navigate } from "react-router-dom";
 
@@ -37,6 +39,10 @@ const UserRoutes = () => {
         <Route path="templates-dashboard-page" element={<Templates />} />
         <Route path="ats-checker" element={<ATSChecker />} />
         <Route path="my-resumes" element={<MyResumes />} />
+        <Route path="downloads" element={<Downloads />} />
+        
+
+
         <Route path="full-preview" element={<Preview />} />
         <Route path="edit-profile" element={<Profile />} />
 
