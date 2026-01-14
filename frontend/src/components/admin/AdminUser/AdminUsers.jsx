@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Pencil, Trash2, Check, X, AlertCircle } from "lucide-react";
 import AdminNavbar from "../AdminNavBar/AdminNavBar";
-import axios from "axios";
+import axiosInstance from "../../../api/axios";
 import toast, { Toaster } from "react-hot-toast";
 
 export default function AdminUsers({ head = "Manage Users" }) {
@@ -29,9 +29,7 @@ export default function AdminUsers({ head = "Manage Users" }) {
 
   const fetchUsers = async () => {
     try {
-      const response = await axios.get("http://localhost:5000/api/user", {
-        withCredentials: true,
-      });
+      const response = await axiosInstance.get("/api/user");
       setUsers(response.data);
       setLoading(false);
     } catch (err) {
@@ -87,10 +85,9 @@ export default function AdminUsers({ head = "Manage Users" }) {
     if (!editingUser) return;
 
     try {
-      const response = await axios.put(
-        `http://localhost:5000/api/user/${editingUser._id}`,
-        editFormData,
-        { withCredentials: true }
+      const response = await axiosInstance.put(
+        `/api/user/${editingUser._id}`,
+        editFormData
       );
 
       setUsers((prev) =>
@@ -111,9 +108,8 @@ export default function AdminUsers({ head = "Manage Users" }) {
       // Optimistic update
       setUsers(prev => prev.map(u => u._id === user._id ? { ...u, isActive: newStatus } : u));
 
-      await axios.put(`http://localhost:5000/api/user/${user._id}`,
-        { isActive: newStatus },
-        { withCredentials: true }
+      await axiosInstance.put(`/api/user/${user._id}`,
+        { isActive: newStatus }
       );
 
       toast.success(`User ${newStatus ? 'activated' : 'deactivated'} successfully`);
@@ -132,9 +128,7 @@ export default function AdminUsers({ head = "Manage Users" }) {
   const confirmDelete = async () => {
     if (!deleteConfirmId) return;
     try {
-      await axios.delete(`http://localhost:5000/api/user/${deleteConfirmId}`, {
-        withCredentials: true,
-      });
+      await axiosInstance.delete(`/api/user/${deleteConfirmId}`);
       setUsers((prev) => prev.filter((u) => u._id !== deleteConfirmId));
       setDeleteConfirmId(null);
       toast.success("User deleted successfully");
@@ -168,7 +162,7 @@ export default function AdminUsers({ head = "Manage Users" }) {
                 <th className="px-6 py-4 text-center">Role</th>
                 <th className="px-6 py-4 text-center">Plan</th>
                 <th className="px-6 py-4 text-center">Status</th>
-                <th className="px-6 py-4 text-center">User ID</th>
+                {/* <th className="px-6 py-4 text-center">User ID</th> */}
                 <th className="px-6 py-4 text-center">Created At</th>
                 <th className="px-6 py-4 text-center">Actions</th>
               </tr>
@@ -223,11 +217,11 @@ export default function AdminUsers({ head = "Manage Users" }) {
                     </div>
                   </td>
 
-                  <td className="px-6 py-4 text-center">
+                  {/* <td className="px-6 py-4 text-center">
                     <code className="bg-gray-100 px-2 py-1 rounded text-xs text-gray-600 font-mono">
                       {u._id}
                     </code>
-                  </td>
+                  </td> */}
 
                   <td className="px-6 py-4 text-center text-gray-500">
                     {u.createdAt ? new Date(u.createdAt).toLocaleDateString() : "N/A"}

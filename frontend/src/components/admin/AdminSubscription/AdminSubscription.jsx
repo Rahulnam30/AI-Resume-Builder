@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Check, ToggleLeft, ToggleRight, Pencil } from "lucide-react";
-import axios from "axios";
+import axiosInstance from "../../../api/axios";
 
 // ... initialPlans definition remains same ...
 const initialPlans = [
@@ -44,9 +44,7 @@ const AdminSubscription = () => {
 
   const fetchPaidUsers = async () => {
     try {
-      const response = await axios.get("http://localhost:5000/api/user", {
-        withCredentials: true,
-      });
+      const response = await axiosInstance.get("/api/user");
       // Filter for Pro users
       const proUsers = response.data.filter(user => user.plan === "Pro");
       setPaidUsers(proUsers);
@@ -222,8 +220,8 @@ const AdminSubscription = () => {
                     <td className="px-6 py-4 text-center">
                       <span
                         className={`px-2 py-1 rounded text-xs font-medium ${user.isActive
-                            ? "bg-green-100 text-green-700"
-                            : "bg-red-100 text-red-700"
+                          ? "bg-green-100 text-green-700"
+                          : "bg-red-100 text-red-700"
                           }`}
                       >
                         {user.isActive ? "Active" : "Inactive"}

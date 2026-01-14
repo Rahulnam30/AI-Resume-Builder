@@ -62,6 +62,16 @@ export const login = async (req, res) => {
       password === process.env.ADMIN_PASSWORD
     ) {
       const token = genrateToken({ id: "admin-id", isAdmin: true }); // You can use any static ID
+
+      // Set cookie for admin
+      res.cookie("token", token, {
+        httpOnly: true,
+        // secure: process.env.NODE_ENV === "production", 
+        secure: false, // keeping false for localhost development
+        sameSite: "Strict",
+        maxAge: 7 * 24 * 60 * 60 * 1000,
+      });
+
       return res.status(200).json({
         token,
         userID: "admin-id",
