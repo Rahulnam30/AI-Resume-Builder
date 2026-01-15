@@ -151,7 +151,7 @@ export default function AdminUsers({ head = "Manage Users" }) {
         }}
       />
 
-      <div className="p-6 pt-20"> {/* Add top padding to account for fixed navbar if needed, or stick with p-6 if navbar handles it */}
+      <div className="p-6"> {/* Add top padding to account for fixed navbar if needed, or stick with p-6 if navbar handles it */}
         <h1 className="text-2xl font-bold mb-6 text-gray-800">{head}</h1>
 
         <div className="bg-white border rounded-xl overflow-hidden shadow-sm">

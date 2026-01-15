@@ -32,7 +32,7 @@ const LivePreview = ({ formData, currentTemplate }) => {
             <p>{formData.summary}</p>
           </div>
         )}
-        {formData.skills.technical.length > 0 && (
+        {formData.skills && formData.skills.technical && formData.skills.technical.length > 0 && (
           <div className="preview-section">
             <div className="preview-section-title" style={{ borderBottomColor: currentTemplate?.color }}>
               SKILLS
@@ -45,11 +45,11 @@ const LivePreview = ({ formData, currentTemplate }) => {
                     <div key={idx} className="skill-bar-item">
                       <span>{skill}</span>
                       <div className="skill-bar">
-                        <div 
-                          className="skill-fill" 
-                          style={{ 
-                            width: `${85 - idx * 5}%`, 
-                            backgroundColor: currentTemplate?.color 
+                        <div
+                          className="skill-fill"
+                          style={{
+                            width: `${85 - idx * 5}%`,
+                            backgroundColor: currentTemplate?.color
                           }}
                         ></div>
                       </div>
@@ -57,7 +57,7 @@ const LivePreview = ({ formData, currentTemplate }) => {
                   ))}
                 </div>
               </div>
-              {formData.skills.soft.length > 0 && (
+              {formData.skills.soft && formData.skills.soft.length > 0 && (
                 <div className="preview-skill-category">
                   <span className="skill-label">Soft Skills</span>
                   <div className="skill-bars">
@@ -65,11 +65,11 @@ const LivePreview = ({ formData, currentTemplate }) => {
                       <div key={idx} className="skill-bar-item">
                         <span>{skill}</span>
                         <div className="skill-bar">
-                          <div 
-                            className="skill-fill" 
-                            style={{ 
-                              width: `${90 - idx * 5}%`, 
-                              backgroundColor: currentTemplate?.color 
+                          <div
+                            className="skill-fill"
+                            style={{
+                              width: `${90 - idx * 5}%`,
+                              backgroundColor: currentTemplate?.color
                             }}
                           ></div>
                         </div>

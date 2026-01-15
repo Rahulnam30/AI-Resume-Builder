@@ -20,8 +20,24 @@ import UserNavBar from "../UserNavBar/UserNavBar"; // ✅ Navbar import
 
 import "./ResumeBuilder.css";
 
-const ResumeBuilder = ({ setActivePage = () => {}, onSidebarToggle }) => {
-  const [formData, setFormData] = useState({});
+const ResumeBuilder = ({ setActivePage = () => { }, onSidebarToggle }) => {
+  const [formData, setFormData] = useState({
+    fullName: '',
+    email: '',
+    phone: '',
+    location: '',
+    linkedin: '',
+    website: '',
+    summary: '',
+    skills: {
+      technical: [],
+      soft: []
+    },
+    work: [],
+    education: [],
+    projects: [],
+    certifications: [] // Assuming this is needed too
+  });
   const [templates] = useState([]);
   const [selectedTemplate, setSelectedTemplate] = useState(null);
 
@@ -169,39 +185,39 @@ const ResumeBuilder = ({ setActivePage = () => {}, onSidebarToggle }) => {
 
         {(resumeMode === "create" ||
           (resumeMode === "edit" && uploadedResume)) && (
-          <>
-            <div className="main-header">
-              <h1>
-                {resumeMode === "create"
-                  ? "📝 Create New Resume"
-                  : "✏️ Edit Resume"}
-              </h1>
-            </div>
+            <>
+              <div className="main-header">
+                <h1>
+                  {resumeMode === "create"
+                    ? "📝 Create New Resume"
+                    : "✏️ Edit Resume"}
+                </h1>
+              </div>
 
-            <div className="main-tabs">
-              <button
-                className={`main-tab ${activeTab === "builder" ? "active" : ""}`}
-                onClick={() => setActiveTab("builder")}
-              >
-                🔧 Builder
-              </button>
-              <button
-                className={`main-tab ${activeTab === "preview" ? "active" : ""}`}
-                onClick={() => setActiveTab("preview")}
-              >
-                👁️ Preview
-              </button>
-              <button
-                className={`main-tab ${activeTab === "templates" ? "active" : ""}`}
-                onClick={() => setActiveTab("templates")}
-              >
-                📄 Templates
-              </button>
-            </div>
+              <div className="main-tabs">
+                <button
+                  className={`main-tab ${activeTab === "builder" ? "active" : ""}`}
+                  onClick={() => setActiveTab("builder")}
+                >
+                  🔧 Builder
+                </button>
+                <button
+                  className={`main-tab ${activeTab === "preview" ? "active" : ""}`}
+                  onClick={() => setActiveTab("preview")}
+                >
+                  👁️ Preview
+                </button>
+                <button
+                  className={`main-tab ${activeTab === "templates" ? "active" : ""}`}
+                  onClick={() => setActiveTab("templates")}
+                >
+                  📄 Templates
+                </button>
+              </div>
 
-            {renderMainContent()}
-          </>
-        )}
+              {renderMainContent()}
+            </>
+          )}
       </div>
     </div>
   );

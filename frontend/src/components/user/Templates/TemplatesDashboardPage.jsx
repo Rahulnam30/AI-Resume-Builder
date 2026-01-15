@@ -1,32 +1,58 @@
-import { useMemo, useState } from 'react';
+
+import { useMemo, useState, useEffect } from 'react';
 import TemplateCard from './TemplateCard';
 import './TemplatesDashboardPage.css';
 import { Bell, HelpCircle } from "lucide-react";
 import UserNavBar from '../UserNavBar/UserNavBar'; // adjust path if needed
+import axios from 'axios';
 
-const TemplatesDashboardPage = ({ templates = [] }) => {
-  const [search] = useState('');
+const TemplatesDashboardPage = () => {
+  const [search, setSearch] = useState('');
+  const [fetchedTemplates, setFetchedTemplates] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  const staticTemplates = [
-    { id: 101, name: "Modern Resume Sample 1", category: "modern", file: "/sample-resumes/modern1.pdf", img: "/sample-resumes/modern1.jpg" },
-    { id: 102, name: "Modern Resume Sample 2", category: "modern", file: "/sample-resumes/modern2.pdf", img: "/sample-resumes/modern2.jpg" },
-    { id: 103, name: "Creative Resume Sample 1", category: "creative", file: "/sample-resumes/creative1.pdf", img: "/sample-resumes/creative1.jpg" },
-    { id: 104, name: "Professional Resume Sample 1", category: "professional", file: "/sample-resumes/professional1.pdf", img: "/sample-resumes/professional1.jpg" },
-    { id: 105, name: "Creative Resume Sample 2", category: "creative", file: "/sample-resumes/creative2.pdf", img: "/sample-resumes/creative2.jpg" },
-    { id: 106, name: "Professional Resume Sample 2", category: "professional", file: "/sample-resumes/professional2.pdf", img: "/sample-resumes/professional2.jpg" },
-  ];
+  useEffect(() => {
+    const fetchTemplates = async () => {
+      try {
+        const response = await axios.get('http://localhost:5000/api/template?status=approved');
+        // API returns an array directly. Map it to the expected structure.
+        const rawData = response.data || [];
+        const mappedData = rawData.map(item => ({
+          id: item._id,
+          name: item.name,
+          // Normalize category: remove " Templates" suffix if present and lowercase, or just match exactly in filters later.
+          // For now, let's keep the original category string but handle it in the filter.
+          category: item.category,
+          file: item.fileUrl,
+          img: item.imageUrl,
+          description: item.description
+        }));
+        setFetchedTemplates(mappedData);
+        setLoading(false);
+      } catch (err) {
+        console.error("Error fetching templates:", err);
+        setError("Failed to load templates.");
+        setLoading(false);
+      }
+    };
 
-  const allTemplates = [...templates, ...staticTemplates];
+    fetchTemplates();
+  }, []);
+
+  // Merge dynamic + static templates (Static removed as requested)
+  // If props passed templates, we could merge them, but for now we rely on fetched data.
+  const allTemplates = fetchedTemplates;
 
   const filteredTemplates = useMemo(() => {
     return allTemplates.filter(t =>
-      t.name.toLowerCase().includes(search.toLowerCase())
+      t.name?.toLowerCase().includes(search.toLowerCase())
     );
   }, [allTemplates, search]);
 
-  const modern = filteredTemplates.filter(t => t.category === 'modern');
-  const creative = filteredTemplates.filter(t => t.category === 'creative');
-  const professional = filteredTemplates.filter(t => t.category === 'professional');
+  const modern = filteredTemplates.filter(t => t.category === 'modern' || t.category === 'Modern Templates');
+  const creative = filteredTemplates.filter(t => t.category === 'creative' || t.category === 'Creative Templates');
+  const professional = filteredTemplates.filter(t => t.category === 'professional' || t.category === 'Professional Templates');
 
   const renderSection = (title, items, count) => (
     <section className="template-section">
@@ -43,6 +69,15 @@ const TemplatesDashboardPage = ({ templates = [] }) => {
     </section>
   );
 
+
+  if (loading) {
+    return <div className="templates-dashboard"><div className="loading">Loading templates...</div></div>;
+  }
+
+  if (error) {
+    return <div className="templates-dashboard"><div className="error">{error}</div></div>;
+  }
+
   return (
     <div className="templates-dashboard">
       {/* ✅ Navbar */}
@@ -50,6 +85,20 @@ const TemplatesDashboardPage = ({ templates = [] }) => {
 
       {/* CONTENT BELOW NAVBAR */}
       <div style={{ marginTop: "80px" }}> {/* ensures content is below fixed navbar */}
+        <div className="filter-row">
+          {/* Kept my search implementation but inside the HEAD's layout if possible, or merged */}
+          <div className="filter-input">
+            <svg className="icon" viewBox="0 0 24 24">
+              <path d="M21 21l-4.35-4.35m1.85-5.4a7.25 7.25 0 11-14.5 0 7.25 7.25 0 0114.5 0z" />
+            </svg>
+            <input
+              placeholder="Search Templates Accordingly..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+          </div>
+        </div>
+
         {/* HEADER */}
         <div className="page-header">
           <div>

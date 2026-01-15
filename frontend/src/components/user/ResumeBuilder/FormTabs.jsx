@@ -1,10 +1,10 @@
-import { 
-  User, 
-  Briefcase, 
-  GraduationCap, 
-  Zap, 
-  FolderKanban, 
-  Award 
+import {
+  User,
+  Briefcase,
+  GraduationCap,
+  Zap,
+  FolderKanban,
+  Award
 } from 'lucide-react';
 
 const FormTabs = ({ activeSection, setActiveSection }) => {
@@ -20,9 +20,9 @@ const FormTabs = ({ activeSection, setActiveSection }) => {
   return (
     <div className="form-tabs">
       {formTabs.map((tab) => (
-        <button 
-          key={tab.id} 
-          className={`form-tab ${activeSection === tab.id ? 'active' : ''}`} 
+        <button
+          key={tab.id}
+          className={`form-tab ${activeSection === tab.id ? 'active' : ''}`}
           onClick={() => setActiveSection(tab.id)}
         >
           <tab.icon size={16} />

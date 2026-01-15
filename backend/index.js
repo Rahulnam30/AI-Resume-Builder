@@ -6,6 +6,7 @@ import cors from "cors";
 import authRouter from "./routers/auth.router.js";
 import cookieParser from "cookie-parser";
 import userRouter from "./routers/user.router.js";
+import templateRouter from "./routers/template.router.js";
 import connectDB from "./config/db.js";
 
 const app = express();
@@ -37,6 +38,14 @@ app.use(cookieParser());
 
 app.use("/api/auth", authRouter);
 app.use("/api/user", userRouter);
+app.use("/api/template", templateRouter);
+
+// Serve uploads directory
+import path from "path";
+import { fileURLToPath } from "url";
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 app.listen(port, () => {
   connectDB();

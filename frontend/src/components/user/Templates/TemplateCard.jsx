@@ -1,6 +1,6 @@
 const TemplateCard = ({ template, onSelect }) => {
   return (
-    <div 
+    <div
       className="template-card"
       onClick={() => onSelect?.(template.id)}
     >
