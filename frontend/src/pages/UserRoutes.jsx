@@ -1,6 +1,3 @@
-import Downloads from "./Downloads";
-
-// src/pages/UserRoutes.jsx
 import { Routes, Route, Navigate } from "react-router-dom";
 
 // Layout
@@ -14,35 +11,23 @@ import Preview from "../components/user/Preview/FullPreview";
 import Profile from "../components/user/Profile/EditProfile";
 import ResumeBuilder from "../components/user/ResumeBuilder/ResumeBuilder";
 import Templates from "../components/user/Templates/TemplatesDashboardPage";
+import Downloads from "./Downloads";
 
 const UserRoutes = () => {
   return (
     <Routes>
-      {/* Layout Route */}
+      {/* Sidebar + Header layout */}
       <Route element={<UserSidebar />}>
 
         {/* /user → /user/dashboard */}
         <Route index element={<Navigate to="dashboard" replace />} />
 
-        <Route
-          path="dashboard"
-          element={
-            <Dashboard
-              user={{ name: "Meghana" }}
-              resumes={[]}
-              setActivePage={() => {}}
-            />
-          }
-        />
-
+        <Route path="dashboard" element={<Dashboard />} />
         <Route path="resume-builder" element={<ResumeBuilder />} />
         <Route path="templates-dashboard-page" element={<Templates />} />
         <Route path="ats-checker" element={<ATSChecker />} />
         <Route path="my-resumes" element={<MyResumes />} />
         <Route path="downloads" element={<Downloads />} />
-        
-
-
         <Route path="full-preview" element={<Preview />} />
         <Route path="edit-profile" element={<Profile />} />
 

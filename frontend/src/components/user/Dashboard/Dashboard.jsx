@@ -7,26 +7,35 @@ import {
   FaDownload,
   FaLayerGroup,
 } from "react-icons/fa";
-import UserNavBar from "../UserNavBar/UserNavBar"; // adjust path
+import UserNavBar from "../UserNavBar/UserNavBar";
 import "./Dashboard.css";
 
-const Dashboard = ({ user, resumes, setActivePage, onSidebarToggle }) => {
+const Dashboard = ({
+  user = { name: "User" },
+  resumes = [],
+  setActivePage = () => {},
+  onSidebarToggle,
+}) => {
   return (
     <div className="dashboard-page user-page">
-      {/* ✅ Navbar */}
-      <UserNavBar onMenuClick={onSidebarToggle || (() => console.log("Toggle sidebar"))} />
+      {/* Top Navbar */}
+      <UserNavBar
+        onMenuClick={
+          onSidebarToggle || (() => console.log("Toggle sidebar"))
+        }
+      />
 
-      {/* CONTENT BELOW NAVBAR */}
+      {/* Content */}
       <div style={{ marginTop: "80px", padding: "1rem" }}>
         <div className="page-header">
-          <h1>👋 Welcome back, {user?.name || "User"}!</h1>
+          <h1>👋 Welcome back, {user?.name}!</h1>
           <p>Here's your resume building progress</p>
         </div>
 
         <div className="dashboard-stats">
           <StatCard
             icon={<FaFileAlt />}
-            value={resumes.length}
+            value={resumes?.length || 0}
             label="Resumes Created"
             colorClass="blue"
           />
