@@ -95,3 +95,36 @@
 .nav-item-wrapper + .nav-item-wrapper {
   margin-top: 28px; /* adjust as needed */
 }
+
+/* ===============================
+   TOGGLE BUTTON
+================================ */
+.nav-item.toggle {
+  display: flex;
+  justify-content: flex-start;      /* same as nav items */
+  align-items: center;              /* vertically center */
+  height: 52px;                     /* same as nav-item */
+  width: 100%;                      /* full width like nav items */
+  cursor: pointer;
+  background: transparent;
+  padding-left: 18px;               /* same left padding as nav items */
+  padding-right: 18px;
+  gap: 10px;                        /* optional spacing if needed */
+}
+
+/* Three lines container */
+.nav-item.toggle .lines {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px;                        /* spacing between lines */
+}
+
+.nav-item.toggle .line {
+  display: block;
+  width: 20px;                     /* same as icon width */
+  height: 2px;                      /* thickness */
+  background-color: #475569;        /* match icon color */
+  border-radius: 1px;
+  transition: all 0.3s ease;
+}

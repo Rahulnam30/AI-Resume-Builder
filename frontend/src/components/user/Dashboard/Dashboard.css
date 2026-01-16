@@ -1,258 +1,32 @@
-/* Container for dashboard page content */
-.dashboard-page {
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: 20px 30px 40px;
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-  color: #1a1a2e;
-}
-
-/* Header */
-.page-header h1 {
-  font-size: 2rem;
-  font-weight: 700;
-  margin-bottom: 6px;
-}
-
-.page-header p {
-  font-size: 1rem;
-  color: #4b5563;
-  margin-top: 0;
-  margin-bottom: 24px;
-}
-
-/* Stats container - flex for horizontal alignment */
-.dashboard-stats {
-  display: flex;
-  gap: 20px;
-  margin-bottom: 36px;
-}
-
-/* Each stat card */
-.dashboard-stats > div {
-  flex: 1;
-  background: #fff;
-  padding: 18px 24px;
-  border-radius: 14px;
-  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  font-weight: 600;
-  font-size: 1.1rem;
-  color: #1a1a2e;
-}
-
-/* Stat icon */
-.dashboard-stats > div img {
-  width: 28px;
-  height: 28px;
-  object-fit: contain;
-  filter: grayscale(50%) contrast(120%);
-}
-
-/* Stat number bigger and right aligned */
-.stat-value {
-  font-size: 1.7rem;
-  font-weight: 700;
-  margin-left: auto;
-  color: #111827;
-}
-
-/* Main content grid */
-.dashboard-grid {
-  display: grid;
-  grid-template-columns: 2fr 1fr;
-  gap: 36px;
-}
-
-/* Cards styling */
-.dashboard-card {
-  background: #fff;
-  border-radius: 14px;
-  padding: 28px 32px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
-  border: none;
-}
-
-/* Card title */
-.dashboard-card h3 {
-  font-weight: 700;
-  font-size: 1.25rem;
-  margin-bottom: 20px;
-  color: #111827;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-/* Recent list container */
-.recent-list {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-}
-
-/* Each recent item */
-.recent-item {
-  background: #f9fafb;
-  border-radius: 12px;
-  padding: 14px 20px;
-  display: flex;
-  align-items: center;
-  gap: 20px;
-  cursor: pointer;
-  transition: background-color 0.15s ease;
-}
-
-.recent-item:hover {
-  background: #e5e7eb;
-}
-
-/* File icon */
-.file-icon {
-  font-size: 24px;
-  color: #6b7280;
-  flex-shrink: 0;
-}
-
-/* File info */
-.file-info {
-  flex-grow: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
-
-.file-name {
-  font-weight: 600;
-  font-size: 1rem;
-  color: #1f2937;
-  margin-bottom: 4px;
-}
-
-.file-date {
-  font-size: 0.85rem;
-  color: #6b7280;
-}
-
-/* ATS badge on the right */
-.ats-badge {
-  background: #d1fae5;
-  color: #047857;
-  font-weight: 600;
-  padding: 4px 12px;
-  border-radius: 9999px;
-  font-size: 0.9rem;
-  white-space: nowrap;
-  flex-shrink: 0;
-}
-
-/* View All button */
-.view-all-btn {
-  margin-top: 22px;
-  display: inline-block;
-  font-size: 0.95rem;
-  color: #3b82f6;
-  cursor: pointer;
-  user-select: none;
-  border: none;
-  background: transparent;
-  transition: color 0.2s ease;
-}
-
-.view-all-btn:hover {
-  color: #2563eb;
-  text-decoration: underline;
-}
-
-/* Quick actions card */
-.quick-actions {
-  background: #fff;
-  border-radius: 14px;
-  padding: 28px 24px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.quick-actions h3 {
-  font-weight: 700;
-  font-size: 1.25rem;
-  margin-bottom: 14px;
-  color: #111827;
-}
-
-/* Each quick action button */
-.quick-action-btn {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  padding: 14px 22px;
-  background: #f9fafb;
-  border: none;
-  border-radius: 10px;
-  font-size: 1rem;
-  font-weight: 600;
-  color: #374151;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-}
-
-.quick-action-btn:hover {
-  background: #e0e7ff;
-  color: #1e3a8a;
-}
-
-/* Icon inside quick action buttons */
-.quick-action-btn img {
-  width: 20px;
-  height: 20px;
-  object-fit: contain;
-  filter: grayscale(50%) contrast(120%);
-}
-
-/* Responsive for smaller screens */
-@media (max-width: 1024px) {
-  .dashboard-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .dashboard-stats {
-    flex-direction: column;
-    gap: 18px;
-  }
-}
-
-@media (max-width: 600px) {
-  .dashboard-page {
-    padding: 15px 20px;
-  }
-
-  .dashboard-stats > div {
-    font-size: 1rem;
-    padding: 14px 18px;
-  }
-}
-
 /* ===============================
-   TOP BAR
+   DASHBOARD TOPBAR (like ATS navbar)
 ================================ */
 .dashboard-topbar {
+  height: 64px;                 /* match ATS navbar height */
+  margin-top: 4px;             /* same spacing as ATS */
+  margin-bottom: 8px;          /* space below */
+  width: 100%;
   display: flex;
+  align-items: center;          /* vertical centering */
   justify-content: space-between;
-  align-items: center;
-  margin-bottom: 26px;
+  padding: 0 20px;              /* horizontal padding */
+  background: #ffffff;          /* white background */
+  border-radius: 12px;          /* rounded corners */
+  box-shadow: 0 1px 2px rgba(0,0,0,0.05); /* subtle shadow */
+  gap: 16px;
+  position: relative;
+  z-index: 1000;
 }
 
-/* Search bar */
+/* -------------------------------
+   SEARCH BOX
+--------------------------------- */
 .search-box input {
-  width: 340px;
-  padding: 11px 16px;
-  border-radius: 12px;
+  width: 240px;                 /* compact width */
+  padding: 8px 12px;            /* compact padding */
+  border-radius: 8px;
   border: 1px solid #e5e7eb;
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   background: #ffffff;
   transition: border 0.2s ease, box-shadow 0.2s ease;
 }
@@ -263,35 +37,50 @@
   box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
 }
 
-/* ===============================
+/* -------------------------------
    PROFILE AREA
-================================ */
+--------------------------------- */
 .profile-area {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 8px 14px;
+  gap: 8px;                     /* spacing between avatar and text */
+  padding: 4px 10px;             /* compact padding */
   background: #ffffff;
-  border-radius: 14px;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+  border-radius: 12px;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
   cursor: pointer;
   position: relative;
   transition: box-shadow 0.2s ease, transform 0.2s ease;
 }
 
 .profile-area:hover {
-  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
   transform: translateY(-1px);
 }
 
-.profile-area img {
-  width: 40px;
-  height: 40px;
+.profile-area img,
+.profile-initials,
+.profile-initials-circle {
+  width: 32px;                  /* smaller avatar size */
+  height: 32px;
   border-radius: 50%;
-  object-fit: cover;
+  font-size: 0.85rem;           /* initials font size */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  background-color: #6366f1;    /* default primary color */
 }
 
-/* Profile text */
+/* profile initials circle alternative */
+.profile-initials-circle {
+  background-color: #2563eb;    /* ATS blue */
+  font-weight: bold;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+/* PROFILE TEXT */
 .profile-info {
   display: flex;
   flex-direction: column;
@@ -300,27 +89,27 @@
 
 .profile-info .name {
   font-weight: 600;
-  font-size: 0.95rem;
+  font-size: 0.85rem;           /* smaller text */
   color: #111827;
 }
 
 .profile-info .email {
-  font-size: 0.75rem;
+  font-size: 0.65rem;           /* smaller text */
   color: #6b7280;
 }
 
-/* ===============================
+/* -------------------------------
    PROFILE DROPDOWN
-================================ */
+--------------------------------- */
 .profile-dropdown {
   position: absolute;
   right: 0;
-  top: 56px;
+  top: 56px;                     /* below profile area */
   width: 190px;
   background: #ffffff;
   border-radius: 12px;
   padding: 8px;
-  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 14px 30px rgba(0,0,0,0.15);
   z-index: 100;
   animation: dropdownFade 0.15s ease;
 }
@@ -356,11 +145,15 @@
   color: #dc2626;
 }
 
+/* -------------------------------
+   RESPONSIVE
+--------------------------------- */
 @media (max-width: 768px) {
   .dashboard-topbar {
     flex-direction: column;
     align-items: stretch;
-    gap: 16px;
+    gap: 12px;
+    padding: 8px 16px;
   }
 
   .search-box input {
@@ -372,34 +165,126 @@
   }
 }
 
-.profile-initials {
-  width: 40px;
-  height: 40px;
-  background-color: #6366f1; /* Primary color */
-  color: #fff;
-  font-weight: 600;
-  font-size: 1rem;
+/* ===============================
+   DASHBOARD STATS
+================================ */
+.dashboard-stats {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  text-transform: uppercase;
+  gap: 20px;
+  margin-bottom: 36px;
 }
 
-.profile-initials-circle {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background-color: #2563eb; /* Blue circle, change color if you want */
-  color: #fff;
+.dashboard-stats > div {
+  flex: 1;
+  background: #fff;
+  padding: 18px 24px;
+  border-radius: 14px;
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
   display: flex;
   align-items: center;
-  justify-content: center;
-  font-weight: bold;
-  font-size: 16px;
-  cursor: pointer;
+  gap: 14px;
+  font-weight: 600;
+  font-size: 1.1rem;
+  color: #1a1a2e;
 }
-.stat-icon {
-  font-size: 28px;
-  margin-bottom: 8px;
+
+.dashboard-stats > div img {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+  filter: grayscale(50%) contrast(120%);
+}
+
+.stat-value {
+  font-size: 1.7rem;
+  font-weight: 700;
+  margin-left: auto;
+  color: #111827;
+}
+
+/* ===============================
+   DASHBOARD GRID & CARDS
+================================ */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 36px;
+}
+
+.dashboard-card {
+  background: #fff;
+  border-radius: 14px;
+  padding: 28px 32px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+  border: none;
+}
+
+.dashboard-card h3 {
+  font-weight: 700;
+  font-size: 1.25rem;
+  margin-bottom: 20px;
+  color: #111827;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* ===============================
+   RECENT ITEMS LIST
+================================ */
+.recent-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.recent-item {
+  background: #f9fafb;
+  border-radius: 12px;
+  padding: 14px 20px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.recent-item:hover {
+  background: #e5e7eb;
+}
+
+.file-icon {
+  font-size: 24px;
+  color: #6b7280;
+  flex-shrink: 0;
+}
+
+.file-info {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.file-name {
+  font-weight: 600;
+  font-size: 1rem;
+  color: #1f2937;
+  margin-bottom: 4px;
+}
+
+.file-date {
+  font-size: 0.85rem;
+  color: #6b7280;
+}
+
+.ats-badge {
+  background: #d1fae5;
+  color: #047857;
+  font-weight: 600;
+  padding: 4px 12px;
+  border-radius: 9999px;
+  font-size: 0.9rem;
+  white-space: nowrap;
+  flex-shrink: 0;
 }

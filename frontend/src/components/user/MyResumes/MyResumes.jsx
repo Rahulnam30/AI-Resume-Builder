@@ -1,16 +1,9 @@
 import { useState } from "react";
 import "./myresumes.css";
-import UserNavBar from "../UserNavBar/UserNavBar"; // ✅ Add navbar
+import UserNavBar from "../UserNavBar/UserNavBar"; // ✅ keep navbar
 
-export default function MyResumes({ user, onSidebarToggle }) {
+export default function MyResumes({ onSidebarToggle }) {
   const [openMenu, setOpenMenu] = useState(null);
-
-  const getInitials = (name) => {
-    if (!name) return "U";
-    const words = name.trim().split(" ");
-    if (words.length === 1) return words[0][0].toUpperCase();
-    return (words[0][0] + words[1][0]).toUpperCase();
-  };
 
   const resumes = [
     {
@@ -48,46 +41,33 @@ export default function MyResumes({ user, onSidebarToggle }) {
   ];
 
   return (
-    <div className="myresumes-wrapper user-page">
+    <div className="myresumes-page user-page">
       {/* ✅ Navbar */}
-      <UserNavBar onMenuClick={onSidebarToggle || (() => console.log("Toggle sidebar"))} />
+      <UserNavBar
+        onMenuClick={onSidebarToggle || (() => console.log("Toggle sidebar"))}
+      />
 
       {/* CONTENT BELOW NAVBAR */}
       <div style={{ marginTop: "80px", padding: "1rem" }}>
-        {/* TOP BAR */}
-        <div className="top-bar"></div>
-        <div className="filter-row">
-         
-
-          <div className="topbar-right">
-            
-           
-          </div>
-        </div>
-
-        {/* HEADER */}
+        {/* Page Header */}
         <div className="page-header">
-          <div>
-            <h1>My Resumes</h1>
-            <p>Manage all your resume documents.</p>
-          </div>
+          <h1>My Resumes</h1>
+          <p>Manage all your resume documents.</p>
         </div>
 
-        {/* CARD */}
+        {/* Table / Card Section */}
         <div className="card">
-          {/* FILTER ROW */}
           <div className="filter-row">
             <div className="filter-input">
               <svg className="icon" viewBox="0 0 24 24">
                 <path d="M21 21l-4.35-4.35m1.85-5.4a7.25 7.25 0 11-14.5 0 7.25 7.25 0 0114.5 0z" />
               </svg>
-              <input placeholder="search templates accordingly..." />
+              <input placeholder="Search templates accordingly..." />
             </div>
-
             <button className="format-btn">All Formats</button>
           </div>
 
-          {/* TABLE */}
+          {/* Table */}
           <table className="resume-table">
             <thead>
               <tr>
@@ -99,7 +79,6 @@ export default function MyResumes({ user, onSidebarToggle }) {
                 <th>Actions</th>
               </tr>
             </thead>
-
             <tbody>
               {resumes.map((resume, index) => (
                 <tr key={index}>
@@ -108,7 +87,6 @@ export default function MyResumes({ user, onSidebarToggle }) {
                   <td>{resume.modified}</td>
                   <td>{resume.format}</td>
                   <td className={`score ${resume.color}`}>{resume.score}</td>
-
                   <td className="actions">
                     <button className="action-btn" title="View">
                       <svg className="icon" viewBox="0 0 24 24">
@@ -116,7 +94,6 @@ export default function MyResumes({ user, onSidebarToggle }) {
                         <circle cx="12" cy="12" r="3" />
                       </svg>
                     </button>
-
                     <div className="dropdown-wrapper">
                       <button
                         className="dots-btn"
@@ -126,7 +103,6 @@ export default function MyResumes({ user, onSidebarToggle }) {
                       >
                         ⋮
                       </button>
-
                       {openMenu === index && (
                         <div className="dropdown-menu">
                           <button>Edit</button>
@@ -141,7 +117,7 @@ export default function MyResumes({ user, onSidebarToggle }) {
             </tbody>
           </table>
 
-          {/* TABLE BOTTOM */}
+          {/* Table Bottom */}
           <div className="table-bottom">
             <span>Showing 1 to 4 of 4 resumes</span>
             <div className="pagination">
@@ -152,7 +128,7 @@ export default function MyResumes({ user, onSidebarToggle }) {
           </div>
         </div>
 
-        {/* FOOTER */}
+        {/* Footer */}
         <footer className="footer">© 2023 ResumeAI Inc. All rights reserved.</footer>
       </div>
     </div>
