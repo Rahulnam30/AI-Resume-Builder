@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Search, ArrowRight, Calendar, Tag } from 'lucide-react';
 import NavBar from '../components/NavBar';
-import Footer from '../components/Footer';
+import Footer from "./Footer";
 
 const BlogPage = () => {
   const [activeCategory, setActiveCategory] = useState('All Articles');

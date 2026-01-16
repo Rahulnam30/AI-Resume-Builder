@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { MapPin, Briefcase, Clock, Users, Heart, Zap, Target, Rocket, Award, TrendingUp } from 'lucide-react';
 import NavBar from '../components/NavBar';
-import Footer from '../components/Footer';
+import Footer from "./Footer";
 
 const CareersPage = () => {
   const [activeFilter, setActiveFilter] = useState('All Roles');

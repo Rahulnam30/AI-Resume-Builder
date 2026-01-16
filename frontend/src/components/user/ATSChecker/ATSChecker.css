@@ -1,14 +1,4 @@
-/* ATS Checker Page */
-.ats-checker-page {
-  padding: 10px;
-}
 
-.ats-upload-section {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 24px;
-  margin-bottom: 24px;
-}
 
 .upload-box {
   background: #fff;
@@ -146,4 +136,51 @@
   .ats-upload-section {
     grid-template-columns: 1fr;
   }
+}
+.ats-checker-page {
+  /* No extra padding here — handled by card & content wrapper */
+  background: var(--primary-bg); /* same as MyResumes */
+  min-height: 100vh;
+}
+
+/* Card wrapper */
+.card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+  width: 100%;
+}
+
+/* ATS Upload Section inside the card */
+.ats-upload-section {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin-bottom: 24px;
+}
+
+@media (max-width: 768px) {
+  .ats-upload-section {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Navbar wrapper (same as MyResumes) */
+.user-navbar-wrapper {
+  height: 64px; 
+  margin-top: 16px; 
+  width: 100%;
+  display: flex;
+  align-items: center; 
+  position: relative;
+  z-index: 1000;
+}
+
+/* Footer same as MyResumes */
+.footer {
+  margin-top: 32px;
+  text-align: center;
+  font-size: 13px;
+  color: #64748b;
 }

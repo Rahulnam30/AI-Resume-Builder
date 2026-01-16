@@ -6,7 +6,7 @@ import ValuesImg from "../assets/vision-globe.jpeg";
 import JourneyImg from "../assets/journey-path.jpeg";
 
 import NavBar from "../components/NavBar";
-import Footer from "../components/Footer";
+import Footer from "./Footer";
 
 const AboutUs = () => {
   useEffect(() => {

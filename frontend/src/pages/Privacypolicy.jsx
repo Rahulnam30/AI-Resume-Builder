@@ -2,7 +2,7 @@ import React from "react";
 import { useNavigate, Link } from "react-router-dom";
 import UpToSkillsImg from "../assets/UptoSkills.webp";
 import { useEffect, useState } from "react";
-import Footer from "../components/Footer";
+import Footer from "./Footer";
 
 export default function PrivacyPolicy() {
   const navigate = useNavigate();

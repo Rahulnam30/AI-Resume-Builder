@@ -11,7 +11,7 @@ import work2 from "../assets/analysis.png";
 import work1 from "../assets/goodResume.png";
 import work4 from "../assets/oneClick.png";
 import work5 from "../assets/win.png";
-import Footer from "../components/Footer";
+import Footer from "./Footer";
 import {
   ArrowRight,
   BarChart3,

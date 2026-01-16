@@ -9,7 +9,7 @@ import {
   AlertCircle,
 } from "lucide-react";
 import UpToSkillsImg from "../assets/UptoSkills.webp"; // Ensure path is correct
-import Footer from "../components/Footer";
+import Footer from "./Footer";
 
 const TermsAndConditions = () => {
   const navigate = useNavigate();

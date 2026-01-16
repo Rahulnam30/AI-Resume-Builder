@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import UpToSkillsImg from '../assets/UptoSkills.webp';
-import Footer from '../components/Footer';
+import Footer from "./Footer";
 
 function ContactUs() {
   const navigate = useNavigate();
