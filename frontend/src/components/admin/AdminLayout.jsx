@@ -14,7 +14,7 @@ export default function AdminLayout() {
 
       <main
         className={`
-          pt-16 min-h-screen bg-slate-950
+          pt-16 min-h-screen bg-slate-50
           transition-all duration-300 ease-in-out
           ml-0
           ${isCollapsed ? "md:ml-20" : "md:ml-64"}

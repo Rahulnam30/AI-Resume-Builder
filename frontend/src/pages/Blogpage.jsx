@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Search, ArrowRight, Calendar, Tag } from 'lucide-react';
 import NavBar from '../components/NavBar';
-import Footer from '../components/Footer';
+import Footer from "./Footer";
 
 const BlogPage = () => {
   const [activeCategory, setActiveCategory] = useState('All Articles');
@@ -81,7 +81,7 @@ const BlogPage = () => {
   });
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 select-none">
       <NavBar />
 
       {/* Hero Section */}

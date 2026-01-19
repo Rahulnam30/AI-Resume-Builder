@@ -1,40 +1,76 @@
-import React from "react";
-import { TrendingUp, Percent, Cpu, UserMinus } from "lucide-react";
+import React, { useEffect, useState } from "react";
+import { TrendingUp, Users, UserCheck, UserMinus, Layout } from "lucide-react";
+import axiosInstance from "../../../api/axios";
 
 export default function AdminAnalytics() {
+  const [userGrowth, setUserGrowth] = useState({ count: 0, note: "" });
+  const [conversions, setConversions] = useState({ count: 0, note: "" });
+  const [activeUsers, setActiveUsers] = useState({ count: 0, note: "" });
+  const [churnRate, setChurnRate] = useState({ count: 0, note: "" });
+  const [templatesUsed, setTemplatesUsed] = useState({ count: 0, note: "" });
+  const [mostUsedTemplates, setMostUsedTemplates] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchAnalyticsData();
+  }, []);
+
+  const fetchAnalyticsData = async () => {
+    try {
+      const response = await axiosInstance.get("/api/user/analytics-stat");
+      setUserGrowth(response.data.userGrowth);
+      setConversions(response.data.conversions);
+      setActiveUsers(response.data.activeUsers);
+      setChurnRate(response.data.churnRate);
+      setTemplatesUsed(response.data.templatesUsed);
+      setMostUsedTemplates(response.data.mostUsedTemplates || []);
+      setLoading(false);
+    } catch (error) {
+      console.error("Error fetching analytics:", error);
+      setLoading(false);
+    }
+  };
+
   const stats = [
     {
-      title: "User Growth Rate",
-      value: "+12.5%",
-      note: "vs previous 30 days",
+      title: "User Growth",
+      value: loading ? "..." : `${userGrowth.count} Users`,
+      note: userGrowth.note,
       icon: <TrendingUp className="text-green-600" />,
       valueColor: "text-green-600",
     },
     {
-      title: "Conversion Rate",
-      value: "3.2%",
-      note: "Industry Avg: 2.5%",
-      icon: <Percent className="text-blue-600" />,
+      title: "Paid Conversions",
+      value: loading ? "..." : `${conversions.count} Users`,
+      note: conversions.note,
+      icon: <Users className="text-blue-600" />,
       valueColor: "text-blue-600",
     },
     {
-      title: "AI Token Usage",
-      value: "1.2M Tokens",
-      note: "Est. Cost: $450.00",
-      icon: <Cpu className="text-purple-600" />,
+      title: "Active Users",
+      value: loading ? "..." : `${activeUsers.count} Users`,
+      note: activeUsers.note,
+      icon: <UserCheck className="text-purple-600" />,
       valueColor: "text-purple-600",
     },
     {
-      title: "Churn Rate",
-      value: "1.8%",
-      note: "Lowest this quarter",
+      title: "Templates Used",
+      value: loading ? "..." : `${templatesUsed.count} Templates`,
+      note: templatesUsed.note,
+      icon: <Layout className="text-orange-600" />,
+      valueColor: "text-orange-600",
+    },
+    {
+      title: "Churned Users",
+      value: loading ? "..." : `${churnRate.count} Users`,
+      note: churnRate.note,
       icon: <UserMinus className="text-red-600" />,
       valueColor: "text-red-600",
     },
   ];
 
   return (
-    <div className="flex-1 p-6 sm:p-8 lg:p-10 bg-slate-50 text-slate-900">
+    <div className="min-h-screen flex-1 p-6 sm:p-8 lg:p-10 bg-slate-50 text-slate-900">
       {/* Header */}
       <div className="mb-8">
         <h1 className="text-3xl font-bold">System Analytics</h1>
@@ -44,7 +80,7 @@ export default function AdminAnalytics() {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5 mb-10">
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-5 gap-5 mb-10">
         {stats.map((item) => (
           <div
             key={item.title}
@@ -81,24 +117,29 @@ export default function AdminAnalytics() {
         <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
           <h2 className="text-lg font-semibold mb-4">Most Used Templates</h2>
 
-          <div className="space-y-4 text-sm">
-            <div className="flex justify-between">
-              <span>Modern Tech V2</span>
-              <span className="text-blue-600 font-medium">45%</span>
+          {loading ? (
+            <div className="text-center text-slate-400 py-8">Loading...</div>
+          ) : mostUsedTemplates.length > 0 ? (
+            <div className="space-y-4 text-sm">
+              {mostUsedTemplates.map((template, index) => {
+                const colors = ["text-blue-600", "text-purple-600", "text-red-600", "text-orange-600", "text-slate-500"];
+                return (
+                  <div key={template.templateId} className="flex justify-between items-center">
+                    <span className="text-slate-700">
+                      Template {template.templateId}
+                    </span>
+                    <span className={`${colors[index % colors.length]} font-medium`}>
+                      {template.percentage}% ({template.count})
+                    </span>
+                  </div>
+                );
+              })}
             </div>
-            <div className="flex justify-between">
-              <span>Creative Minimal</span>
-              <span className="text-purple-600 font-medium">25%</span>
+          ) : (
+            <div className="text-center text-slate-400 py-8">
+              No template usage data yet
             </div>
-            <div className="flex justify-between">
-              <span>Corporate Standard</span>
-              <span className="text-red-600 font-medium">15%</span>
-            </div>
-            <div className="flex justify-between">
-              <span>Simple ATS</span>
-              <span className="text-slate-500 font-medium">15%</span>
-            </div>
-          </div>
+          )}
         </div>
       </div>
 

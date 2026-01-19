@@ -1,4 +1,6 @@
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
+/* Removed external Google Fonts import to avoid blocked third-party requests (ERR_BLOCKED_BY_CLIENT).
+  If you want to use these fonts, either whitelist fonts.googleapis.com in your browser
+  or download and host the font files locally and add @font-face rules. */
 
 @tailwind base;
 @tailwind components;
@@ -44,9 +46,9 @@ button {
 }
 
 /* Smooth scrolling */
-html {
+/* html {
   scroll-behavior: smooth;
-}
+} */
 
 .animate-slide-in {
   opacity: 1 !important;

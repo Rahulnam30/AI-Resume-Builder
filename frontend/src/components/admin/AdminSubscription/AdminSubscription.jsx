@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Check, ToggleLeft, ToggleRight, Pencil } from "lucide-react";
-import AdminUsers from "../AdminUser/AdminUsers";
+import axiosInstance from "../../../api/axios";
 
+// ... initialPlans definition remains same ...
 const initialPlans = [
   {
     id: 1,
@@ -34,6 +35,25 @@ const initialPlans = [
 
 const AdminSubscription = () => {
   const [plans, setPlans] = useState(initialPlans);
+  const [paidUsers, setPaidUsers] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchPaidUsers();
+  }, []);
+
+  const fetchPaidUsers = async () => {
+    try {
+      const response = await axiosInstance.get("/api/user");
+      // Filter for Pro users
+      const proUsers = response.data.filter(user => user.plan === "Pro");
+      setPaidUsers(proUsers);
+      setLoading(false);
+    } catch (err) {
+      console.error("Failed to fetch users", err);
+      setLoading(false);
+    }
+  };
 
   const togglePlan = (id) => {
     setPlans((prev) =>
@@ -72,7 +92,7 @@ const AdminSubscription = () => {
         <div className="bg-white p-6 rounded-xl shadow flex flex-col gap-2">
           <p className="text-sm text-gray-500">Active Subscribers</p>
           <p className="text-2xl font-bold">
-            3,100 <span className="text-gray-400 text-sm">(Pro Users)</span>
+            {paidUsers.length} <span className="text-gray-400 text-sm">(Pro Users)</span>
           </p>
         </div>
         <div className="bg-white p-6 rounded-xl shadow flex flex-col gap-2">
@@ -137,10 +157,9 @@ const AdminSubscription = () => {
             <div className="mt-6">
               <span
                 className={`inline-block px-3 py-1 rounded-full text-xs font-medium 
-                  ${
-                    plan.active
-                      ? "bg-green-100 text-green-700"
-                      : "bg-red-100 text-red-700"
+                  ${plan.active
+                    ? "bg-green-100 text-green-700"
+                    : "bg-red-100 text-red-700"
                   }`}
               >
                 {plan.active ? "Active" : "Disabled"}
@@ -152,12 +171,74 @@ const AdminSubscription = () => {
 
       {/* Save Button */}
       <div className="mt-12 flex justify-end">
-        <button className="px-6 py-3 rounded-xl bg-blue-600 text-white font-medium hover:bg-blue-700">
+        <button className="px-6 py-3 rounded-xl bg-blue-600 text-white font-medium hover:bg-blue-700 mb-10">
           Save Changes
         </button>
       </div>
 
-      <AdminUsers head={"User Subscription"} />
+      {/* Paid Users Table */}
+      <div className="bg-white border rounded-xl overflow-hidden shadow-sm mb-10">
+        <div className="px-6 py-4 border-b border-gray-100">
+          <h2 className="text-lg font-semibold text-gray-900">Paid Users</h2>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead className="bg-gray-50 text-gray-500">
+              <tr>
+                <th className="px-6 py-4 text-left">User</th>
+                <th className="px-6 py-4 text-left">Email</th>
+                <th className="px-6 py-4 text-center">Plan</th>
+                <th className="px-6 py-4 text-center">Status</th>
+                <th className="px-6 py-4 text-center">Joined Date</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y">
+              {loading ? (
+                <tr>
+                  <td colSpan="5" className="px-6 py-8 text-center text-gray-500">
+                    Loading paid users...
+                  </td>
+                </tr>
+              ) : paidUsers.length === 0 ? (
+                <tr>
+                  <td colSpan="5" className="px-6 py-8 text-center text-gray-500">
+                    No paid users found.
+                  </td>
+                </tr>
+              ) : (
+                paidUsers.map((user) => (
+                  <tr key={user._id} className="hover:bg-gray-50">
+                    <td className="px-6 py-4 font-medium text-gray-900">
+                      {user.username || "User"}
+                    </td>
+                    <td className="px-6 py-4 text-gray-600">{user.email}</td>
+                    <td className="px-6 py-4 text-center">
+                      <span className="px-3 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-800 border border-amber-200">
+                        {user.plan}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 text-center">
+                      <span
+                        className={`px-2 py-1 rounded text-xs font-medium ${user.isActive
+                          ? "bg-green-100 text-green-700"
+                          : "bg-red-100 text-red-700"
+                          }`}
+                      >
+                        {user.isActive ? "Active" : "Inactive"}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 text-center text-gray-500">
+                      {user.createdAt
+                        ? new Date(user.createdAt).toLocaleDateString()
+                        : "N/A"}
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
   );
 };

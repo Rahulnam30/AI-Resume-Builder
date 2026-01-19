@@ -6,7 +6,7 @@ export default function NavBar() {
   const navigate = useNavigate()
 
   return (
-    <nav className="sticky top-0 z-50 py-4 bg-white/95 backdrop-blur-md border-b border-gray-100">
+    <nav className="sticky top-0 z-50 py-4 bg-white/95 backdrop-blur-md border-b border-gray-100 select-none">
       <div className="max-w-[1400px] mx-auto px-6 flex items-center">
         <button
           onClick={() => navigate('/')}

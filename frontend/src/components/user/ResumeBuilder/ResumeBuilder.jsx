@@ -1,210 +1,234 @@
 import { useState } from 'react';
 import { AlertTriangle } from 'lucide-react';
+
 import ModeSelection from './ModeSelection';
 import ResumeUpload from './ResumeUpload';
 import FormTabs from './FormTabs';
+
 import PersonalInfoForm from './forms/PersonalInfoForm';
 import ExperienceForm from './forms/ExperienceForm';
 import EducationForm from './forms/EducationForm';
 import SkillsForm from './forms/SkillsForm';
 import ProjectsForm from './forms/ProjectsForm';
 import CertificationsForm from './forms/CertificationsForm';
+
 import LivePreview from '../Preview/LivePreview';
 import FullPreview from '../Preview/FullPreview';
 import TemplatesPage from '../Templates/TemplatesDashboardPage';
+
 import './ResumeBuilder.css';
 
-const ResumeBuilder = ({
-  setActivePage = () => {}
-}) => {
+const sections = ['personal', 'work', 'education', 'skills', 'projects', 'certs'];
+
+
+const ResumeBuilder = ({ setActivePage = () => {} }) => {
+  /* -------------------- CORE STATE -------------------- */
   const [formData, setFormData] = useState({});
   const [templates] = useState([]);
   const [selectedTemplate, setSelectedTemplate] = useState(null);
 
   const [resumeMode, setResumeMode] = useState(null);
   const [uploadedResume, setUploadedResume] = useState(null);
+
   const [activeTab, setActiveTab] = useState('builder');
   const [activeSection, setActiveSection] = useState('personal');
 
+  /* -------------------- PREVIEW STATE -------------------- */
+  const [isPreviewExpanded, setIsPreviewExpanded] = useState(false);
+  const [isPreviewHidden, setIsPreviewHidden] = useState(false);
+
+  /* -------------------- HELPERS -------------------- */
   const handleInputChange = (field, value) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+    setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
   const handleUseSummary = (text) => {
-    setFormData(prev => ({ ...prev, summary: text }));
+    setFormData((prev) => ({ ...prev, summary: text }));
   };
 
   const handleSelectTemplate = (id) => {
     setSelectedTemplate(id);
-    setActiveTab('builder');
+    setActiveTab("builder");
   };
 
-const currentTemplate = templates?.find(
-  (t) => t.id === selectedTemplate
-);
+  const currentTemplate = templates?.find(t => t.id === selectedTemplate);
 
+  /* -------------------- FORM RENDER -------------------- */
   const renderFormContent = () => {
     switch (activeSection) {
-      case 'personal':
+      case "personal":
         return (
-          <PersonalInfoForm 
-            formData={formData} 
+          <PersonalInfoForm
+            formData={formData}
             onInputChange={handleInputChange}
             onUseSummary={handleUseSummary}
           />
         );
-      case 'work':
+      case "work":
         return <ExperienceForm formData={formData} setFormData={setFormData} />;
-      case 'education':
+      case "education":
         return <EducationForm formData={formData} setFormData={setFormData} />;
-      case 'skills':
+      case "skills":
         return <SkillsForm formData={formData} setFormData={setFormData} />;
-      case 'projects':
+      case "projects":
         return <ProjectsForm formData={formData} setFormData={setFormData} />;
-      case 'certs':
-        return <CertificationsForm formData={formData} setFormData={setFormData} />;
-      default:
+      case "certs":
         return (
-          <PersonalInfoForm 
-            formData={formData} 
-            onInputChange={handleInputChange}
-            onUseSummary={handleUseSummary}
-          />
+          <CertificationsForm formData={formData} setFormData={setFormData} />
         );
+      default:
+        return null;
     }
   };
 
+  const currentIndex = sections.indexOf(activeSection);
+
+const goNext = () => {
+  if (currentIndex < sections.length - 1) {
+    setActiveSection(sections[currentIndex + 1]);
+  }
+};
+
+const goBack = () => {
+  if (currentIndex > 0) {
+    setActiveSection(sections[currentIndex - 1]);
+  }
+};
+
+
+  /* -------------------- MAIN CONTENT -------------------- */
   const renderMainContent = () => {
-    if (activeTab === 'templates') {
+    if (activeTab === "templates") {
       return (
-        <TemplatesPage 
+        <TemplatesPage
           templates={templates}
           selectedTemplate={selectedTemplate}
           onSelectTemplate={handleSelectTemplate}
         />
       );
     }
+
     if (activeTab === 'preview') {
       return (
-        <FullPreview 
+        <FullPreview
           formData={formData}
           currentTemplate={currentTemplate}
           setActiveTab={setActiveTab}
         />
       );
     }
+
     return (
       <>
+        {/* ALERT */}
         <div className="alert-banner">
-          <span className="alert-icon"><AlertTriangle size={20} /></span>
+          <AlertTriangle size={20} />
           <div className="alert-content">
             <strong>Complete Your Resume</strong>
             <p>Add the following information to enable export functionality:</p>
           </div>
           <div className="alert-tags">
-            <span className="alert-tag warning">Personal Information (Name & Email required)</span>
-            <span className="alert-tag warning">Experience or Education</span>
+            <span className="alert-tag warning">Personal Info</span>
+            <span className="alert-tag warning">Experience / Education</span>
             <span className="alert-tag success">Skills</span>
           </div>
         </div>
-        <div className="content-area">
+
+        {/* BUILDER + PREVIEW */}
+        <div className={`content-area ${isPreviewExpanded ? 'expanded-preview' : ''}`}>
           <div className="builder-section">
-            <FormTabs activeSection={activeSection} setActiveSection={setActiveSection} />
-            <div className="form-content">{renderFormContent()}</div>
+            <FormTabs
+              activeSection={activeSection}
+              setActiveSection={setActiveSection}
+            />
+            <div className="form-content">{renderFormContent()}
+ 
+  
+            </div>
           </div>
-          <LivePreview formData={formData} currentTemplate={currentTemplate} />
+          
+
+          {!isPreviewHidden && (
+            <LivePreview
+              formData={formData}
+              currentTemplate={currentTemplate}
+              isExpanded={isPreviewExpanded}
+              onExpand={() => setIsPreviewExpanded(true)}
+              onCollapse={() => setIsPreviewExpanded(false)}
+              onMinimize={() => setIsPreviewHidden(true)}
+            />
+          )}
         </div>
-        <button className="export-resume-btn">📥 Export This Resume</button>
       </>
     );
   };
 
-  // If no mode selected, show the selection page
+  /* -------------------- MODE SELECTION -------------------- */
   if (!resumeMode) {
     return (
       <div className="resume-builder-page">
-        <div className="main-header">
-          <div className="header-left">
-            <h1>📝 AI Resume Builder</h1>
-            <p>Create professional, ATS-friendly resumes with AI assistance</p>
-          </div>
-        </div>
+        <h1>📝 AI Resume Builder</h1>
         <ModeSelection onSelectMode={setResumeMode} />
       </div>
     );
   }
 
-  // Edit mode - show upload page first if no resume uploaded
+  /* -------------------- UPLOAD MODE -------------------- */
   if (resumeMode === 'edit' && !uploadedResume) {
     return (
-      <div className="resume-builder-page">
-        <div className="main-header">
-          <div className="header-left">
-            <h1>📤 Upload Your Resume</h1>
-            <p>Upload your existing resume to edit and enhance it</p>
-          </div>
-          <div className="header-right">
-            <button className="back-btn" onClick={() => setResumeMode(null)}>
-              ← Back to Options
-            </button>
-          </div>
-        </div>
-        <ResumeUpload 
-          onUpload={setUploadedResume} 
-          onBack={() => setResumeMode(null)} 
-        />
-      </div>
+      <ResumeUpload
+        onUpload={setUploadedResume}
+        onBack={() => setResumeMode(null)}
+      />
     );
   }
 
-  // Create mode or Edit mode with uploaded resume - show the builder
+  /* -------------------- BUILDER PAGE -------------------- */
   return (
-    <div className="resume-builder-page">
-      <div className="main-header">
-        <div className="header-left">
-          <h1>📝 {resumeMode === 'create' ? 'Create New Resume' : 'Edit Resume'}</h1>
-          <p>
-            {resumeMode === 'create' 
-              ? 'Build your professional resume step by step' 
-              : `Editing: ${uploadedResume?.name || 'Your Resume'}`}
-          </p>
+    <div>
+      <UserNavBar />
+      <div className="resume-builder-page">
+        <div className="main-header">
+          <h1>{resumeMode === "create" ? "Create Resume" : "Edit Resume"}</h1>
+          <div className="header-actions">
+            <button className="upload-btn">Upload</button>
+            <button className="export-btn">Export</button>
+          </div>
         </div>
-        <div className="header-right">
-          <button 
-            className="back-btn" 
-            onClick={() => { setResumeMode(null); setUploadedResume(null); }}
+
+        <div className="main-tabs">
+          <button
+            className={activeTab === "builder" ? "active" : ""}
+            onClick={() => setActiveTab("builder")}
           >
-            ← Back to Options
+            Builder
           </button>
-          <button 
-            className="ats-check-btn" 
-            onClick={() => setActivePage('ats-checker')}
+          <button
+            className={activeTab === "templates" ? "active" : ""}
+            onClick={() => setActiveTab("templates")}
           >
-            📊 Check ATS Score
+            Templates
           </button>
-          <button className="export-btn">📤 Export Resume</button>
         </div>
+
+        {renderMainContent()}
       </div>
+
       <div className="main-tabs">
-        <button 
-          className={`main-tab ${activeTab === 'builder' ? 'active' : ''}`} 
+        <button
+          className={activeTab === 'builder' ? 'active' : ''}
           onClick={() => setActiveTab('builder')}
         >
-          🔧 Builder
+          Builder
         </button>
-        <button 
-          className={`main-tab ${activeTab === 'preview' ? 'active' : ''}`} 
-          onClick={() => setActiveTab('preview')}
-        >
-          👁️ Preview
-        </button>
-        <button 
-          className={`main-tab ${activeTab === 'templates' ? 'active' : ''}`} 
+        <button
+          className={activeTab === 'templates' ? 'active' : ''}
           onClick={() => setActiveTab('templates')}
         >
-          📄 Templates
+          Templates
         </button>
       </div>
+
       {renderMainContent()}
     </div>
   );

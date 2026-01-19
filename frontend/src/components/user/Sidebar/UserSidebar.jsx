@@ -1,102 +1,117 @@
-import { NavLink, Outlet, useNavigate } from "react-router-dom";
-import { useState } from "react";
+import React, { useState } from "react";
+import { NavLink, Outlet, useNavigate, useLocation } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   LayoutDashboard,
   FileText,
-  FolderOpen,
+  FileUser,
+  FilePen,
   CheckCircle,
+  FileStack,
   Files,
   LogOut,
+  ChevronLeft,
+  ChevronRight,
+  Menu,
+  X,
 } from "lucide-react";
-import { FaLinkedin, FaInstagram, FaYoutube } from "react-icons/fa";
 import "./UserSidebar.css";
 
-const UserSidebar = () => {
+export default function UserSidebar() {
   const navigate = useNavigate();
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const location = useLocation();
+  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isMobileOpen, setIsMobileOpen] = useState(false);
 
-  const sidebarNav = [
-    { path: "/user/dashboard", label: "Dashboard", icon: LayoutDashboard },
-    { path: "/user/resume-builder", label: "AI Resume Builder", icon: FileText },
-    { path: "/user/templates-dashboard-page", label: "Templates", icon: FolderOpen },
-    { path: "/user/ats-checker", label: "ATS Score Checker", icon: CheckCircle },
-    { path: "/user/my-resumes", label: "My Resumes", icon: Files },
+  const menuItems = [
+    { id: "dashboard", icon: LayoutDashboard, label: "Dashboard", path: "/user/dashboard" },
+    { id: "resume", icon: FileText, label: "AI Resume Builder", path: "/user/resume-builder" },
+    { id: "cv", icon: FileUser, label: "CV", path: "/user/cv" },
+    { id: "coverletter", icon: FilePen, label: "Cover Letter", path: "/user/cover-letter" },
+    { id: "ats", icon: CheckCircle, label: "ATS Score Checker", path: "/user/ats-checker" },
+    { id: "templates", icon: FileStack, label: "Templates", path: "/user/templates-dashboard-page" },
+    { id: "myresumes", icon: Files, label: "My Resumes", path: "/user/my-resumes" },
   ];
 
-  const logout = () => {
-    navigate("/login");
+  const handleNavigate = (path) => {
+    navigate(path);
+    setIsMobileOpen(false);
   };
 
   return (
-    <div className="user-page">
-      {/* SIDEBAR */}
-      <aside className={`sidebar ${sidebarCollapsed ? "collapsed" : ""}`}>
-        
-        {/* BRAND + TOGGLE */}
-        <div className="sidebar-brand">
-          <button
-            className="sidebar-toggle"
-            onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-          >
-            ☰
-          </button>
+    <>
+      {/* Toggle Buttons */}
+      <div className="fixed top-4 left-4 z-[60] flex gap-2">
+        <button onClick={() => setIsMobileOpen(!isMobileOpen)} className="md:hidden p-2">
+          {isMobileOpen ? <X /> : <Menu />}
+        </button>
+{/* Desktop collapse toggle */}
+<button
+  onClick={() => setIsCollapsed(!isCollapsed)}
+  className="hidden md:flex nav-item toggle"
+>
+  <div className="lines">
+    <span className="line"></span>
+    <span className="line"></span>
+    <span className="line"></span>
+  </div>
+  {!isCollapsed && <span className="nav-label"></span>} {/* optional */}
+</button>
 
-          
-        </div>
 
-        {/* NAV */}
-        <nav className="sidebar-nav-main">
-          {sidebarNav.map((item) => (
-            <NavLink
-              key={item.path}
-              to={item.path}
-              className={({ isActive }) =>
-                `nav-item ${isActive ? "active" : ""}`
-              }
-              title={sidebarCollapsed ? item.label : ""}
-            >
-              <span className="nav-icon">
-                <item.icon size={20} />
-              </span>
+      </div>
 
-              {!sidebarCollapsed && (
-                <div className="nav-info">
-                  <span className="nav-label">{item.label}</span>
-                </div>
-              )}
-            </NavLink>
-          ))}
+      {/* Overlay for mobile */}
+      {isMobileOpen && <div onClick={() => setIsMobileOpen(false)} className="fixed inset-0 bg-black/30 z-40 md:hidden" />}
+
+      {/* Sidebar */}
+      <motion.aside
+        className="fixed top-0 left-0 z-40 bg-white border-r border-slate-200 flex flex-col"
+        style={{ width: isCollapsed ? 80 : 256, height: "100vh" }}
+        animate={{ x: isMobileOpen || window.innerWidth >= 768 ? 0 : "-100%" }}
+        transition={{ type: "spring", stiffness: 220, damping: 25 }}
+      >
+        <nav className="p-3 space-y-2 mt-16 flex-1">
+          {menuItems.map((item, index) => {
+            const Icon = item.icon;
+            const active =
+              item.path === "/user/dashboard"
+                ? location.pathname === "/user/dashboard"
+                : location.pathname.startsWith(item.path);
+
+            return (
+              <div key={item.id} className={`relative group ${index !== 0 ? "mt-[45px]" : ""}`}>
+                <button
+                  onClick={() => handleNavigate(item.path)}
+                  className={`w-full flex items-center rounded-xl transition-all
+                    ${isCollapsed ? "justify-center px-0" : "gap-3 px-4"} py-3
+                    ${active ? "bg-blue-50 text-blue-600 font-semibold" : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"}`}
+                >
+                  <Icon size={22} />
+                  {!isCollapsed && <span className="whitespace-nowrap">{item.label}</span>}
+                </button>
+              </div>
+            );
+          })}
         </nav>
 
-        {/* FOOTER */}
-        <div className="sidebar-footer">
-          {!sidebarCollapsed && (
-            <>
-
-              <div className="social-media-section">
-                <p className="social-title">Connect With Us</p>
-                <div className="social-links">
-                  <FaLinkedin className="social-icon linkedin" />
-                  <FaInstagram className="social-icon instagram" />
-                  <FaYoutube className="social-icon youtube" />
-                </div>
-              </div>
-            </>
-          )}
-
-          <button className="logout-btn" onClick={logout}>
-            <LogOut />
-            {!sidebarCollapsed && <span>Log Out</span>}
+        {/* Logout */}
+        <div className="p-3 border-t border-slate-200 mt-auto">
+          <button
+            onClick={() => navigate("/login")}
+            className={`w-full flex items-center rounded-xl transition-all text-red-500 hover:bg-red-50
+              ${isCollapsed ? "justify-center px-0" : "gap-3 px-4"} py-3`}
+          >
+            <LogOut size={22} />
+            {!isCollapsed && <span>Logout</span>}
           </button>
         </div>
-      </aside>
+      </motion.aside>
 
-      {/* MAIN CONTENT */}
-      <main className="main-content">
+      {/* Right Panel (Navbar + Content) */}
+      <div className="transition-all duration-300" style={{ marginLeft: isCollapsed ? 80 : 256 }}>
         <Outlet />
-      </main>
-    </div>
+      </div>
+    </>
   );
-};
-
-export default UserSidebar;
+}

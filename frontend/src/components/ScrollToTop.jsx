@@ -1,13 +1,31 @@
-import { useEffect } from 'react'
-import { useLocation } from 'react-router-dom'
+// import { useEffect } from 'react'
+// import { useLocation } from 'react-router-dom'
+
+// export default function ScrollToTop() {
+//   const { pathname } = useLocation()
+
+//   useEffect(() => {
+//     // Scroll to top on route change
+//     window.scrollTo({ top: 0, left: 0, behavior: 'instant' })
+//   }, [pathname])
+
+//   return null
+// }
+
+import { useEffect } from 'react';
+import { useLocation, useNavigationType } from 'react-router-dom';
 
 export default function ScrollToTop() {
-  const { pathname } = useLocation()
+  const { pathname } = useLocation();
+  const navType = useNavigationType(); 
 
   useEffect(() => {
-    // Scroll to top on route change
-    window.scrollTo({ top: 0, left: 0, behavior: 'instant' })
-  }, [pathname])
+    // Agar user naye link par click karke aaya hai (PUSH), tabhi top par bhejo
+    // Agar user BACK button (POP) se aaya hai, toh scroll ko mat chedo (browser khud purani position yaad rakhega)
+    if (navType !== 'POP') {
+      window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    }
+  }, [pathname, navType]);
 
-  return null
+  return null;
 }

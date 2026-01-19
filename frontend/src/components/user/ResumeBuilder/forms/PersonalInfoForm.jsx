@@ -10,7 +10,7 @@ const PersonalInfoForm = ({ formData, onInputChange, onUseSummary }) => {
           <input 
             type="text" 
             placeholder="John Doe" 
-            value={formData.fullName} 
+            value={formData?.fullName || ''} 
             onChange={(e) => onInputChange('fullName', e.target.value)} 
           />
         </div>
@@ -19,7 +19,7 @@ const PersonalInfoForm = ({ formData, onInputChange, onUseSummary }) => {
           <input 
             type="email" 
             placeholder="john.doe@example.com" 
-            value={formData.email} 
+            value={formData?.email || ''} 
             onChange={(e) => onInputChange('email', e.target.value)} 
           />
         </div>
@@ -28,7 +28,7 @@ const PersonalInfoForm = ({ formData, onInputChange, onUseSummary }) => {
           <input 
             type="tel" 
             placeholder="+1 (555) 123-4567" 
-            value={formData.phone} 
+            value={formData?.phone || ''} 
             onChange={(e) => onInputChange('phone', e.target.value)} 
           />
         </div>
@@ -37,7 +37,7 @@ const PersonalInfoForm = ({ formData, onInputChange, onUseSummary }) => {
           <input 
             type="text" 
             placeholder="San Francisco, CA" 
-            value={formData.location} 
+            value={formData?.location || ''} 
             onChange={(e) => onInputChange('location', e.target.value)} 
           />
         </div>
@@ -46,7 +46,7 @@ const PersonalInfoForm = ({ formData, onInputChange, onUseSummary }) => {
           <input 
             type="text" 
             placeholder="linkedin.com/in/johndoe" 
-            value={formData.linkedin} 
+            value={formData?.linkedin || ''} 
             onChange={(e) => onInputChange('linkedin', e.target.value)} 
           />
         </div>
@@ -55,7 +55,7 @@ const PersonalInfoForm = ({ formData, onInputChange, onUseSummary }) => {
           <input 
             type="text" 
             placeholder="johndoe.com" 
-            value={formData.website} 
+            value={formData?.website || ''} 
             onChange={(e) => onInputChange('website', e.target.value)} 
           />
         </div>
@@ -64,12 +64,11 @@ const PersonalInfoForm = ({ formData, onInputChange, onUseSummary }) => {
         <label>Professional Summary</label>
         <textarea 
           placeholder="Brief professional summary highlighting your key skills and experience..." 
-          value={formData.summary} 
+          value={formData?.summary || ''} 
           onChange={(e) => onInputChange('summary', e.target.value)} 
           rows={3} 
         />
       </div>
-      <AISuggestions onUseSummary={onUseSummary} />
     </div>
   );
 };

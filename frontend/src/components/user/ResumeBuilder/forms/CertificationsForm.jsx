@@ -4,27 +4,30 @@ const CertificationsForm = ({ formData, setFormData }) => {
   const addCertification = () => {
     setFormData(prev => ({
       ...prev,
-      certifications: [...prev.certifications, { 
-        id: Date.now(), 
-        name: '', 
-        issuer: '', 
-        date: '', 
-        link: '' 
-      }]
+      certifications: [
+        ...(prev?.certifications ?? []),
+        {
+          id: Date.now(),
+          name: '',
+          issuer: '',
+          date: '',
+          link: ''
+        }
+      ]
     }));
   };
 
   const removeCertification = (id) => {
     setFormData(prev => ({
       ...prev,
-      certifications: prev.certifications.filter(c => c.id !== id)
+      certifications: (prev?.certifications ?? []).filter(c => c.id !== id)
     }));
   };
 
   return (
     <div className="form-section">
       <h3 className="form-section-title">Certifications</h3>
-      {formData.certifications.map((cert, index) => (
+      {(formData?.certifications ?? []).map((cert, index) => (
         <div key={cert.id} className="entry-card">
           <div className="entry-header">
             <span>Certification {index + 1}</span>
@@ -40,19 +43,54 @@ const CertificationsForm = ({ formData, setFormData }) => {
           <div className="form-grid">
             <div className="form-group">
               <label>Certification Name *</label>
-              <input type="text" placeholder="AWS Solutions Architect" />
+              <input
+                type="text"
+                placeholder="AWS Solutions Architect"
+                value={cert.name || ''}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  const updated = (formData?.certifications ?? []).map(item => item.id === cert.id ? { ...item, name: val } : item);
+                  setFormData(prev => ({ ...prev, certifications: updated }));
+                }}
+              />
             </div>
             <div className="form-group">
               <label>Issuing Organization</label>
-              <input type="text" placeholder="Amazon Web Services" />
+              <input
+                type="text"
+                placeholder="Amazon Web Services"
+                value={cert.issuer || ''}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  const updated = (formData?.certifications ?? []).map(item => item.id === cert.id ? { ...item, issuer: val } : item);
+                  setFormData(prev => ({ ...prev, certifications: updated }));
+                }}
+              />
             </div>
             <div className="form-group">
               <label>Date Obtained</label>
-              <input type="month" />
+              <input
+                type="month"
+                value={cert.date || ''}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  const updated = (formData?.certifications ?? []).map(item => item.id === cert.id ? { ...item, date: val } : item);
+                  setFormData(prev => ({ ...prev, certifications: updated }));
+                }}
+              />
             </div>
             <div className="form-group">
               <label>Credential Link (Optional)</label>
-              <input type="text" placeholder="https://credential.url" />
+              <input
+                type="text"
+                placeholder="https://credential.url"
+                value={cert.link || ''}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  const updated = (formData?.certifications ?? []).map(item => item.id === cert.id ? { ...item, link: val } : item);
+                  setFormData(prev => ({ ...prev, certifications: updated }));
+                }}
+              />
             </div>
           </div>
         </div>

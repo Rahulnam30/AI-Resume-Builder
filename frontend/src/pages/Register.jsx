@@ -1,9 +1,8 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import axios from "axios";
+import axiosInstance from "../api/axios";
 import { toast, Toaster } from "react-hot-toast";
 import images from "../assets";
-import NavBar from "../components/NavBar";
 
 export default function Register() {
   const [usernametext, setUserNameText] = useState("");
@@ -29,8 +28,7 @@ export default function Register() {
     if (!validate()) return;
     setLoading(true);
     try {
-      const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
-      await axios.post(`${API_URL}/api/auth/register`, {
+      await axiosInstance.post(`/api/auth/register`, {
         username: usernametext.trim(),
         email: emailtext.trim(),
         password: passwordtext,
@@ -50,7 +48,7 @@ export default function Register() {
   return (
     <>
       <Toaster position="top-right" reverseOrder={false} />
-      <NavBar />
+
       <div className="fixed inset-0 pt-20 flex items-center justify-center bg-gradient-to-br from-blue-950 to-slate-900 px-4 select-none overflow-hidden">
         <div className="w-full max-w-5xl grid grid-cols-1 md:grid-cols-2 bg-white rounded-3xl overflow-hidden shadow-2xl max-h-[95vh]">
           {/* Left Form Section */}
@@ -143,11 +141,10 @@ export default function Register() {
                 type="submit"
                 disabled={loading}
                 className={`w-full py-2 rounded-lg text-white text-sm font-medium transition mt-3
-                ${
-                  loading
+                ${loading
                     ? "bg-blue-400 cursor-not-allowed"
                     : "bg-blue-600 hover:bg-blue-700"
-                }
+                  }
               `}
               >
                 {loading ? "Creating account..." : "Sign Up"}

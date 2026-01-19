@@ -1,267 +1,130 @@
-/* Sidebar */
+/* ===============================
+   SIDEBAR BASE
+================================ */
 .sidebar {
-  width: 230px;
-  background: #fff;
-  border-right: 1px solid #e5e7eb;
-  padding: 24px 16px;
-  display: flex;
-  flex-direction: column;
   position: fixed;
-  height: 100vh;
-  overflow: visible; /* allow content to show outside if needed */
-  transition: all 0.3s ease;
-  z-index: 100;
-}
-
-.sidebar.collapsed {
-  width: 80px;
-  padding: 24px 12px;
-  overflow: visible; /* allow nav labels, tip box, and footer to show */
-}
-
-/* Sidebar toggle button */
-.sidebar-toggle {
-  width: 36px;
-  height: 36px;
-  border: none;
-  background: #f3f4f6;
-  border-radius: 8px;
-  font-size: 16px;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.2s;
-  margin-right: 12px; /* gap between toggle and brand text */
-}
-
-.sidebar-toggle:hover {
-  background: #e5e7eb;
-}
-
-.sidebar.collapsed .sidebar-toggle {
-  transform: rotate(0deg);
-}
-
-/* Sidebar Brand */
-.sidebar-brand {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  justify-content: flex-start;
-  font-size: 20px;
-  font-weight: 700;
-  color: #1a1a2e;
-  padding: 0 12px 20px;
-  margin-top: 12px;
-}
-
-.sidebar.collapsed .sidebar-brand {
-  justify-content: flex-start;
-  font-size: 18px; /* smaller brand font when collapsed */
-  padding: 0 0 20px;
-}
-
-.brand-icon {
-  font-size: 24px;
-}
-
-.brand-text {
-  font-size: 18px;
-  font-weight: 800;
-  color: #0f172a;
-  text-align: left;
-  margin-left: 0;
-}
-
-.sidebar.collapsed .brand-text {
-  display: inline; /* always visible */
-  font-size: 16px;
-}
-
-/* Sidebar Nav Main */
-.sidebar-nav-main {
-  flex: 1;
+  top: 64px;
+  left: 0;
+  width: 256px;
+  height: calc(100vh - 64px);
+  background: #ffffff;
+  border-right: 1px solid #e5e7eb;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  z-index: 50;
 }
 
+/* ===============================
+   NAV ITEM
+================================ */
 .nav-item {
   display: flex;
   align-items: center;
-  gap: 12px;
-  width: 100%;
-  padding: 12px;
+  gap: 26px;
+  height: 52px;
+  padding: 0 18px;
+  border-radius: 14px;
+  font-size: 15px;
+  font-weight: 500;
+  color: #475569;
   background: transparent;
   border: none;
-  border-radius: 10px;
   cursor: pointer;
-  text-align: left;
-  transition: all 0.2s;
+  transition: all 0.2s ease;
 }
 
 .nav-item:hover {
-  background: #f3f4f6;
+  background: #f1f5f9;
+  color: #0f172a;
 }
 
 .nav-item.active {
-  background: linear-gradient(135deg, #667eea15, #764ba215);
-  border-left: 3px solid #667eea;
-}
-
-.nav-icon {
-  font-size: 20px;
-  width: 24px;
-  text-align: center;
-}
-
-.nav-info {
-  display: flex;
-  flex-direction: column;
-}
-
-.nav-label {
-  font-size: 14px;
-  font-weight: 500;
-  color: #1f2937;
-}
-
-.sidebar.collapsed .nav-item {
-  justify-content: flex-start; /* keep icon + label visible */
-  padding: 12px 8px;
-}
-
-.sidebar.collapsed .nav-label {
-  opacity: 1; /* fully visible */
-  position: relative; /* inside sidebar */
-  left: 0;
-  white-space: nowrap; /* no wrapping */
-  overflow: hidden;
-  text-overflow: ellipsis;
-  font-size: 13px;
-}
-
-/* Sidebar Footer (social + logout) */
-.sidebar-footer {
-  margin-top: auto;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  padding-top: 12px;
-  align-items: center;
-  padding-bottom: 28px;
-}
-
-.social-media-section {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  align-items: center;
-  text-align: center;
-}
-
-.social-title {
-  font-size: 13px;
-  color: #6b7280;
-  margin: 0 0 6px 0;
+  background: #eef5ff;
+  color: #2563eb;
   font-weight: 600;
 }
 
-.social-links {
-  display: flex;
-  gap: 8px;
+.nav-item.collapsed {
   justify-content: center;
+  padding: 0;
 }
 
-.social-icon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 34px;
-  height: 34px;
-  border-radius: 8px;
-  color: #111827;
-  text-decoration: none;
-  font-weight: 700;
+.nav-item svg {
+  width: 24px;
+  height: 24px;
+}
+
+.nav-label {
+  white-space: nowrap;
+}
+
+/* ===============================
+   TOOLTIP
+================================ */
+.tooltip {
+  position: absolute;
+  left: 90px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: #0f172a;
+  color: white;
   font-size: 13px;
-  background: transparent;
-  transition: transform 0.12s ease, opacity 0.12s ease, color 0.12s ease;
+  padding: 6px 10px;
+  border-radius: 6px;
+  white-space: nowrap;
+  z-index: 100;
 }
 
-.social-icon:hover { 
-  transform: translateY(-2px); 
-  opacity: 0.95; 
+/* ===============================
+   SIDEBAR FOOTER
+================================ */
+.sidebar-footer {
+  padding: 12px;
+  border-top: 1px solid #e5e7eb;
+  margin-top: auto;
 }
 
-.social-icon.linkedin:hover { color: #0A66C2; }
-.social-icon.instagram:hover { color: #E1306C; }
-.social-icon.youtube:hover { color: #FF0000; }
-
-/* Logout Button */
-.logout-btn {
-  background: transparent;
-  border: none;
-  color: #ef4444;
-  font-size: 15px;
-  font-weight: 700;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  padding: 8px 12px;
-  transition: all 0.12s ease;
+.nav-item.logout {
+  color: #dc2626;
 }
 
-.logout-btn:hover {
-  opacity: 0.8;
-  transform: translateY(-1px);
+.nav-item.logout:hover {
+  background: #fee2e2;
 }
 
-.sidebar.collapsed .logout-btn {
-  flex-direction: column;
-  padding: 12px 8px;
-  font-size: 16px;
-  gap: 4px;
+.nav-item-wrapper + .nav-item-wrapper {
+  margin-top: 28px; /* adjust as needed */
 }
 
-.sidebar.collapsed .logout-btn .logout-text {
-  display: inline; /* always show text */
-  font-size: 14px;
-}
-
-
-/* Media Queries */
-@media (max-width: 768px) {
-  .sidebar {
-    position: fixed;
-    left: -260px;
-    transition: left 0.3s;
-  }
-  .sidebar.open {
-    left: 0;
-  }
-}
-
-
-/* ===== MAIN CONTENT FIX ===== */
-
-.user-page {
+/* ===============================
+   TOGGLE BUTTON
+================================ */
+.nav-item.toggle {
   display: flex;
+  justify-content: flex-start;      /* same as nav items */
+  align-items: center;              /* vertically center */
+  height: 52px;                     /* same as nav-item */
+  width: 100%;                      /* full width like nav items */
+  cursor: pointer;
+  background: transparent;
+  padding-left: 18px;               /* same left padding as nav items */
+  padding-right: 18px;
+  gap: 10px;                        /* optional spacing if needed */
 }
 
-/* Default main content */
-.main-content {
-  margin-left: 220px; /* same as sidebar width */
-  padding: 24px;
-  width: calc(100% - 280px);
-  min-height: 100vh;
-  transition: margin-left 0.3s ease, width 0.3s ease;
+/* Three lines container */
+.nav-item.toggle .lines {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px;                        /* spacing between lines */
 }
 
-/* When sidebar collapsed */
-.sidebar.collapsed ~ .main-content {
-  margin-left: 80px;
-  width: calc(100% - 80px);
+.nav-item.toggle .line {
+  display: block;
+  width: 20px;                     /* same as icon width */
+  height: 2px;                      /* thickness */
+  background-color: #475569;        /* match icon color */
+  border-radius: 1px;
+  transition: all 0.3s ease;
 }

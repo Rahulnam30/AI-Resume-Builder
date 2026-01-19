@@ -9,8 +9,8 @@ const SkillsForm = ({ formData, setFormData }) => {
       setFormData(prev => ({
         ...prev,
         skills: {
-          ...prev.skills,
-          [skillType]: [...prev.skills[skillType], newSkill.trim()]
+          ...(prev?.skills ?? { technical: [], soft: [] }),
+          [skillType]: [...(prev?.skills?.[skillType] ?? []), newSkill.trim()]
         }
       }));
       setNewSkill('');
@@ -21,19 +21,19 @@ const SkillsForm = ({ formData, setFormData }) => {
     setFormData(prev => ({
       ...prev,
       skills: {
-        ...prev.skills,
-        [type]: prev.skills[type].filter((_, i) => i !== index)
+        ...(prev?.skills ?? { technical: [], soft: [] }),
+        [type]: (prev?.skills?.[type] ?? []).filter((_, i) => i !== index)
       }
     }));
   };
 
   const addSuggestedSkill = (skill) => {
-    if (!formData.skills[skillType].includes(skill)) {
+    if (!((formData?.skills?.[skillType] ?? []).includes(skill))) {
       setFormData(prev => ({
         ...prev,
         skills: {
-          ...prev.skills,
-          [skillType]: [...prev.skills[skillType], skill]
+          ...(prev?.skills ?? { technical: [], soft: [] }),
+          [skillType]: [...(prev?.skills?.[skillType] ?? []), skill]
         }
       }));
     }
@@ -75,7 +75,7 @@ const SkillsForm = ({ formData, setFormData }) => {
         <button onClick={addSkill}>Add</button>
       </div>
       <div className="skills-list">
-        {formData.skills[skillType].map((skill, idx) => (
+        {(formData?.skills?.[skillType] ?? []).map((skill, idx) => (
           <span key={idx} className="skill-tag">
             {skill}
             <button onClick={() => removeSkill(skillType, idx)}>×</button>

@@ -1,9 +1,12 @@
+/* Wrapper */
 .myresumes-wrapper {
   background: #f8fafc;
   min-height: 100vh;
   padding: 24px 32px;
   font-family: Inter, system-ui, sans-serif;
   color: #0f172a;
+  width: 100%;
+  max-width: 100%;
 }
 
 /* Topbar */
@@ -12,6 +15,7 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 24px;
+  width: 100%;
 }
 
 .topbar-right {
@@ -25,7 +29,8 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  width: 420px;
+  width: 100%;
+  max-width: 520px;
   padding: 10px 14px;
   border: 1px solid #e2e8f0;
   border-radius: 8px;
@@ -55,7 +60,7 @@
   stroke-linejoin: round;
 }
 
-/* Bell Button */
+/* Icon Button */
 .icon-btn {
   border: 1px solid #e2e8f0;
   background: #fff;
@@ -82,6 +87,20 @@
   border-radius: 50%;
 }
 
+/* Avatar fallback */
+.profile-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #4f46e5;
+  color: white;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+}
+
 /* Breadcrumb */
 .breadcrumb {
   font-size: 14px;
@@ -94,12 +113,13 @@
   font-weight: 500;
 }
 
-/* Header */
+/* Page Header */
 .page-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 20px;
+  width: 100%;
 }
 
 .page-header h1 {
@@ -119,6 +139,7 @@
   padding: 12px 18px;
   border-radius: 8px;
   font-weight: 500;
+  cursor: pointer;
 }
 
 /* Card */
@@ -127,21 +148,24 @@
   border-radius: 12px;
   padding: 20px;
   box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+  width: 100%;
 }
 
 /* Filters */
 .filter-row {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 16px;
   gap: 12px;
+  margin-bottom: 16px;
+  width: 100%;
 }
 
 .filter-input {
   display: flex;
   align-items: center;
   gap: 8px;
-  width: 77%;
+  flex: 1;
+  min-width: 0;
   border: 1px solid #e2e8f0;
   padding: 10px 12px;
   border-radius: 8px;
@@ -153,24 +177,56 @@
   width: 100%;
 }
 
-/* Table */
-.resume-table {
+/* All Formats button */
+.format-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 14px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  background-color: #fff;
+  font-size: 14px;
+  font-weight: 500;
+  color: #0f172a;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.format-btn svg {
+  stroke: #64748b;
+  stroke-width: 2;
+  width: 16px;
+  height: 16px;
+}
+
+.format-btn:hover {
+  background-color: #f1f5f9;
+  border-color: #cbd5e1;
+}
+
+.card {
   width: 100%;
+  max-width: 100%;
+}
+
+.resume-table {
+  width: calc(100% + 24px);
+  margin-left: -12px;
+  margin-right: -12px;
   border-collapse: collapse;
 }
 
-.resume-table thead th {
-  font-size: 13px;
-  color: #64748b;
-  text-align: left;
-  padding-bottom: 12px;
+.resume-table thead th,
+.resume-table tbody td {
+  padding: 14px 20px;
+  font-size: 14px;
 }
 
 .resume-table tbody td {
-  padding: 14px 0;
   border-top: 1px solid #e2e8f0;
-  font-size: 14px;
 }
+
 
 /* Scores */
 .score.green { color: #22c55e; font-weight: 600; }
@@ -181,50 +237,15 @@
 .actions {
   display: flex;
   gap: 12px;
-  font-size: 16px;
 }
 
-/* Bottom */
-.table-bottom {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 16px;
-  font-size: 13px;
-  color: #64748b;
-}
-
-.pagination button {
-  border: 1px solid #e2e8f0;
-  background: #fff;
-  padding: 6px 10px;
-  border-radius: 6px;
-}
-
-.pagination .active {
-  background: #0f172a;
-  color: #fff;
-}
-
-/* Footer */
-.footer {
-  margin-top: 32px;
-  text-align: center;
-  font-size: 13px;
-  color: #64748b;
-}
-
-
-.actions {
-  display: flex;
-  gap: 12px;
-}
-
+/* Action Buttons */
 .action-btn {
   background: none;
   border: none;
   padding: 6px;
   cursor: pointer;
-  color: #4b5563; /* gray */
+  color: #4b5563;
   transition: color 0.2s ease;
   display: flex;
   align-items: center;
@@ -233,7 +254,7 @@
 }
 
 .action-btn:hover {
-  color: #2563eb; /* blue */
+  color: #2563eb;
   background-color: #e0e7ff;
 }
 
@@ -243,7 +264,7 @@
   stroke-width: 2.2;
 }
 
-
+/* Dropdown */
 .dropdown-wrapper {
   position: relative;
   display: inline-block;
@@ -286,47 +307,39 @@
   color: #d9534f;
 }
 
-/* All Formats button */
-.format-btn {
+/* Table Bottom */
+.table-bottom {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px; /* space between text and icon */
-  padding: 10px 14px;
+  justify-content: space-between;
+  margin-top: 16px;
+  font-size: 13px;
+  color: #64748b;
+}
+
+.pagination button {
   border: 1px solid #e2e8f0;
-  border-radius: 8px;
-  background-color: #fff;
-  font-size: 14px;
-  font-weight: 500;
-  color: #0f172a;
+  background: #fff;
+  padding: 6px 10px;
+  border-radius: 6px;
   cursor: pointer;
-  transition: all 0.2s ease;
-  margin-left: 40px; /* shift slightly to the left */
 }
 
-
-.format-btn svg {
-  stroke: #64748b;
-  stroke-width: 2;
-  width: 16px;
-  height: 16px;
+.pagination .active {
+  background: #0f172a;
+  color: #fff;
 }
 
-.format-btn:hover {
-  background-color: #f1f5f9;
-  border-color: #cbd5e1;
+/* Footer */
+.footer {
+  margin-top: 32px;
+  text-align: center;
+  font-size: 13px;
+  color: #64748b;
 }
 
-.profile-avatar {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  background: #4f46e5; /* professional indigo */
-  color: white;
-  font-weight: 600;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 14px;
+/* Large Screens Enhancement */
+@media (min-width: 1400px) {
+  .myresumes-wrapper {
+    padding: 32px 64px;
+  }
 }
-

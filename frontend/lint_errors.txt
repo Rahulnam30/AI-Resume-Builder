@@ -1,0 +1,239 @@
+
+> frontend@0.0.0 lint
+> eslint .
+
+
+C:\Users\juney\OneDrive\Desktop\Internship\AI-Resume-Builder\frontend\src\components\Footer.jsx
+  10:3  error  'faTwitter' is defined but never used. Allowed unused vars must match /^[A-Z_]/u        no-unused-vars
+  12:3  error  'faWhatsapp' is defined but never used. Allowed unused vars must match /^[A-Z_]/u       no-unused-vars
+  13:3  error  'faDiscord' is defined but never used. Allowed unused vars must match /^[A-Z_]/u        no-unused-vars
+  14:3  error  'faTelegramPlane' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+C:\Users\juney\OneDrive\Desktop\Internship\AI-Resume-Builder\frontend\src\components\admin\AdminAcceptUserTemplate\AdminAcceptUser.jsx
+  12:5  error  Error: Cannot access variable before it is declared
+
+`fetchPendingTemplates` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+  10 |
+  11 |   useEffect(() => {
+> 12 |     fetchPendingTemplates();
+     |     ^^^^^^^^^^^^^^^^^^^^^ `fetchPendingTemplates` accessed before it is declared
+  13 |   }, []);
+  14 |
+  15 |   const fetchPendingTemplates = async () => {
+
+  13 |   }, []);
+  14 |
+> 15 |   const fetchPendingTemplates = async () => {
+     |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 16 |     try {
+     | ^^^^^^^^^
+> 17 |       const response = await axios.get("http://localhost:5000/api/template?status=pending");
+     …
+     | ^^^^^^^^^
+> 26 |     }
+     | ^^^^^^^^^
+> 27 |   };
+     | ^^^^^ `fetchPendingTemplates` is declared here
+  28 |
+  29 |   const handleAction = async (id, action) => {
+  30 |     try {  react-hooks/immutability
+
+C:\Users\juney\OneDrive\Desktop\Internship\AI-Resume-Builder\frontend\src\components\admin\AdminCreateTemplates\Template.jsx
+  116:15  error  'res' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+C:\Users\juney\OneDrive\Desktop\Internship\AI-Resume-Builder\frontend\src\components\admin\AdminDashboard\AdminDashboard.jsx
+  95:5  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+  93 |
+  94 |   useEffect(() => {
+> 95 |     fetchTotalUser();
+     |     ^^^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  96 |   }, []);
+  97 |
+  98 |   return (  react-hooks/set-state-in-effect
+
+C:\Users\juney\OneDrive\Desktop\Internship\AI-Resume-Builder\frontend\src\components\admin\AdminNavBar\AdminNavBar.jsx
+  5:10  error  'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u             no-unused-vars
+  8:9   error  'navigate' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+C:\Users\juney\OneDrive\Desktop\Internship\AI-Resume-Builder\frontend\src\components\admin\AdminSidebar\AdminSidebar.jsx
+  16:10  error  'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+C:\Users\juney\OneDrive\Desktop\Internship\AI-Resume-Builder\frontend\src\components\admin\AdminSubscription\AdminSubscription.jsx
+  42:5  error  Error: Cannot access variable before it is declared
+
+`fetchPaidUsers` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+  40 |
+  41 |   useEffect(() => {
+> 42 |     fetchPaidUsers();
+     |     ^^^^^^^^^^^^^^ `fetchPaidUsers` accessed before it is declared
+  43 |   }, []);
+  44 |
+  45 |   const fetchPaidUsers = async () => {
+
+  43 |   }, []);
+  44 |
+> 45 |   const fetchPaidUsers = async () => {
+     |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 46 |     try {
+     | ^^^^^^^^^
+> 47 |       const response = await axiosInstance.get("/api/user");
+     …
+     | ^^^^^^^^^
+> 55 |     }
+     | ^^^^^^^^^
+> 56 |   };
+     | ^^^^^ `fetchPaidUsers` is declared here
+  57 |
+  58 |   const togglePlan = (id) => {
+  59 |     setPlans((prev) =>  react-hooks/immutability
+
+C:\Users\juney\OneDrive\Desktop\Internship\AI-Resume-Builder\frontend\src\components\admin\AdminUser\AdminUsers.jsx
+  13:10  error  'isEditModalOpen' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    no-unused-vars
+  27:5   error  Error: Cannot access variable before it is declared
+
+`fetchUsers` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+  25 |
+  26 |   useEffect(() => {
+> 27 |     fetchUsers();
+     |     ^^^^^^^^^^ `fetchUsers` accessed before it is declared
+  28 |   }, []);
+  29 |
+  30 |   const fetchUsers = async () => {
+
+  28 |   }, []);
+  29 |
+> 30 |   const fetchUsers = async () => {
+     |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 31 |     try {
+     | ^^^^^^^^^
+> 32 |       const response = await axiosInstance.get("/api/user");
+     …
+     | ^^^^^^^^^
+> 40 |     }
+     | ^^^^^^^^^
+> 41 |   };
+     | ^^^^^ `fetchUsers` is declared here
+  42 |
+  43 |   /* ================= HANDLERS ================= */
+  44 |  react-hooks/immutability
+  45:9   error  'handleEditClick' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    no-unused-vars
+  53:16  error  'e' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      no-unused-vars
+  68:9   error  'handleEditChange' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   no-unused-vars
+  76:9   error  'handleRoleChange' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   no-unused-vars
+  83:9   error  'handleUpdateUser' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   no-unused-vars
+
+C:\Users\juney\OneDrive\Desktop\Internship\AI-Resume-Builder\frontend\src\components\admin\resume.jsx
+  9:5  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+   7 |   useEffect(() => {
+   8 |     const stored = JSON.parse(localStorage.getItem("resumeTemplates")) || [];
+>  9 |     setTemplates(stored);
+     |     ^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  10 |   }, []);
+  11 |
+  12 |   const handleDelete = (id) => {  react-hooks/set-state-in-effect
+
+C:\Users\juney\OneDrive\Desktop\Internship\AI-Resume-Builder\frontend\src\components\user\MyResumes\MyResumes.jsx
+  5:37  error  'user' is defined but never used                                                             no-unused-vars
+  8:9   error  'getInitials' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+C:\Users\juney\OneDrive\Desktop\Internship\AI-Resume-Builder\frontend\src\components\user\ResumeBuilder\ResumeBuilder.jsx
+  23:26  error  'setActivePage' is assigned a value but never used  no-unused-vars
+
+C:\Users\juney\OneDrive\Desktop\Internship\AI-Resume-Builder\frontend\src\components\user\Sidebar\UserSidebar.jsx
+  3:10  error  'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+C:\Users\juney\OneDrive\Desktop\Internship\AI-Resume-Builder\frontend\src\pages\Careerpage.jsx
+  110:9  error  'team' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+C:\Users\juney\OneDrive\Desktop\Internship\AI-Resume-Builder\frontend\src\pages\HelpCenter.jsx
+  1198:22  error  Error: Cannot create components during render
+
+Components created during render will reset their state each time they are created. Declare components outside of render.
+
+  1196 |                         </button>
+  1197 |                     </div>
+> 1198 |                     <GuideContent guide={selectedGuide} />
+       |                      ^^^^^^^^^^^^ This component is created during render
+  1199 |                 </div>
+  1200 |             )}
+  1201 |
+
+   24 |
+   25 |     // Guide Content Component
+>  26 |     const GuideContent = ({ guide }) => {
+      |                          ^^^^^^^^^^^^^^^^
+>  27 |         const guideContentMap = {
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+>  28 |             'create-first-resume': (
+      …
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 897 |         );
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 898 |     };
+      | ^^^^^^ The component is created during render here
+  899 |
+  900 |     const CollectionView = ({ collection }) => (
+  901 |         <div className="space-y-6">                   react-hooks/static-components
+  1217:22  error  Error: Cannot create components during render
+
+Components created during render will reset their state each time they are created. Declare components outside of render.
+
+  1215 |                         </button>
+  1216 |                     </div>
+> 1217 |                     <CollectionView collection={selectedCollection} />
+       |                      ^^^^^^^^^^^^^^ This component is created during render
+  1218 |                 </div>
+  1219 |             )}
+  1220 |
+
+  898 |     };
+  899 |
+> 900 |     const CollectionView = ({ collection }) => (
+      |                            ^^^^^^^^^^^^^^^^^^^^^
+> 901 |         <div className="space-y-6">
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 902 |             <div className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
+      …
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 937 |         </div>
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 938 |     );
+      | ^^^^^^ The component is created during render here
+  939 |
+  940 |     const collections = [
+  941 |         {  react-hooks/static-components
+
+C:\Users\juney\OneDrive\Desktop\Internship\AI-Resume-Builder\frontend\src\pages\Home.jsx
+  38:10  error  'direction' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u     no-unused-vars
+  38:21  error  'setDirection' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+C:\Users\juney\OneDrive\Desktop\Internship\AI-Resume-Builder\frontend\src\pages\Pricing.jsx
+  6:20  error  React Hook "useNavigate" is called in function "pricing" that is neither a React function component nor a custom React Hook function. React component names must start with an uppercase letter. React Hook names must start with the word "use"  react-hooks/rules-of-hooks
+
+C:\Users\juney\OneDrive\Desktop\Internship\AI-Resume-Builder\frontend\src\pages\Privacypolicy.jsx
+  4:21  error  'useState' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+C:\Users\juney\OneDrive\Desktop\Internship\AI-Resume-Builder\frontend\src\pages\ResumeChecker.jsx
+  31:10  error  'isUploading' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u   no-unused-vars
+  49:9   error  'removeFile' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u    no-unused-vars
+  54:9   error  'handleUpload' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+✖ 33 problems (33 errors, 0 warnings)
+
