@@ -27,22 +27,21 @@ const EducationForm = ({ formData, setFormData }) => {
 
   return (
     <div className="form-section">
-      <h3 className="form-section-title">Education</h3>
       {(formData?.education ?? []).map((edu, index) => (
         <div key={edu.id} className="entry-card">
           <div className="entry-header">
             <span>Education {index + 1}</span>
             {formData.education.length > 1 && (
               <button 
-                className="remove-entry-btn" 
+                className="remove-entry-btn ml-2" 
                 onClick={() => removeEducation(edu.id)}
               >
                 <Trash2 size={14} />
               </button>
             )}
           </div>
-          <div className="form-grid">
-            <div className="form-group">
+          <div className="p-0.5">
+            <div className="form-group mt-2">
               <label>Degree *</label>
               <input
                 type="text"
@@ -69,6 +68,18 @@ const EducationForm = ({ formData, setFormData }) => {
               />
             </div>
             <div className="form-group">
+              <label>Start Date</label>
+              <input
+                type="month"
+                value={edu.startDate || ''}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  const updated = (formData?.education ?? []).map(item => item.id === edu.id ? { ...item, startDate: val } : item);
+                  setFormData(prev => ({ ...prev, education: updated }));
+                }}
+              />
+            </div>
+            <div className="form-group">
               <label>Graduation Date</label>
               <input
                 type="month"
@@ -84,7 +95,7 @@ const EducationForm = ({ formData, setFormData }) => {
               <label>GPA (Optional)</label>
               <input
                 type="text"
-                placeholder="3.8/4.0"
+                placeholder="7.8/10.0"
                 value={edu.gpa || ''}
                 onChange={(e) => {
                   const val = e.target.value;
