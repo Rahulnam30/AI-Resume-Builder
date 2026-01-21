@@ -6,6 +6,30 @@
 @tailwind components;
 @tailwind utilities;
 
+@font-face {
+  font-family: 'Outfit';
+  src: url('/src/assets/fonts/Outfit/static/Outfit-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Outfit';
+  src: url('/src/assets/fonts/Outfit/static/Outfit-Medium.ttf') format('truetype');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Outfit';
+  src: url('/src/assets/fonts/Outfit/static/Outfit-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
 * {
   margin: 0;
   padding: 0;

@@ -2,15 +2,18 @@ import { LuEye } from "react-icons/lu";
 
 const RecentResumes = ({ resumes = [], onViewAll }) => {
   return (
-    <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-5">
-      {/* Title */}
-      <h3 className="flex items-center gap-2 text-lg font-semibold text-gray-800 mb-4">
-        <LuEye className="text-gray-600 text-xl" />
-        <span>Recent Resumes</span>
-      </h3>
+    <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-5 flex flex-col relative">
+      
+      {/* Header - Now only contains the title */}
+      <div className="recent-header">
+        <h3 className="recent-title">
+          <LuEye className="recent-icon" />
+          Recent Resumes
+        </h3>
+      </div>
 
       {/* List */}
-      <div className="space-y-3">
+      <div className="space-y-3 flex-grow">
         {resumes.length > 0 ? (
           resumes.map((resume) => (
             <div
@@ -26,13 +29,17 @@ const RecentResumes = ({ resumes = [], onViewAll }) => {
                   <span className="font-medium text-gray-800">
                     {resume.name}
                   </span>
-                  <span className="text-xs text-gray-500">{resume.date}</span>
+                  <span className="text-xs text-gray-500">
+                    {new Date(resume.date).toLocaleDateString()}
+                  </span>
                 </div>
               </div>
 
-              <span className="text-xs font-semibold px-2 py-1 rounded-full bg-green-100 text-green-700">
-                ATS: {resume.atsScore}%
-              </span>
+              {resume.atsScore !== undefined && (
+                <span className="text-xs font-semibold px-2 py-1 rounded-full bg-green-100 text-green-700">
+                  ATS: {resume.atsScore}%
+                </span>
+              )}
             </div>
           ))
         ) : (
@@ -42,13 +49,16 @@ const RecentResumes = ({ resumes = [], onViewAll }) => {
         )}
       </div>
 
-      {/* View All */}
-      <button
-        onClick={onViewAll}
-        className="mt-4 text-sm font-medium text-blue-600 hover:text-blue-700"
-      >
-        View All →
-      </button>
+      {/* View All Button - Moved to the Bottom Right */}
+      <div className="recent-footer">
+        <button
+          onClick={onViewAll}
+          className="view-all-btn"
+        >
+          View All →
+        </button>
+      </div>
+
     </div>
   );
 };

@@ -29,6 +29,7 @@ import {
   LogIn,
   ChevronLeft,
   ChevronRight,
+  Activity,
 } from "lucide-react";
 
 function LandingPage() {
@@ -170,7 +171,7 @@ function LandingPage() {
     return () => clearInterval(scrollInterval);
   }, []);
 
-  // Scroll to the free templates section when URL hash is present 
+  // Scroll to the free templates section when URL hash is present
   const location = useLocation();
   useEffect(() => {
     if (location.hash === "#free-templates") {
@@ -215,57 +216,57 @@ function LandingPage() {
   const features = [
     {
       icon: <FileSearch className="text-blue-600 size-6" />,
-      title: "Resume Checker",
+      title: "ATS Score Checker",
       description:
-        "Analyze and optimize your resume for success with our advanced scanning engine.",
+        "Analyze your resume against specific job descriptions to ensure you pass through Applicant Tracking Systems.",
+      path: "/ats-checker",
     },
     {
       icon: <Layout className="text-green-600 size-6" />,
-      title: "Resume Templates",
+      title: "Categorized Templates",
       description:
-        "Choose from professional, ATS-friendly designs built to land interviews.",
-    },
-    {
-      icon: <BarChart3 className="text-purple-600 size-6" />,
-      title: "Resume Analysis",
-      description:
-        "Get actionable feedback and scoring to improve your resume content.",
-    },
-    {
-      icon: <Edit3 className="text-orange-600 size-6" />,
-      title: "Resume Editor",
-      description:
-        "Edit and enhance your resume with smart tools and real-time formatting.",
-    },
-    {
-      icon: <Palette className="text-pink-600 size-6" />,
-      title: "Customize Your Resume",
-      description:
-        "Personalize your layout, fonts, and branding to stand out from the crowd.",
+        "Access a curated library of Modern, Creative, and Professional templates tailored for every industry.",
+      path: "/TemplatesFeature",
     },
     {
       icon: <Zap className="text-yellow-600 size-6" />,
-      title: "Summary Generator",
+      title: "Guided AI Builder",
       description:
-        "Create a strong, impactful resume summary in seconds using AI.",
+        "Create a fresh resume with a step-by-step guided experience and AI-powered content suggestions.",
+      path: "/AI-builder",
     },
     {
-      icon: <PenTool className="text-indigo-600 size-6" />,
-      title: "AI Bulletpoint Writer",
+      icon: <Edit3 className="text-orange-600 size-6" />,
+      title: "AI Content Enhancement",
       description:
-        "Generate tailored, achievement-oriented bullet points effortlessly.",
+        "Upload existing PDF or Word docs to transform weak bullet points into high-impact, achievement-oriented text.",
+      path: "/content-enhance",
     },
     {
-      icon: <Mail className="text-red-600 size-6" />,
-      title: "Cover Letter Writer",
+      icon: <BarChart3 className="text-purple-600 size-6" />,
+      title: "Live Quality Scoring",
       description:
-        "Quickly craft tailored cover letters that match your resume perfectly.",
+        "Get a real-time AI score out of 100 as you edit, helping you reach that 90%+ 'Interview-Ready' threshold.",
+      path: "/score-checker",
+    },
+    {
+      icon: <Layers className="text-indigo-600 size-6" />,
+      title: "Resume Manager",
+      description:
+        "Organize multiple versions of your resumes for different roles and track your total download history.",
+      path: "/resume-hub",
+    },
+    {
+      icon: <Activity className="text-cyan-500 size-6" />,
+      title: "Strategic Growth Insights",
+      description:
+        "Monitor average ATS performance and track document engagement with actionable AI-driven career data.",
+      path: "/growths",
     },
   ];
 
   return (
     <div className="min-h-screen flex flex-col bg-white text-[#1a2e52] font-['Outfit']">
-     
       {/* NAVIGATION */}
 
       <nav className="fixed top-0 w-full z-50 py-4 border-b border-gray-100 bg-white/95 backdrop-blur-md select-none">
@@ -281,9 +282,10 @@ function LandingPage() {
             />
           </div>
 
-          <div className={`absolute left-1/2 transform -translate-x-1/2 ${mobileMenuOpen ? "hidden" : ""}`}>
+          <div
+            className={`absolute left-1/2 transform -translate-x-1/2 ${mobileMenuOpen ? "hidden" : ""}`}
+          >
             <ul className="flex items-center gap-8 hidden md:flex">
-              
               <li className="cursor-pointer hover:text-orange-600">
                 <Link to="/about">About us</Link>
               </li>
@@ -292,43 +294,57 @@ function LandingPage() {
                 <Link to="/#free-templates">Templates</Link>
               </li>
 
-              
               {/* Features Dropdown */}
               <li className="relative group cursor-pointer hover:text-orange-600">
                 <div className="flex items-center gap-1">
                   <span>Features</span>
                   <i className="fas fa-chevron-down text-xs transition-transform duration-300 group-hover:rotate-180"></i>
                 </div>
-                
-              {/* Features Dropdown Menu */}
+
+                {/* Features Dropdown Menu */}
                 <div className="absolute top-full left-0 mt-2 w-56 bg-white border border-gray-200 rounded-xl shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform translate-y-2 group-hover:translate-y-0 z-50">
                   <ul className="py-2">
                     <li className="px-4 py-3 hover:bg-blue-50 hover:text-blue-600 transition-colors duration-200">
-                      <Link to="/resume-checker" className="flex items-center gap-3 text-black">
+                      <Link
+                        to="/resume-checker"
+                        className="flex items-center gap-3 text-black"
+                      >
                         <i className="fas fa-clipboard-check text-blue-600"></i>
                         <span>AI Resume Checker</span>
                       </Link>
                     </li>
                     <li className="px-4 py-3 hover:bg-green-50 hover:text-green-600 transition-colors duration-200">
-                      <Link to={`${isLoggedIn ? "/user/resume-builder" : "/login"}`} className="flex items-center gap-3 text-black">
+                      <Link
+                        to={`${isLoggedIn ? "/user/resume-builder" : "/login"}`}
+                        className="flex items-center gap-3 text-black"
+                      >
                         <i className="fas fa-file-alt text-green-600"></i>
                         <span>AI Resume Builder</span>
                       </Link>
                     </li>
                     <li className="px-4 py-3 hover:bg-purple-50 hover:text-purple-600 transition-colors duration-200">
-                      <Link to="/" className="flex items-center gap-3 text-black">
+                      <Link
+                        to="/"
+                        className="flex items-center gap-3 text-black"
+                      >
                         <i className="fas fa-check-circle text-purple-600"></i>
                         <span>ATS Optimization</span>
                       </Link>
                     </li>
                     <li className="px-4 py-3 hover:bg-teal-50 hover:text-teal-600 transition-colors duration-200">
-                      <Link to="/" className="flex items-center gap-3 text-black">
+                      <Link
+                        to="/"
+                        className="flex items-center gap-3 text-black"
+                      >
                         <i className="fas fa-envelope text-teal-600"></i>
                         <span>Cover Letter Gen</span>
                       </Link>
                     </li>
                     <li className="px-4 py-3 hover:bg-indigo-50 hover:text-indigo-600 transition-colors duration-200">
-                      <Link to="/" className="flex items-center gap-3 text-black">
+                      <Link
+                        to="/"
+                        className="flex items-center gap-3 text-black"
+                      >
                         <i className="fas fa-magic text-indigo-600"></i>
                         <span>Smart Formatting</span>
                       </Link>
@@ -336,7 +352,6 @@ function LandingPage() {
                   </ul>
                 </div>
               </li>
-
 
               {isLoggedIn && (
                 <li className="cursor-pointer hover:text-orange-600">
@@ -351,7 +366,6 @@ function LandingPage() {
               </li>
             </ul>
           </div>
-
 
           {!isLoggedIn && (
             <div className="items-center hidden gap-6 md:flex">
@@ -707,7 +721,10 @@ function LandingPage() {
 
       {/* FEATURES GRID */}
 
-      <section className="relative px-8 py-24 overflow-hidden bg-white select-none">
+      <section
+        id="features"
+        className="relative px-8 py-24 overflow-hidden bg-white select-none"
+      >
         {/* Soft Background Decorative Blurs - Switched to light pastels */}
         <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-blue-100/50 rounded-full blur-[120px] pointer-events-none" />
         <div className="absolute bottom-0 right-1/4 w-[500px] h-[500px] bg-orange-50/50 rounded-full blur-[120px] pointer-events-none" />
@@ -729,14 +746,12 @@ function LandingPage() {
             {features.map((feature, index) => (
               <div
                 key={index}
+                onClick={() => feature.path && navigate(feature.path)}
                 className="relative p-8 transition-all duration-500 bg-white/40 backdrop-blur-md border border-gray-100 group rounded-3xl
                      hover:bg-white hover:-translate-y-3 hover:border-blue-200 hover:shadow-[0_20px_40px_rgba(0,119,204,0.1)]"
               >
-                {/* Animated Gradient Border (visible on hover) - Light theme colors */}
-                <div className="absolute inset-0 p-[1px] rounded-3xl bg-gradient-to-br from-transparent via-transparent to-transparent group-hover:from-blue-400/30 group-hover:via-orange-300/30 group-hover:to-blue-400/30 -z-10 transition-all duration-500" />
-
                 {/* Icon Section with Glass Effect */}
-                <div className="relative inline-flex items-center justify-center p-4 mb-8 transition-all duration-500 rounded-2xl bg-blue-50 border border-blue-100 group-hover:scale-110 group-hover:bg-[#0077cc] group-hover:shadow-[0_10px_20px_rgba(0,119,204,0.3)] group-hover:-rotate-6">
+                <div className="relative inline-flex items-center justify-center p-4 mb-8 transition-all duration-500 rounded-2xl bg-blue-50 border border-blue-100 group-hover:scale-110 group-hover:bg-[#0077cc] group-hover:shadow-[0_10px_20px_rgba(0,119,204,0.3)] group-hover:rotate-6">
                   <div className="transition-colors duration-500 text-[#0077cc] group-hover:text-white">
                     {/* Fixed the React.cloneElement using the features array from your state */}
                     {React.cloneElement(feature.icon, {
@@ -759,7 +774,7 @@ function LandingPage() {
                   <span className="tracking-wide cursor-pointer">
                     Explore Feature
                   </span>
-                  <div className="p-1 transition-all duration-300 rounded-full bg-blue-100 group-hover:bg-[#e65100] group-hover:text-white">
+                  <div className="p-1 transition-all duration-300 bg-blue-100 rounded-full ">
                     <ArrowRight className="size-3" />
                   </div>
                 </div>

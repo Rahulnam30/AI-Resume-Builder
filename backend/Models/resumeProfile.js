@@ -1,9 +1,13 @@
 import mongoose from "mongoose";
-import User from "./User";
 
 const resumeProfileSchema = new mongoose.Schema(
   {
-    userId: User.id,
+   
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
     title: {
       type: String,
       required: true,

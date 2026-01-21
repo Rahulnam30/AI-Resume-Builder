@@ -1,26 +1,26 @@
-import { Trash2 } from 'lucide-react';
+import { Trash2 } from "lucide-react";
 
 const ProjectsForm = ({ formData, setFormData }) => {
   const addProject = () => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       projects: [
         ...(prev?.projects ?? []),
         {
           id: Date.now(),
-          name: '',
-          description: '',
-          technologies: '',
-          link: ''
-        }
-      ]
+          name: "",
+          description: "",
+          technologies: "",
+          link: "",
+        },
+      ],
     }));
   };
 
   const removeProject = (id) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      projects: (prev?.projects ?? []).filter(p => p.id !== id)
+      projects: (prev?.projects ?? []).filter((p) => p.id !== id),
     }));
   };
 
@@ -32,25 +32,27 @@ const ProjectsForm = ({ formData, setFormData }) => {
           <div className="entry-header">
             <span>Project {index + 1}</span>
             {formData.projects.length > 1 && (
-              <button 
-                className="remove-entry-btn" 
+              <button
+                className="remove-entry-btn ml-2"
                 onClick={() => removeProject(project.id)}
               >
                 <Trash2 size={14} />
               </button>
             )}
           </div>
-          <div className="form-grid">
+          <div className="mt-4">
             <div className="form-group">
               <label>Project Name *</label>
               <input
                 type="text"
                 placeholder="E-commerce Platform"
-                value={project.name || ''}
+                value={project.name || ""}
                 onChange={(e) => {
                   const val = e.target.value;
-                  const updated = (formData?.projects ?? []).map(item => item.id === project.id ? { ...item, name: val } : item);
-                  setFormData(prev => ({ ...prev, projects: updated }));
+                  const updated = (formData?.projects ?? []).map((item) =>
+                    item.id === project.id ? { ...item, name: val } : item,
+                  );
+                  setFormData((prev) => ({ ...prev, projects: updated }));
                 }}
               />
             </div>
@@ -59,11 +61,15 @@ const ProjectsForm = ({ formData, setFormData }) => {
               <input
                 type="text"
                 placeholder="React, Node.js, MongoDB"
-                value={project.technologies || ''}
+                value={project.technologies || ""}
                 onChange={(e) => {
                   const val = e.target.value;
-                  const updated = (formData?.projects ?? []).map(item => item.id === project.id ? { ...item, technologies: val } : item);
-                  setFormData(prev => ({ ...prev, projects: updated }));
+                  const updated = (formData?.projects ?? []).map((item) =>
+                    item.id === project.id
+                      ? { ...item, technologies: val }
+                      : item,
+                  );
+                  setFormData((prev) => ({ ...prev, projects: updated }));
                 }}
               />
             </div>
@@ -73,30 +79,62 @@ const ProjectsForm = ({ formData, setFormData }) => {
             <textarea
               placeholder="Describe the project and your contributions..."
               rows={3}
-              value={project.description || ''}
+              value={project.description || ""}
               onChange={(e) => {
                 const val = e.target.value;
-                const updated = (formData?.projects ?? []).map(item => item.id === project.id ? { ...item, description: val } : item);
-                setFormData(prev => ({ ...prev, projects: updated }));
+                const updated = (formData?.projects ?? []).map((item) =>
+                  item.id === project.id ? { ...item, description: val } : item,
+                );
+                setFormData((prev) => ({ ...prev, projects: updated }));
               }}
             />
           </div>
           <div className="form-group full-width">
-            <label>Project Link (Optional)</label>
+            <label>Github Link (Optional)</label>
             <input
               type="text"
               placeholder="https://github.com/username/project"
-              value={project.link || ''}
+              value={project?.link?.github || ""}
               onChange={(e) => {
                 const val = e.target.value;
-                const updated = (formData?.projects ?? []).map(item => item.id === project.id ? { ...item, link: val } : item);
-                setFormData(prev => ({ ...prev, projects: updated }));
+                const updated = (formData?.projects ?? []).map((item) =>
+                  item.id === project.id
+                    ? { ...item, link: { ...item.link, github: val } }
+                    : item,
+                );
+                setFormData((prev) => ({ ...prev, projects: updated }));
               }}
             />
           </div>
           <div className="form-group full-width">
-            <label>Project Link (Optional)</label>
-            <input type="text" placeholder="https://github.com/username/project" />
+            <label>Live Link (Optional)</label>
+            <input
+              type="text"
+              placeholder="https://www.yourwebsite.com"
+              value={project?.link?.liveLink || ""}
+              onChange={(e) => {
+                const val = e.target.value;
+                const updated = (formData?.projects ?? []).map((item) =>
+                  item.id === project.id ? { ...item, link:  { ...item.link, liveLink: val }  } : item,
+                );
+                setFormData((prev) => ({ ...prev, projects: updated }));
+              }}
+            />
+          </div>
+          <div className="form-group full-width">
+            <label>Other Links (Optional)</label>
+            <input
+              type="text"
+              placeholder="https://www.linkedin.com/feed/update/"
+              value={project?.link?.other || ""}
+              onChange={(e) => {
+                const val = e.target.value;
+                const updated = (formData?.projects ?? []).map((item) =>
+                  item.id === project.id ? { ...item, link:  { ...item.link, other: val }  } : item,
+                );
+                setFormData((prev) => ({ ...prev, projects: updated }));
+              }}
+            />
           </div>
         </div>
       ))}

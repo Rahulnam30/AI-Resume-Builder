@@ -1,6 +1,41 @@
 import Template from "../Models/template.js";
 import fs from "fs";
 import path from "path";
+import mammoth from "mammoth";
+
+export const getTemplateHtml = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const template = await Template.findById(id);
+
+        if (!template) {
+            return res.status(404).json({ msg: "Template not found" });
+        }
+
+        if (!fs.existsSync(template.filePath)) {
+            return res.status(404).json({ msg: "File not found on server" });
+        }
+
+        const options = {
+            styleMap: [
+                "p[style-name='Section Title'] => h2:fresh",
+                "p[style-name='Subsection Title'] => h3:fresh",
+                "table => table.docx-table",
+                "tr => tr.docx-tr",
+                "td => td.docx-td",
+                "p[style-name='List Paragraph'] => li:fresh"
+            ],
+            includeDefaultStyleMap: true
+        };
+
+        const result = await mammoth.convertToHtml({ path: template.filePath }, options);
+        res.status(200).json({ html: result.value });
+
+    } catch (error) {
+        console.error("Error parsing DOCX:", error);
+        res.status(500).json({ msg: "Parsing failed", error: error.message });
+    }
+};
 
 // Upload a new template
 export const uploadTemplate = async (req, res) => {
@@ -63,6 +98,30 @@ export const getTemplates = async (req, res) => {
     }
 };
 
+// Get single template by ID
+export const getTemplateById = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const template = await Template.findById(id);
+
+        if (!template) {
+            return res.status(404).json({ msg: "Template not found" });
+        }
+
+        const fileUrl = `${process.env.BACKEND_URL || 'http://localhost:5000'}/uploads/templates/${path.basename(template.filePath)}`;
+        const imageUrl = `${process.env.BACKEND_URL || 'http://localhost:5000'}/uploads/templates/${path.basename(template.previewimage)}`;
+
+        res.status(200).json({
+            ...template._doc,
+            fileUrl,
+            imageUrl
+        });
+    } catch (error) {
+        console.error("Error fetching template:", error);
+        res.status(500).json({ msg: "Server Error" });
+    }
+};
+
 // Approve a template
 export const approveTemplate = async (req, res) => {
     try {
@@ -76,6 +135,54 @@ export const approveTemplate = async (req, res) => {
         res.status(200).json({ msg: "Template approved", template });
     } catch (error) {
         console.error("Error approving template:", error);
+        res.status(500).json({ msg: "Server Error" });
+    }
+};
+
+// Update a template (File and/or Thumbnail)
+export const updateTemplate = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const template = await Template.findById(id);
+
+        if (!template) {
+            return res.status(404).json({ msg: "Template not found" });
+        }
+
+        // Delete old files if new ones are uploaded
+        if (req.files) {
+            if (req.files.templateFile && req.files.templateFile[0]) {
+                if (fs.existsSync(template.filePath)) {
+                    try { fs.unlinkSync(template.filePath); } catch (e) { console.error("Error deleting old file:", e); }
+                }
+                template.filePath = req.files.templateFile[0].path;
+            }
+
+            if (req.files.thumbnail && req.files.thumbnail[0]) {
+                if (fs.existsSync(template.previewimage)) {
+                    try { fs.unlinkSync(template.previewimage); } catch (e) { console.error("Error deleting old thumbnail:", e); }
+                }
+                template.previewimage = req.files.thumbnail[0].path;
+            }
+        }
+
+        // Update other fields if sent
+        if (req.body.name) template.name = req.body.name;
+        if (req.body.category) template.category = req.body.category;
+
+        // If we switched to HTML, we might want to note that? 
+        // For now, thefilePath extension handles it.
+
+        await template.save();
+
+        // Return updated URLs
+        const fileUrl = `${process.env.BACKEND_URL || 'http://localhost:5000'}/uploads/templates/${path.basename(template.filePath)}`;
+        const imageUrl = `${process.env.BACKEND_URL || 'http://localhost:5000'}/uploads/templates/${path.basename(template.previewimage)}`;
+
+        res.status(200).json({ msg: "Template updated successfully", template: { ...template._doc, fileUrl, imageUrl } });
+
+    } catch (error) {
+        console.error("Error updating template:", error);
         res.status(500).json({ msg: "Server Error" });
     }
 };

@@ -374,11 +374,11 @@ export default function AdminTemplates() {
                 {/* Actions Overlay or Button Row */}
                 <div className="flex gap-2 mt-3 pt-3 border-t border-slate-100">
                   <button
-                    onClick={() => handlePreview(tpl.image)}
+                    onClick={() => window.open(`/admin/resume-editor?id=${tpl._id}`, '_blank')}
                     className="flex-1 py-1.5 flex items-center justify-center gap-1 bg-slate-50 text-slate-600 rounded text-xs hover:bg-slate-100 font-medium transition"
                   >
                     <Eye size={14} />
-                    Preview
+                    Edit / View
                   </button>
                   <button
                     onClick={() => handleDelete(tpl._id)}

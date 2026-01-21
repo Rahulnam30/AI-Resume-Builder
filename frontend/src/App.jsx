@@ -14,12 +14,18 @@ import About from "./pages/About";
 import Pricing from "./pages/Pricing";
 import BlogPage from "./pages/Blogpage";
 import CareersPage from "./pages/Careerpage";
+import ATSCheckerPage from "./pages/ATSChecker";
+import TemplatesFeature from "./pages/TemplatesFeature";
+import AIBuilderPage from "./pages/AIBuilder";
+import AIContentEnhancementPage  from "./pages/AIContentEnhance";
+import ScoreChecker   from "./pages/ScoreChecker";
+import ResumeHubPage from "./pages/ResumeHub";
+import GrowthInsightsPage  from "./pages/GrowthInsights";
+import AICoverLetterPage  from "./pages/CoverLetter";
+import CVFormattingPage from "./pages/CV";
 
 import ScrollToTop from "./components/ScrollToTop";
-
-// PrivacyPolicy route REMOVED because component is not imported
-// If needed later, import it explicitly and add the route back safely
-
+import PrivacyPolicy from "./pages/Privacypolicy";
 import ResumeChecker from "./pages/ResumeChecker";
 import Terms from "./pages/Terms";
 import NotFound from "./pages/NotFound";
@@ -36,9 +42,8 @@ import AdminSubscription from "./components/admin/AdminSubscription/AdminSubscri
 import AdminAcceptUser from "./components/admin/AdminAcceptUserTemplate/AdminAcceptUser";
 import AdminAnalytics from "./components/admin/AdminAnalytics/AdminAnalytics";
 import AdminTemplates from "./components/admin/AdminCreateTemplates/Template";
-
-// ================= USER ROUTES =================
-
+import ResumeEditor from "./components/admin/ResumeEditor/ResumeEditor";
+// User routes
 import UserRoutes from "./pages/UserRoutes";
 
 function App() {
@@ -66,6 +71,16 @@ function App() {
 
           <Route path="/resume-checker" element={<ResumeChecker />} />
           <Route path="/terms" element={<Terms />} />
+          <Route path="/help-center" element={<HelpCenter />} />
+          <Route path="/ats-checker" element={<ATSCheckerPage />} />
+          <Route path="/TemplatesFeature" element={<TemplatesFeature />} />
+          <Route path="/AI-builder" element={<AIBuilderPage />}/>
+          <Route path="/content-enhance" element={<AIContentEnhancementPage />}/>
+          <Route path="/score-checker" element={<ScoreChecker />}/>
+          <Route path="/resume-hub" element={<ResumeHubPage />}/>
+          <Route path="/growths" element={<GrowthInsightsPage />}/>
+          <Route path="/cover-letter" element={<AICoverLetterPage  />}/>
+          <Route path="/cv" element={<CVFormattingPage  />}/>
 
           {/* ================= USER DASHBOARD ROUTES ================= */}
           <Route path="/user/*" element={<UserRoutes />} />
@@ -74,6 +89,7 @@ function App() {
           <Route path="/admin" element={<AdminLayout />}>
             <Route index element={<AdminDashboard />} />
             <Route path="create-templates" element={<AdminTemplates />} />
+            <Route path="resume-editor" element={<ResumeEditor />} />
             <Route path="templates" element={<Resume />} />
             <Route path="users" element={<AdminUsers />} />
             <Route path="subscription" element={<AdminSubscription />} />

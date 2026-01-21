@@ -26,11 +26,10 @@ const CertificationsForm = ({ formData, setFormData }) => {
 
   return (
     <div className="form-section">
-      <h3 className="form-section-title">Certifications</h3>
       {(formData?.certifications ?? []).map((cert, index) => (
-        <div key={cert.id} className="entry-card">
+        <div key={cert.id} className="entry-card mt-5">
           <div className="entry-header">
-            <span>Certification {index + 1}</span>
+            <span className='mr-2'>Certification {index + 1}</span>
             {formData.certifications.length > 1 && (
               <button 
                 className="remove-entry-btn" 
@@ -40,7 +39,7 @@ const CertificationsForm = ({ formData, setFormData }) => {
               </button>
             )}
           </div>
-          <div className="form-grid">
+          <div className="mt-4">
             <div className="form-group">
               <label>Certification Name *</label>
               <input

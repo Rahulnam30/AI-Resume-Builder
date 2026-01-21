@@ -1,186 +1,140 @@
-
-
-.upload-box {
-  background: #fff;
-  border: 2px dashed #d1d5db;
-  border-radius: 12px;
-  padding: 40px;
-  text-align: center;
-  transition: all 0.2s;
+.ats-container {
+  display: flex;
+  gap: 20px;
+  padding: 30px;
+  max-width: 1500px;
+  margin: auto;
 }
 
-.upload-box:hover {
-  border-color: #667eea;
-  background: #f9fafb;
+.upload-panel {
+  width: 200px;
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+}
+
+.upload-area {
+  border: 2px dashed #cbcade;
+  border-radius: 14px;
+  padding: 40px 20px;
+  text-align: center;
+  cursor: pointer;
+  background: linear-gradient(180deg, #4f46e5, #3b82f6);
+  color: white;
+  margin: 20px 0;
 }
 
 .upload-icon {
-  font-size: 48px;
-  margin-bottom: 16px;
+  font-size: 36px;
+  margin-bottom: 10px;
 }
 
-.upload-box h3 {
-  font-size: 18px;
-  color: #1a1a2e;
-  margin: 0 0 8px 0;
-}
 
-.upload-box p {
-  font-size: 14px;
-  color: #6b7280;
-  margin: 0 0 16px 0;
-}
-
-.upload-btn {
-  display: inline-block;
-  padding: 12px 24px;
-  background: #667eea;
-  color: #fff;
-  border-radius: 8px;
-  font-size: 14px;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.upload-btn:hover {
-  background: #5a67d8;
-}
-
-.file-types {
-  display: block;
-  margin-top: 12px;
-  font-size: 12px;
-  color: #9ca3af;
-}
-
-.job-description-box {
-  background: #fff;
-  border: 1px solid #e5e7eb;
-  border-radius: 12px;
+.checker-panel {
+  flex: 1;
+  background: linear-gradient(135deg, #f8f9ff, #eef2ff);
+  border-radius: 16px;
   padding: 24px;
 }
 
-.job-description-box h3 {
-  font-size: 16px;
-  color: #1a1a2e;
-  margin: 0 0 12px 0;
-}
-
-.job-description-box textarea {
-  width: 100%;
-  padding: 12px;
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
-  font-size: 14px;
-  resize: vertical;
-  margin-bottom: 16px;
-  box-sizing: border-box;
-}
-
-.analyze-btn {
-  width: 100%;
-  padding: 14px;
-  background: #1a1a2e;
-  color: #fff;
-  border: none;
-  border-radius: 8px;
-  font-size: 14px;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.analyze-btn:hover {
-  background: #2d2d44;
-}
-
-.ats-tips {
-  background: #fff;
-  border: 1px solid #e5e7eb;
-  border-radius: 12px;
-  padding: 24px;
-}
-
-.ats-tips h3 {
-  font-size: 16px;
-  color: #1a1a2e;
-  margin: 0 0 16px 0;
-}
-
-.ats-tips ul {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.ats-tips li {
-  padding: 10px 0;
-  border-bottom: 1px solid #f3f4f6;
-  font-size: 14px;
-  color: #4b5563;
-  padding-left: 24px;
-  position: relative;
-}
-
-.ats-tips li::before {
-  content: '✓';
-  position: absolute;
-  left: 0;
-  color: #10b981;
-}
-
-.ats-tips li:last-child {
-  border-bottom: none;
-}
-
-@media (max-width: 768px) {
-  .ats-upload-section {
-    grid-template-columns: 1fr;
-  }
-}
-.ats-checker-page {
-  /* No extra padding here — handled by card & content wrapper */
-  background: var(--primary-bg); /* same as MyResumes */
-  min-height: 100vh;
-}
-
-/* Card wrapper */
-.card {
-  background: #fff;
-  border-radius: 12px;
-  padding: 20px;
-  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
-  width: 100%;
-}
-
-/* ATS Upload Section inside the card */
-.ats-upload-section {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 24px;
-  margin-bottom: 24px;
-}
-
-@media (max-width: 768px) {
-  .ats-upload-section {
-    grid-template-columns: 1fr;
-  }
-}
-
-/* Navbar wrapper (same as MyResumes) */
-.user-navbar-wrapper {
-  height: 64px; 
-  margin-top: 16px; 
-  width: 100%;
+.score-section {
   display: flex;
-  align-items: center; 
-  position: relative;
-  z-index: 1000;
+  gap: 20px;
+  margin: 20px 0;
 }
 
-/* Footer same as MyResumes */
-.footer {
-  margin-top: 32px;
+.ats-score-badge,
+.match-score-badge {
+  flex: 1;
+  background: white;
+  border-radius: 14px;
+  padding: 20px;
   text-align: center;
-  font-size: 13px;
-  color: #64748b;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+}
+
+.ats-score-badge span {
+  font-size: 42px;
+  font-weight: bold;
+  color: #16a34a;
+}
+
+.match-score-badge span {
+  font-size: 42px;
+  font-weight: bold;
+  color: #2563eb;
+}
+
+.ats-container{display:flex;gap:20px;padding:20px}.preview-panel{flex:2;background:#f1f5f9;padding:20px;border-radius:12px}.control-panel{flex:1;background:#fff;padding:20px;border-radius:12px}.resume-frame{background:#fff;min-height:400px;padding:16px;border-radius:8px}.pdf-canvas{width:100%;margin-bottom:16px;border-radius:8px}.placeholder-text{text-align:center;color:#64748b}.upload-box button{margin-top:10px;padding:6px 12px}.ats-score{font-size:32px;font-weight:bold;text-align:center;margin-bottom:12px}.score-90{color:#16a34a}.score-70{color:#d97706}.score-50{color:#dc2626}.metric-card{margin-bottom:12px}.metric-title{font-weight:600}.progress{height:6px;background:#e5e7eb;border-radius:4px}.progress-bar{height:100%;background:#3b82f6;border-radius:4px}.error-text{color:#dc2626;margin-top:8px}
+
+.preview-panel {
+  flex: 1;
+  background: white;
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+}
+
+.resume-frame {
+  width: 100%;
+  height: 80vh;
+  border-radius: 12px;
+  border: none;
+}
+
+.placeholder-text {
+  color: #6b7280;
+  text-align: center;
+  margin-top: 60px;
+}
+.placeholder-text h3 {
+  font-size: 24px;
+  margin-bottom: 10px;
+}
+.placeholder-text p {
+  font-size: 16px;       
+}
+.resume-page {
+  aspect-ratio: 1 / 1.4142;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+              0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+mark {
+  background-color: #fde68a;
+  padding: 0 4px;
+  border-radius: 4px;
+}
+.constraint-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 10px;
+}
+.resume-page {
+  aspect-ratio: 1 / 1.4142;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+              0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+mark {
+  background-color: #fde68a;
+  padding: 0 4px;
+  border-radius: 4px;
+}
+.constraint-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 10px;
+}
+.resume-page {
+  aspect-ratio: 1 / 1.4142;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+              0 2px 4px -1px rgba(0, 0, 0, 0.06);
 }

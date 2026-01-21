@@ -64,25 +64,6 @@ const JobDetailsForm = ({ formData, onInputChange }) => {
         </small>
       </div>
 
-      <div className="ai-analysis-box">
-        <div className="ai-analysis-header">
-          <span className="ai-icon">🤖</span>
-          <h4>AI Job Analysis</h4>
-        </div>
-        <p>Paste the job description above and we'll identify:</p>
-        <ul>
-          <li>✅ Key skills to highlight</li>
-          <li>✅ Important keywords to include</li>
-          <li>✅ Company values to address</li>
-          <li>✅ Requirements to match</li>
-        </ul>
-        <button 
-          className="analyze-btn"
-          disabled={!formData.jobDescription}
-        >
-          🔍 Analyze Job Description
-        </button>
-      </div>
     </div>
   );
 };

@@ -1,13 +1,19 @@
-const StatCard = ({ icon, value, label, colorClass }) => {
+const StatCard = ({ label, value, icon, trend }) => {
   return (
-    <div className={`stat-card ${colorClass}`}>
-      <div className="stat-icon">{icon}</div>
-      <div className="stat-info">
-        <h2>{value}</h2>
-        <p>{label}</p>
+    <div className="stat-card">
+      <div className="stat-content">
+        <div className="stat-header">
+          <span className="stat-label">{label}</span>
+          <span className="stat-icon-inline">{icon}</span>
+        </div>
+
+        <div className="stat-value">{value}</div>
+
+        {trend && <div className="stat-trend">{trend}</div>}
       </div>
     </div>
   );
 };
 
 export default StatCard;
+

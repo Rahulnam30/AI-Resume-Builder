@@ -30,6 +30,7 @@ const fileFilter = (req, file, cb) => {
         "image/jpeg",
         "image/png",
         "image/webp",
+        "text/html" // .html (for saved templates)
     ];
 
     if (allowedTypes.includes(file.mimetype)) {
