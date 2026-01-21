@@ -1,27 +1,28 @@
-import { Trash2 } from 'lucide-react';
+import { Trash2 } from "lucide-react";
 
 const EducationForm = ({ formData, setFormData }) => {
   const addEducation = () => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       education: [
         ...(prev?.education ?? []),
         {
           id: Date.now(),
-          degree: '',
-          school: '',
-          location: '',
-          graduationDate: '',
-          gpa: ''
-        }
-      ]
+          title: "",
+          company: "",
+          description: "",
+          startDate: "",
+          endDate: "",
+          location: "",
+        },
+      ],
     }));
   };
 
   const removeEducation = (id) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      education: (prev?.education ?? []).filter(e => e.id !== id)
+      education: (prev?.education ?? []).filter((e) => e.id !== id),
     }));
   };
 
@@ -32,8 +33,8 @@ const EducationForm = ({ formData, setFormData }) => {
           <div className="entry-header">
             <span>Education {index + 1}</span>
             {formData.education.length > 1 && (
-              <button 
-                className="remove-entry-btn ml-2" 
+              <button
+                className="remove-entry-btn ml-2"
                 onClick={() => removeEducation(edu.id)}
               >
                 <Trash2 size={14} />
@@ -46,11 +47,13 @@ const EducationForm = ({ formData, setFormData }) => {
               <input
                 type="text"
                 placeholder="Bachelor of Science in Computer Science"
-                value={edu.degree || ''}
+                value={edu.degree || ""}
                 onChange={(e) => {
                   const val = e.target.value;
-                  const updated = (formData?.education ?? []).map(item => item.id === edu.id ? { ...item, degree: val } : item);
-                  setFormData(prev => ({ ...prev, education: updated }));
+                  const updated = (formData?.education ?? []).map((item) =>
+                    item.id === edu.id ? { ...item, degree: val } : item,
+                  );
+                  setFormData((prev) => ({ ...prev, education: updated }));
                 }}
               />
             </div>
@@ -59,11 +62,13 @@ const EducationForm = ({ formData, setFormData }) => {
               <input
                 type="text"
                 placeholder="University Name"
-                value={edu.school || ''}
+                value={edu.school || ""}
                 onChange={(e) => {
                   const val = e.target.value;
-                  const updated = (formData?.education ?? []).map(item => item.id === edu.id ? { ...item, school: val } : item);
-                  setFormData(prev => ({ ...prev, education: updated }));
+                  const updated = (formData?.education ?? []).map((item) =>
+                    item.id === edu.id ? { ...item, school: val } : item,
+                  );
+                  setFormData((prev) => ({ ...prev, education: updated }));
                 }}
               />
             </div>
@@ -71,11 +76,13 @@ const EducationForm = ({ formData, setFormData }) => {
               <label>Start Date</label>
               <input
                 type="month"
-                value={edu.startDate || ''}
+                value={edu.startDate || ""}
                 onChange={(e) => {
                   const val = e.target.value;
-                  const updated = (formData?.education ?? []).map(item => item.id === edu.id ? { ...item, startDate: val } : item);
-                  setFormData(prev => ({ ...prev, education: updated }));
+                  const updated = (formData?.education ?? []).map((item) =>
+                    item.id === edu.id ? { ...item, startDate: val } : item,
+                  );
+                  setFormData((prev) => ({ ...prev, education: updated }));
                 }}
               />
             </div>
@@ -83,11 +90,15 @@ const EducationForm = ({ formData, setFormData }) => {
               <label>Graduation Date</label>
               <input
                 type="month"
-                value={edu.graduationDate || ''}
+                value={edu.graduationDate || ""}
                 onChange={(e) => {
                   const val = e.target.value;
-                  const updated = (formData?.education ?? []).map(item => item.id === edu.id ? { ...item, graduationDate: val } : item);
-                  setFormData(prev => ({ ...prev, education: updated }));
+                  const updated = (formData?.education ?? []).map((item) =>
+                    item.id === edu.id
+                      ? { ...item, graduationDate: val }
+                      : item,
+                  );
+                  setFormData((prev) => ({ ...prev, education: updated }));
                 }}
               />
             </div>
@@ -96,11 +107,13 @@ const EducationForm = ({ formData, setFormData }) => {
               <input
                 type="text"
                 placeholder="7.8/10.0"
-                value={edu.gpa || ''}
+                value={edu.gpa || ""}
                 onChange={(e) => {
                   const val = e.target.value;
-                  const updated = (formData?.education ?? []).map(item => item.id === edu.id ? { ...item, gpa: val } : item);
-                  setFormData(prev => ({ ...prev, education: updated }));
+                  const updated = (formData?.education ?? []).map((item) =>
+                    item.id === edu.id ? { ...item, gpa: val } : item,
+                  );
+                  setFormData((prev) => ({ ...prev, education: updated }));
                 }}
               />
             </div>

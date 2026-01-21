@@ -73,292 +73,291 @@ const LivePreview = ({
   } = formData;
 
   const PreviewContent = () => (
-    <div className="mt-10 mb-4 w-[90%]">
+    <div className="mt-10 mb-4">
       <div
-        className="bg-white p-8 lg:p-12 text-slate-800 text-sm leading-relaxed relative shadow-lg"
+        className="bg-white w-[694px] min-h-[1023px] p-8 lg:p-12 text-slate-800 text-sm leading-relaxed relative shadow-lg"
         style={{
           transform: `scale(${zoom})`,
         }}
       >
-        <div className="w-[90%] max-w-[694px] min-h-screen">
-          <div className="pb-6">
-            {fullName && (
-              <h1 className="text-3xl font-semibold text-gray-900 mb-1 tracking-tight">
-                {fullName}
-              </h1>
+        <div className="pb-6">
+          {fullName && (
+            <h1 className="text-3xl font-semibold text-gray-900 mb-1 tracking-tight">
+              {fullName}
+            </h1>
+          )}
+          <p className="text-slate-500 flex pt-2 gap-3 text-xs flex-wrap">
+            {location && (
+              <span className="flex gap-1 items-center">
+                <MapPin size={18} />
+                {location}
+              </span>
+            )}{" "}
+            {email && (
+              <span className="flex gap-1 items-center">
+                <Mail size={18} /> {email}
+              </span>
+            )}{" "}
+            {phone && (
+              <span className="flex gap-1 items-center">
+                <Phone size={18} /> {phone}
+              </span>
             )}
-            <p className="text-slate-500 flex pt-2 gap-3 text-xs flex-wrap">
-              {location && (
-                <span className="flex gap-1 items-center">
-                  <MapPin size={18} />
-                  {location}
-                </span>
-              )}{" "}
-              {email && (
-                <span className="flex gap-1 items-center">
-                  <Mail size={18} /> {email}
-                </span>
-              )}{" "}
-              {phone && (
-                <span className="flex gap-1 items-center">
-                  <Phone size={18} /> {phone}
-                </span>
-              )}
-              {linkedin && (
-                <span className="flex gap-1 items-center">
-                  <FaLinkedin className="text-[#000] text-lg" /> {linkedin}
-                </span>
-              )}
-              {website && (
-                <span className="flex gap-1 items-center">
-                  <Globe size={18} /> {website}
-                </span>
-              )}
-            </p>
-            {(fullName ||
-              email ||
-              phone ||
-              location ||
-              linkedin ||
-              website) && <hr className="text-slate-200 mt-4" />}
-          </div>
-
-          {summary && <Section title="Professional Summary">{summary}</Section>}
-
-          {experience?.some(
-            (exp) =>
-              exp.title ||
-              exp.company ||
-              exp.description ||
-              exp.startDate ||
-              exp.endDate ||
-              exp.location,
-          ) && (
-            <Section title="Experience">
-              {experience.map(
-                (exp) =>
-                  (exp?.title ||
-                    exp?.company ||
-                    exp?.startDate ||
-                    exp?.endDate ||
-                    exp?.description) && (
-                    <div key={exp?.id}>
-                      <div className="mb-6">
-                        <div className="flex justify-between items-start mb-1">
-                          <div>
-                            <h3 className="text-sm font-semibold text-slate-900">
-                              {exp?.title}
-                            </h3>
-                            <p className="text-xs text-slate-500">
-                              {exp?.company}
-                            </p>
-                          </div>
-                          <span className="text-xs text-slate-500 whitespace-nowrap">
-                            {formatMonthYear(exp?.startDate)} -{" "}
-                            {!/[a-zA-Z]/.test(exp?.endDate)
-                              ? formatMonthYear(exp?.endDate)
-                              : exp?.endDate}
-                          </span>
-                        </div>
-                        <p className="mt-2 text-sm text-slate-700">
-                          {exp?.description}
-                        </p>
-                      </div>
-                    </div>
-                  ),
-              )}
-            </Section>
-          )}
-
-          {education?.some(
-            (edu) =>
-              edu.school ||
-              edu.degree ||
-              edu.gpa ||
-              edu.startDate ||
-              edu.graduationDate ||
-              edu.location,
-          ) && (
-            <Section title="Education">
-              {education.map(
-                (edu) =>
-                  (edu?.degree ||
-                    edu?.startDate ||
-                    edu?.graduationDate ||
-                    edu?.school ||
-                    edu?.gpa) && (
-                    <div
-                      key={edu?.id}
-                      className="border-l-2 border-slate-200 pl-4 mb-2"
-                    >
-                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1">
-                        <h3 className="font-medium text-slate-900">
-                          {edu?.degree}
-                        </h3>
-                        {edu?.startDate && edu?.startDate && (
-                          <span className="text-sm text-slate-500">
-                            {formatMonthYear(edu?.startDate)} -{" "}
-                            {formatMonthYear(edu?.graduationDate)}
-                          </span>
-                        )}
-                      </div>
-
-                      <p className="text-sm text-slate-600">{edu?.school}</p>
-
-                      {edu?.gpa && (
-                        <p className="text-sm text-slate-500">
-                          GPA: {edu?.gpa} / 10.0
-                        </p>
-                      )}
-                    </div>
-                  ),
-              )}
-            </Section>
-          )}
-
-          {projects?.some(
-            (project) =>
-              project.name ||
-              project.description ||
-              project.technologies ||
-              project?.link?.github ||
-              project?.link?.liveLink ||
-              project?.link?.other,
-          ) && (
-            <Section title="Projects">
-              {projects.map(
-                (prj) =>
-                  (prj?.name ||
-                    prj?.link?.github ||
-                    prj?.link?.liveLink ||
-                    prj?.link?.other ||
-                    prj?.technologies ||
-                    prj?.description) && (
-                    <div key={prj?.id} className="space-y-4">
-                      {/* Project Item */}
-                      <div className="space-y-1">
-                        <div className="flex items-start justify-between gap-4">
-                          <h3 className="font-bold text-slate-900">
-                            {prj?.name}
-                          </h3>
-
-                          <div className="flex gap-2">
-                            {prj?.link?.github && (
-                              <a
-                                href={prj?.link?.github}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-sm text-slate-500 hover:text-slate-900 underline whitespace-nowrap"
-                              >
-                                GitHub
-                              </a>
-                            )}
-                            {prj?.link?.liveLink && (
-                              <a
-                                href={prj?.link?.liveLink}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-sm text-slate-500 hover:text-slate-900 underline whitespace-nowrap"
-                              >
-                                Live
-                              </a>
-                            )}
-                            {prj?.link?.other && (
-                              <a
-                                href={prj?.link?.other}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-sm text-slate-500 hover:text-slate-900 underline whitespace-nowrap"
-                              >
-                                Other
-                              </a>
-                            )}
-                          </div>
-                        </div>
-
-                        <p className="text-xs text-slate-600">
-                          {prj?.technologies}
-                        </p>
-
-                        <p className="text-sm text-slate-700 leading-relaxed">
-                          {prj?.description}
-                        </p>
-                      </div>
-                    </div>
-                  ),
-              )}
-            </Section>
-          )}
-
-          {certifications?.some(
-            (cert) => cert.name || cert.issuer || cert.date || cert.link,
-          ) && (
-            <Section title="Certifications">
-              <section className="space-y-4">
-                {certifications.map((cert) => (
-                  <div
-                    key={cert.id}
-                    className="flex items-start justify-between gap-4"
-                  >
-                    <div>
-                      <h3 className="text-sm font-medium text-slate-900">
-                        {cert.name}
-                      </h3>
-
-                      <p className="text-sm text-slate-600">{cert.issuer}</p>
-
-                      <p className="text-sm text-slate-500">{cert.date}</p>
-                    </div>
-
-                    {cert.link && (
-                      <a
-                        href={cert.link}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-sm text-slate-500 hover:text-slate-900 underline whitespace-nowrap"
-                      >
-                        Credential
-                      </a>
-                    )}
-                  </div>
-                ))}
-              </section>
-            </Section>
-          )}
-
-          {(skills?.technical.length !== 0 || skills?.soft.length !== 0) && (
-            <Section title="Skills">
-              <div className="flex flex-wrap gap-2 items-center">
-                <span className="font-bold text-sm">Technical Skills:</span>
-                <div className="flex gap-2">
-                  {skills?.technical.length !== 0 &&
-                    skills?.technical.map((skill) => (
-                      <span
-                        key={skill}
-                        className="px-2 py-1 bg-slate-100 rounded text-xs"
-                      >
-                        {skill}
-                      </span>
-                    ))}
-                </div>
-              </div>
-              <div className="flex flex-nowrap gap-2 items-start mt-2">
-                <span className="font-bold text-sm">Soft Skills:</span>
-                <div className="flex gap-2 flex-wrap w-[85%]">
-                  {skills?.soft.length !== 0 &&
-                    skills?.soft.map((skill) => (
-                      <span
-                        key={skill}
-                        className="px-2 py-1 bg-slate-100 rounded text-xs"
-                      >
-                        {skill}
-                      </span>
-                    ))}
-                </div>
-              </div>
-            </Section>
+            {linkedin && (
+              <span className="flex gap-1 items-center">
+                <FaLinkedin className="text-[#000] text-lg" /> {linkedin}
+              </span>
+            )}
+            {website && (
+              <span className="flex gap-1 items-center">
+                <Globe size={18} /> {website}
+              </span>
+            )}
+          </p>
+          {(fullName || email || phone || location || linkedin || website) && (
+            <hr className="text-slate-200 mt-4" />
           )}
         </div>
+
+        {summary && (
+          <div className="break-words overflow-wrap-anywhere">
+            <Section title="Professional Summary">{summary}</Section>
+          </div>
+        )}
+
+        {experience?.some(
+          (exp) =>
+            exp.title ||
+            exp.company ||
+            exp.description ||
+            exp.startDate ||
+            exp.endDate ||
+            exp.location,
+        ) && (
+          <Section title="Experience">
+            {experience.map(
+              (exp) =>
+                (exp?.title ||
+                  exp?.company ||
+                  exp?.startDate ||
+                  exp?.endDate ||
+                  exp?.description) && (
+                  <div key={exp?.id}>
+                    <div className="mb-6">
+                      <div className="flex justify-between items-start mb-1">
+                        <div>
+                          <h3 className="text-sm font-semibold text-slate-900">
+                            {exp?.title}
+                          </h3>
+                          <p className="text-xs text-slate-500">
+                            {exp?.company}
+                          </p>
+                        </div>
+                        <span className="text-xs text-slate-500 whitespace-nowrap">
+                          {formatMonthYear(exp?.startDate)} -{" "}
+                          {!/[a-zA-Z]/.test(exp?.endDate)
+                            ? formatMonthYear(exp?.endDate)
+                            : exp?.endDate}
+                        </span>
+                      </div>
+                      <div className="mt-2 text-sm text-slate-700 break-words overflow-wrap-anywhere">
+                        {exp?.description}
+                      </div>
+                    </div>
+                  </div>
+                ),
+            )}
+          </Section>
+        )}
+
+        {education?.some(
+          (edu) =>
+            edu.school ||
+            edu.degree ||
+            edu.gpa ||
+            edu.startDate ||
+            edu.graduationDate ||
+            edu.location,
+        ) && (
+          <Section title="Education">
+            {education.map(
+              (edu) =>
+                (edu?.degree ||
+                  edu?.startDate ||
+                  edu?.graduationDate ||
+                  edu?.school ||
+                  edu?.gpa) && (
+                  <div
+                    key={edu?.id}
+                    className="border-l-2 border-slate-200 pl-4 mb-2"
+                  >
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1">
+                      <h3 className="font-medium text-slate-900">
+                        {edu?.degree}
+                      </h3>
+                      {edu?.startDate && edu?.startDate && (
+                        <span className="text-sm text-slate-500">
+                          {formatMonthYear(edu?.startDate)} -{" "}
+                          {formatMonthYear(edu?.graduationDate)}
+                        </span>
+                      )}
+                    </div>
+
+                    <p className="text-sm text-slate-600">{edu?.school}</p>
+
+                    {edu?.gpa && (
+                      <p className="text-sm text-slate-500">
+                        GPA: {edu?.gpa} / 10.0
+                      </p>
+                    )}
+                  </div>
+                ),
+            )}
+          </Section>
+        )}
+
+        {projects?.some(
+          (project) =>
+            project.name ||
+            project.description ||
+            project.technologies ||
+            project?.link?.github ||
+            project?.link?.liveLink ||
+            project?.link?.other,
+        ) && (
+          <Section title="Projects">
+            {projects.map(
+              (prj) =>
+                (prj?.name ||
+                  prj?.link?.github ||
+                  prj?.link?.liveLink ||
+                  prj?.link?.other ||
+                  prj?.technologies ||
+                  prj?.description) && (
+                  <div key={prj?.id} className="space-y-4">
+                    {/* Project Item */}
+                    <div className="space-y-1">
+                      <div className="flex items-start justify-between gap-4">
+                        <h3 className="font-bold text-slate-900">
+                          {prj?.name}
+                        </h3>
+
+                        <div className="flex gap-2">
+                          {prj?.link?.github && (
+                            <a
+                              href={prj?.link?.github}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-sm text-slate-500 hover:text-slate-900 underline whitespace-nowrap"
+                            >
+                              GitHub
+                            </a>
+                          )}
+                          {prj?.link?.liveLink && (
+                            <a
+                              href={prj?.link?.liveLink}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-sm text-slate-500 hover:text-slate-900 underline whitespace-nowrap"
+                            >
+                              Live
+                            </a>
+                          )}
+                          {prj?.link?.other && (
+                            <a
+                              href={prj?.link?.other}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-sm text-slate-500 hover:text-slate-900 underline whitespace-nowrap"
+                            >
+                              Other
+                            </a>
+                          )}
+                        </div>
+                      </div>
+
+                      <p className="text-xs text-slate-600">
+                        {prj?.technologies}
+                      </p>
+
+                      <p className="text-sm text-slate-700 leading-relaxed">
+                        {prj?.description}
+                      </p>
+                    </div>
+                  </div>
+                ),
+            )}
+          </Section>
+        )}
+
+        {certifications?.some(
+          (cert) => cert.name || cert.issuer || cert.date || cert.link,
+        ) && (
+          <Section title="Certifications">
+            <section className="space-y-4">
+              {certifications.map((cert) => (
+                <div
+                  key={cert.id}
+                  className="flex items-start justify-between gap-4"
+                >
+                  <div>
+                    <h3 className="text-sm font-medium text-slate-900">
+                      {cert.name}
+                    </h3>
+
+                    <p className="text-sm text-slate-600">{cert.issuer}</p>
+
+                    <p className="text-sm text-slate-500">{cert.date}</p>
+                  </div>
+
+                  {cert.link && (
+                    <a
+                      href={cert.link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-sm text-slate-500 hover:text-slate-900 underline whitespace-nowrap"
+                    >
+                      Credential
+                    </a>
+                  )}
+                </div>
+              ))}
+            </section>
+          </Section>
+        )}
+
+        {(skills?.technical.length !== 0 || skills?.soft.length !== 0) && (
+          <Section title="Skills">
+            <div className="flex flex-wrap gap-2 items-center">
+              <span className="font-bold text-sm">Technical Skills:</span>
+              <div className="flex gap-2">
+                {skills?.technical.length !== 0 &&
+                  skills?.technical.map((skill) => (
+                    <span
+                      key={skill}
+                      className="px-2 py-1 bg-slate-100 rounded text-xs"
+                    >
+                      {skill}
+                    </span>
+                  ))}
+              </div>
+            </div>
+            <div className="flex flex-nowrap gap-2 items-start mt-2">
+              <span className="font-bold text-sm">Soft Skills:</span>
+              <div className="flex gap-2 flex-wrap w-[85%]">
+                {skills?.soft.length !== 0 &&
+                  skills?.soft.map((skill) => (
+                    <span
+                      key={skill}
+                      className="px-2 py-1 bg-slate-100 rounded text-xs"
+                    >
+                      {skill}
+                    </span>
+                  ))}
+              </div>
+            </div>
+          </Section>
+        )}
       </div>
     </div>
   );

@@ -1,117 +1,112 @@
-import { Trash2 } from 'lucide-react';
+import { Trash2 } from "lucide-react";
 
-const EducationForm = ({ formData, setFormData }) => {
-  const addEducation = () => {
-    setFormData(prev => ({
+const ExperienceForm = ({ formData, setFormData }) => {
+  const addExperience = () => {
+    console.log(formData);
+    setFormData((prev) => ({
       ...prev,
-      education: [
-        ...(prev?.education ?? []),
+      experience: [
+        ...(prev?.experience ?? []),
         {
           id: Date.now(),
-          degree: '',
-          school: '',
-          location: '',
-          graduationDate: '',
-          gpa: ''
-        }
-      ]
+          title: "",
+          company: "",
+          location: "",
+          startDate: "",
+          endDate: "",
+          description: "",
+        },
+      ],
     }));
   };
 
-  const removeEducation = (id) => {
-    setFormData(prev => ({
+  const removeExperience = (id) => {
+    setFormData((prev) => ({
       ...prev,
-      education: (prev?.education ?? []).filter(e => e.id !== id)
+      experience: (prev?.experience ?? []).filter((e) => e.id !== id),
+    }));
+  };
+
+  const updateExperience = (id, field, value) => {
+    setFormData((prev) => ({
+      ...prev,
+      experience: prev.experience.map((exp) =>
+        exp.id === id ? { ...exp, [field]: value } : exp,
+      ),
     }));
   };
 
   return (
     <div className="form-section">
-      {(formData?.education ?? []).map((edu, index) => (
-        <div key={edu.id} className="entry-card">
-          <div className="entry-header">
-            <span>Education {index + 1}</span>
-            {formData.education.length > 1 && (
-              <button 
-                className="remove-entry-btn ml-2" 
-                onClick={() => removeEducation(edu.id)}
+      <h3 className="form-section-title">Work Experience</h3>
+      {(formData?.experience ?? []).map((exp, index) => (
+        <div key={exp.id} className="entry-card">
+          <div className="entry-header flex items-center gap-2 mb-2">
+            <span>Experience {index + 1}</span>
+            {formData.experience.length > 1 && (
+              <button
+                className="remove-entry-btn"
+                onClick={() => removeExperience(exp.id)}
               >
                 <Trash2 size={14} />
               </button>
             )}
           </div>
-          <div className="p-0.5">
-            <div className="form-group mt-2">
-              <label>Degree *</label>
+          <div className="pr-0.5">
+            <div className="form-group">
+              <label>Job Title *</label>
               <input
                 type="text"
-                placeholder="Bachelor of Science in Computer Science"
-                value={edu.degree || ''}
-                onChange={(e) => {
-                  const val = e.target.value;
-                  const updated = (formData?.education ?? []).map(item => item.id === edu.id ? { ...item, degree: val } : item);
-                  setFormData(prev => ({ ...prev, education: updated }));
-                }}
+                placeholder="Software Engineer"
+                value={exp.title || ""}
+                onChange={(e) => updateExperience(exp.id, 'title', e.target.value)}
               />
             </div>
             <div className="form-group">
-              <label>School *</label>
+              <label>Company *</label>
               <input
                 type="text"
-                placeholder="University Name"
-                value={edu.school || ''}
-                onChange={(e) => {
-                  const val = e.target.value;
-                  const updated = (formData?.education ?? []).map(item => item.id === edu.id ? { ...item, school: val } : item);
-                  setFormData(prev => ({ ...prev, education: updated }));
-                }}
+                placeholder="Tech Company Inc."
+                value={exp.company || ""}
+                onChange={(e) => updateExperience(exp.id, 'company', e.target.value)}
               />
             </div>
             <div className="form-group">
               <label>Start Date</label>
               <input
                 type="month"
-                value={edu.startDate || ''}
-                onChange={(e) => {
-                  const val = e.target.value;
-                  const updated = (formData?.education ?? []).map(item => item.id === edu.id ? { ...item, startDate: val } : item);
-                  setFormData(prev => ({ ...prev, education: updated }));
-                }}
+                value={exp.startDate || ""}
+                onChange={(e) => updateExperience(exp.id, 'startDate', e.target.value)}
               />
             </div>
             <div className="form-group">
-              <label>Graduation Date</label>
-              <input
-                type="month"
-                value={edu.graduationDate || ''}
-                onChange={(e) => {
-                  const val = e.target.value;
-                  const updated = (formData?.education ?? []).map(item => item.id === edu.id ? { ...item, graduationDate: val } : item);
-                  setFormData(prev => ({ ...prev, education: updated }));
-                }}
-              />
-            </div>
-            <div className="form-group">
-              <label>GPA (Optional)</label>
+              <label>End Date</label>
               <input
                 type="text"
-                placeholder="7.8/10.0"
-                value={edu.gpa || ''}
-                onChange={(e) => {
-                  const val = e.target.value;
-                  const updated = (formData?.education ?? []).map(item => item.id === edu.id ? { ...item, gpa: val } : item);
-                  setFormData(prev => ({ ...prev, education: updated }));
-                }}
+                placeholder="Present or YYYY-MM"
+                value={exp.endDate || ""}
+                onChange={(e) => updateExperience(exp.id, 'endDate', e.target.value)}
+
               />
             </div>
           </div>
+          <div className="form-group full-width">
+            <label>Description</label>
+            <textarea
+              placeholder="Describe your responsibilities and achievements..."
+              rows={3}
+              value={exp.description || ""}
+              onChange={(e) => updateExperience(exp.id, 'description', e.target.value)}
+
+            />
+          </div>
         </div>
       ))}
-      <button className="add-entry-btn" onClick={addEducation}>
-        + Add Education
+      <button className="add-entry-btn" onClick={addExperience}>
+        + Add Experience
       </button>
     </div>
   );
 };
 
-export default EducationForm;
+export default ExperienceForm;
