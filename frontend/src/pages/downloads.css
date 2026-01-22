@@ -1,0 +1,162 @@
+/* GLOBAL FONT FIX */
+.downloads-page {
+  font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  background: #f8fafc;
+  padding: 24px;
+}
+
+/* HEADER */
+.downloads-header {
+  background: linear-gradient(90deg, #2563eb, #3b82f6);
+  color: #ffffff;
+  padding: 28px;
+  border-radius: 14px;
+  margin-bottom: 24px;
+}
+
+.downloads-header h1 {
+  font-size: 26px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.downloads-header p {
+  font-size: 14px;
+  margin-top: 6px;
+  opacity: 0.95;
+}
+
+/* CARD */
+.downloads-card {
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 20px;
+}
+
+/* FILTERS */
+.downloads-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.search-input {
+  height: 40px;
+  padding: 0 14px;
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+  font-size: 14px;
+  width: 260px;
+}
+
+.filter-group {
+  display: flex;
+  gap: 10px;
+}
+
+.chip {
+  height: 38px;
+  padding: 0 16px;
+  border-radius: 20px;
+  font-size: 13px;
+  border: 1px solid #dbeafe;
+  background: #ffffff;
+  cursor: pointer;
+  color: #1e40af;
+}
+
+.chip.active {
+  background: #2563eb;
+  color: #ffffff;
+  border-color: #2563eb;
+}
+
+/* TABLE */
+.downloads-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.downloads-table th {
+  text-align: left;
+  font-weight: 500;
+  color: #64748b;
+  padding: 14px 12px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.downloads-table td {
+  padding: 16px 12px;
+  border-bottom: 1px solid #f1f5f9;
+  color: #0f172a;
+}
+
+/* BADGES */
+.badge {
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.badge.pdf {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.badge.docx {
+  background: #dbeafe;
+  color: #1d4ed8;
+}
+
+/* ACTIONS */
+.view-btn {
+  height: 34px;
+  padding: 0 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  background: #eef2ff;
+  color: #1e40af;
+  border: none;
+  cursor: pointer;
+  margin-right: 6px;
+}
+
+.dots-btn {
+  background: transparent;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+  color: #64748b;
+}
+
+/* FOOTERS */
+.table-footer {
+  font-size: 13px;
+  color: #64748b;
+  margin-top: 14px;
+}
+
+.page-footer {
+  text-align: center;
+  margin-top: 28px;
+  font-size: 13px;
+  color: #94a3b8;
+}
+
+.user-page {
+  padding-top: 64px; /* height of UserNavBar */
+}
+.user-page .downloads-page {
+  padding-top: 0; /* override padding for pages with UserNavBar */
+}
+.downloads-table th {
+  font-weight: 600;      /* or 700 for extra bold */
+  color: #111827;        /* dark text like UpToSkills */
+}
+.downloads-table td {
+  color: #1f2937;        /* slightly lighter dark text */
+}
