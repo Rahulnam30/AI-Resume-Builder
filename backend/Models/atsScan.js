@@ -1,9 +1,5 @@
 import mongoose from "mongoose";
 
-import User from "./User.js";
-import Template from "./template.js";
-import ResumeProfile from "./resumeProfile.js";
-
 const atsScansSchema = new mongoose.Schema(
   {
     userId: {
@@ -11,30 +7,56 @@ const atsScansSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
-    
-    resumeprofileId: {
+
+    // Optional link to a saved resume document
+    resumeId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Resume",
+    },
+
+    // Optional link to a resume profile (structured data)
+    resumeProfileId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "ResumeProfile",
-      required: true,
     },
-   
+
+    // Associated template (if any)
     templateId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Template",
-      required: true,
     },
+
+    // File metadata (if upload was provided)
+    filename: {
+      type: String,
+    },
+    originalName: {
+      type: String,
+    },
+    filePath: {
+      type: String,
+    },
+    fileSize: {
+      type: Number,
+    },
+    fileType: {
+      type: String,
+    },
+
     jobTitle: {
       type: String,
-      required: true,
     },
     jobDescription: {
       type: String,
-      required: true,
     },
+
     overallScore: {
       type: Number,
       required: true,
+      min: 0,
+      max: 10,
     },
+
     sectionScores: [
       {
         sectionName: {
@@ -45,8 +67,14 @@ const atsScansSchema = new mongoose.Schema(
           type: Number,
           required: true,
         },
+        status: {
+          type: String,
+          enum: ["ok", "warn", "error"],
+          default: "ok",
+        },
       },
     ],
+
     matchedKeywords: [
       {
         keyword: {
@@ -55,6 +83,7 @@ const atsScansSchema = new mongoose.Schema(
         },
       },
     ],
+
     missingKeywords: [
       {
         keyword: {
@@ -63,10 +92,33 @@ const atsScansSchema = new mongoose.Schema(
         },
       },
     ],
+
+    suggestions: [String],
+
+    extractedText: {
+      type: String,
+    },
+
+    extractedData: {
+      email: String,
+      phone: String,
+      name: String,
+      skills: [String],
+      experience: [String],
+      education: [String],
+    },
+
+    passThreshold: {
+      type: Boolean,
+      default: false,
+    },
   },
- 
   { timestamps: true }
 );
+
+// Indexes to make common queries faster
+atsScansSchema.index({ userId: 1, createdAt: -1 });
+atsScansSchema.index({ overallScore: -1 });
 
 const AtsScans = mongoose.model("AtsScans", atsScansSchema);
 export default AtsScans;

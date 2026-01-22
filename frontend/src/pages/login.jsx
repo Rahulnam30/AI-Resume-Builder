@@ -25,21 +25,17 @@ export default function Login() {
   const handleLogin = async () => {
     if (!validate()) return;
     setLoading(true);
+
     try {
-      const response = await axiosInstance.post(
-        `/api/auth/login`,
-        {
-          email: emailtext,
-          password: passwordtext,
-        }
-      );
+      const response = await axiosInstance.post("/api/auth/login", {
+        email: emailtext,
+        password: passwordtext,
+      });
 
       console.log("Login response:", response.data);
 
-      // Save token in localStorage
       localStorage.setItem("token", response.data.token);
 
-      // Redirect based on isAdmin
       if (response.data.isAdmin) {
         toast.success("Welcome Admin!");
         setTimeout(() => navigate("/admin"), 1200);
@@ -112,9 +108,11 @@ export default function Login() {
                   placeholder="Enter your e-mail"
                   value={emailtext}
                   onChange={(e) => setEmailText(e.target.value)}
+                  autoComplete="email"
                   className="w-full px-3 py-2 rounded-lg border border-gray-300 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
+
               <div>
                 <label className="block text-xs font-medium text-gray-600 mb-0.5">
                   Password
@@ -124,6 +122,7 @@ export default function Login() {
                   placeholder="Enter your Password"
                   value={passwordtext}
                   onChange={(e) => setPasswordText(e.target.value)}
+                  autoComplete="current-password"
                   className="w-full px-3 py-2 rounded-lg border border-gray-300 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
@@ -140,10 +139,11 @@ export default function Login() {
               <button
                 type="submit"
                 disabled={loading}
-                className={`w-full py-2 rounded-lg text-white text-sm font-medium transition mt-3 ${loading
-                  ? "bg-blue-400 cursor-not-allowed"
-                  : "bg-blue-600 hover:bg-blue-700"
-                  }`}
+                className={`w-full py-2 rounded-lg text-white text-sm font-medium transition mt-3 ${
+                  loading
+                    ? "bg-blue-400 cursor-not-allowed"
+                    : "bg-blue-600 hover:bg-blue-700"
+                }`}
               >
                 {loading ? "Signing in..." : "Sign In"}
               </button>

@@ -1,45 +1,17 @@
 import React, { useState, useEffect } from "react";
 import { Check, ToggleLeft, ToggleRight, Pencil } from "lucide-react";
 import axiosInstance from "../../../api/axios";
-
-// ... initialPlans definition remains same ...
-const initialPlans = [
-  {
-    id: 1,
-    name: "Free",
-    price: 0,
-    active: true,
-    description: "For testing & basic usage",
-    features: [
-      "1 Resume Template",
-      "Limited AI Suggestions",
-      "Watermark on Resume",
-      "Community Support",
-    ],
-  },
-  {
-    id: 2,
-    name: "Pro",
-    price: 299,
-    active: true,
-    description: "Best for students & professionals",
-    features: [
-      "Unlimited Templates",
-      "Full AI Resume Writing",
-      "No Watermark",
-      "PDF & DOCX Export",
-      "Priority Support",
-    ],
-  },
-];
+import { usePricing } from "../../../context/Pricingcontext";
 
 const AdminSubscription = () => {
-  const [plans, setPlans] = useState(initialPlans);
+  const { plans, setPlans, savePlans, fetchPlans } = usePricing(); // ⭐ Added fetchPlans
   const [paidUsers, setPaidUsers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     fetchPaidUsers();
+    fetchPlans(); // ⭐ Refresh plans when component mounts
   }, []);
 
   const fetchPaidUsers = async () => {
@@ -67,6 +39,20 @@ const AdminSubscription = () => {
     setPlans((prev) =>
       prev.map((plan) => (plan.id === id ? { ...plan, price: value } : plan))
     );
+  };
+
+  const handleSaveChanges = async () => {
+    setSaving(true);
+    const result = await savePlans(plans);
+    setSaving(false);
+    
+    if (result.success) {
+      alert('✅ Pricing changes saved successfully! The changes will now be visible on the pricing page.');
+      // ⭐ Refresh plans from backend to ensure sync
+      await fetchPlans();
+    } else {
+      alert('❌ Failed to save changes: ' + result.error);
+    }
   };
 
   return (
@@ -171,8 +157,12 @@ const AdminSubscription = () => {
 
       {/* Save Button */}
       <div className="mt-12 flex justify-end">
-        <button className="px-6 py-3 rounded-xl bg-blue-600 text-white font-medium hover:bg-blue-700 mb-10">
-          Save Changes
+        <button 
+          onClick={handleSaveChanges}
+          disabled={saving}
+          className="px-6 py-3 rounded-xl bg-blue-600 text-white font-medium hover:bg-blue-700 mb-10 disabled:bg-gray-400"
+        >
+          {saving ? 'Saving...' : 'Save Changes'}
         </button>
       </div>
 

@@ -11,7 +11,7 @@ import TemplateEditor from "./pages/TemplateEditor";
 import Contact from "./pages/Contact";
 import HelpCenter from "./pages/HelpCenter";
 import About from "./pages/About";
-import Pricing from "./pages/Pricing";
+import Pricing from "./pages/Pricing-FIXED";
 import BlogPage from "./pages/Blogpage";
 import CareersPage from "./pages/Careerpage";
 import ATSCheckerPage from "./pages/ATSChecker";
