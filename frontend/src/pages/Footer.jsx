@@ -121,7 +121,7 @@ function Footer() {
             <h4 className={headerStyle}>Company</h4>
             <ul className="space-y-4">
               <li className={linkStyle}><Link to="/about">About Us</Link></li>
-              <li className={linkStyle}><Link to={`${isLoggedIn ? "/pricing" : "/login"}`}>Pricing</Link></li>
+              <li className={linkStyle}><Link to="/pricing">Pricing</Link></li>
               <li className={linkStyle}><Link to="/contact">Contact Us</Link></li>
             </ul>
           </div>

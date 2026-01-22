@@ -9,7 +9,7 @@
 
 //   return (
 //     <div className="ats-tips">
-//       <h3>ATS Optimization Tips</h3>
+//       <h3>💡 ATS Optimization Tips</h3>
 //       <ul>
 //         {tips.map((tip, index) => (
 //           <li key={index}>{tip}</li>

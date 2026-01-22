@@ -7,7 +7,7 @@ export default function ATSUpload({ onUpload }) {
     const file = e.target.files[0];
     if (!file) return;
 
-    onUpload(file); // 🔥 send file to parent
+    onUpload(file); 
   };
 
   return (

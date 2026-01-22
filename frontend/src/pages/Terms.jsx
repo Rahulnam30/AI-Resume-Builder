@@ -9,6 +9,7 @@ import {
   AlertCircle,
 } from "lucide-react";
 import UpToSkillsImg from "../assets/UptoSkills.webp"; // Ensure path is correct
+import NavBar from "../components/NavBar";
 import Footer from "./Footer";
 
 const TermsAndConditions = () => {
@@ -20,18 +21,8 @@ const TermsAndConditions = () => {
 
   return (
     <div className="min-h-screen bg-slate-50 font-jakarta text-[#1a2e52] select-none">
-      {/* NAVBAR */}
-      <nav className="sticky top-0 z-50 py-4 border-b border-gray-100 bg-white/95 backdrop-blur-md">
-        <div className="max-w-[1400px] mx-auto px-8 flex items-center justify-between">
-          <div onClick={() => navigate("/")} className="cursor-pointer">
-            <img
-              src={UpToSkillsImg}
-              alt="UpToSkills Logo"
-              className="w-[150px]"
-            />
-          </div>
-        </div>
-      </nav>
+      
+       <NavBar />
 
       {/* Header Section */}
       <header className="px-8 py-20 bg-white border-b border-gray-200">

@@ -1,5 +1,6 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import NavBar from "../components/NavBar";
 import {
   Target,
   Zap,
@@ -32,6 +33,8 @@ const ScoreChecker = () => {
   return (
     <div className="min-h-screen bg-[#FCFCFE] font-['Outfit'] text-[#1a2e52] selection:bg-orange-100 overflow-x-hidden">
       
+      <NavBar />
+
       {/* --- HERO SECTION: THEME ALIGNED --- */}
       <section className="relative pb-16 overflow-hidden pt-28">
   <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[500px] bg-gradient-to-b from-orange-50/50 to-transparent -z-10" />
