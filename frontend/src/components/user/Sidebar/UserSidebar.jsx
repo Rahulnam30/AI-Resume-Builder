@@ -46,7 +46,7 @@ export default function UserSidebar() {
     setIsMobileOpen(false);
     // Navigate after ensuring localStorage is cleared
     setTimeout(() => {
-      navigate("/login", { replace: true });
+      navigate("/", { replace: true });
       window.location.reload(); // Force reload to clear any cached state
     }, 100);
   };

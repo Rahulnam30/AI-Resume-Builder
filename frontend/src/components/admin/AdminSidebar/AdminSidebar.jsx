@@ -63,7 +63,7 @@ export default function AdminSidebar({ isCollapsed, setIsCollapsed }) {
 
   const handleLogout = () => {
     localStorage.removeItem('token');
-    navigate("/login", { replace: true });
+    navigate("/", { replace: true });
     setIsMobileOpen(false);
   };
 
