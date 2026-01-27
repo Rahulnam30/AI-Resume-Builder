@@ -30,7 +30,6 @@
   margin-bottom: 10px;
 }
 
-
 .checker-panel {
   flex: 1;
   background: linear-gradient(135deg, #f8f9ff, #eef2ff);
@@ -66,19 +65,19 @@
   color: #2563eb;
 }
 
-.ats-container{display:flex;gap:20px;padding:20px}.preview-panel{flex:2;background:#f1f5f9;padding:20px;border-radius:12px}.control-panel{flex:1;background:#fff;padding:20px;border-radius:12px}.resume-frame{background:#fff;min-height:400px;padding:16px;border-radius:8px}.pdf-canvas{width:100%;margin-bottom:16px;border-radius:8px}.placeholder-text{text-align:center;color:#64748b}.upload-box button{margin-top:10px;padding:6px 12px}.ats-score{font-size:32px;font-weight:bold;text-align:center;margin-bottom:12px}.score-90{color:#16a34a}.score-70{color:#d97706}.score-50{color:#dc2626}.metric-card{margin-bottom:12px}.metric-title{font-weight:600}.progress{height:6px;background:#e5e7eb;border-radius:4px}.progress-bar{height:100%;background:#3b82f6;border-radius:4px}.error-text{color:#dc2626;margin-top:8px}
-
 .preview-panel {
   flex: 1;
   background: white;
   border-radius: 16px;
   padding: 20px;
   box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 .resume-frame {
   width: 100%;
-  height: 80vh;
   border-radius: 12px;
   border: none;
 }
@@ -88,17 +87,24 @@
   text-align: center;
   margin-top: 60px;
 }
+
 .placeholder-text h3 {
   font-size: 24px;
   margin-bottom: 10px;
 }
+
 .placeholder-text p {
   font-size: 16px;       
 }
+
 .resume-page {
-  aspect-ratio: 1 / 1.4142;
+  width: 100%;
+  max-width: 100%;
+  aspect-ratio: auto;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
               0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  margin-bottom: 0;
+  overflow: hidden;
 }
 
 mark {
@@ -106,6 +112,7 @@ mark {
   padding: 0 4px;
   border-radius: 4px;
 }
+
 .constraint-item {
   display: flex;
   align-items: center;
@@ -114,27 +121,27 @@ mark {
   border-radius: 8px;
   margin-bottom: 10px;
 }
-.resume-page {
-  aspect-ratio: 1 / 1.4142;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
-              0 2px 4px -1px rgba(0, 0, 0, 0.06);
+
+/* Fix for PDF canvas to fill container */
+canvas {
+  max-width: 100%;
+  max-height: 100%;
+  width: auto !important;
+  height: auto !important;
+  display: block;
+  object-fit: contain;
 }
 
-mark {
-  background-color: #fde68a;
-  padding: 0 4px;
-  border-radius: 4px;
+/* Ensure DOCX content doesn't overflow */
+.prose {
+  max-width: 100% !important;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
 }
-.constraint-item {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 12px;
-  border-radius: 8px;
-  margin-bottom: 10px;
-}
-.resume-page {
-  aspect-ratio: 1 / 1.4142;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
-              0 2px 4px -1px rgba(0, 0, 0, 0.06);
+
+/* Prevent text content from overflowing */
+.whitespace-pre-wrap {
+  white-space: pre-wrap;
+  word-break: break-word;
+  max-width: 100%;
 }

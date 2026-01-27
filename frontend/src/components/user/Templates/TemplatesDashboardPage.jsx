@@ -3,8 +3,8 @@ import { useMemo, useState, useEffect, useRef } from 'react';
 import { Search, Plus, Upload, Filter, Eye, X, Check } from "lucide-react";
 import UserNavBar from '../UserNavBar/UserNavBar';
 import axios from 'axios';
-import { renderAsync } from "docx-preview";
-import html2canvas from "html2canvas";
+//import { renderAsync } from "docx-preview";
+//import html2canvas from "html2canvas";
 
 const TemplatesDashboardPage = ({ onSelectTemplate }) => {
   const [search, setSearch] = useState('');

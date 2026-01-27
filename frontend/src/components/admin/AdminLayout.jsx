@@ -8,7 +8,7 @@ export default function AdminLayout() {
 
   return (
     <>
-      <AdminNavbar />
+      <AdminNavbar isCollapsed={isCollapsed} />
 
       <AdminSidebar isCollapsed={isCollapsed} setIsCollapsed={setIsCollapsed} />
 
