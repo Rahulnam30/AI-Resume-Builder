@@ -28,6 +28,7 @@ import ResumeHubPage from "./pages/ResumeHub";
 import GrowthInsightsPage from "./pages/GrowthInsights";
 import AICoverLetterPage from "./pages/CoverLetter";
 import CVFormattingPage from "./pages/CV";
+import WritingCoverLetter from "./pages/WritingCoverLetter"
 
 // ================= ADMIN =================
 
@@ -81,6 +82,7 @@ function App() {
           <Route path="/growths" element={<GrowthInsightsPage />}/>
           <Route path="/cover-letter" element={<AICoverLetterPage  />}/>
           <Route path="/cv" element={<CVFormattingPage  />}/>
+          <Route path="/WritingCoverLetter" element={<WritingCoverLetter />}/>
 
           {/* ================= USER DASHBOARD ROUTES ================= */}
           <Route path="/user/*" element={<UserRoutes />} />
