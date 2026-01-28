@@ -1,11 +1,12 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 import axiosInstance from "../../../api/axios";
 import { renderAsync } from 'docx-preview';
 import html2canvas from 'html2canvas';
 
 const ResumeEditor = ({ initialData }) => {
     const [searchParams] = useSearchParams();
+    const navigate = useNavigate();
     const templateId = searchParams.get('id');
     const resumeRef = useRef(null);
     const containerRef = useRef(null);
@@ -98,6 +99,7 @@ const ResumeEditor = ({ initialData }) => {
             });
 
             alert("Resume Saved Successfully!");
+            navigate('/admin/create-templates');
 
         } catch (err) {
             console.error("Save failed:", err);

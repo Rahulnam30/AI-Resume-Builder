@@ -74,18 +74,18 @@ export default function AdminDashboard() {
         "/api/user/dashboard-stat"
       );
 
-      setTotalUser(result.data.users.total);
-      setTotalUserChange(result.data.users.change);
-      setTotalActiveSub(result.data.subscriptions.total);
-      setTotalActiveSubChange(result.data.subscriptions.change);
-      setTotalRevenue(result.data.revenue.total);
-      setTotalRevenueChange(result.data.revenue.change);
-      setResumeGen(result.data.resumes.total);
-      setTotalResumeGenChange(result.data.resumes.change);
-      setResumeChart(result.data.resumeChart);
-      setSubscriptionSplit(result.data.subscriptionSplit);
-      setUserGrowth(result.data.userGrowth);
-      setDailyActivity(result.data.dailyActiveUsers);
+      setTotalUser(result.data?.users?.total || 0);
+      setTotalUserChange(result.data?.users?.change || 0);
+      setTotalActiveSub(result.data?.subscriptions?.total || 0);
+      setTotalActiveSubChange(result.data?.subscriptions?.change || 0);
+      setTotalRevenue(result.data?.revenue?.total || 0);
+      setTotalRevenueChange(result.data?.revenue?.change || 0);
+      setResumeGen(result.data?.resumes?.total || 0);
+      setTotalResumeGenChange(result.data?.resumes?.change || 0);
+      setResumeChart(result.data?.resumeChart || []);
+      setSubscriptionSplit(result.data?.subscriptionSplit || []);
+      setUserGrowth(result.data?.userGrowth || []);
+      setDailyActivity(result.data?.dailyActiveUsers || []);
     } catch (error) {
       console.error(error);
     }
@@ -136,7 +136,7 @@ export default function AdminDashboard() {
             <h3 className="text-base font-semibold mb-4">
               Resume Generation Trend
             </h3>
-            <ResponsiveContainer width="100%" height="90%">
+            <ResponsiveContainer width="100%" height="90%" minWidth={0}>
               <BarChart data={resumeChart}>
                 <XAxis dataKey="month" fontSize={12} />
                 <YAxis fontSize={12} />
@@ -153,7 +153,7 @@ export default function AdminDashboard() {
           {/* User Growth */}
           <div className="bg-white border rounded-2xl p-6 shadow-sm h-[350px] xl:col-span-2">
             <h3 className="text-base font-semibold mb-4">User Growth</h3>
-            <ResponsiveContainer width="100%" height="90%">
+            <ResponsiveContainer width="100%" height="90%" minWidth={0}>
               <LineChart data={userGrowth}>
                 <XAxis dataKey="month" fontSize={12} />
                 <YAxis fontSize={12} />
@@ -179,7 +179,7 @@ export default function AdminDashboard() {
               Subscription Distribution
             </h3>
 
-            <ResponsiveContainer width="100%" height="80%">
+            <ResponsiveContainer width="100%" height="80%" minWidth={0}>
               <PieChart>
                 <Pie
                   data={subscriptionSplit}
@@ -218,7 +218,7 @@ export default function AdminDashboard() {
           {/* Daily Active Users */}
           <div className="bg-white border rounded-2xl p-6 shadow-sm h-[350px]">
             <h3 className="text-base font-semibold mb-4">Daily Active Users</h3>
-            <ResponsiveContainer width="100%" height="90%">
+            <ResponsiveContainer width="100%" height="90%" minWidth={0}>
               <BarChart data={dailyActivity}>
                 <XAxis dataKey="day" fontSize={12} />
                 <YAxis fontSize={12} />

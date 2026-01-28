@@ -1,6 +1,7 @@
 import React from "react";
 import { useState, useEffect, useRef } from "react";
 import { useNavigate, useLocation, Link } from "react-router-dom";
+import NavBar from "../components/NavBar";
 import UpToSkillsImg from "../assets/UptoSkills.webp";
 import featureImage1 from "../assets/ai-assistant.png";
 import featureImage2 from "../assets/tailored-summary.png";
@@ -11,6 +12,13 @@ import work2 from "../assets/analysis.png";
 import work1 from "../assets/goodResume.png";
 import work4 from "../assets/oneClick.png";
 import work5 from "../assets/win.png";
+import template1 from "../assets/template_thumnail/JessicaClaire1.png";
+import template2 from "../assets/template_thumnail/JessicaClaire2.png";
+import template3 from "../assets/template_thumnail/JessicaClaire3.png";
+import template4 from "../assets/template_thumnail/JessicaClaire4.png";
+import template5 from "../assets/template_thumnail/JessicaClaire5.png";
+import template6 from "../assets/template_thumnail/JessicaClaire6.png";
+
 import Footer from "./Footer";
 import {
   ArrowRight,
@@ -30,6 +38,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Activity,
+  CheckCircle,
 } from "lucide-react";
 
 function LandingPage() {
@@ -91,42 +100,42 @@ function LandingPage() {
       name: "Atlantic Blue",
       category: "modern",
       desc: "Modern and professional design",
-      image: `${base}templates/chronological.png`,
+      image: template1,
     },
     {
       id: 2,
       name: "Classic",
       category: "traditional",
       desc: "Traditional and timeless layout",
-      image: `${base}templates/functional.png`,
+      image: template2,
     },
     {
       id: 3,
       name: "Corporate",
       category: "traditional",
       desc: "Professional corporate style",
-      image: `${base}templates/creative.png`,
+      image: template3,
     },
     {
       id: 4,
       name: "Modern Pro",
       category: "modern",
       desc: "Sleek and contemporary design",
-      image: `${base}templates/modern.png`,
+      image: template4,
     },
     {
       id: 5,
       name: "Executive",
       category: "executive",
       desc: "Perfect for senior positions",
-      image: `${base}templates/minimalist.png`,
+      image: template5,
     },
     {
       id: 6,
       name: "Creative Edge",
       category: "creative",
       desc: "Stand out with creative flair",
-      image: `${base}templates/executive.png`,
+      image: template6,
     },
   ];
 
@@ -266,248 +275,15 @@ function LandingPage() {
   ];
 
   return (
-    <div className="min-h-screen flex flex-col bg-white text-[#1a2e52] font-['Outfit']">
-      {/* NAVIGATION */}
+    <div className="min-h-screen flex flex-col bg-white text-[#1a2e52] font-['Segoe UI']">
 
-      <nav className="fixed top-0 w-full z-50 py-4 border-b border-gray-100 bg-white/95 backdrop-blur-md select-none">
-        <div className="max-w-[1400px] mx-auto px-8 flex items-center justify-between z-50">
-          <div
-            onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-            className="cursor-pointer"
-          >
-            <img
-              src={UpToSkillsImg}
-              alt="UpToSkills Logo"
-              className="w-[150px]"
-            />
-          </div>
-
-          <div
-            className={`absolute left-1/2 transform -translate-x-1/2 ${mobileMenuOpen ? "hidden" : ""}`}
-          >
-            <ul className="flex items-center gap-8 hidden md:flex">
-              <li className="cursor-pointer hover:text-orange-600">
-                <Link to="/about">About us</Link>
-              </li>
-
-              <li className="cursor-pointer hover:text-orange-600">
-                <Link to="/#free-templates">Templates</Link>
-              </li>
-
-              {/* Features Dropdown */}
-              <li className="relative group cursor-pointer hover:text-orange-600">
-                <div className="flex items-center gap-1">
-                  <span>Features</span>
-                  <i className="fas fa-chevron-down text-xs transition-transform duration-300 group-hover:rotate-180"></i>
-                </div>
-
-                {/* Features Dropdown Menu */}
-                <div className="absolute top-full left-0 mt-2 w-56 bg-white border border-gray-200 rounded-xl shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform translate-y-2 group-hover:translate-y-0 z-50">
-                  <ul className="py-2">
-                    <li className="px-4 py-3 hover:bg-blue-50 hover:text-blue-600 transition-colors duration-200">
-                      <Link
-                        to="/resume-checker"
-                        className="flex items-center gap-3 text-black"
-                      >
-                        <i className="fas fa-clipboard-check text-blue-600"></i>
-                        <span>AI Resume Checker</span>
-                      </Link>
-                    </li>
-                    <li className="px-4 py-3 hover:bg-green-50 hover:text-green-600 transition-colors duration-200">
-                      <Link
-                        to={`${isLoggedIn ? "/user/resume-builder" : "/login"}`}
-                        className="flex items-center gap-3 text-black"
-                      >
-                        <i className="fas fa-file-alt text-green-600"></i>
-                        <span>AI Resume Builder</span>
-                      </Link>
-                    </li>
-                    <li className="px-4 py-3 hover:bg-purple-50 hover:text-purple-600 transition-colors duration-200">
-                      <Link
-                        to="/"
-                        className="flex items-center gap-3 text-black"
-                      >
-                        <i className="fas fa-check-circle text-purple-600"></i>
-                        <span>ATS Optimization</span>
-                      </Link>
-                    </li>
-                    <li className="px-4 py-3 hover:bg-teal-50 hover:text-teal-600 transition-colors duration-200">
-                      <Link
-                        to="/"
-                        className="flex items-center gap-3 text-black"
-                      >
-                        <i className="fas fa-envelope text-teal-600"></i>
-                        <span>Cover Letter Gen</span>
-                      </Link>
-                    </li>
-                    <li className="px-4 py-3 hover:bg-indigo-50 hover:text-indigo-600 transition-colors duration-200">
-                      <Link
-                        to="/"
-                        className="flex items-center gap-3 text-black"
-                      >
-                        <i className="fas fa-magic text-indigo-600"></i>
-                        <span>Smart Formatting</span>
-                      </Link>
-                    </li>
-                  </ul>
-                </div>
-              </li>
-
-              {isLoggedIn && (
-                <li className="cursor-pointer hover:text-orange-600">
-                  <Link to="/user/dashboard">Dashboard</Link>
-                </li>
-              )}
-              <li className="cursor-pointer hover:text-orange-600">
-                <Link to="/pricing">Pricing</Link>
-              </li>
-              <li className="cursor-pointer hover:text-orange-600">
-                <Link to="/contact">Contact</Link>
-              </li>
-            </ul>
-          </div>
-
-          {!isLoggedIn && (
-            <div className="items-center hidden gap-6 md:flex">
-              <button
-                onClick={() => navigate("/login")}
-                className="flex items-center gap-3 px-6 py-2.5 border-2 border-[#0077cc] text-[#0077cc] rounded-xl font-bold transition-all duration-300 hover:bg-[#0077cc] hover:text-white hover:shadow-lg hover:shadow-blue-100 hover:-translate-y-1 active:scale-95"
-              >
-                <LogIn size={20} />
-                <span>Login</span>
-              </button>
-
-              <button
-                onClick={() => navigate("/register")}
-                className="flex items-center gap-3 px-6 py-2.5 bg-[#e65100] text-white rounded-xl font-bold transition-all duration-300 border-2 border-transparent hover:bg-[#ff6d00] hover:shadow-xl hover:shadow-orange-200 hover:-translate-y-1 active:scale-95"
-              >
-                <UserPlus size={20} />
-                <span>Sign up</span>
-              </button>
-            </div>
-          )}
-
-          {isLoggedIn && (
-            <div className="items-center hidden gap-6 md:flex">
-              <button
-                onClick={() => {
-                  navigate("/login");
-                  localStorage.removeItem("token");
-                }}
-                className="flex items-center gap-3 px-6 py-2.5 bg-[#e65100] text-white rounded-xl font-bold transition-all duration-300 border-2 border-transparent hover:bg-[#ff6d00] hover:shadow-xl hover:shadow-orange-200 hover:-translate-y-1 active:scale-95"
-              >
-                <LogOut size={20} />
-                <span>Logout</span>
-              </button>
-            </div>
-          )}
-
-          <button className="text-2xl md:hidden" onClick={toggleMobileMenu}>
-            <Menu size={28} />
-          </button>
-        </div>
-        <div
-          className={`absolute top-19 right-0 w-full bg-white z-40 overflow-hidden
-                      transition-all duration-800 ease-in-out
-                      transform
-                      ${
-                        mobileMenuOpen
-                          ? "max-h-[500px] translate-y-0 opacity-100 pointer-events-auto"
-                          : "max-h-0 -translate-y-4 opacity-0 pointer-events-none"
-                      }
-                      md:hidden
-                    `}
-        >
-          <div
-            onClick={() => {
-              navigate("/");
-              toggleMobileMenu();
-            }}
-            className="text-center p-3 border-b-[1px] border-solid border-black-500 active:bg-orange-500 active:text-white"
-          >
-            Home
-          </div>
-          <div
-            onClick={() => {
-              navigate("/about");
-              toggleMobileMenu();
-            }}
-            className="text-center p-3 border-b-[1px] border-solid border-black-500 active:bg-orange-500 active:text-white"
-          >
-            About us
-          </div>
-          <div
-            onClick={() => {
-              navigate("/pricing");
-              toggleMobileMenu();
-            }}
-            className="text-center p-3 border-b-[1px] border-solid border-black-500 active:bg-orange-500 active:text-white"
-          >
-            Pricing
-          </div>
-          <div
-            onClick={() => {
-              navigate("/contact");
-              toggleMobileMenu();
-            }}
-            className="text-center p-3 border-b-[1px] border-solid border-black-500 active:bg-orange-500 active:text-white"
-          >
-            Contact
-          </div>
-          {isLoggedIn && (
-            <>
-              <div
-                onClick={() => {
-                  navigate("/user/dashboard");
-                  toggleMobileMenu();
-                }}
-                className="text-center p-3 border-b-[1px] border-solid border-black-500 active:bg-orange-500 active:text-white"
-              >
-                Dashboard
-              </div>
-              <div
-                onClick={() => {
-                  toggleMobileMenu();
-                  localStorage.removeItem("token");
-                  navigate("/login");
-                }}
-                className="text-center p-3 border-b-[1px] border-solid border-black-500 active:bg-orange-500 active:text-white"
-              >
-                Logout
-              </div>
-            </>
-          )}
-          {!isLoggedIn && (
-            <>
-              <div
-                onClick={() => {
-                  navigate("/login");
-                  toggleMobileMenu();
-                }}
-                className="text-center p-3 border-b-[1px] border-solid border-black-500 active:bg-orange-500 active:text-white"
-              >
-                Login
-              </div>
-              <div
-                onClick={() => {
-                  navigate("/register");
-                  toggleMobileMenu();
-                }}
-                className="text-center p-3 border-b-[1px] border-solid border-black-500 active:bg-orange-500 active:text-white"
-              >
-                Sign up
-              </div>
-            </>
-          )}
-        </div>
-      </nav>
+      <NavBar />
 
       {/*  OVERLAY */}
       <div
         onClick={toggleMobileMenu}
-        className={`w-full h-full absolute top-0 left-0 z-30 bg-black/20 ${
-          mobileMenuOpen ? "" : "hidden"
-        }`}
+        className={`w-full h-full absolute top-0 left-0 z-30 bg-black/20 ${mobileMenuOpen ? "" : "hidden"
+          }`}
       ></div>
 
       {/* HERO SECTION */}
@@ -564,21 +340,19 @@ function LandingPage() {
               {templates.map((template, idx) => (
                 <div
                   key={idx}
-                  className={`absolute inset-0 transition-all duration-700 ease-out flex items-center justify-center select-none ${
-                    idx === currentTemplateIndex
+                  className={`absolute inset-0 transition-all duration-700 ease-out flex items-center justify-center select-none ${idx === currentTemplateIndex
                       ? "opacity-100 scale-100"
                       : "opacity-0 scale-95"
-                  }`}
+                    }`}
                 >
                   <img
                     src={template.image}
                     alt={template.name}
-                    className={`object-contain ${
-                      template.name === "Tailored Summary" ||
-                      template.name === "Tailor to Job"
+                    className={`object-contain ${template.name === "Tailored Summary" ||
+                        template.name === "Tailor to Job"
                         ? "w-[70%] h-[70%]"
                         : "w-full h-full"
-                    }`}
+                      }`}
                     onError={(e) => {
                       e.target.style.display = "none";
                     }}
@@ -606,9 +380,8 @@ function LandingPage() {
             {howItWorksSteps.map((step, index) => (
               <div
                 key={index}
-                className={`flex flex-col md:flex-row items-center gap-12 ${
-                  index % 2 !== 0 ? "md:flex-row-reverse" : ""
-                }`}
+                className={`flex flex-col md:flex-row items-center gap-12 ${index % 2 !== 0 ? "md:flex-row-reverse" : ""
+                  }`}
               >
                 {/* IMAGE BOX */}
                 <div className="relative w-full md:w-1/2 bg-white  shadow-xl rounded-3xl ">

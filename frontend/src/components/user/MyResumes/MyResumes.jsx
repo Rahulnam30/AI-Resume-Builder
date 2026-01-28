@@ -48,11 +48,14 @@ export default function MyResumes({ onSidebarToggle }) {
       />
 
       {/* CONTENT BELOW NAVBAR */}
-      <div style={{ marginTop: "80px", padding: "1rem" }}>
+      <div className="myresumes-wrapper">
         {/* Page Header */}
         <div className="page-header">
-          <h1>My Resumes</h1>
-          <p>Manage all your resume documents.</p>
+          <div>
+            <h1>My Resumes</h1>
+            <p>Manage all your resume documents.</p>
+          </div>
+          <button className="create-btn">+ Create New</button>
         </div>
 
         {/* Table / Card Section */}

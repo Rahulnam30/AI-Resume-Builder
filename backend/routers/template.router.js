@@ -9,11 +9,11 @@ const router = express.Router();
 // Note: Add auth middleware as needed. For now, I'm keeping it open or assuming global auth usage if provided.
 
 router.get("/parse/:id", getTemplateHtml);
-router.get("/:id", getTemplateById);
-router.post("/upload", upload.fields([{ name: 'templateFile', maxCount: 1 }, { name: 'thumbnail', maxCount: 1 }]), uploadTemplate);
-router.put("/:id", upload.fields([{ name: 'templateFile', maxCount: 1 }, { name: 'thumbnail', maxCount: 1 }]), updateTemplate);
 router.get("/", getTemplates);
+router.post("/upload", upload.fields([{ name: 'templateFile', maxCount: 1 }, { name: 'thumbnail', maxCount: 1 }]), uploadTemplate);
 router.put("/approve/:id", approveTemplate);
+router.get("/:id", getTemplateById);
+router.put("/:id", upload.fields([{ name: 'templateFile', maxCount: 1 }, { name: 'thumbnail', maxCount: 1 }]), updateTemplate);
 router.delete("/:id", deleteTemplate);
 
 export default router;

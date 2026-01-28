@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import UpToSkillsImg from '../assets/UptoSkills.webp';
+import NavBar from "../components/NavBar";
 import Footer from "./Footer";
 
 function HelpCenter() {
@@ -1078,16 +1079,8 @@ function HelpCenter() {
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50">
-            {/* Navigation */}
-            <nav className="bg-white shadow-sm sticky top-0 z-50">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="flex justify-between items-center h-16">
-                        <div onClick={() => navigate('/')} className="cursor-pointer hover:opacity-80 transition-opacity">
-                            <img src={UpToSkillsImg} alt="UpToSkills Logo" className="h-8" />
-                        </div>
-                    </div>
-                </div>
-            </nav>
+
+            <NavBar />
 
             {/* Hero Section */}
             <div className="bg-gradient-to-br from-blue-600 via-indigo-700 to-blue-800 text-white relative overflow-hidden" onMouseMove={handleMouseMove}>

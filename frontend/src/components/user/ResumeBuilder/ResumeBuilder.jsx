@@ -6,15 +6,16 @@ import {
   Award,
   Briefcase,
   Download,
+  FilePenLine,
   FolderKanban,
   GraduationCap,
+  PenTool,
   Upload,
   User,
   Zap,
 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
-import ModeSelection from "./ModeSelection";
-import ResumeUpload from "./ResumeUpload";
 import FormTabs from "./FormTabs";
 
 import PersonalInfoForm from "./forms/PersonalInfoForm";
@@ -27,6 +28,9 @@ import CertificationsForm from "./forms/CertificationsForm";
 import LivePreview from "../Preview/LivePreview";
 import FullPreview from "../Preview/FullPreview";
 import TemplatesPage from "../Templates/TemplatesDashboardPage";
+import { TEMPLATES } from "../Templates/TemplateRegistry";
+
+import { getCompletionStatus } from "./completion";
 
 import "./ResumeBuilder.css";
 import UserNavbar from "../UserNavBar/UserNavBar";
@@ -40,7 +44,7 @@ const sections = [
   "certs",
 ];
 
-const ResumeBuilder = ({ setActivePage = () => {} }) => {
+const ResumeBuilder = ({ setActivePage = () => { } }) => {
   /* -------------------- CORE STATE -------------------- */
   const [formData, setFormData] = useState({
     fullname: "",
@@ -79,9 +83,9 @@ const ResumeBuilder = ({ setActivePage = () => {} }) => {
         description: "",
         technologies: "",
         link: {
-          github:"",
-          liveLink:"",
-          other:""
+          github: "",
+          liveLink: "",
+          other: "",
         },
       },
     ],
@@ -96,14 +100,17 @@ const ResumeBuilder = ({ setActivePage = () => {} }) => {
       },
     ],
   });
-  const [templates, setTemplates] = useState([]);
-  const [selectedTemplate, setSelectedTemplate] = useState(null);
+  const navigate = useNavigate();
+  const [templates, setTemplates] = useState(TEMPLATES);
+  const [selectedTemplate, setSelectedTemplate] = useState(TEMPLATES[0]?.id || "jessica-claire");
 
-  const [resumeMode, setResumeMode] = useState(null);
-  const [uploadedResume, setUploadedResume] = useState(null);
+  // const [resumeMode, setResumeMode] = useState(null);
+  // const [uploadedResume, setUploadedResume] = useState(null);
 
   const [activeTab, setActiveTab] = useState("builder");
   const [activeSection, setActiveSection] = useState("personal");
+
+  const completion = getCompletionStatus(formData);
 
   /* -------------------- PREVIEW STATE -------------------- */
   const [isPreviewExpanded, setIsPreviewExpanded] = useState(false);
@@ -128,8 +135,8 @@ const ResumeBuilder = ({ setActivePage = () => {} }) => {
   /*------------------- PREVIOUS & NEXT BUTTON ------------*/
   const tabs = [
     { id: "personal", label: "Personal", icon: User },
-    { id: "work", label: "Work", icon: Briefcase },
     { id: "education", label: "Education", icon: GraduationCap },
+    { id: "work", label: "Work", icon: Briefcase },
     { id: "projects", label: "Projects", icon: FolderKanban },
     { id: "certs", label: "Certifications", icon: Award },
     { id: "skills", label: "Skills", icon: Zap },
@@ -193,11 +200,7 @@ const ResumeBuilder = ({ setActivePage = () => {} }) => {
   const renderMainContent = () => {
     if (activeTab === "templates") {
       return (
-        <TemplatesPage
-          templates={templates}
-          selectedTemplate={selectedTemplate}
-          onSelectTemplate={handleSelectTemplate}
-        />
+        <TemplatesPage onSelectTemplate={handleSelectTemplate} isEmbedded={true} />
       );
     }
 
@@ -205,7 +208,6 @@ const ResumeBuilder = ({ setActivePage = () => {} }) => {
       return (
         <FullPreview
           formData={formData}
-          currentTemplate={currentTemplate}
           setActiveTab={setActiveTab}
         />
       );
@@ -226,17 +228,13 @@ const ResumeBuilder = ({ setActivePage = () => {} }) => {
               Add the following information to enable export functionality:
             </p>
           </div>
-          {/* alert-tags */}
           <div className="flex gap-2 ml-auto flex-wrap">
-            {/* alert-tag warning */}
             <span className="px-2.5 py-1 rounded-md text-xs font-medium bg-amber-100 text-amber-800">
               Personal Info
             </span>
-            {/* alert-tag warning */}
             <span className="px-2.5 py-1 rounded-md text-xs font-medium bg-amber-100 text-amber-800">
               Experience / Education
             </span>
-            {/* alert-tag success */}
             <span className="px-2.5 py-1 rounded-md text-xs font-medium bg-emerald-100 text-emerald-800">
               Skills
             </span>
@@ -244,7 +242,6 @@ const ResumeBuilder = ({ setActivePage = () => {} }) => {
         </div>
 
         {/* BUILDER + PREVIEW */}
-        {/* `content-area ${isPreviewExpanded ? "expanded-preview" : ""}` */}
         <div
           className={`grid grid-cols-[32%_68%] gap-14 p-1.5 ml-2 mr-2 ${isPreviewExpanded ? "grid-cols-[0_100%]" : ""}`}
         >
@@ -255,7 +252,9 @@ const ResumeBuilder = ({ setActivePage = () => {} }) => {
               setActiveSection={setActiveSection}
             />
             {/* form-content */}
-            <div className="w-full h-[55%] mt-5 overflow-auto">{renderFormContent()}</div>
+            <div className="w-full h-[72%] mt-5 overflow-auto">
+              {renderFormContent()}
+            </div>
             {/* Previous & Next */}
             <div className="w-full flex items-center justify-between mt-10">
               <button
@@ -294,39 +293,48 @@ const ResumeBuilder = ({ setActivePage = () => {} }) => {
   };
 
   /* -------------------- MODE SELECTION -------------------- */
-  if (!resumeMode) {
-    return (
-      // resume-builder-page
-      <div className="p-2.5">
-        <h1>📝 AI Resume Builder</h1>
-        <ModeSelection onSelectMode={setResumeMode} />
-      </div>
-    );
-  }
+  // if (!resumeMode) {
+  //   return (
+  //     // resume-builder-page
+  //     <div className="p-2.5">
+  //       <h1>📝 AI Resume Builder</h1>
+  //       <ModeSelection onSelectMode={setResumeMode} />
+  //     </div>
+  //   );
+  // }
+  // <ResumeUpload
+  //   onUpload={setUploadedResume}
+  //   onBack={() => setResumeMode(null)}
+  // />;
 
   /* -------------------- UPLOAD MODE -------------------- */
-  if (resumeMode === "edit" && !uploadedResume) {
-    return (
-      <ResumeUpload
-        onUpload={setUploadedResume}
-        onBack={() => setResumeMode(null)}
-      />
-    );
-  }
+  // if (resumeMode === "edit" && !uploadedResume) {
+  //   return (
+  //     <ResumeUpload
+  //       onUpload={setUploadedResume}
+  //       onBack={() => setResumeMode(null)}
+  //     />
+  //   );
+  // }
 
   /* -------------------- BUILDER PAGE -------------------- */
   return (
-    <div className="">
+    <>
       <UserNavbar />
       {/* resume-builder-page */}
-      <div className="p-2.5">
+      <div className="p-2.5 mt-4">
         {/* main-header */}
         <div className="flex justify-between items-start mb-5 p-2">
-          <h1 className="text-2xl font-['Outfit']">
-            {resumeMode === "create" ? "Create Resume" : "Edit Resume"}
-          </h1>
-          <div className="header-actions">
+          <h1 className="text-2xl font-['Outfit']">Create Resume</h1>
+          <div className="flex gap-2">
             {/* upload-btn &  export-btn */}
+            <button
+              onClick={() => navigate("/user/cv")}
+              className="flex items-center gap-2 px-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-800 font-medium shadow-sm hover:bg-gray-50 hover:shadow-md transition-all"
+            >
+              <PenTool size={18} />
+              CV Designer
+            </button>
             <button className="flex gap-2 py-2.5 px-5 text-white cursor-pointer bg-gradient-to-br from-blue-600 to-blue-700 border-0 rounded-lg text-sm transition-all duration-200 hover:from-blue-700 hover:to-blue-800">
               <Upload size={18} />
               Upload
@@ -338,14 +346,12 @@ const ResumeBuilder = ({ setActivePage = () => {} }) => {
         </div>
         {/* main-tabs */}
         <div className="flex gap-1 bg-gray-100 rounded-lg p-1.5 mb-4 w-fit">
-          {/* {activeTab === "builder" ? "active" : ""}  */}
           <button
             className={`py-1 px-2.5 rounded-lg mr-1 ${activeTab === "builder" ? "bg-white text-slate-900 shadow-sm" : ""}`}
             onClick={() => setActiveTab("builder")}
           >
             Builder
           </button>
-          {/* {activeTab === "templates" ? "active" : ""} */}
           <button
             className={`py-1 px-2.5 rounded-lg ${activeTab === "templates" ? "bg-white text-slate-900 shadow-sm" : ""}`}
             onClick={() => setActiveTab("templates")}
@@ -356,7 +362,7 @@ const ResumeBuilder = ({ setActivePage = () => {} }) => {
 
         {renderMainContent()}
       </div>
-    </div>
+    </>
   );
 };
 

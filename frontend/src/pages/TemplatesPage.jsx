@@ -3,27 +3,28 @@ import { useNavigate } from "react-router-dom";
 import NavBar from "../components/NavBar";
 import Footer from "./Footer";
 
+import { TEMPLATES } from "../components/user/Templates/TemplateRegistry";
+import { getTemplateStatus } from "../utils/templateVisibility";
+
 function TemplatesPage() {
   const navigate = useNavigate();
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [hoveredTemplate, setHoveredTemplate] = useState(null);
-  const base = import.meta.env.BASE_URL || "/";
 
-  const templates = [
-    { id: 1, name: "Atlantic Blue", category: "modern", image: `${base}templates/chronological.png` },
-    { id: 2, name: "Classic", category: "traditional", image: `${base}templates/functional.png` },
-    { id: 3, name: "Corporate", category: "traditional", image: `${base}templates/creative.png` },
-    { id: 4, name: "Modern Pro", category: "modern", image: `${base}templates/modern.png` },
-    { id: 5, name: "Executive", category: "executive", image: `${base}templates/minimalist.png` },
-    { id: 6, name: "Creative Edge", category: "creative", image: `${base}templates/executive.png` },
-  ];
+  const activeTemplates = TEMPLATES.filter(t => getTemplateStatus(t.id));
+
+  const templates = activeTemplates.map(t => ({
+    id: t.id,
+    name: t.name,
+    category: t.category.toLowerCase(), // Ensure lowercase matching
+    image: t.thumbnail
+  }));
 
   const categories = [
     { id: "all", label: "All Templates" },
-    { id: "traditional", label: "Traditional" },
+    { id: "professional", label: "Professional" },
     { id: "modern", label: "Modern" },
     { id: "creative", label: "Creative" },
-    { id: "executive", label: "Executive" },
   ];
 
   const filteredTemplates =
@@ -54,9 +55,8 @@ function TemplatesPage() {
               <button
                 key={cat.id}
                 onClick={() => setSelectedCategory(cat.id)}
-                className={`px-6 py-2.5 rounded-lg font-semibold transition-all duration-300 ${
-                  selectedCategory === cat.id ? "bg-blue-600 text-white shadow-md" : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-                }`}
+                className={`px-6 py-2.5 rounded-lg font-semibold transition-all duration-300 ${selectedCategory === cat.id ? "bg-blue-600 text-white shadow-md" : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                  }`}
               >
                 {cat.label}
               </button>
@@ -74,9 +74,8 @@ function TemplatesPage() {
                 className="group relative cursor-pointer"
               >
                 <div
-                  className={`bg-white rounded-xl shadow-lg border-2 overflow-hidden transition-all duration-300 ${
-                    hoveredTemplate === template.id ? "border-blue-600 shadow-2xl -translate-y-2" : "border-gray-200"
-                  }`}
+                  className={`bg-white rounded-xl shadow-lg border-2 overflow-hidden transition-all duration-300 ${hoveredTemplate === template.id ? "border-blue-600 shadow-2xl -translate-y-2" : "border-gray-200"
+                    }`}
                 >
                   <div className="relative h-[400px] bg-gray-50 overflow-hidden">
                     <img

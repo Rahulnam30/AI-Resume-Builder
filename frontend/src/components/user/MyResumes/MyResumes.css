@@ -1,7 +1,8 @@
 /* Wrapper */
 .myresumes-wrapper {
   background: #f8fafc;
-  min-height: 100vh;
+  min-height: calc(100vh - 64px);
+  /* Subtract navbar height */
   padding: 24px 32px;
   font-family: Inter, system-ui, sans-serif;
   color: #0f172a;
@@ -147,7 +148,7 @@
   background: #fff;
   border-radius: 12px;
   padding: 20px;
-  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
   width: 100%;
 }
 
@@ -205,15 +206,10 @@
   border-color: #cbd5e1;
 }
 
-.card {
-  width: 100%;
-  max-width: 100%;
-}
-
 .resume-table {
-  width: calc(100% + 24px);
-  margin-left: -12px;
-  margin-right: -12px;
+  width: calc(100% + 40px);
+  margin-left: -20px;
+  margin-right: -20px;
   border-collapse: collapse;
 }
 
@@ -221,6 +217,7 @@
 .resume-table tbody td {
   padding: 14px 20px;
   font-size: 14px;
+  text-align: left;
 }
 
 .resume-table tbody td {
@@ -229,9 +226,20 @@
 
 
 /* Scores */
-.score.green { color: #22c55e; font-weight: 600; }
-.score.blue { color: #3b82f6; font-weight: 600; }
-.score.orange { color: #f97316; font-weight: 600; }
+.score.green {
+  color: #22c55e;
+  font-weight: 600;
+}
+
+.score.blue {
+  color: #3b82f6;
+  font-weight: 600;
+}
+
+.score.orange {
+  color: #f97316;
+  font-weight: 600;
+}
 
 /* Actions */
 .actions {

@@ -11,8 +11,8 @@ import { useRef } from "react";
 /* ===== TABS (SINGLE SOURCE OF TRUTH) ===== */
 const tabs = [
   { id: "personal", label: "Personal", icon: User },
-  { id: "work", label: "Work", icon: Briefcase },
   { id: "education", label: "Education", icon: GraduationCap },
+  { id: "work", label: "Work", icon: Briefcase },
   { id: "projects", label: "Projects", icon: FolderKanban },
   { id: "certs", label: "Certifications", icon: Award },
   { id: "skills", label: "Skills", icon: Zap },
@@ -22,7 +22,7 @@ export default function FormTabs({ activeSection, setActiveSection }) {
   const tabsRef = useRef(null);
   const currentIdx = tabs.findIndex((tab) => tab.id === activeSection);
   return (
-    <div className="flex items-center justify-center bg-white rounded-xl px-3 py-2">
+    <div className="flex items-center justify-center bg-white rounded-xl py-2 pr-10">
       {/* TABS */}
       <div className="flex-1 overflow-hidden">
         <div

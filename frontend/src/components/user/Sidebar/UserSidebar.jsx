@@ -22,6 +22,7 @@ export default function UserSidebar() {
   const location = useLocation();
   const [isCollapsed, setIsCollapsed] = useState(true);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
+  const [hoveredItem, setHoveredItem] = useState(null);
 
   const menuItems = [
     { id: "dashboard", icon: LayoutDashboard, label: "Dashboard", path: "/user/dashboard" },
@@ -29,7 +30,7 @@ export default function UserSidebar() {
     { id: "cv", icon: FileUser, label: "CV", path: "/user/cv" },
     { id: "coverletter", icon: FilePen, label: "Cover Letter", path: "/user/cover-letter" },
     { id: "ats", icon: CheckCircle, label: "ATS Score Checker", path: "/user/ats-checker" },
-    { id: "templates", icon: FileStack, label: "Templates", path: "/user/templates-dashboard-page" },
+
     { id: "myresumes", icon: Files, label: "My Resumes", path: "/user/my-resumes" },
   ];
 
@@ -38,31 +39,36 @@ export default function UserSidebar() {
     setIsMobileOpen(false);
   };
 
+  const handleLogout = () => {
+    // Clear all authentication data
+    localStorage.removeItem('token');
+    localStorage.clear(); // Clear all localStorage to ensure clean logout
+    setIsMobileOpen(false);
+    // Navigate after ensuring localStorage is cleared
+    setTimeout(() => {
+      navigate("/", { replace: true });
+      window.location.reload(); // Force reload to clear any cached state
+    }, 100);
+  };
+
   return (
     <>
       {/* Toggle Buttons */}
       <div className="fixed top-4 left-4 z-[60] flex gap-2">
-        <button onClick={() => setIsMobileOpen(!isMobileOpen)} className="md:hidden p-2">
+        <button onClick={() => setIsMobileOpen(!isMobileOpen)} className="md:hidden">
           {isMobileOpen ? <X /> : <Menu />}
         </button>
-{/* Desktop collapse toggle */}
-<button
-  onClick={() => setIsCollapsed(!isCollapsed)}
-  className="hidden md:flex nav-item toggle"
->
-  <div className="lines">
-    <span className="line"></span>
-    <span className="line"></span>
-    <span className="line"></span>
-  </div>
-  {!isCollapsed && <span className="nav-label"></span>} {/* optional */}
-</button>
-
-
+        <button
+          onClick={() => setIsCollapsed(!isCollapsed)}
+          className="hidden md:flex nav-item toggle"
+        >
+          <div className="lines">
+            <span className="line"></span>
+            <span className="line"></span>
+            <span className="line"></span>
+          </div>
+        </button>
       </div>
-
-      {/* Overlay for mobile */}
-      {isMobileOpen && <div onClick={() => setIsMobileOpen(false)} className="fixed inset-0 bg-black/30 z-40 md:hidden" />}
 
       {/* Sidebar */}
       <motion.aside
@@ -83,6 +89,8 @@ export default function UserSidebar() {
               <div key={item.id} className={`relative group ${index !== 0 ? "mt-[45px]" : ""}`}>
                 <button
                   onClick={() => handleNavigate(item.path)}
+                  onMouseEnter={() => isCollapsed && setHoveredItem(item.id)}
+                  onMouseLeave={() => setHoveredItem(null)}
                   className={`w-full flex items-center rounded-xl transition-all
                     ${isCollapsed ? "justify-center px-0" : "gap-3 px-4"} py-3
                     ${active ? "bg-blue-50 text-blue-600 font-semibold" : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"}`}
@@ -90,21 +98,35 @@ export default function UserSidebar() {
                   <Icon size={22} />
                   {!isCollapsed && <span className="whitespace-nowrap">{item.label}</span>}
                 </button>
+                {/* Tooltip for collapsed state */}
+                {isCollapsed && hoveredItem === item.id && (
+                  <div className="tooltip">
+                    {item.label}
+                  </div>
+                )}
               </div>
             );
           })}
         </nav>
 
         {/* Logout */}
-        <div className="p-3 border-t border-slate-200 mt-auto">
+        <div className="p-3 border-t border-slate-200 mt-auto relative">
           <button
-            onClick={() => navigate("/login")}
+            onClick={handleLogout}
+            onMouseEnter={() => isCollapsed && setHoveredItem("logout")}
+            onMouseLeave={() => setHoveredItem(null)}
             className={`w-full flex items-center rounded-xl transition-all text-red-500 hover:bg-red-50
               ${isCollapsed ? "justify-center px-0" : "gap-3 px-4"} py-3`}
           >
             <LogOut size={22} />
             {!isCollapsed && <span>Logout</span>}
           </button>
+          {/* Tooltip for logout in collapsed state */}
+          {isCollapsed && hoveredItem === "logout" && (
+            <div className="tooltip">
+              Logout
+            </div>
+          )}
         </div>
       </motion.aside>
 

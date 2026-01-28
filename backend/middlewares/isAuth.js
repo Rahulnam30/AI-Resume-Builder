@@ -11,13 +11,13 @@ const isAuth = async (req, res, next) => {
     if (!verifyToken) {
       return res.status(401).json({ message: "Valid Token Not Found" });
     }
-    console.log(verifyToken);
-
-    req.userId = verifyToken.userId;
+    
+    // FIX: Use 'id' instead of 'userId'
+    req.userId = verifyToken.id;
     next();
   } catch (error) {
-    console.log(" isAuth error");
-    return res.status(400).json({ message: `isAuth Error ${error}` });
+    console.log("isAuth error:", error);
+    return res.status(400).json({ message: `isAuth Error ${error.message}` });
   }
 };
 

@@ -31,6 +31,7 @@
   border: none;
   cursor: pointer;
   transition: all 0.2s ease;
+  position: relative; /* Added for tooltip positioning */
 }
 
 .nav-item:hover {
@@ -63,16 +64,41 @@
 ================================ */
 .tooltip {
   position: absolute;
-  left: 90px;
-  top: 50%;
-  transform: translateY(-50%);
-  background: #0f172a;
-  color: white;
+  left: 100%;
+  top: 110%;
+  transform: translate(-10px, -50%);
+  background: #eff6ff;
+  color: #2563eb;
   font-size: 13px;
-  padding: 6px 10px;
+  font-weight: 500;
+  padding: 8px 12px;
   border-radius: 6px;
   white-space: nowrap;
   z-index: 100;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.15), 0 0 0 1px rgba(37, 99, 235, 0.1);
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s ease, visibility 0.2s ease;
+  width: auto;
+  max-width: 200px;
+}
+
+div.relative:hover .tooltip {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Arrow pointing up to the icon */
+.tooltip::before {
+  content: '';
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-bottom: 2px;
+  border: 5px solid transparent;
+  border-bottom-color: #eff6ff;
 }
 
 /* ===============================
@@ -92,8 +118,9 @@
   background: #fee2e2;
 }
 
-.nav-item-wrapper + .nav-item-wrapper {
-  margin-top: 28px; /* adjust as needed */
+.nav-item-wrapper+.nav-item-wrapper {
+  margin-top: 28px;
+  /* adjust as needed */
 }
 
 /* ===============================
@@ -101,15 +128,21 @@
 ================================ */
 .nav-item.toggle {
   display: flex;
-  justify-content: flex-start;      /* same as nav items */
-  align-items: center;              /* vertically center */
-  height: 52px;                     /* same as nav-item */
-  width: 100%;                      /* full width like nav items */
+  justify-content: flex-start;
+  /* same as nav items */
+  align-items: center;
+  /* vertically center */
+  height: 52px;
+  /* same as nav-item */
+  width: 100%;
+  /* full width like nav items */
   cursor: pointer;
   background: transparent;
-  padding-left: 18px;               /* same left padding as nav items */
+  padding-left: 18px;
+  /* same left padding as nav items */
   padding-right: 18px;
-  gap: 10px;                        /* optional spacing if needed */
+  gap: 10px;
+  /* optional spacing if needed */
 }
 
 /* Three lines container */
@@ -117,14 +150,38 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
-  gap: 4px;                        /* spacing between lines */
+  gap: 4px;
+  /* spacing between lines */
 }
 
 .nav-item.toggle .line {
   display: block;
-  width: 20px;                     /* same as icon width */
-  height: 2px;                      /* thickness */
-  background-color: #475569;        /* match icon color */
+  width: 20px;
+  /* same as icon width */
+  height: 2px;
+  /* thickness */
+  background-color: #475569;
+  /* match icon color */
   border-radius: 1px;
   transition: all 0.3s ease;
+}
+
+/* ===============================
+   TOOLTIP FOR NAV ITEMS
+================================ */
+.nav-item::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  left: 100%; /* Position to the right of the item */
+  margin-left: 8px; /* Space between the item and tooltip */
+  color: #fff;
+  padding: 4px 8px;
+  border-radius: 4px;
+  white-space: nowrap;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.nav-item:hover::after {
+  opacity: 1;
 }

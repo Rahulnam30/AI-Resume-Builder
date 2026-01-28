@@ -2,6 +2,7 @@ import React from "react";
 import { useNavigate, Link } from "react-router-dom";
 import UpToSkillsImg from "../assets/UptoSkills.webp";
 import { useEffect, useState } from "react";
+import NavBar from "../components/NavBar";
 import Footer from "./Footer";
 
 export default function PrivacyPolicy() {
@@ -90,90 +91,8 @@ export default function PrivacyPolicy() {
 
   return (
     <div className="min-h-screen text-gray-900 bg-white select-none">
-      <nav className="sticky top-0 z-50 py-4 border-b border-gray-100 bg-white/95 backdrop-blur-md">
-        <div className="max-w-[1400px] mx-auto px-8 flex items-center justify-between">
-          <div onClick={() => navigate("/")} className="cursor-pointer">
-            <img
-              src={UpToSkillsImg}
-              alt="UpToSkills Logo"
-              className="w-[150px]"
-            />
-          </div>
-
-          {/* Section to display navigation bar */}
-
-          <div className={`flex-1 flex justify-center ${mobileMenuOpen ? "hidden" : ""}`}>
-            <ul className="flex items-center gap-8 hidden md:flex">
-              
-              <li className="cursor-pointer hover:text-orange-600">
-                <Link to="/about">About us</Link>
-              </li>
-              <li className="cursor-pointer hover:text-orange-600">
-                <Link to="/#free-templates">Templates</Link>
-              </li>
-
-              {/* Features Dropdown */}
-              <li className="relative group cursor-pointer hover:text-orange-600">
-                <div className="flex items-center gap-1">
-                  <span>Features</span>
-                  <i className="fas fa-chevron-down text-xs transition-transform duration-300 group-hover:rotate-180"></i>
-                </div>
-                
-              {/* Features Dropdown Menu */}
-                <div className="absolute top-full left-0 mt-2 w-56 bg-white border border-gray-200 rounded-xl shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform translate-y-2 group-hover:translate-y-0 z-50">
-                  <ul className="py-2">
-                    <li className="px-4 py-3 hover:bg-blue-50 hover:text-blue-600 transition-colors duration-200">
-                      <Link to="/resume-checker" className="flex items-center gap-3 text-black">
-                        <i className="fas fa-clipboard-check text-blue-600"></i>
-                        <span>AI Resume Checker</span>
-                      </Link>
-                    </li>
-                    <li className="px-4 py-3 hover:bg-green-50 hover:text-green-600 transition-colors duration-200">
-                      <Link to={`${isLoggedIn ? "/user/resume-builder" : "/login"}`} className="flex items-center gap-3 text-black">
-                        <i className="fas fa-file-alt text-green-600"></i>
-                        <span>AI Resume Builder</span>
-                      </Link>
-                    </li>
-                    <li className="px-4 py-3 hover:bg-purple-50 hover:text-purple-600 transition-colors duration-200">
-                      <Link to="/" className="flex items-center gap-3 text-black">
-                        <i className="fas fa-check-circle text-purple-600"></i>
-                        <span>ATS Optimization</span>
-                      </Link>
-                    </li>
-                    <li className="px-4 py-3 hover:bg-teal-50 hover:text-teal-600 transition-colors duration-200">
-                      <Link to="/" className="flex items-center gap-3 text-black">
-                        <i className="fas fa-envelope text-teal-600"></i>
-                        <span>Cover Letter Gen</span>
-                      </Link>
-                    </li>
-                    <li className="px-4 py-3 hover:bg-indigo-50 hover:text-indigo-600 transition-colors duration-200">
-                      <Link to="/" className="flex items-center gap-3 text-black">
-                        <i className="fas fa-magic text-indigo-600"></i>
-                        <span>Smart Formatting</span>
-                      </Link>
-                    </li>
-                  </ul>
-                </div>
-              </li>  
-
-              {isLoggedIn && (
-                <li className="cursor-pointer hover:text-orange-600">
-                  <Link to="/user/dashboard">Dashboard</Link>
-                </li>
-              )}
-              <li className="cursor-pointer hover:text-orange-600">
-                <Link to="/pricing">Pricing</Link>
-              </li>
-              <li className="cursor-pointer hover:text-orange-600">
-                <Link to="/contact">Contact</Link>
-              </li>
-            </ul>
-          </div>
-
-          {/* Empty div to balance the layout (acts as spacer for right side) */}
-          <div className="w-[150px]"></div>
-        </div>
-      </nav>
+      
+      <NavBar />
 
       {/* Section to display privacy policy page title and subtitle */}
 

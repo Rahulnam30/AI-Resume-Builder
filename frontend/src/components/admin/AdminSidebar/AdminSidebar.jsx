@@ -42,12 +42,6 @@ export default function AdminSidebar({ isCollapsed, setIsCollapsed }) {
     },
     { id: "users", icon: User, label: "Users", path: "/admin/users" },
     {
-      id: "accept",
-      icon: Drone,
-      label: "Accept User Template",
-      path: "/admin/template-requests",
-    },
-    {
       id: "analytics",
       icon: BarChart,
       label: "Analytics",
@@ -58,6 +52,12 @@ export default function AdminSidebar({ isCollapsed, setIsCollapsed }) {
   // Navigate to page
   const handleNavigate = (path) => {
     navigate(path);
+    setIsMobileOpen(false);
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    navigate("/", { replace: true });
     setIsMobileOpen(false);
   };
 
@@ -113,10 +113,9 @@ export default function AdminSidebar({ isCollapsed, setIsCollapsed }) {
                   onClick={() => handleNavigate(item.path)}
                   className={`w-full flex items-center rounded-xl transition-all
                     ${isCollapsed ? "justify-center px-0" : "gap-3 px-4"} py-3
-                    ${
-                      active
-                        ? "bg-blue-50 text-blue-600 font-semibold"
-                        : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+                    ${active
+                      ? "bg-blue-50 text-blue-600 font-semibold"
+                      : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
                     }`}
                 >
                   <Icon size={22} />
@@ -149,7 +148,7 @@ export default function AdminSidebar({ isCollapsed, setIsCollapsed }) {
         <div className="p-3 border-t border-slate-200">
           <div className="relative group">
             <button
-              onClick={() => navigate("/login")}
+              onClick={handleLogout}
               className={`w-full flex items-center rounded-xl transition-all text-red-500 hover:bg-red-50
                 ${isCollapsed ? "justify-center px-0" : "gap-3 px-4"} py-3`}
             >

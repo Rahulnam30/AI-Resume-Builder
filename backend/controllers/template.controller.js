@@ -72,11 +72,8 @@ export const uploadTemplate = async (req, res) => {
 export const getTemplates = async (req, res) => {
     try {
         const { status } = req.query;
-        const query = status ? { status } : {}; // If no status provided, return all? Or maybe default to approved?
-
-        // If user is admin (you'd normally check req.user.role), they might want all.
-        // For public API, we usually just want approved.
-        // Let's assume this endpoint handles both based on query param.
+        // If status is provided, filter by it; otherwise return all
+        const query = status ? { status } : {}; 
 
         const templates = await Template.find(query).sort({ createdAt: -1 });
 
@@ -94,7 +91,7 @@ export const getTemplates = async (req, res) => {
         res.status(200).json(templatesWithUrls);
     } catch (error) {
         console.error("Error fetching templates:", error);
-        res.status(500).json({ msg: "Server Error" });
+        res.status(500).json({ msg: "Server Error", error: error.message });
     }
 };
 

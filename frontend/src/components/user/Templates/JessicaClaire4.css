@@ -1,0 +1,154 @@
+/* Jessica Claire 4 Template Styles */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;0,700;1,400&family=Open+Sans:ital,wght@0,400;0,600;0,700;1,400&display=swap');
+
+.jessica-claire-4 {
+    font-family: 'Open Sans', sans-serif;
+    background-color: white;
+    width: 100%;
+    max-width: 794px;
+    min-height: 1123px;
+    margin: 0 auto;
+    padding: 40px 30px;
+    /* vmargins hmargins from dynamic */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    color: #2a2a2a;
+    line-height: 14px;
+    font-size: 10px;
+}
+
+.jessica-claire-4 * {
+    box-sizing: border-box;
+}
+
+.jessica-claire-4 table {
+    border-collapse: collapse;
+    border-spacing: 0;
+    width: 100%;
+}
+
+.jessica-claire-4 ul,
+.jessica-claire-4 li {
+    list-style: none;
+    margin: 0 0 0 8px;
+    padding: 0;
+}
+
+.jessica-claire-4 ul li {
+    position: relative;
+    margin: 0 0 0 3px;
+}
+
+.jessica-claire-4 ul li:before {
+    content: '\25CF\0020';
+    font-size: .7em;
+    position: absolute;
+    left: -11px;
+    top: 0;
+}
+
+.jessica-claire-4 .paddedline {
+    display: block;
+}
+
+.jessica-claire-4 .txtBold {
+    font-weight: bold;
+}
+
+.jessica-claire-4 .txtItl {
+    font-style: italic;
+}
+
+.jessica-claire-4 .parentContainer {
+    display: table;
+    width: 100%;
+    table-layout: fixed;
+}
+
+.jessica-claire-4 .leftBox {
+    padding: 0 15px 0 30px;
+    /* Adjusted padding */
+    display: table-cell;
+    vertical-align: top;
+    width: 65%;
+    /* Adjusted based on content */
+    border-right: 1px solid #2c806f;
+    /* Wait, structure is diff? No, sections have borders */
+}
+
+/* Actually, the borders are distinct in this one.
+   Left box sections have top border.
+   Right box sections have top border.
+   But first child doesn't.
+*/
+
+.jessica-claire-4 .leftBox,
+.jessica-claire-4 .rightBox {
+    vertical-align: top;
+}
+
+.jessica-claire-4 .leftBox .section,
+.jessica-claire-4 .rightBox .section {
+    border-top: 1px solid #2c806f;
+    margin-bottom: 20px;
+    padding-top: 20px;
+}
+
+.jessica-claire-4 .leftBox .section:first-child,
+.jessica-claire-4 .rightBox .section:first-child {
+    border-top: none !important;
+    margin-top: 0 !important;
+    padding-top: 0 !important;
+}
+
+.jessica-claire-4 .rightBox {
+    padding: 0 30px 0 15px;
+    display: table-cell;
+    width: 35%;
+}
+
+
+/* Name Section */
+.jessica-claire-4 .name {
+    font-size: 24px;
+    line-height: 30px;
+    font-weight: bold;
+    font-family: 'Montserrat', sans-serif;
+    position: relative;
+    padding-left: 15px;
+}
+
+.jessica-claire-4 .name:before {
+    content: "";
+    position: absolute;
+    width: 30px;
+    background: #2c806f;
+    top: 0px;
+    height: 100%;
+    left: -30px;
+    /* This logic relies on leftBox padding */
+}
+
+.jessica-claire-4 .sectiontitle {
+    font-weight: bold;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 12px;
+    line-height: 15px;
+}
+
+.jessica-claire-4 .cntcSec {
+    border-bottom: 11px solid #2c806f;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+}
+
+.jessica-claire-4 .address {
+    font-size: 10px;
+    line-height: 14px;
+}
+
+.jessica-claire-4 a {
+    color: inherit;
+    text-decoration: none;
+}

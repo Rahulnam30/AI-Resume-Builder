@@ -2,19 +2,17 @@ import StatCard from "./StatCard";
 import RecentResumes from "./RecentResumes";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import NavBar  from "../../NavBar"; 
+// Corrected Import based on your file structure
+import UserNavBar from "../UserNavBar/UserNavBar"; 
 import axios from "axios";
 
 import {
   FaFileAlt,
   FaEye,
   FaChartLine,
-  FaDownload,
 } from "react-icons/fa";
 
 import "./Dashboard.css";
-
-
 
 const Dashboard = ({ setActivePage }) => {
   const navigate = useNavigate();
@@ -38,7 +36,7 @@ const Dashboard = ({ setActivePage }) => {
     fetchDashboard();
   }, []);
 
-  // Real data and trends from backend
+  // Extraction of data from backend response
   const resumesCreated = dashboardData?.stats.resumesCreated || 0;
   const resumesThisWeek = dashboardData?.stats.resumesThisWeek || 0;
   const avgAtsScore = dashboardData?.stats.avgAtsScore || 0;
@@ -47,7 +45,9 @@ const Dashboard = ({ setActivePage }) => {
 
   return (
     <div className="dashboard-page">
-      
+      {/* 1. Integrated the correct UserNavBar at the top */}
+      <UserNavBar />
+
       <div className="dashboard-content-container">
         <p className="breadcrumb-text">Home / Dashboard</p>
 
@@ -61,7 +61,7 @@ const Dashboard = ({ setActivePage }) => {
           </button>
         </div>
 
-        {/* AI Resume Analysis */}
+        {/* AI Resume Analysis Section */}
         <div className="ai-card">
           <div className="ai-left">
             <span className="ai-label">✨ AI RESUME ANALYSIS</span>
@@ -70,7 +70,7 @@ const Dashboard = ({ setActivePage }) => {
             <div className="ai-progress">
               <div
                 className="ai-progress-fill"
-                style={{ width: `${avgAtsScore}%` }}
+                style={{ width: `${Math.min(avgAtsScore, 100)}%` }}
               />
             </div>
 
@@ -88,7 +88,7 @@ const Dashboard = ({ setActivePage }) => {
           </div>
         </div>
 
-        {/* Stats */}
+        {/* Statistics Grid */}
         <div className="dashboard-stats">
           <StatCard
             label="Resumes Created"
@@ -110,18 +110,9 @@ const Dashboard = ({ setActivePage }) => {
             trend="+0 vs last week"
             icon={<FaEye />}
           />
-
-          {/*
-          <StatCard
-            label="Downloads"
-            value="24"
-            trend="+6 this week"
-            icon={<FaDownload />}
-          />
-          */}
         </div>
 
-        {/* Main Grid - Now simplified to only show Recent Resumes */}
+        {/* Recent Resumes Table/List */}
         <div className="dashboard-grid full-width-list">
           <RecentResumes
             resumes={dashboardData?.recentResumes || []}

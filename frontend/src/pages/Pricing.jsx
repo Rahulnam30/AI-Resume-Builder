@@ -16,7 +16,7 @@ const pricing = () => {
           <div className="text-center mb-14 select-none">
             <h2 className="text-4xl font-extrabold">
               <span className="text-blue-600">Plans & </span>{" "}
-              <span className="text-orange-500">Pricing</span>
+              <span className="text-blue-600">Pricing</span>
             </h2>
             <p className="mt-4 text-gray-600 max-w-2xl mx-auto">
               Choose a plan that fits your career goals. Upgrade anytime to

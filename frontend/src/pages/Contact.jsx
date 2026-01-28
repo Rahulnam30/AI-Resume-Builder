@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import UpToSkillsImg from '../assets/UptoSkills.webp';
+import NavBar from "../components/NavBar";
 import Footer from "./Footer";
 
 function ContactUs() {
@@ -72,20 +73,7 @@ function ContactUs() {
   return (
     <div className="min-h-screen bg-white font-['Outfit']">
 
-      {/* NAVIGATION */}
-      <nav className="sticky top-0 z-50 bg-white/80 backdrop-blur-xl border-b border-gray-100 shadow-sm">
-        <div className="max-w-[1400px] mx-auto px-6 lg:px-8 py-4">
-          <div className="flex items-center justify-between">
-            <div onClick={() => navigate('/')} className="cursor-pointer transition-transform hover:scale-105">
-              <div onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} className="cursor-pointer">
-                <img src={UpToSkillsImg} alt="UpToSkills Logo" className="w-[150px]" />
-              </div>
-            </div>
-
-            
-          </div>
-        </div>
-      </nav>
+      <NavBar />
 
       {/* HERO SECTION */}
       <section className="relative pt-20 pb-16 overflow-hidden">
