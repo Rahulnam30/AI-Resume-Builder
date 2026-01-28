@@ -67,15 +67,15 @@
   left: 100%;
   top: 110%;
   transform: translate(-10px, -50%);
-  background: #eff6ff;
-  color: #2563eb;
+  background: #0f172a;
+  color: #ffffff;
   font-size: 13px;
   font-weight: 500;
   padding: 8px 12px;
   border-radius: 6px;
   white-space: nowrap;
   z-index: 100;
-  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.15), 0 0 0 1px rgba(37, 99, 235, 0.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(0, 0, 0, 0.1);
   pointer-events: none;
   opacity: 0;
   visibility: hidden;
@@ -87,18 +87,6 @@
 div.relative:hover .tooltip {
   opacity: 1;
   visibility: visible;
-}
-
-/* Arrow pointing up to the icon */
-.tooltip::before {
-  content: '';
-  position: absolute;
-  bottom: 100%;
-  left: 50%;
-  transform: translateX(-50%);
-  margin-bottom: 2px;
-  border: 5px solid transparent;
-  border-bottom-color: #eff6ff;
 }
 
 /* ===============================
