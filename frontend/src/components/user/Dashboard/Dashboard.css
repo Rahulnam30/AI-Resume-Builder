@@ -1,10 +1,10 @@
 /* Container for dashboard page content */
 .dashboard-page {
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: 20px 30px 40px;
+  max-width: 100%; /* Allow content to reach edges */
+  margin: 0;
+  padding: 0; /* Remove padding here so the topbar can touch edges */
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-  color: #1a1a2e;
+  background-color: #ffffff;
 }
 
 /* Header */
@@ -166,52 +166,6 @@
   text-decoration: underline;
 }
 
-/* Quick actions card */
-.quick-actions {
-  background: #fff;
-  border-radius: 14px;
-  padding: 28px 24px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.quick-actions h3 {
-  font-weight: 700;
-  font-size: 1.25rem;
-  margin-bottom: 14px;
-  color: #111827;
-}
-
-/* Each quick action button */
-.quick-action-btn {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  padding: 14px 22px;
-  background: #f9fafb;
-  border: none;
-  border-radius: 10px;
-  font-size: 1rem;
-  font-weight: 600;
-  color: #374151;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-}
-
-.quick-action-btn:hover {
-  background: #e0e7ff;
-  color: #1e3a8a;
-}
-
-/* Icon inside quick action buttons */
-.quick-action-btn img {
-  width: 20px;
-  height: 20px;
-  object-fit: contain;
-  filter: grayscale(50%) contrast(120%);
-}
 
 /* Responsive for smaller screens */
 @media (max-width: 1024px) {
@@ -243,18 +197,32 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 26px;
+  background-color: #fcfcfc; 
+  border-bottom: 1px solid #edeff2; 
+  padding: 12px 40px; 
+  margin-bottom: 24px;
+  width: 100%;
+  box-sizing: border-box;
+}
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+.dashboard-content-container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 30px 40px;
 }
 
 /* Search bar */
 .search-box input {
-  width: 340px;
-  padding: 11px 16px;
-  border-radius: 12px;
+  width: 380px;
+  padding: 10px 16px;
+  border-radius: 10px;
   border: 1px solid #e5e7eb;
-  font-size: 0.95rem;
-  background: #ffffff;
-  transition: border 0.2s ease, box-shadow 0.2s ease;
+  background: #ffffff; 
+  font-size: 0.9rem;
 }
 
 .search-box input:focus {
@@ -269,19 +237,17 @@
 .profile-area {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 8px 14px;
-  background: #ffffff;
-  border-radius: 14px;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+  gap: 10px;
+  padding: 4px 8px;
+  background: transparent; /* Clean look */
+  box-shadow: none; 
+  border-radius: 8px;
   cursor: pointer;
-  position: relative;
-  transition: box-shadow 0.2s ease, transform 0.2s ease;
 }
 
 .profile-area:hover {
-  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.12);
-  transform: translateY(-1px);
+  background: #f9fafb;
+  transform: none; /* Keep it static and clean */
 }
 
 .profile-area img {
@@ -402,4 +368,216 @@
 .stat-icon {
   font-size: 28px;
   margin-bottom: 8px;
+}
+
+/* Bilal */
+/* AI Resume Card */
+.ai-card {
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  background: linear-gradient(135deg, #0f172a, #020617);
+  color: #fff;
+  padding: 28px;
+  border-radius: 18px;
+  margin-bottom: 36px;
+}
+
+.ai-label {
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  opacity: 0.8;
+}
+
+.ai-left h2 {
+  font-size: 2.4rem;
+  margin: 12px 0;
+}
+
+.ai-progress {
+  width: 100%;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 999px;
+  overflow: hidden;
+  margin: 10px 0 14px;
+}
+
+.ai-progress-fill {
+  height: 100%;
+  background: #ffffff;
+  border-radius: 999px;
+}
+
+.ai-subtext {
+  font-size: 0.9rem;
+  opacity: 0.85;
+}
+
+.ai-right {
+  max-width: 280px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.ai-tip {
+  background: rgba(255, 255, 255, 0.12);
+  padding: 14px;
+  border-radius: 12px;
+  font-size: 0.85rem;
+}
+
+.ai-btn {
+  /* Your original styles */
+  margin-top: 16px;
+  padding: 10px 16px;
+  border-radius: 10px;
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+
+  /* Styles to match the image */
+  background-color: #ffffff; 
+  color: #1a1a1a;          
+  font-family: 'Inter', sans-serif; 
+  font-size: 14px;
+  width: 100%;              
+  max-width: 200px;         
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); 
+  transition: background-color 0.2s ease;
+}
+
+.ai-btn:hover {
+  background-color: #f3f4f6;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .ai-card {
+    flex-direction: column;
+  }
+}
+
+/* ===== STAT CARD REFINED UI ===== */
+.stat-card {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 18px 22px;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.08);
+}
+
+
+.stat-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.stat-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.stat-label {
+  font-size: 0.75rem;
+  color: #6b7280;
+  font-weight: 500;
+}
+.stat-icon-inline {
+  font-size: 14px; /* SMALL icon */
+  color: #9ca3af;
+}
+
+.stat-value {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #111827;
+  margin: 6px 0 2px;
+}
+
+.stat-trend {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #059669;
+}
+
+.stat-icon-small {
+  font-size: 22px;
+  color: #9ca3af;
+}
+
+/* ===== HEADER BUTTON ===== */
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 28px;
+}
+
+.create-btn {
+ 
+  padding: 10px 16px;
+  background-color: #ffffff !important;
+  color: #000000 !important;
+  border: 1px solid #000000 !important;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  /* Kill all transitions and browser feedback */
+  transition: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+/* This block ensures that even if you hover, the styles stay identical */
+.create-btn:hover, 
+.create-btn:active, 
+.create-btn:focus {
+  background-color: #ffffff !important;
+  color: #000000 !important;
+  border: 1px solid #000000 !important;
+  /* Keeps the cursor as a pointer, but changes nothing else */
+  cursor: pointer; 
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 14px;
+  }
+
+  .create-btn {
+    width: 100%;
+    text-align: center;
+  }
+}
+
+/* Container for the footer area */
+.recent-footer {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 16px;
+  border-top: 1px solid #f3f4f6; 
+  padding-top: 12px;
+}
+
+.view-all-btn {
+  background: none;
+  border: none;
+  color: #2563eb; 
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+.view-all-btn:hover {
+  background-color: #eff6ff;
+  color: #1d4ed8;
+  text-decoration: underline;
 }

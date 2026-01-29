@@ -1,9 +1,8 @@
 import React, { useState } from "react";
-import axios from "axios";
+import axiosInstance from "../api/axios";
 import { useNavigate, Link } from "react-router-dom";
 import { toast, Toaster } from "react-hot-toast";
 import images from "../assets";
-import NavBar from "../components/NavBar";
 
 export default function Login() {
   const [emailtext, setEmailText] = useState("");
@@ -26,23 +25,17 @@ export default function Login() {
   const handleLogin = async () => {
     if (!validate()) return;
     setLoading(true);
+
     try {
-      const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
-      const response = await axios.post(
-        `${API_URL}/api/auth/login`,
-        {
-          email: emailtext,
-          password: passwordtext,
-        },
-        { withCredentials: true } // Important if backend sets cookies
-      );
+      const response = await axiosInstance.post("/api/auth/login", {
+        email: emailtext,
+        password: passwordtext,
+      });
 
       console.log("Login response:", response.data);
 
-      // Save token in localStorage
       localStorage.setItem("token", response.data.token);
 
-      // Redirect based on isAdmin
       if (response.data.isAdmin) {
         toast.success("Welcome Admin!");
         setTimeout(() => navigate("/admin"), 1200);
@@ -64,7 +57,6 @@ export default function Login() {
   return (
     <>
       <Toaster position="top-right" reverseOrder={false} />
-      <NavBar />
 
       <div className="fixed inset-0 pt-20 flex items-center justify-center bg-gradient-to-br from-blue-950 to-slate-900 px-4 select-none overflow-hidden">
         <div className="w-full max-w-4xl grid grid-cols-1 md:grid-cols-2 rounded-3xl overflow-hidden shadow-2xl bg-white max-h-[85vh]">
@@ -116,9 +108,11 @@ export default function Login() {
                   placeholder="Enter your e-mail"
                   value={emailtext}
                   onChange={(e) => setEmailText(e.target.value)}
+                  autoComplete="email"
                   className="w-full px-3 py-2 rounded-lg border border-gray-300 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
+
               <div>
                 <label className="block text-xs font-medium text-gray-600 mb-0.5">
                   Password
@@ -128,6 +122,7 @@ export default function Login() {
                   placeholder="Enter your Password"
                   value={passwordtext}
                   onChange={(e) => setPasswordText(e.target.value)}
+                  autoComplete="current-password"
                   className="w-full px-3 py-2 rounded-lg border border-gray-300 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
@@ -144,10 +139,11 @@ export default function Login() {
               <button
                 type="submit"
                 disabled={loading}
-                className={`w-full py-2 rounded-lg text-white text-sm font-medium transition mt-3 ${loading
+                className={`w-full py-2 rounded-lg text-white text-sm font-medium transition mt-3 ${
+                  loading
                     ? "bg-blue-400 cursor-not-allowed"
                     : "bg-blue-600 hover:bg-blue-700"
-                  }`}
+                }`}
               >
                 {loading ? "Signing in..." : "Sign In"}
               </button>

@@ -1,3 +1,369 @@
+/* --- Scrollable Form Tabs --- */
+.form-tabs-scrollbar-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  margin-bottom: 18px;
+}
+
+.form-tabs-scrollbar {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #bdbdbd #f5f5f5;
+  padding-bottom: 4px;
+}
+
+.form-tabs-scrollbar::-webkit-scrollbar {
+  height: 6px;
+}
+.form-tabs-scrollbar::-webkit-scrollbar-thumb {
+  background: #bdbdbd;
+  border-radius: 4px;
+}
+.form-tabs-scrollbar::-webkit-scrollbar-track {
+  background: #f5f5f5;
+}
+
+.form-tab {
+  background: none;
+  border: none;
+  padding: 8px 18px;
+  border-radius: 8px;
+  font-size: 1.08rem;
+  font-weight: 500;
+  color: #23272f;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+.form-tab.active {
+  background: #e6f0ff;
+  color: #0056b3;
+  font-weight: 700;
+}
+.form-tab:focus {
+  outline: 2px solid #007bff;
+}
+.form-content {
+  padding: 40px 36px 36px 36px;
+  background: #fcfcfd;
+  border-radius: 18px;
+  box-shadow: 0 6px 36px rgba(0,0,0,0.09);
+  margin-bottom: 32px;
+  font-size: 1.13rem;
+  font-family: 'Inter', 'Segoe UI', 'Roboto', 'Arial', sans-serif;
+  border: 1.5px solid #f1f1f3;
+}
+
+.form-content label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: #23272f;
+  font-size: 1.09rem;
+  letter-spacing: 0.01em;
+}
+
+.form-content input,
+.form-content textarea {
+  width: 100%;
+  padding: 13px 16px;
+  border: 1.5px solid #e0e0e0;
+  border-radius: 8px;
+  margin-bottom: 28px;
+  font-size: 1.08rem;
+  background: #f7f8fa;
+  color: #23272f;
+  transition: border 0.2s, box-shadow 0.2s;
+  font-family: inherit;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.01);
+}
+
+.form-content input:focus,
+.form-content textarea:focus {
+  border: 1.5px solid #007bff;
+  outline: none;
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(0,123,255,0.07);
+}
+
+.form-content .form-group {
+  margin-bottom: 28px;
+}
+
+.form-content .form-row {
+  display: flex;
+  gap: 24px;
+}
+
+.form-content .form-row > * {
+  flex: 1;
+}
+
+.form-content .form-section-title {
+  font-size: 1.22rem;
+  font-weight: 700;
+  margin-bottom: 18px;
+  color: #1a1a1a;
+  letter-spacing: 0.01em;
+}
+/* --- Professional Font and Layout Enhancements --- */
+body, .form-content, .live-preview {
+  font-family: 'Inter', 'Segoe UI', 'Roboto', 'Arial', sans-serif;
+  letter-spacing: 0.01em;
+}
+
+.content-area {
+  display: flex;
+  gap: 48px;
+  align-items: flex-start;
+  margin-top: 32px;
+}
+
+
+.form-content {
+  padding: 38px 36px 32px 36px;
+  background: #fff;
+  border-radius: 20px;
+  box-shadow: 0 6px 36px rgba(0,0,0,0.09);
+  margin-bottom: 28px;
+  font-size: 1.13rem;
+  font-family: inherit;
+}
+
+.form-content label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: #1a1a1a;
+  font-size: 1.07rem;
+  letter-spacing: 0.01em;
+}
+
+.form-content input,
+.form-content textarea {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1.5px solid #e0e0e0;
+  border-radius: 8px;
+  margin-bottom: 26px;
+  font-size: 1.07rem;
+  background: #f8f8f8;
+  color: #222;
+  transition: border 0.2s;
+  font-family: inherit;
+}
+
+.form-content input:focus,
+.form-content textarea:focus {
+  border: 1.5px solid #007bff;
+  outline: none;
+  background: #fff;
+}
+
+.form-content .form-group {
+  margin-bottom: 26px;
+}
+
+.form-content .form-row {
+  display: flex;
+  gap: 22px;
+}
+
+.form-content .form-row > * {
+  flex: 1;
+}
+
+.form-content .form-section-title {
+  font-size: 1.18rem;
+  font-weight: 700;
+  margin-bottom: 16px;
+  color: #222;
+}
+
+/* --- Card shadow for preview and form --- */
+.live-preview,
+.form-content {
+  box-shadow: 0 6px 36px rgba(0,0,0,0.09);
+}
+
+.live-preview {
+  max-width: 600px;
+  min-width: 420px;
+  min-height: 420px;
+  padding: 36px 38px;
+  font-size: 1.13rem;
+  font-family: inherit;
+}
+
+.live-preview.expanded {
+  max-width: 900px;
+  min-width: 600px;
+  min-height: 700px;
+  padding: 48px 54px;
+}
+
+.preview-document {
+  min-height: 260px;
+  font-family: inherit;
+}
+
+/* --- Responsive adjustments --- */
+@media (max-width: 1100px) {
+  .content-area {
+    flex-direction: column;
+    gap: 32px;
+  }
+  .live-preview, .form-content {
+    max-width: 100%;
+    min-width: 0;
+  }
+}
+/* --- Unified Resume Builder Layout & Card Styles --- */
+.content-area {
+  display: flex;
+  gap: 40px;
+  align-items: flex-start;
+  margin-top: 24px;
+}
+
+.builder-section {
+  flex: 1;
+  min-width: 340px;
+  max-width: 480px;
+}
+
+.form-content {
+  padding: 32px 28px 28px 28px;
+  background: #fff;
+  border-radius: 18px;
+  box-shadow: 0 4px 32px rgba(0,0,0,0.07);
+  margin-bottom: 24px;
+  font-size: 1.08rem;
+}
+
+.form-content label {
+  display: block;
+  font-weight: 500;
+  margin-bottom: 4px;
+  color: #222;
+}
+
+.form-content input,
+.form-content textarea {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1.5px solid #e0e0e0;
+  border-radius: 7px;
+  margin-bottom: 22px;
+  font-size: 1rem;
+  background: #f8f8f8;
+  color: #222;
+  transition: border 0.2s;
+}
+
+.form-content input:focus,
+.form-content textarea:focus {
+  border: 1.5px solid #007bff;
+  outline: none;
+  background: #fff;
+}
+
+.form-content .form-group {
+  margin-bottom: 22px;
+}
+
+.form-content .form-row {
+  display: flex;
+  gap: 18px;
+}
+
+.form-content .form-row > * {
+  flex: 1;
+}
+
+.form-content .form-section-title {
+  font-size: 1.13rem;
+  font-weight: 600;
+  margin-bottom: 14px;
+  color: #333;
+}
+
+/* --- Card shadow for preview and form --- */
+.live-preview,
+.form-content {
+  box-shadow: 0 4px 32px rgba(0,0,0,0.07);
+}
+
+/* --- Responsive adjustments --- */
+@media (max-width: 900px) {
+  .content-area {
+    flex-direction: column;
+    gap: 24px;
+  }
+  .live-preview, .form-content {
+    max-width: 100%;
+  }
+}
+/* --- Improved Form Section Styles --- */
+.form-content {
+  padding: 24px 32px 24px 24px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+  margin-bottom: 24px;
+}
+
+.form-content label {
+  display: block;
+  font-weight: 500;
+  margin-bottom: 4px;
+  color: #222;
+}
+
+.form-content input,
+.form-content textarea {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  margin-bottom: 18px;
+  font-size: 1rem;
+  background: #f8f8f8;
+  color: #222;
+  transition: border 0.2s;
+}
+
+.form-content input:focus,
+.form-content textarea:focus {
+  border: 1.5px solid #007bff;
+  outline: none;
+  background: #fff;
+}
+
+.form-content .form-group {
+  margin-bottom: 18px;
+}
+
+.form-content .form-row {
+  display: flex;
+  gap: 18px;
+}
+
+.form-content .form-row > * {
+  flex: 1;
+}
+
+.form-content .form-section-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 12px;
+  color: #333;
+}
 /* Resume Builder Page */
 .resume-builder-page {
   padding: 10px;
@@ -29,6 +395,7 @@
   gap: 12px;
   align-items: center;
 }
+
 
 .back-btn {
   padding: 10px 20px;
@@ -167,18 +534,32 @@
 /* Content Area */
 .content-area {
   display: grid;
-  grid-template-columns: 1fr 380px;
+  grid-template-columns: 32% 68%; /* forms smaller, preview bigger */
   gap: 24px;
-  flex: 1;
+  height: calc(100vh - 160px);
+  padding: 16px;
 }
+
+.content-area.expanded-preview {
+  grid-template-columns: 0 100%;
+}
+
+.content-area.normal-preview {
+  grid-template-columns: 32% 68%;
+}
+
 
 /* Builder Section */
 .builder-section {
-  background: #fff;
+  background: #ffffff;
   border-radius: 12px;
-  border: 1px solid #e5e7eb;
-  overflow: hidden;
+  height: 100%;
+  overflow-y: auto;        /* only forms scroll */
+  padding: 16px;
+  flex: 1;
+
 }
+
 
 /* Form Content */
 .form-content {
@@ -317,8 +698,13 @@
 
 @media (max-width: 1200px) {
   .content-area {
-    grid-template-columns: 1fr;
-  }
+  display: grid;
+  grid-template-columns: 35% 65%;   /* 👈 forms smaller, preview larger */
+  gap: 24px;
+  height: calc(100vh - 140px);
+  padding: 16px;
+}
+
 
   .alert-tags {
     margin-left: 0;
@@ -345,7 +731,179 @@
   }
 
   .main-tabs {
-    width: 100%;
-    overflow-x: auto;
-  }
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;   
+  overflow-x: hidden; 
+  
+}
+
+}
+.form-navigation {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 24px;
+}
+
+.nav-btn {
+  padding: 10px 18px;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+  background: #fff;
+  cursor: pointer;
+}
+
+.nav-btn.primary {
+  background: #2563eb;
+  color: white;
+  border-color: #2563eb;
+}
+
+.nav-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ===== FORCE FORM TABS OVERRIDE ===== */
+
+.form-tabs-wrapper,
+
+.form-tabs-container {
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  padding: 6px 10px !important;
+}
+
+.form-tabs-scrollbar-wrapper,
+.form-tabs-scrollbar {
+  width: 100% !important;
+}
+
+/* Tabs row */
+.form-tabs-scrollbar {
+  display: flex !important;
+  align-items: center !important;
+  gap: 20px !important;
+}
+
+/* Individual tab */
+.form-tab {
+  font-size: 13px !important;      /* smaller font */
+  padding: 8px 14px !important;    /* uniform size */
+  border-radius: 8px !important;
+  font-weight: 500 !important;
+}
+
+/* Active tab */
+.form-tab.active {
+  background: #e8f1ff !important;
+  color: #2563eb !important;
+  border: none !important;
+}
+
+/* Arrows */
+.tab-arrow {
+  width: 32px !important;
+  height: 32px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+/* ===== COMPACT FORM SPACING ===== */
+
+.form-section-title {
+  margin-bottom: 12px !important;
+  font-size: 15px !important;
+}
+
+.form-group {
+  margin-bottom: 10px !important;
+}
+
+.form-group label {
+  font-size: 12px !important;
+  margin-bottom: 4px !important;
+}
+
+.form-group input,
+.form-group textarea {
+  padding: 8px 10px !important;
+  font-size: 13px !important;
+}
+
+/* ===== REMOVE TAB SCROLLBAR COMPLETELY ===== */
+.form-tabs-scrollbar {
+  overflow: hidden !important;
+}
+
+.form-tabs-scrollbar::-webkit-scrollbar {
+  display: none !important;
+}
+
+/* ===== FORM SECTION VISIBILITY ===== */
+.form-page {
+  display: none;
+}
+
+.form-page.active {
+  display: block;
+}
+
+.tab-arrow:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+.section-tabs-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+}
+
+/* FIX: reserve arrow space */
+.section-arrow {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid #e5e7eb;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* FIX: center container grows */
+.section-tabs-center {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  overflow: visible; /* VERY IMPORTANT */
+}
+
+/* Tabs pill container */
+.section-tabs {
+  display: flex;
+  gap: 8px;
+  background: #f3f4f6;
+  padding: 6px;
+  border-radius: 999px;
+}
+
+/* Individual tab */
+.section-tab {
+  padding: 8px 18px;
+  border-radius: 999px;
+  border: none;
+  background: transparent;
+  font-weight: 500;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.section-tab.active {
+  background: #e0ecff;
+  color: #2563eb;
 }

@@ -12,6 +12,10 @@ import Preview from "../components/user/Preview/FullPreview";
 import Profile from "../components/user/Profile/EditProfile";
 import ResumeBuilder from "../components/user/ResumeBuilder/ResumeBuilder";
 import Templates from "../components/user/Templates/TemplatesDashboardPage";
+import CVBuilder from "../components/user/CV/CVBuilder";
+import CoverLetterBuilder from "../components/user/CoverLetter/CoverLetterBuilder";
+
+
 
 const UserRoutes = () => {
   return (
@@ -28,17 +32,23 @@ const UserRoutes = () => {
             <Dashboard
               user={{ name: "Meghana" }}
               resumes={[]}
-              setActivePage={() => {}}
+              setActivePage={() => { }}
             />
           }
         />
 
         <Route path="resume-builder" element={<ResumeBuilder />} />
-        <Route path="templates-dashboard-page" element={<Templates />} />
+        <Route path="cv" element={<CVBuilder />} />
+        <Route path="cover-letter" element={<CoverLetterBuilder />} />
+
         <Route path="ats-checker" element={<ATSChecker />} />
         <Route path="my-resumes" element={<MyResumes />} />
         <Route path="full-preview" element={<Preview />} />
         <Route path="edit-profile" element={<Profile />} />
+
+
+
+        
 
       </Route>
     </Routes>

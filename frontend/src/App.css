@@ -1,4 +1,5 @@
-@import url("https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@300;400;500;600;700&display=swap");
+/* Removed external Google Fonts import to avoid blocked third-party requests (ERR_BLOCKED_BY_CLIENT).
+  To preserve typography, host fonts locally and add @font-face rules, or whitelist fonts.googleapis.com. */
 
 :root {
   --primary-dark: #0a1628;

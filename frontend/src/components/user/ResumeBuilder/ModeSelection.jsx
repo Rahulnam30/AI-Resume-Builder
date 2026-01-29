@@ -15,7 +15,7 @@ const ModeSelection = ({ onSelectMode }) => {
           </ul>
           <button className="mode-btn create">Get Started →</button>
         </div>
-        
+
         <div className="mode-card" onClick={() => onSelectMode('edit')}>
           <div className="mode-icon">📤</div>
           <h3>Edit Existing Resume</h3>

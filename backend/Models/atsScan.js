@@ -1,13 +1,28 @@
 import mongoose from "mongoose";
-import User from "./User";
-import Template from "./template";
-import ResumeProfile from "./resumeProfile";
+
+import User from "./User.js";
+import Template from "./template.js";
+import ResumeProfile from "./resumeProfile.js";
 
 const atsScansSchema = new mongoose.Schema(
   {
-    userId: User.id,
-    resumeprofileId: ResumeProfile.id,
-    templateId: Template.id,
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
+    
+    resumeprofileId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "ResumeProfile",
+      required: true,
+    },
+   
+    templateId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Template",
+      required: true,
+    },
     jobTitle: {
       type: String,
       required: true,
@@ -49,7 +64,8 @@ const atsScansSchema = new mongoose.Schema(
       },
     ],
   },
-  { timestamps }
+ 
+  { timestamps: true }
 );
 
 const AtsScans = mongoose.model("AtsScans", atsScansSchema);

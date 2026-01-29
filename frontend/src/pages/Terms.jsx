@@ -8,7 +8,7 @@ import {
   ChevronRight,
   AlertCircle,
 } from "lucide-react";
-import UpToSkillsImg from "../assets/UptoSkills.webp"; // Ensure path is correct
+import UpToSkillsImg from "../assets/UptoSkills.webp";
 import Footer from "./Footer"
 
 const TermsAndConditions = () => {

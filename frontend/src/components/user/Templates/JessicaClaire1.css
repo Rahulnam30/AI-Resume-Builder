@@ -1,0 +1,147 @@
+/* Jessica Claire 1 Template Styles */
+.jessica-claire-1 {
+    font-family: "Palatino Linotype", serif;
+    background-color: white;
+    width: 100%;
+    max-width: 794px;
+    /* A4 width */
+    min-height: 1123px;
+    margin: 0 auto;
+    padding: 30px;
+    /* hmargins */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    color: #000;
+    line-height: 20px;
+    font-size: 12px;
+}
+
+.jessica-claire-1 * {
+    box-sizing: border-box;
+}
+
+.jessica-claire-1 table {
+    border-collapse: collapse;
+    border-spacing: 0;
+    width: 100%;
+    font-size: inherit;
+    color: inherit;
+}
+
+.jessica-claire-1 ul,
+.jessica-claire-1 li {
+    list-style-type: disc;
+    margin: 0 0 0 10px;
+    padding: 0;
+}
+
+.jessica-claire-1 ul li {
+    margin: 0 0 0 13px;
+}
+
+.jessica-claire-1 .address ul,
+.jessica-claire-1 .address li {
+    display: inline;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.jessica-claire-1 .address li:before {
+    content: "\2022\0020";
+    vertical-align: bottom;
+    margin-left: 5px;
+    margin-right: 5px;
+    font-size: 14px;
+}
+
+.jessica-claire-1 .address li.first:before,
+.jessica-claire-1 .address li:first-child:before {
+    content: "";
+    margin: 0;
+}
+
+.jessica-claire-1 .paddedline {
+    display: block;
+}
+
+.jessica-claire-1 .jobtitle,
+.jessica-claire-1 .companyname,
+.jessica-claire-1 .degree {
+    font-weight: bold;
+}
+
+.jessica-claire-1 .lowerborder {
+    border-bottom: 3px solid #000;
+    margin-top: 2px;
+    display: block;
+}
+
+.jessica-claire-1 .name {
+    font-size: 24px;
+    line-height: 56px;
+    font-weight: bold;
+    padding: 0 0 1px 0;
+    border-bottom: 1px solid #000;
+    font-variant: small-caps;
+    text-align: center;
+    color: #000;
+}
+
+.jessica-claire-1 .sectiontitle {
+    font-size: 14px;
+    line-height: 22px;
+    color: #000;
+    font-weight: bold;
+}
+
+.jessica-claire-1 .heading {
+    clear: both;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.jessica-claire-1 .paragraph {
+    position: relative;
+    margin-top: 20px;
+}
+
+.jessica-claire-1 .address {
+    margin-top: 11px;
+    text-align: center;
+    font-size: 11px;
+    line-height: 19px;
+    word-wrap: break-word;
+}
+
+/* Skills Table */
+.jessica-claire-1 table.twocol td {
+    width: 50%;
+    vertical-align: top;
+}
+
+.jessica-claire-1 .twocol_2 {
+    border-left: 1px solid #FEFDFD;
+    /* Essentially invisible or white */
+}
+
+.jessica-claire-1 .section {
+    margin-top: 12px;
+}
+
+.jessica-claire-1 .firstsection {
+    margin-top: 0 !important;
+}
+
+/* Helper classes for our React implementation */
+.jessica-claire-1 .txtBold {
+    font-weight: bold;
+}
+
+.jessica-claire-1 .txtItl {
+    font-style: italic;
+}
+
+.jessica-claire-1 a {
+    color: inherit;
+    text-decoration: none;
+}

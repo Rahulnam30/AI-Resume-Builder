@@ -345,5 +345,4 @@ const TemplatesFeature = () => {
     </div>
   );
 };
-
 export default TemplatesFeature;

@@ -8,11 +8,24 @@ const templateSchema = new mongoose.Schema(
     },
     description: {
       type: String,
-      required: true,
+      default: "",
     },
     previewimage: {
       type: String,
-      required: true,
+      required: true, // Path to the thumbnail image
+    },
+    filePath: {
+      type: String,
+      required: true, // Path to the source DOCX file
+    },
+    status: {
+      type: String,
+      enum: ["pending", "approved"],
+      default: "pending",
+    },
+    category: {
+      type: String,
+      default: "Modern", // Default category
     },
   },
   { timestamps: true }

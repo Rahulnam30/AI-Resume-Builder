@@ -19,8 +19,8 @@ const AIEnhancementPage = () => {
   const navigate = useNavigate();
 
   const handleBackHome = () => {
-  navigate("/#features");
-};
+    navigate("/?scrollTo=features");
+  };
 
   return (
     <div className="min-h-screen bg-white font-['Outfit'] text-[#1a2e52] selection:bg-orange-100 overflow-x-hidden select-none">
