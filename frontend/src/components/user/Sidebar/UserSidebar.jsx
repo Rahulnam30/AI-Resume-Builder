@@ -9,6 +9,7 @@ import {
   CheckCircle,
   FileStack,
   Files,
+  Download,
   LogOut,
   ChevronLeft,
   ChevronRight,
@@ -31,6 +32,7 @@ export default function UserSidebar() {
     { id: "ats", icon: CheckCircle, label: "ATS Score Checker", path: "/user/ats-checker" },
     { id: "templates", icon: FileStack, label: "Templates", path: "/user/templates-dashboard-page" },
     { id: "myresumes", icon: Files, label: "My Resumes", path: "/user/my-resumes" },
+    { id: "downloads", icon: Download, label: "Downloads", path: "/user/downloads" },
   ];
 
   const handleNavigate = (path) => {

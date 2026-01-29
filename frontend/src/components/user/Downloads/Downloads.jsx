@@ -186,60 +186,60 @@ const Downloads = () => {
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-4 sm:mb-6">
             <motion.div 
               whileHover={{ scale: 1.02 }}
-              className="bg-white rounded-lg sm:rounded-xl p-3 sm:p-4 shadow-md border border-blue-100"
+              className="bg-white rounded-lg sm:rounded-xl p-3 sm:p-4 shadow-md border border-gray-100"
             >
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-gray-500 text-xs sm:text-sm">Total Downloads</p>
                   <p className="text-xl sm:text-2xl font-bold text-black">{stats.total}</p>
                 </div>
-                <div className="bg-blue-100 p-2 sm:p-3 rounded-lg">
-                  <FiDownload className="text-blue-600 text-lg sm:text-xl" />
+                <div className="bg-gray-100 p-2 sm:p-3 rounded-lg">
+                  <FiDownload className="text-gray-600 text-lg sm:text-xl" />
                 </div>
               </div>
             </motion.div>
 
             <motion.div 
               whileHover={{ scale: 1.02 }}
-              className="bg-white rounded-lg sm:rounded-xl p-3 sm:p-4 shadow-md border border-green-100"
+              className="bg-white rounded-lg sm:rounded-xl p-3 sm:p-4 shadow-md border border-gray-100"
             >
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-gray-500 text-xs sm:text-sm">Resumes</p>
                   <p className="text-xl sm:text-2xl font-bold text-black">{stats.resumes}</p>
                 </div>
-                <div className="bg-green-100 p-2 sm:p-3 rounded-lg">
-                  <FiFileText className="text-green-600 text-lg sm:text-xl" />
+                <div className="bg-gray-100 p-2 sm:p-3 rounded-lg">
+                  <FiFileText className="text-gray-600 text-lg sm:text-xl" />
                 </div>
               </div>
             </motion.div>
 
             <motion.div 
               whileHover={{ scale: 1.02 }}
-              className="bg-white rounded-lg sm:rounded-xl p-3 sm:p-4 shadow-md border border-purple-100"
+              className="bg-white rounded-lg sm:rounded-xl p-3 sm:p-4 shadow-md border border-gray-100"
             >
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-gray-500 text-xs sm:text-sm">Cover Letters</p>
                   <p className="text-xl sm:text-2xl font-bold text-black">{stats.coverLetters}</p>
                 </div>
-                <div className="bg-purple-100 p-2 sm:p-3 rounded-lg">
-                  <FiEdit className="text-purple-600 text-lg sm:text-xl" />
+                <div className="bg-gray-100 p-2 sm:p-3 rounded-lg">
+                  <FiEdit className="text-gray-600 text-lg sm:text-xl" />
                 </div>
               </div>
             </motion.div>
 
             <motion.div 
               whileHover={{ scale: 1.02 }}
-              className="bg-white rounded-lg sm:rounded-xl p-3 sm:p-4 shadow-md border border-orange-100"
+              className="bg-white rounded-lg sm:rounded-xl p-3 sm:p-4 shadow-md border border-gray-100"
             >
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-gray-500 text-xs sm:text-sm">Total Views</p>
                   <p className="text-xl sm:text-2xl font-bold text-black">{stats.totalViews}</p>
                 </div>
-                <div className="bg-orange-100 p-2 sm:p-3 rounded-lg">
-                  <FiTrendingUp className="text-orange-600 text-lg sm:text-xl" />
+                <div className="bg-gray-100 p-2 sm:p-3 rounded-lg">
+                  <FiTrendingUp className="text-gray-600 text-lg sm:text-xl" />
                 </div>
               </div>
             </motion.div>
@@ -402,22 +402,11 @@ const Downloads = () => {
                     viewMode === 'list' ? 'flex items-center' : ''
                   }`}
                 >
-                  {/* Color Strip */}
-                  <div className={`h-2 ${viewMode === 'list' ? 'w-2 h-full' : 'w-full'} bg-gradient-to-r ${
-                    download.color === 'blue' ? 'from-blue-400 to-blue-600' :
-                    download.color === 'purple' ? 'from-purple-400 to-purple-600' :
-                    'from-green-400 to-green-600'
-                  }`} />
-
                   <div className={`p-3 sm:p-4 lg:p-6 ${viewMode === 'list' ? 'flex items-center w-full gap-3 sm:gap-4' : ''}`}>
                     <div className={`flex items-start ${viewMode === 'list' ? 'flex-row gap-3 sm:gap-4 flex-1' : 'mb-3 sm:mb-4'}`}>
                       <div className={`flex items-center gap-3 sm:gap-4 ${viewMode === 'list' ? 'flex-1' : 'flex-1'}`}>
-                        <div className={`${
-                          download.type === 'resume' ? 'bg-blue-100' : 'bg-purple-100'
-                        } p-2 sm:p-3 rounded-lg group-hover:scale-110 transition-transform`}>
-                          <FiFileText className={`text-xl sm:text-2xl ${
-                            download.type === 'resume' ? 'text-blue-600' : 'text-purple-600'
-                          }`} />
+                        <div className="bg-gray-100 p-2 sm:p-3 rounded-lg group-hover:scale-110 transition-transform">
+                          <FiFileText className="text-xl sm:text-2xl text-gray-600" />
                         </div>
                         <div className="flex-1 min-w-0">
                           <h3 className="font-bold text-gray-800 text-sm sm:text-base lg:text-lg mb-1 group-hover:text-blue-600 transition-colors truncate">
@@ -469,8 +458,7 @@ const Downloads = () => {
                         className="px-3 sm:px-4 py-1.5 sm:py-2 text-sm sm:text-base bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all flex items-center gap-1.5 sm:gap-2 font-medium whitespace-nowrap"
                       >
                         <FiDownload className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-                        <span className="hidden xs:inline">Download</span>
-                        <span className="xs:hidden">Get</span>
+                        <span>Download</span>
                       </button>
                       <button
                         onClick={() => handleDelete(download.id)}

@@ -8,6 +8,12 @@ export default function AdminUsers({ head = "Manage Users" }) {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [search, setSearch] = useState("");
+  
+  // Filter States
+  const [roleFilter, setRoleFilter] = useState("all");
+  const [planFilter, setPlanFilter] = useState("all");
+  const [statusFilter, setStatusFilter] = useState("all");
 
   // Edit Modal State
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -151,8 +157,84 @@ export default function AdminUsers({ head = "Manage Users" }) {
         }}
       />
 
-      <div className="p-6"> {/* Add top padding to account for fixed navbar if needed, or stick with p-6 if navbar handles it */}
+      <div className="p-6">
         <h1 className="text-2xl font-bold mb-6 text-gray-800">{head}</h1>
+
+        {/* Search and Filter Box */}
+        <div className="mb-6 bg-white border rounded-xl shadow-sm p-6">
+          <div className="space-y-4">
+            {/* Filter Options */}
+            <div className="flex flex-wrap items-center gap-4">
+              {/* Role Filter */}
+              <div className="flex items-center gap-2">
+                <label className="text-sm font-bold text-gray-700">Role</label>
+                <select
+                  value={roleFilter}
+                  onChange={(e) => setRoleFilter(e.target.value)}
+                  className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 bg-white text-sm"
+                >
+                  <option value="all">All</option>
+                  <option value="admin">Admin</option>
+                  <option value="user">User</option>
+                </select>
+              </div>
+
+              {/* Plan Filter */}
+              <div className="flex items-center gap-2">
+                <label className="text-sm font-bold text-gray-700">Plan</label>
+                <select
+                  value={planFilter}
+                  onChange={(e) => setPlanFilter(e.target.value)}
+                  className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 bg-white text-sm"
+                >
+                  <option value="all">All</option>
+                  <option value="free">Free</option>
+                  <option value="pro">Pro</option>
+                </select>
+              </div>
+
+              {/* Status Filter */}
+              <div className="flex items-center gap-2">
+                <label className="text-sm font-bold text-gray-700">Status</label>
+                <select
+                  value={statusFilter}
+                  onChange={(e) => setStatusFilter(e.target.value)}
+                  className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 bg-white text-sm"
+                >
+                  <option value="all">All</option>
+                  <option value="active">Active</option>
+                  <option value="inactive">Inactive</option>
+                </select>
+              </div>
+
+              {/* Search Bar */}
+              <div className="flex-1 min-w-[250px]">
+                <input
+                  type="text"
+                  placeholder="Search users by name or email..."
+                  value={search}
+                  onChange={e => setSearch(e.target.value)}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent text-sm"
+                />
+              </div>
+
+              {/* Clear Filters Button */}
+              {(roleFilter !== "all" || planFilter !== "all" || statusFilter !== "all" || search) && (
+                <button
+                  onClick={() => {
+                    setRoleFilter("all");
+                    setPlanFilter("all");
+                    setStatusFilter("all");
+                    setSearch("");
+                  }}
+                  className="px-4 py-2 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg transition-colors"
+                >
+                  Clear All
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
 
         <div className="bg-white border rounded-xl overflow-hidden shadow-sm">
           <table className="w-full text-sm">
@@ -169,7 +251,30 @@ export default function AdminUsers({ head = "Manage Users" }) {
             </thead>
 
             <tbody className="divide-y">
-              {users.map((u) => (
+              {users
+                .filter(u => {
+                  // Search filter
+                  const matchesSearch = u.username?.toLowerCase().includes(search.toLowerCase()) ||
+                    u.email?.toLowerCase().includes(search.toLowerCase());
+                  
+                  // Role filter
+                  const matchesRole = roleFilter === "all" ||
+                    (roleFilter === "admin" && u.isAdmin) ||
+                    (roleFilter === "user" && !u.isAdmin);
+                  
+                  // Plan filter
+                  const matchesPlan = planFilter === "all" ||
+                    (planFilter === "free" && (!u.plan || u.plan.toLowerCase() === "free")) ||
+                    (planFilter === "pro" && u.plan?.toLowerCase() === "pro");
+                  
+                  // Status filter
+                  const matchesStatus = statusFilter === "all" ||
+                    (statusFilter === "active" && u.isActive) ||
+                    (statusFilter === "inactive" && !u.isActive);
+                  
+                  return matchesSearch && matchesRole && matchesPlan && matchesStatus;
+                })
+                .map((u) => (
                 <tr key={u._id} className="hover:bg-gray-50">
                   <td className="px-6 py-4 flex items-center gap-3">
                     <div className="w-10 h-10 rounded-full bg-indigo-100 text-indigo-700 flex items-center justify-center font-bold text-lg uppercase shrink-0">

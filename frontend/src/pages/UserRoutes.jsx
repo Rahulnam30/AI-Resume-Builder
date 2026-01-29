@@ -13,6 +13,7 @@ import Profile from "../components/user/Profile/EditProfile";
 import ResumeBuilder from "../components/user/ResumeBuilder/ResumeBuilder";
 import Templates from "../components/user/Templates/TemplatesDashboardPage";
 import CoverLetterBuilder from "../components/user/CoverLetter/CoverLetterBuilder";
+import Downloads from "../components/user/Downloads/Downloads";
 
 const UserRoutes = () => {
   return (
@@ -39,6 +40,7 @@ const UserRoutes = () => {
         <Route path="templates-dashboard-page" element={<Templates />} />
         <Route path="ats-checker" element={<ATSChecker />} />
         <Route path="my-resumes" element={<MyResumes />} />
+        <Route path="downloads" element={<Downloads />} />
         <Route path="full-preview" element={<FullPreview formData={{}} currentTemplate={{}} setActiveTab={() => {}} />} />
         <Route path="edit-profile" element={<Profile />} />
 
