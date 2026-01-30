@@ -6,6 +6,7 @@ import {
 } from 'react-icons/fi';
 import { motion, AnimatePresence } from 'framer-motion';
 import { initializeSampleData } from '../../../utils/sampleDownloadsData';
+import UserNavBar from '../UserNavBar/UserNavBar';
 
 const Downloads = () => {
   const [downloads, setDownloads] = useState([]);
@@ -163,8 +164,10 @@ const Downloads = () => {
   const filteredDownloads = getFilteredDownloads();
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 font-outfit">
-      <div className="container mx-auto px-3 sm:px-4 lg:px-6 py-4 sm:py-6 lg:py-8 max-w-7xl">
+    <>
+      <UserNavBar />
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 font-outfit">
+        <div className="container mx-auto px-3 sm:px-4 lg:px-6 py-4 sm:py-6 lg:py-8 max-w-7xl">
         
         {/* Header Section */}
         <motion.div 
@@ -476,6 +479,7 @@ const Downloads = () => {
         )}
       </div>
     </div>
+    </>
   );
 };
 
