@@ -45,20 +45,32 @@ const SkillsForm = ({ formData, setFormData }) => {
 
   return (
     <div className="form-section">
-      <div className="skills-type-tabs">
+        <div className="skills-type-tabs flex gap-2 p-3 rounded-xl bg-slate-900 w-fit my-2 mx-auto">
         <button
-          className={`skill-type-tab ${skillType === 'technical' ? 'active' : ''}`}
-          onClick={() => setSkillType('technical')}
+          onClick={() => setSkillType("technical")}
+          className={`px-5 py-2 rounded-lg text-sm font-medium transition-all duration-300
+      ${
+        skillType === "technical"
+          ? "bg-white text-slate-900 shadow-md scale-105"
+          : "bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-white"
+      }`}
         >
           Technical Skills
         </button>
+
         <button
-          className={`skill-type-tab ${skillType === 'soft' ? 'active' : ''}`}
-          onClick={() => setSkillType('soft')}
+          onClick={() => setSkillType("soft")}
+          className={`px-5 py-2 rounded-lg text-sm font-medium transition-all duration-300
+      ${
+        skillType === "soft"
+          ? "bg-white text-slate-900 shadow-md scale-105"
+          : "bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-white"
+      }`}
         >
           Soft Skills
         </button>
       </div>
+
       <div className="add-skill-row">
         <input
           type="text"

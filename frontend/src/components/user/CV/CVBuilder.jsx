@@ -11,6 +11,7 @@ import {
   Zap,
   FolderKanban,
   Award,
+   AlertTriangle,
 } from "lucide-react";
 
 
@@ -217,6 +218,7 @@ const CVBuilder = () => {
 
   // --------
   return (
+    
     <div className="min-h-screen bg-slate-50">
       <UserNavBar />
 
@@ -239,6 +241,31 @@ const CVBuilder = () => {
                 Export
               </button>
             </div>
+          </div>
+        </div>
+         {/* ALERT */}
+        {/* Alert Banner */}
+        <div className="flex items-center w-full gap-3 p-4 bg-amber-50 border border-amber-200 rounded-[10px] mb-5">
+          <AlertTriangle size={20} />
+          {/* Alert content */}
+          <div>
+            <strong className="block text-sm text-amber-800 mb-0.5">
+              Complete Your Resume
+            </strong>
+            <p className="text-sm text-yellow-700 m-0 ">
+              Add the following information to enable export functionality:
+            </p>
+          </div>
+          <div className="flex gap-2 ml-auto flex-wrap">
+            <span className="px-2.5 py-1 rounded-md text-xs font-medium bg-amber-100 text-amber-800">
+              Personal Info
+            </span>
+            <span className="px-2.5 py-1 rounded-md text-xs font-medium bg-amber-100 text-amber-800">
+              Experience / Education
+            </span>
+            <span className="px-2.5 py-1 rounded-md text-xs font-medium bg-emerald-100 text-emerald-800">
+              Skills
+            </span>
           </div>
         </div>
         <div className="cv-builder-content">
@@ -302,6 +329,7 @@ const CVBuilder = () => {
              
             </div>
           )}
+           
           {/* RIGHT PANEL: PREVIEW */}
           <CVPreview
             formData={formData}
