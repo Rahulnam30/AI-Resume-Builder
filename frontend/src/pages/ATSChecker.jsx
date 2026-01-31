@@ -8,22 +8,16 @@ import {
   Shield,
   TrendingUp,
   Activity,
-  Zap,
-  UserCheck,
-  Tag,
-  Type,
-  Award,
-  LayoutTemplate,
-  Briefcase,
-  Palette,
-  Search,
-  ClipboardCheck
+  UploadCloud,
+  ChevronDown,
+  AlertCircle
 } from "lucide-react";
+import { ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
 import NavBar from "../components/NavBar";
 import Footer from "./Footer";
 import ATSChecker from "../assets/ATSChecker.jpeg";
 
-// ✅ Small helper for scroll animations
+/** ✅ helper: scroll animations */
 const useInView = (threshold = 0.15) => {
   const ref = useRef(null);
   const [isVisible, setIsVisible] = useState(false);
@@ -31,18 +25,137 @@ const useInView = (threshold = 0.15) => {
   useEffect(() => {
     if (!ref.current) return;
     const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) setIsVisible(true);
-      },
+      ([entry]) => entry.isIntersecting && setIsVisible(true),
       { threshold }
     );
     observer.observe(ref.current);
-
     return () => observer.disconnect();
   }, [threshold]);
 
   return [ref, isVisible];
 };
+
+/** ✅ ATS donut chart data */
+const atsBreakdown = [
+  { name: "Keyword Match", value: 52 },
+  { name: "Formatting", value: 28 },
+  { name: "Sections", value: 20 },
+];
+
+const ATS_COLORS = ["#0077cc", "#e65100", "#1a2e52"];
+
+/** ✅ FAQ Data */
+const faqData = [
+  {
+    q: "How does the ATS Checker work?",
+    a: "Our checker parses your resume file (PDF/Word) using algorithms similar to real corporate ATS software. It evaluates keyword density, section headers, and formatting to generate a compatibility score."
+  },
+  {
+    q: "What is a good ATS score?",
+    a: "An ATS score above 80 is considered strong. A score between 60-79 is average and might need optimization. Anything below 60 implies your resume might be filtered out automatically."
+  },
+  {
+    q: "Is this free to use?",
+    a: "Yes, you can upload and scan your resume to get a preliminary score for free. Detailed fix recommendations may require an account."
+  },
+  {
+    q: "Can I upload both PDF and Word files?",
+    a: "Yes! We support both .pdf and .docx formats. PDF is generally recommended for consistent formatting, but we test parseability for both."
+  }
+];
+
+function ATSDonutCard({ score = 78 }) {
+  return (
+    <div className="relative w-full rounded-[2.2rem] bg-white border border-gray-100 shadow-[0_25px_60px_rgba(26,46,82,0.14)] overflow-hidden">
+      <div className="px-7 pt-7 pb-5">
+        <div className="flex items-start justify-between">
+          <div>
+            <p className="text-[11px] font-black tracking-widest uppercase text-gray-400">
+              ATS Score Overview
+            </p>
+            <h3 className="mt-2 text-3xl font-black text-[#1a2e52]">
+              {score}/100
+            </h3>
+            <p className="mt-1 text-sm text-gray-500">
+              Breakdown of ATS scanning factors
+            </p>
+          </div>
+
+          <span className="px-3 py-1 rounded-full bg-blue-50 text-[#0077cc] text-[11px] font-bold">
+            Instant
+          </span>
+        </div>
+
+        <div className="relative mt-6 h-[230px]">
+          <ResponsiveContainer width="100%" height="100%">
+            <PieChart>
+              <Pie
+                data={atsBreakdown}
+                dataKey="value"
+                innerRadius={74}
+                outerRadius={98}
+                paddingAngle={3}
+                stroke="transparent"
+              >
+                {atsBreakdown.map((_, i) => (
+                  <Cell key={i} fill={ATS_COLORS[i % ATS_COLORS.length]} />
+                ))}
+              </Pie>
+            </PieChart>
+          </ResponsiveContainer>
+
+          {/* center label */}
+          <div className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-center">
+            <div className="text-4xl font-black text-[#1a2e52] tabular-nums">
+              {score}%
+            </div>
+            <div className="text-[10px] font-black text-gray-400 uppercase tracking-widest">
+              Match
+            </div>
+          </div>
+        </div>
+
+        {/* legend */}
+        <div className="mt-1 space-y-2">
+          {atsBreakdown.map((item, i) => (
+            <div key={item.name} className="flex items-center justify-between text-sm">
+              <div className="flex items-center gap-2">
+                <span
+                  className="inline-block w-3 h-3 rounded-full"
+                  style={{ backgroundColor: ATS_COLORS[i] }}
+                />
+                <span className="font-semibold text-gray-600">{item.name}</span>
+              </div>
+              <span className="font-black text-[#1a2e52]">{item.value}%</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* footer chips */}
+      <div className="grid grid-cols-3 gap-2 px-7 pb-7">
+        <div className="rounded-xl bg-slate-50 border border-gray-100 p-3 text-center">
+          <p className="text-[10px] font-black tracking-widest uppercase text-gray-400">
+            Keywords
+          </p>
+          <p className="mt-1 text-sm font-black text-[#1a2e52]">Strong</p>
+        </div>
+        <div className="rounded-xl bg-slate-50 border border-gray-100 p-3 text-center">
+          <p className="text-[10px] font-black tracking-widest uppercase text-gray-400">
+            Format
+          </p>
+          <p className="mt-1 text-sm font-black text-[#1a2e52]">Good</p>
+        </div>
+        <div className="rounded-xl bg-slate-50 border border-gray-100 p-3 text-center">
+          <p className="text-[10px] font-black tracking-widest uppercase text-gray-400">
+            Sections
+          </p>
+          <p className="mt-1 text-sm font-black text-[#1a2e52]">Ok</p>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 const ATSCheckerFeature = () => {
   const navigate = useNavigate();
@@ -52,301 +165,214 @@ const ATSCheckerFeature = () => {
     navigate(isLoggedIn ? "/user/ats-checker" : "/resume-checker");
   };
 
-  const handleBackHome = () => {
-    navigate("/?scrollTo=features");
-  };
-
   const [heroRef, heroVisible] = useInView(0.2);
-  const [whatRef, whatVisible] = useInView(0.15);
-  const [whyRef, whyVisible] = useInView(0.15);
-  const [looksRef, looksVisible] = useInView(0.15);
-  const [howRef, howVisible] = useInView(0.15);
-  const [ctaRef, ctaVisible] = useInView(0.2);
+  const [procRef, procVisible] = useInView(0.15);
+  const [uploadRef, uploadVisible] = useInView(0.15);
+  const [fixesRef, fixesVisible] = useInView(0.15);
+  const [faqRef, faqVisible] = useInView(0.15);
+  const [openFaq, setOpenFaq] = useState(0);
 
   return (
-    <div className="min-h-screen bg-white font-['Outfit'] select-none">
+    <div className="min-h-screen bg-[#FDFDFD] font-['Outfit'] select-none">
       <NavBar />
 
-      {/* HERO SECTION */}
-      <section
-        ref={heroRef}
-        className="relative px-6 pt-10 pb-6 overflow-hidden bg-white"
-      >
-        {/* Subtly matching home page blur accents */}
-        <div className="absolute rounded-full -top-24 -left-24 w-72 h-72 bg-blue-50 blur-3xl opacity-60" />
-        <div className="absolute rounded-full -bottom-24 -right-24 w-72 h-72 bg-orange-50 blur-3xl opacity-60" />
+      {/* 1) HERO SECTION */}
+      <section ref={heroRef} className="relative px-6 pt-16 pb-20 overflow-hidden bg-white">
+        {/* Background Accents (Clean Dashboard Look) */}
+        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-50/50 rounded-full blur-3xl -z-10 opacity-60" />
+        <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-orange-50/50 rounded-full blur-3xl -z-10 opacity-60" />
 
         <div className="mx-auto max-w-7xl">
-
-          <div className="grid items-center gap-12 lg:grid-cols-2">
-            <div
-              className={`transition-all duration-700 ${
-                heroVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
-              }`}
-            >
-              <div className="inline-block px-4 py-2 bg-blue-50 text-[#0077cc] rounded-full text-sm font-bold mb-6">
-                Free ATS Resume Checker
+          <div className="grid items-center gap-16 lg:grid-cols-2">
+            {/* LEFT: Text */}
+            <div className={`transition-all duration-700 ${heroVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"}`}>
+              <div className="inline-flex items-center gap-2 px-4 py-2 mb-8 border rounded-full bg-slate-50 border-slate-100">
+                <Shield size={14} className="text-[#0077cc]" />
+                <span className="text-xs font-bold tracking-widest text-slate-500 uppercase">
+                  Recruiter Screening
+                </span>
               </div>
 
-              <h1 className="mb-6 text-5xl font-black leading-tight text-[#1a2e52] md:text-6xl font-jakarta tracking-tight">
-                Free ATS Resume Checker:{" "}
-                <span className="text-[#0077cc]">Get Your Score</span>
+              <h1 className="mb-6 text-5xl font-black leading-[1.1] text-[#1a2e52] md:text-6xl tracking-tight">
+                Get Past the Bots. <br />
+                <span className="text-transparent bg-gradient-to-r from-[#0077cc] to-[#00a3ff] bg-clip-text">
+                  Land the Interview.
+                </span>
               </h1>
 
-              <p className="mb-8 text-xl leading-relaxed text-gray-600">
-                Upload your resume ATS friendly and see how well Resume Builder can
-                optimize your resume to get past applicant tracking systems and
-                land more interviews.
+              <p className="mb-10 text-xl leading-relaxed text-gray-500 max-w-md">
+                Our free ATS Checker simulates corporate screening algorithms to ensure your resume is robust, parseable, and keyword-optimized.
               </p>
 
               <button
                 onClick={handleCTA}
-                className="group relative inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-[#e65100] to-[#f4511e] text-white rounded-xl font-bold text-lg transition-all duration-300 shadow-[0_10px_25px_rgba(230,81,0,0.3)] hover:shadow-[0_15px_35px_rgba(230,81,0,0.45)] hover:-translate-y-1 active:scale-95"
+                className="group relative inline-flex items-center gap-3 px-8 py-4 bg-[#1a2e52] text-white rounded-xl font-bold text-lg transition-all duration-300 shadow-xl hover:bg-[#0077cc] hover:-translate-y-1"
               >
-                <span>Check My Score Now</span>
+                <span>Run Free Scan</span>
                 <ArrowRight size={20} className="transition-transform group-hover:translate-x-1" />
               </button>
 
-              <p className="flex items-center gap-2 mt-8 text-sm font-bold text-gray-400">
-                <CheckCircle size={16} className="text-green-500" />
-                • Instant results
-              </p>
+              <div className="flex items-center gap-4 mt-8 text-sm font-medium text-gray-400">
+                <div className="flex -space-x-2">
+                  {[1, 2, 3].map(i => (
+                    <div key={i} className="w-8 h-8 rounded-full border-2 border-white bg-gray-200" />
+                  ))}
+                </div>
+                <p>Trusted by 10k+ job seekers</p>
+              </div>
             </div>
 
-            <div
-              className={`relative transition-all duration-700 ${
-                heroVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-              }`}
-            >
-              <div className="relative">
-                <div className="absolute inset-0 rounded-full bg-blue-50 blur-3xl" />
-                <img
-                  src={ATSChecker}
-                  alt="ATS Score Analysis"
-                  className="relative z-10 w-full shadow-xl rounded-3xl"
-                />
+            {/* RIGHT: Chart Card */}
+            <div className={`relative transition-all duration-700 delay-100 ${heroVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}>
+              <div className="max-w-md mx-auto lg:mr-0">
+                <ATSDonutCard score={82} />
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      <section ref={whatRef} className="px-6 py-20 bg-white">
-        <div className={`max-w-5xl mx-auto transition-all duration-700 ${whatVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}>
-          <h2 className="mb-6 text-4xl font-black text-center text-[#1a2e52] font-jakarta">Is Your Resume Bot-Readable?</h2>
-          <div className="mb-12 space-y-6 text-lg text-gray-600">
-            <p>An ATS (Applicant Tracking System) is a database that filters resumes based on technical parsability. If your layout is too complex, the recruiter will never see your name.</p>
-            <p>Our checker acts as a "pre-scan" to identify technical roadblocks like unreadable tables or non-standard fonts that cause 75% of resumes to be discarded automatically.</p>
-            <div className="p-6 my-8 border-l-4 border-[#0077cc] bg-[#f0f7ff] rounded-2xl shadow-sm">
-              <h3 className="mb-4 text-xl font-bold text-[#1a2e52]">Technical Compliance Audit:</h3>
-              <ul className="space-y-4">
-                {[
-                  { title: "Parse-Ready Layout:", desc: "Validates that your contact info and headers are extractable." },
-                  { title: "System Compatibility:", desc: "Tests your file against modern tracking algorithms." },
-                  { title: "Standard Date Formats:", desc: "Ensures your work history timeline is chronologically clear to AI." },
-                  { title: "Safe File Structure:", desc: "Verifies that no hidden graphics are blocking text extraction." },
-                ].map((item, idx) => (
-                  <li key={idx} className="flex items-start gap-2">
-                    <CheckCircle size={20} className="mt-1 text-[#0077cc]" />
-                    <span className="text-gray-700"><strong>{item.title}</strong> {item.desc}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* 2) PROCESS ROW (Step Bar) */}
+      <section ref={procRef} className="py-10 bg-white border-y border-gray-50">
+        <div className={`max-w-4xl mx-auto px-6 transition-all duration-700 ${procVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}>
+          <div className="flex flex-col md:flex-row items-center justify-between gap-8 relative">
+            {/* Connector Line (Desktop) */}
+            <div className="absolute top-1/2 left-0 w-full h-0.5 bg-gray-100 -z-10 hidden md:block" />
 
-      {/* WHY USE ATS CHECKER */}
-      <section ref={whyRef} className="px-6 py-20 bg-gray-50/50">
-        <div
-          className={`max-w-6xl mx-auto transition-all duration-700 ${
-            whyVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-          }`}
-        >
-          <h2 className="mb-4 text-4xl font-black text-center text-[#1a2e52] font-jakarta">
-            Why Use an <span className="text-[#e65100]">ATS Resume Checker?</span>
-          </h2>
-
-          <p className="max-w-3xl mx-auto mb-16 text-lg text-center text-gray-600">
-            Most companies use Applicant Tracking Systems to filter resumes. Our
-            checker helps you optimize your resume so it doesn't get rejected
-            before a human even sees it.
-          </p>
-
-          <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
             {[
-              {
-                icon: <Target size={40} />,
-                title: "Increase interview chances",
-                desc: "Optimize your resume to pass ATS filters and reach hiring managers",
-              },
-              {
-                icon: <FileSearch size={40} />,
-                title: "Identify missing keywords",
-                desc: "Discover critical keywords that ATS systems look for in your industry",
-              },
-              {
-                icon: <Shield size={40} />,
-                title: "Fix formatting issues",
-                desc: "Ensure your resume format is compatible with all ATS systems",
-              },
-              {
-                icon: <TrendingUp size={40} />,
-                title: "Improve your score",
-                desc: "Get actionable feedback to boost your ATS compatibility score",
-              },
-            ].map((item, i) => (
-              <div
-                key={i}
-                className="p-8 transition-all duration-300 bg-white border border-gray-100 rounded-2xl hover:shadow-xl hover:-translate-y-1"
-              >
-                <div className="flex items-center justify-center w-16 h-16 mb-6 text-[#0077cc] bg-blue-50 rounded-xl">
-                  {item.icon}
+              { step: "01", title: "Upload Resume", desc: "PDF or Word Doc" },
+              { step: "02", title: "Smart Scan", desc: "AI Checks Keywords" },
+              { step: "03", title: "Improve Score", desc: "Get Actionable Fixes" },
+            ].map((s, i) => (
+              <div key={i} className="flex flex-col items-center text-center bg-white px-4">
+                <div className="w-12 h-12 rounded-full bg-[#f0f7ff] text-[#0077cc] flex items-center justify-center font-black text-lg mb-3 shadow-sm border border-blue-100">
+                  {s.step}
                 </div>
-
-                <h3 className="mb-2 text-lg font-bold text-[#1a2e52]">
-                  {item.title}
-                </h3>
-                <p className="text-sm leading-relaxed text-gray-500">{item.desc}</p>
+                <h4 className="text-base font-bold text-[#1a2e52]">{s.title}</h4>
+                <p className="text-xs text-gray-400 mt-1">{s.desc}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* WHAT OUR CHECKER LOOKS FOR */}
-<section ref={looksRef} className="px-6 py-20 bg-white">
-  <div
-    className={`max-w-6xl mx-auto transition-all duration-700 ${
-      looksVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-    }`}
-  >
-    <h2 className="mb-16 text-4xl font-black text-center text-[#1a2e52] font-jakarta">
-      What Our Free ATS Resume Checker Looks For
-    </h2>
+      {/* 3) SPLIT SECTION: UPLOAD & CHECKLIST */}
+      <section ref={uploadRef} className="px-6 py-24 bg-[#FAFAFA]">
+        <div className="max-w-7xl mx-auto">
+          <div className="grid lg:grid-cols-12 gap-12 items-start">
 
-    <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-      {[
-        { icon: <UserCheck size={32} />, title: "Personalization", desc: "Checks if your resume is tailored to the specific job you're applying for" },
-        { icon: <Tag size={32} />, title: "Targeted keywords", desc: "Scans for job-specific keywords that ATS systems prioritize" },
-        { icon: <Type size={32} />, title: "Spelling and grammar", desc: "Identifies typos and grammatical errors that could hurt your score" },
-        { icon: <Award size={32} />, title: "Hard and soft skills", desc: "Evaluates if you've included both technical and interpersonal skills" },
-        { icon: <LayoutTemplate size={32} />, title: "Strong formatting", desc: "Ensures your resume structure is ATS-compatible and easy to parse" },
-        { icon: <Briefcase size={32} />, title: "Job title optimization", desc: "Checks if your job titles align with industry standards" },
-        { icon: <Palette size={32} />, title: "Resume design", desc: "Verifies your design choices don't interfere with ATS readability" },
-        { icon: <Search size={32} />, title: "Detail depth", desc: "Assesses if you've provided enough detail about your experience" },
-        { icon: <ClipboardCheck size={32} />, title: "Completeness", desc: "Ensures all critical resume sections are present and complete" },
-      ].map((item, i) => (
-        <div
-          key={i}
-          className="group p-8 text-center transition-all duration-300 border border-gray-100 bg-white rounded-[2rem] hover:border-[#0077cc]/30 hover:shadow-xl hover:-translate-y-1"
-        >
-          {/* The Blue Icon Effect Container */}
-          <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-blue-50 text-[#0077cc] transition-all duration-300 group-hover:bg-[#0077cc] group-hover:text-white">
-            {item.icon}
-          </div>
-          
-          <h3 className="mb-2 text-lg font-bold text-[#1a2e52]">
-            {item.title}
-          </h3>
-          <p className="text-sm leading-relaxed text-gray-500">
-            {item.desc}
-          </p>
-        </div>
-      ))}
-    </div>
-  </div>
-</section>
-
-      {/* HOW IT WORKS */}
-      <section ref={howRef} className="px-6 py-14 bg-gray-50/50">
-        <div
-          className={`max-w-5xl mx-auto transition-all duration-700 ${
-            howVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-          }`}
-        >
-          <h2 className="mb-4 text-4xl font-black text-center text-[#1a2e52] font-jakarta">
-            How Our <span className="text-[#0077cc]">ATS Resume Scanner</span> Works
-          </h2>
-
-          <p className="max-w-3xl mx-auto mb-16 text-lg text-center text-gray-600">
-            Our ATS checker scans your resume in seconds. Here's how it works
-            and what you can expect from the results.
-          </p>
-
-          <div className="p-8 bg-white border border-gray-100 shadow-xl rounded-[2.5rem] md:p-12">
-            <h3 className="mb-8 text-2xl font-bold text-center text-[#1a2e52]">
-              Here's how it works:
-            </h3>
-
-            <div className="space-y-6">
-              {[
-                { step: "1", title: "Upload your resume", desc: "Simply upload your current resume in PDF or Word format" },
-                { step: "2", title: "AI analyzes your resume", desc: "Our advanced AI scans your resume against ATS requirements and best practices" },
-                { step: "3", title: "Get your score & fixes", desc: "Receive an instant ATS score with detailed suggestions to improve your resume" },
-              ].map((item, i) => (
-                <div
-                  key={i}
-                  className="flex items-start gap-6 p-4 transition-colors rounded-2xl hover:bg-blue-50"
-                >
-                  <div className="flex items-center justify-center flex-shrink-0 w-12 h-12 text-xl font-black text-white bg-[#0077cc] rounded-full">
-                    {item.step}
-                  </div>
-
-                  <div>
-                    <h4 className="mb-1 text-xl font-bold text-[#1a2e52]">
-                      {item.title}
-                    </h4>
-                    <p className="text-gray-500">{item.desc}</p>
-                  </div>
+            {/* LEFT: Upload Box */}
+            <div className={`lg:col-span-5 transition-all duration-700 ${uploadVisible ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-8"}`}>
+              <div
+                className="bg-white border-2 border-dashed border-gray-200 rounded-[2rem] p-10 text-center cursor-pointer hover:border-[#0077cc] hover:bg-blue-50/30 transition-all group"
+                onClick={handleCTA}
+              >
+                <div className="w-20 h-20 rounded-full bg-blue-50 text-[#0077cc] flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform">
+                  <UploadCloud size={32} />
                 </div>
-              ))}
+                <h3 className="text-2xl font-black text-[#1a2e52] mb-3">Upload your resume</h3>
+                <p className="text-gray-500 mb-8">
+                  Drag and drop your file here, or click to browse. <br />
+                  Supports PDF and Word.
+                </p>
+                <button className="px-6 py-3 bg-[#0077cc] text-white font-bold rounded-lg shadow-lg shadow-blue-200 group-hover:shadow-blue-300 transition-all">
+                  Select File
+                </button>
+              </div>
             </div>
+
+            {/* RIGHT: Checklist */}
+            <div className={`lg:col-span-7 transition-all duration-700 delay-100 ${uploadVisible ? "opacity-100 translate-x-0" : "opacity-0 translate-x-8"}`}>
+              <h2 className="text-3xl font-black text-[#1a2e52] mb-8">
+                Comprehensive <span className="text-[#0077cc]">Checklist</span>
+              </h2>
+              <div className="grid md:grid-cols-2 gap-6">
+                {[
+                  { t: "Keyword Matching", d: "Compares your skills vs. job description" },
+                  { t: "Formatting Check", d: "Ensures fonts & margins are ATS-safe" },
+                  { t: "Contact Info", d: "Validates email & phone parseability" },
+                  { t: "Section Headers", d: "Checks for standard, readable headings" },
+                  { t: "Date Formats", d: "Verifies work history timeline clarity" },
+                  { t: "File Integrity", d: "Tests PDF/Docx structure code" },
+                ].map((item, i) => (
+                  <div key={i} className="flex items-start gap-4 p-5 bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
+                    <div className="mt-1 text-green-500">
+                      <CheckCircle size={20} />
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-[#1a2e52]">{item.t}</h4>
+                      <p className="text-sm text-gray-500 leading-relaxed mt-1">{item.d}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
           </div>
         </div>
       </section>
 
-      {/* CTA SECTION */}
-      <section
-        ref={ctaRef}
-        className="relative px-8 pt-12 pb-24 overflow-hidden bg-white select-none"
-      >
-        <div className="absolute top-0 right-0 w-1/3 h-1/2 bg-orange-50 rounded-full blur-[120px] -z-10 opacity-60"></div>
-        <div className="absolute bottom-0 left-0 w-1/3 h-1/2 bg-blue-50 rounded-full blur-[120px] -z-10 opacity-60"></div>
-        
-        <div
-          className={`relative z-10 max-w-4xl mx-auto text-center transition-all duration-1000 ease-out ${
-            ctaVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12"
-          }`}
-        >
-          <h2 className="mb-6 text-4xl font-black md:text-6xl text-[#1a2e52] tracking-tight font-jakarta">
-            Ready to Check Your <span className="text-[#0077cc]">ATS Score?</span>
+      {/* 4) TOP ATS FIXES (Cards) */}
+      <section ref={fixesRef} className="px-6 py-20 bg-white">
+        <div className={`max-w-6xl mx-auto transition-all duration-700 ${fixesVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}>
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-black text-[#1a2e52]">Top ATS Fixes</h2>
+            <p className="mt-4 text-gray-500">Most common reasons resumes get rejected.</p>
+          </div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {[
+              { icon: FileSearch, title: "Missing Keywords", desc: "Recruiters search for specific skills. If you don't list them, you don't appear." },
+              { icon: AlertCircle, title: "Graphics & Tables", desc: "Complex layouts confuse parsers. Keep it clean and linear." },
+              { icon: Target, title: "Generic Titles", desc: "Use standard job titles (e.g. 'Sales Manager' vs 'Revenue Ninja')." },
+              { icon: Activity, title: "Dateless Experience", desc: "ATS needs standardized dates to calculate years of experience." },
+            ].map((card, i) => (
+              <div key={i} className="p-8 bg-slate-50 rounded-[2rem] hover:bg-[#f0f7ff] transition-colors group">
+                <div className="w-14 h-14 bg-white rounded-2xl flex items-center justify-center text-[#1a2e52] shadow-sm mb-6 group-hover:text-[#0077cc] group-hover:scale-110 transition-all">
+                  <card.icon size={28} />
+                </div>
+                <h3 className="text-xl font-bold text-[#1a2e52] mb-3">{card.title}</h3>
+                <p className="text-sm text-gray-500 leading-relaxed">{card.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* 5) FAQ ACCORDION */}
+      <section ref={faqRef} className="px-6 py-20 bg-[#f8f9fc]">
+        <div className={`max-w-3xl mx-auto transition-all duration-700 ${faqVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}>
+          <h2 className="text-3xl font-black text-center text-[#1a2e52] mb-12">
+            Frequently Asked Questions
           </h2>
 
-          <p className="max-w-2xl mx-auto mb-10 text-xl font-medium text-gray-500">
-            Get instant feedback and actionable tips to improve your resume's marketability with our AI-powered analysis.
-          </p>
-
-          <button
-            onClick={handleCTA}
-            className="group relative inline-flex items-center gap-3 px-10 py-5 bg-gradient-to-r from-[#e65100] to-[#f4511e] text-white rounded-xl font-bold text-lg transition-all duration-300 shadow-[0_10px_25px_rgba(230,81,0,0.3)] 
-                       hover:shadow-[0_15px_35px_rgba(230,81,0,0.45)] hover:-translate-y-1 active:scale-95"
-          >
-            <span className="relative z-10">Check My Resume Now</span>
-            <ArrowRight
-              size={22}
-              className="relative z-10 transition-transform duration-300 group-hover:translate-x-2"
-            />
-          </button>
-          
-          <div className="mt-8 flex items-center justify-center gap-2 text-sm font-bold text-[#0077cc] opacity-60">
-            <Activity size={16} />
-            <span>Real-time AI Analysis</span>
+          <div className="space-y-4">
+            {faqData.map((item, i) => (
+              <div
+                key={i}
+                className="bg-white rounded-2xl border border-gray-100 overflow-hidden cursor-pointer"
+                onClick={() => setOpenFaq(openFaq === i ? -1 : i)}
+              >
+                <div className="p-6 flex items-center justify-between">
+                  <h3 className={`font-bold text-lg ${openFaq === i ? "text-[#0077cc]" : "text-[#1a2e52]"}`}>
+                    {item.q}
+                  </h3>
+                  <ChevronDown
+                    className={`transition-transform duration-300 text-gray-400 ${openFaq === i ? "rotate-180 text-[#0077cc]" : ""}`}
+                  />
+                </div>
+                <div
+                  className={`px-6 text-gray-500 leading-relaxed overflow-hidden transition-all duration-300 ${openFaq === i ? "max-h-40 pb-6 opacity-100" : "max-h-0 opacity-0"}`}
+                >
+                  {item.a}
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </section>
 
+      {/* FOOTER */}
       <Footer />
     </div>
   );

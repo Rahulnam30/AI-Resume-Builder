@@ -1,285 +1,433 @@
-import React from "react";
+import React, { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
-  Target,
-  Zap,
+  Activity,
   CheckCircle2,
   ArrowRight,
-  LineChart,
-  ShieldCheck,
-  Search,
-  Activity,
-  BarChart3,
-  FileText,
+  Zap,
+  PenTool,
+  Sparkles,
+  Award,
+  BookOpen,
+  Briefcase,
+  User,
+  TrendingUp
 } from "lucide-react";
+import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip, CartesianGrid } from "recharts";
+import NavBar from "../components/NavBar";
 import Footer from "./Footer";
-import score from "../assets/score.png"; 
+import scoreImg from "../assets/score.png";
 
 const ScoreChecker = () => {
   const navigate = useNavigate();
-  const isLoggedIn =
-    typeof window !== "undefined" && !!localStorage.getItem("token");
+  const isLoggedIn = typeof window !== "undefined" && !!localStorage.getItem("token");
 
   const handleFeatureClick = (path) => {
-    if (isLoggedIn) {
-      navigate(path);
-    } else {
+    if (isLoggedIn) navigate(path);
+    else {
       localStorage.setItem("redirectPath", path);
       navigate("/login");
     }
   };
 
+  // ✅ editor mock (for demo feel)
+  const [text, setText] = useState(
+    "Senior Software Engineer\n\n- Spearheaded a team of 5 developers to build a scalable React application.\n- Improved page load speed by 40% using code splitting and lazy loading.\n- Integrated RESTful APIs and optimized database queries for better performance."
+  );
+
+  const scoreValue = useMemo(() => {
+    const len = text.trim().length;
+    const bullets = (text.match(/- /g) || []).length;
+    const hasNumbers = /\d+%|\d+x|\$\d+/.test(text);
+
+    let s = 65;
+    if (len > 150) s += 10;
+    if (bullets >= 2) s += 10;
+    if (hasNumbers) s += 10;
+
+    return Math.min(100, s);
+  }, [text]);
+
+  const feedback = useMemo(() => {
+    const items = [];
+    if (!/\d+%|\d+x|\$\d+/.test(text)) {
+      items.push({ type: "warning", text: "Add quantifiable results (e.g., 'Increased revenue by 20%')" });
+    }
+    if ((text.match(/- /g) || []).length < 3) {
+      items.push({ type: "tip", text: "Aim for at least 3 bullet points per role." });
+    }
+    if (text.length < 200) {
+      items.push({ type: "tip", text: "Expand on your specific technical contributions." });
+    }
+    if (items.length === 0) {
+      items.push({ type: "success", text: "Excellent! Strong use of action verbs and metrics." });
+    }
+    return items;
+  }, [text]);
+
+  // ✅ Fake trend data that reacts to score
+  const trendData = useMemo(() => {
+    const base = Math.max(50, scoreValue - 20);
+    return Array.from({ length: 8 }).map((_, i) => ({
+      edit: `v${i + 1}`,
+      score: Math.min(100, base + Math.floor(Math.random() * 5) + (i * 2.5)),
+    }));
+  }, [scoreValue]);
+
   return (
-    <div className="min-h-screen bg-[#FCFCFE] font-['Outfit'] text-[#1a2e52] selection:bg-orange-100 overflow-x-hidden">
-      
-      {/* --- HERO SECTION: THEME ALIGNED --- */}
-      <section className="relative pb-16 overflow-hidden pt-28">
-  <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[500px] bg-gradient-to-b from-orange-50/50 to-transparent -z-10" />
+    <div className="min-h-screen bg-[#F8F9FC] font-['Outfit'] text-[#1a2e52] selection:bg-orange-100 overflow-x-hidden">
+      <NavBar />
 
-  <div className="px-8 mx-auto max-w-7xl">
-    <div className="flex flex-col items-center gap-16 lg:flex-row lg:text-left">
-      <div className="flex-1 text-center lg:text-left">
-        <div className="inline-flex items-center gap-2 px-4 py-2 mb-8 bg-white border border-orange-100 rounded-full shadow-sm">
-          <Activity size={14} className="text-[#e65100]" />
-          <span className="text-sm font-bold tracking-wider text-[#e65100] uppercase">Real-Time Performance Tracking</span>
-        </div>
-        <h1 className="text-5xl md:text-7xl font-black mb-8 leading-[1.1] tracking-tight">
-          Don't Just Write. <br />
-          <span className="text-transparent bg-gradient-to-r from-[#e65100] to-[#ff8f00] bg-clip-text">Measure Success.</span>
-        </h1>
-        <p className="max-w-2xl mx-auto mb-12 text-xl font-light leading-relaxed text-gray-500 lg:mx-0">
-          Our Live Quality Scoring engine provides an instant 0-100 score based on recruiter standards.
-        </p>
-        <button onClick={() => handleFeatureClick("/user/ats-checker")} className="px-10 py-5 bg-[#e65100] text-white rounded-2xl font-bold text-lg hover:bg-[#ff6d00] transition-all flex items-center gap-3 shadow-xl">
-          Check My Score <Target size={20} />
-        </button>
-      </div>
-
-      {/* Main Image Fixed - Badge Active */}
-      <div className="relative flex-1 w-full max-w-[550px] lg:max-w-[500px]">
-          <div className="absolute rounded-full opacity-40 -inset-10 bg-gradient-to-tr from-orange-500/20 to-blue-500/20 blur-3xl" />
-          <div className="relative overflow-hidden bg-white border-2 shadow-2xl rounded-[40px] border-orange-50 p-2.5">
-              <div className="overflow-hidden rounded-[32px]">
-                  <img src={score} alt="Score" className="w-full h-auto" />
-              </div>
-          </div>
-          {/* Floating Badge stays animated */}
-          <div className="absolute hidden p-4 bg-white border border-blue-100 shadow-xl -bottom-6 -right-6 rounded-2xl md:block animate-bounce" style={{ animationDuration: '4s' }}>
-            <div className="flex items-center gap-3">
-              <div className="flex items-center justify-center w-10 h-10 rounded-full bg-blue-50">
-                <CheckCircle2 className="text-[#0077cc]" size={20} />
-              </div>
-              <div>
-                <p className="text-[10px] font-black uppercase text-gray-400">Status</p>
-                <p className="text-sm font-bold text-slate-800">Optimized</p>
-              </div>
-            </div>
-          </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-      {/* --- WHAT IS AN ATS RESUME CHECKER (MATCHING IMAGE DESIGN) --- */}
-<section className="px-8 py-20 bg-white font-['Outfit']">
-  <div className="max-w-4xl mx-auto">
-    <h2 className="text-4xl font-bold text-center text-[#1a2e52] mb-12">What is an ATS Resume Checker?</h2>
-    
-    <div className="mb-12 space-y-6 text-lg text-gray-600">
-      <p>
-        An ATS resume checker is a tool that scans your resume to see how well it matches job requirements and how likely it is to pass an Applicant Tracking System (ATS). These systems are used by 99% of Fortune 500 companies and a growing number of small to medium businesses to filter resumes before they reach human recruiters.
-      </p>
-      <p>
-        Our ATS checker analyzes your resume against industry standards and provides a detailed score based on formatting, keywords, and structure. The higher your score, the better your chances of getting past the ATS and landing an interview.
-      </p>
-    </div>
-
-    {/* Featured Blue Box - Matching Reference UI */}
-    <div className="bg-[#f0f7ff] border-l-4 border-[#0077cc] rounded-2xl p-8 shadow-sm">
-      <h3 className="text-xl font-bold text-[#1a2e52] mb-6">Our ATS Resume Checker scans for:</h3>
-      <ul className="space-y-4">
-        {[
-          { title: "Standard ATS resume format", desc: "Ensures your resume uses ATS-friendly formatting" },
-          { title: "Measurable results", desc: "Checks for quantifiable achievements and metrics" },
-          { title: "Relevant keywords", desc: "Identifies missing industry-specific keywords" },
-          { title: "Personalization", desc: "Evaluates how well your resume is tailored to the role" }
-        ].map((item, i) => (
-          <li key={i} className="flex items-start gap-3">
-            <CheckCircle2 size={20} className="text-[#0077cc] mt-1 shrink-0" />
-            <p className="text-gray-700">
-              <span className="font-bold">{item.title}:</span> {item.desc}
-            </p>
-          </li>
-        ))}
-      </ul>
-    </div>
-  </div>
-</section>
-
-      {/* --- LIVE SCORE VISUALIZATION: CLEAN DESIGN --- */}
-<section className="px-8 py-20 overflow-hidden bg-gray-50/50">
-  <div className="max-w-6xl mx-auto">
-    <div className="grid items-center gap-12 lg:grid-cols-2">
-      
-      {/* Text Content - No Hover */}
-      <div className="space-y-6">
-        <h2 className="text-3xl font-black leading-tight tracking-tight md:text-4xl text-[#1a2e52]">
-          The 90% <span className="inline-block text-[#e65100]">Interview-Ready</span> Threshold.
-        </h2>
-        <p className="max-w-md leading-relaxed text-gray-600">
-          Data shows that resumes scoring above 90 receive 3x more
-          interview callbacks. Our live meter helps you identify exactly
-          what's missing.
-        </p>
-        
-        <ul className="space-y-4">
-          {[
-            "Real-time keyword analysis",
-            "Section-by-section breakdown",
-            "Actionable improvement tips",
-          ].map((text, i) => (
-            <li key={i} className="flex items-center gap-3 text-sm font-bold text-[#1a2e52]">
-              <div className="p-1 bg-blue-100 rounded-full text-[#0077cc]">
-                <CheckCircle2 size={18} />
-              </div>
-              {text}
-            </li>
-          ))}
-        </ul>
-      </div>
-
-      {/* The Card - No Glow, No Movement */}
-      <div className="relative">
-        {/* Glow div removed from here */}
-        
-        <div className="relative bg-white p-10 rounded-[40px] border border-gray-100 shadow-2xl text-center">
-          
-          <div className="relative inline-flex items-center justify-center mb-6">
-            <svg className="w-48 h-48 transform -rotate-90 drop-shadow-md">
-              <circle cx="96" cy="96" r="88" stroke="currentColor" strokeWidth="12" fill="transparent" className="text-gray-100" />
-              <circle
-                cx="96" cy="96" r="88" stroke="currentColor" strokeWidth="12" fill="transparent"
-                strokeDasharray="552"
-                strokeDashoffset="110" /* Fixed position at 82% */
-                className="text-[#e65100]"
-              />
-            </svg>
-            
-            <div className="absolute flex flex-col items-center">
-              <span className="text-5xl font-black text-slate-800 tabular-nums">82</span>
-              <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">ATS Score</span>
-            </div>
+      {/* 1) HERO SECTION (Centered, distinct from ATS) */}
+      <section className="relative px-6 pt-16 pb-12 bg-white">
+        <div className="mx-auto max-w-4xl text-center">
+          <div className="inline-flex items-center gap-2 px-4 py-2 mb-6 bg-orange-50 border border-orange-100 rounded-full">
+            <Activity size={14} className="text-[#e65100]" />
+            <span className="text-xs font-bold tracking-widest text-[#e65100] uppercase">
+              Live Quality Scoring
+            </span>
           </div>
 
-          <div className="p-5 text-left border border-orange-100 bg-orange-50/50 rounded-2xl">
-            <div className="flex items-center gap-2 mb-2">
-              <Zap size={14} className="text-[#e65100] fill-[#e65100]" />
-              <span className="text-xs font-black tracking-tight text-[#e65100] uppercase">AI Optimization Tip</span>
-            </div>
-            <p className="text-xs italic font-medium leading-relaxed text-slate-800">
-              "Add more <span className="font-bold text-[#0077cc] underline">quantifiable results</span> to your current role to boost your impact score."
-            </p>
-          </div>
-        </div>
-      </div>
+          <h1 className="mb-6 text-5xl font-black leading-tight tracking-tight md:text-7xl text-[#1a2e52]">
+            Write Better. <br />
+            <span className="text-transparent bg-gradient-to-r from-[#e65100] to-[#ff8f00] bg-clip-text">
+              Rank Higher.
+            </span>
+          </h1>
 
-    </div>
-  </div>
-</section>
-
-      {/* --- FEATURE GRID --- */}
-<section className="relative px-8 py-14 overflow-hidden bg-white font-['Outfit']">
-  {/* Background glow matching video style */}
-  <div className="absolute top-0 right-0 translate-x-1/2 -translate-y-1/2 rounded-full opacity-50 w-96 h-96 bg-slate-50 blur-3xl -z-10" />
-
-  <div className="mx-auto max-w-7xl">
-    <div className="mb-16 text-center">
-      <h2 className="text-4xl font-[1000] text-[#1a2e52] mb-4 tracking-tighter">
-        What Our ATS Checker <span className="text-[#1a2e52]">Looks For</span>
-      </h2>
-      <div className="h-1.5 w-20 bg-[#1a2e52] rounded-full mx-auto mb-6"></div>
-      <p className="max-w-xl mx-auto font-medium text-gray-500">
-        Our Live Quality Scoring engine analyzes every detail to ensure you pass recruiter filters.
-      </p>
-    </div>
-    
-    <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
-      {[
-        { icon: Target, t: "Personalization", d: "Checks if your resume is tailored to the specific job you're applying for." },
-        { icon: BarChart3, t: "Targeted Keywords", d: "Scans for job-specific keywords that ATS systems prioritize." },
-        { icon: ShieldCheck, t: "Strong Formatting", d: "Ensures your resume uses ATS-friendly structures and layouts." },
-        { icon: Search, t: "Keyword Matching", d: "Compares your resume against common job descriptions." },
-        { icon: FileText, t: "Impact Analysis", d: "Measures the strength of your verbs and achievement clarity." },
-        { icon: CheckCircle2, t: "ATS Compatibility", d: "Ensures your document is 100% readable by top platforms." }
-      ].map((feature, i) => (
-        <div 
-          key={i} 
-          className="relative p-10 rounded-[40px] border border-gray-100 bg-white transition-all duration-500 
-                     hover:shadow-[0_30px_60px_-15px_rgba(26,46,82,0.12)] hover:-translate-y-3 
-                     group text-center md:text-left overflow-hidden"
-        >
-          {/* THE SHINE FROM TOP LEFT - Kept Orange as requested */}
-          <div className="absolute inset-0 transition-opacity duration-500 opacity-0 group-hover:opacity-100 -z-10"  />
-
-          {/* Floating Icon Container - Stays Black/Navy on hover */}
-          <div className="flex items-center justify-center w-20 h-20 mx-auto mb-8 transition-all duration-500 
-                          bg-slate-50 rounded-[24px] md:mx-0 
-                          group-hover:bg-white group-hover:shadow-lg group-hover:rotate-[10deg]">
-            <feature.icon 
-              size={32} 
-              strokeWidth={2.5} 
-              className="text-[#1a2e52] transition-colors duration-300" 
-            />
-          </div>
-
-          {/* Heading - Strictly Black/Navy (#1a2e52) */}
-          <h4 className="mb-4 text-2xl font-[1000] tracking-tight text-[#1a2e52] transition-colors duration-300">
-            {feature.t}
-          </h4>
-          
-          <p className="text-sm font-semibold leading-relaxed text-gray-400 transition-colors duration-300 group-hover:text-gray-600">
-            {feature.d}
+          <p className="max-w-2xl mx-auto mb-10 text-xl font-light leading-relaxed text-gray-500">
+            See your resume score update in real-time as you type. Our AI highlights vague wording and suggests impactful improvements instantly.
           </p>
         </div>
-      ))}
-    </div>
-  </div>
-</section>
+      </section>
 
-      {/* --- QUALITY SCORE CTA --- */}
-<section className="relative px-8 pt-12 pb-20 overflow-hidden bg-white select-none">
-  {/* Decorative Background Blurs - Brand Specific */}
-  <div className="absolute top-0 right-0 w-1/3 h-full bg-orange-50 rounded-full blur-[120px] -z-10 opacity-60" />
-  <div className="absolute bottom-0 left-0 w-1/3 h-full bg-blue-50 rounded-full blur-[120px] -z-10 opacity-60" />
-  
-  <div className="relative z-10 max-w-4xl mx-auto text-center">
-    {/* Heading using your Navy (#1a2e52) and Blue (#0077cc) brand colors */}
-    <h2 className="mb-6 text-4xl font-black md:text-6xl text-[#1a2e52] tracking-tighter font-jakarta">
-      Don't Just Write. <span className="text-[#0077cc]">Measure Success.</span>
-    </h2>
-    
-    <p className="max-w-2xl mx-auto mb-10 text-xl font-medium text-gray-500">
-      Get an instant 0-100 score based on recruiter standards and ATS readability to ensure your resume is interview-ready.
-    </p>
+      {/* 2) MAIN LIVE DEMO (Split Layout) */}
+      <section className="px-6 py-10">
+        <div className="max-w-7xl mx-auto grid lg:grid-cols-12 gap-8 items-start">
 
-    <button 
-      onClick={() => handleFeatureClick("/user/ats-checker")} 
-      className="group relative inline-flex items-center gap-3 px-10 py-5 bg-gradient-to-r from-[#e65100] to-[#f4511e] text-white rounded-xl font-bold text-lg transition-all duration-300 shadow-[0_10px_25px_rgba(230,81,0,0.3)] 
-                 hover:shadow-[0_15px_35px_rgba(230,81,0,0.45)] hover:-translate-y-1 active:scale-95"
-    >
-      <span className="relative z-10">Check My Score Now</span>
-      <Target 
-        size={22} 
-        className="relative z-10 transition-transform duration-300 group-hover:scale-110 group-hover:rotate-12" 
-      />
-    </button>
-    
-    {/* Small badge to reinforce the "Quality Score" concept */}
-    <div className="flex items-center justify-center gap-2 mt-8">
-      <p className="text-sm font-bold text-gray-400">500+ users checking scores daily</p>
-    </div>
-  </div>
-</section>
+          {/* LEFT: Live Editor Mock */}
+          <div className="lg:col-span-7 bg-white rounded-[2rem] shadow-xl border border-gray-100 overflow-hidden flex flex-col h-[600px] ring-1 ring-slate-900/5">
+            <div className="px-8 py-5 border-b border-gray-100 bg-white flex items-center justify-between z-10 relative">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-blue-50 text-[#0077cc] flex items-center justify-center">
+                  <PenTool size={20} />
+                </div>
+                <div>
+                  <h3 className="font-bold text-[#1a2e52]">Experience Editor</h3>
+                  <p className="text-xs text-gray-400">Untitled Resume.pdf</p>
+                </div>
+              </div>
+              <div className="flex gap-2">
+                <span className="w-3 h-3 rounded-full bg-red-400" />
+                <span className="w-3 h-3 rounded-full bg-yellow-400" />
+                <span className="w-3 h-3 rounded-full bg-green-400" />
+              </div>
+            </div>
+
+            {/* Editor Toolbar (Visual Mock) */}
+            <div className="px-6 py-3 bg-slate-50 border-b border-gray-100 flex items-center gap-4 text-gray-500 overflow-x-auto">
+              <div className="flex items-center gap-1 pr-4 border-r border-gray-200">
+                <button className="p-1.5 hover:bg-gray-200 rounded text-gray-700 font-serif font-bold">B</button>
+                <button className="p-1.5 hover:bg-gray-200 rounded text-gray-700 font-serif italic">I</button>
+                <button className="p-1.5 hover:bg-gray-200 rounded text-gray-700 underline underline-offset-2">U</button>
+              </div>
+              <div className="flex items-center gap-2 pr-4 border-r border-gray-200 text-xs font-semibold">
+                <span className="hover:bg-gray-200 px-2 py-1 rounded cursor-pointer">Normal Text</span>
+              </div>
+              <div className="flex items-center gap-1">
+                <div className="p-1.5 hover:bg-gray-200 rounded cursor-pointer">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
+                </div>
+                <div className="p-1.5 hover:bg-gray-200 rounded cursor-pointer">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="21" y1="10" x2="3" y2="10"></line><line x1="21" y1="6" x2="3" y2="6"></line><line x1="21" y1="14" x2="3" y2="14"></line><line x1="21" y1="18" x2="3" y2="18"></line></svg>
+                </div>
+              </div>
+              <div className="ml-auto">
+                <button className="text-[10px] font-bold text-[#0077cc] bg-blue-50 px-3 py-1.5 rounded-full flex items-center gap-1.5 hover:bg-blue-100 transition-colors">
+                  <Sparkles size={10} /> AI Rewrite
+                </button>
+              </div>
+            </div>
+
+            <div className="flex-1 bg-white relative">
+              <textarea
+                value={text}
+                onChange={(e) => setText(e.target.value)}
+                className="w-full h-full p-8 text-base leading-[1.8] text-slate-700 outline-none resize-none font-medium placeholder-gray-300 scrollbar-thin scrollbar-thumb-gray-200 scrollbar-track-transparent"
+                spellCheck="false"
+                placeholder="Describe your role..."
+              />
+              <div className="absolute bottom-5 right-6 px-3 py-1 bg-slate-50 border border-slate-100 rounded-lg text-[10px] font-bold text-slate-400 pointer-events-none tabular-nums shadow-sm">
+                {text.length} chars
+              </div>
+            </div>
+          </div>
+
+          {/* RIGHT: Feedback Stream + Meter */}
+          <div className="lg:col-span-5 space-y-6">
+
+            {/* Score Card */}
+            <div className="bg-[#1a2e52] rounded-[2rem] p-8 text-white shadow-2xl relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full blur-3xl" />
+              <div className="flex items-center justify-between mb-8">
+                <div>
+                  <p className="text-sm font-medium text-blue-200">Overall Quality</p>
+                  <h3 className="text-5xl font-black tracking-tight">{scoreValue}</h3>
+                </div>
+                <div className="relative w-24 h-24 flex items-center justify-center">
+                  <svg className="w-full h-full transform -rotate-90">
+                    <circle
+                      cx="48"
+                      cy="48"
+                      r="40"
+                      stroke="currentColor"
+                      strokeWidth="8"
+                      fill="transparent"
+                      className="text-white/10"
+                    />
+                    <circle
+                      cx="48"
+                      cy="48"
+                      r="40"
+                      stroke={scoreValue >= 80 ? "#22c55e" : scoreValue >= 50 ? "#f59e0b" : "#ef4444"}
+                      strokeWidth="8"
+                      fill="transparent"
+                      strokeDasharray={2 * Math.PI * 40}
+                      strokeDashoffset={2 * Math.PI * 40 - (scoreValue / 100) * (2 * Math.PI * 40)}
+                      strokeLinecap="round"
+                      className="transition-all duration-1000 ease-out"
+                    />
+                  </svg>
+                  <span className="absolute text-2xl font-black text-white">
+                    {scoreValue}
+                  </span>
+                </div>
+              </div>
+
+              <div className="space-y-3">
+                {feedback.slice(0, 3).map((item, i) => (
+                  <div key={i} className={`flex items-start gap-3 p-3 rounded-xl backdrop-blur-sm ${item.type === 'success' ? 'bg-[#00ff9d]/10 border border-[#00ff9d]/20' : 'bg-white/5 border border-white/10'}`}>
+                    {item.type === 'success' ? <CheckCircle2 size={16} className="text-[#00ff9d] mt-0.5" /> : <Zap size={16} className="text-[#ffb700] mt-0.5" />}
+                    <p className="text-xs font-medium leading-relaxed opacity-90">{item.text}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Trend Chart (Mini) */}
+            <div className="bg-white rounded-[2rem] p-6 shadow-lg border border-gray-100">
+              <div className="flex items-center justify-between mb-4">
+                <h4 className="font-bold text-[#1a2e52] flex items-center gap-2">
+                  <TrendingUp size={16} className="text-[#0077cc]" />
+                  Score Trend
+                </h4>
+                <span className="text-[10px] font-bold bg-green-50 text-green-600 px-2 py-1 rounded-full">
+                  +12% vs last edit
+                </span>
+              </div>
+
+              <div className="h-[140px] w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <AreaChart data={trendData}>
+                    <defs>
+                      <linearGradient id="colorScore" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="#0077cc" stopOpacity={0.2} />
+                        <stop offset="95%" stopColor="#0077cc" stopOpacity={0} />
+                      </linearGradient>
+                    </defs>
+                    <Tooltip
+                      contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)', fontSize: '12px' }}
+                    />
+                    <Area type="monotone" dataKey="score" stroke="#0077cc" strokeWidth={2} fillOpacity={1} fill="url(#colorScore)" />
+                  </AreaChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      {/* 3) SECTION SCORE TILES */}
+      <section className="px-6 py-12 bg-white">
+        <div className="max-w-7xl mx-auto">
+          <h2 className="text-2xl font-black text-[#1a2e52] mb-8 text-center md:text-left">
+            Detailed Breakdown
+          </h2>
+          <div className="grid md:grid-cols-4 gap-6">
+            {[
+              { label: "Summary", score: 92, icon: BookOpen, color: "text-green-500", bg: "bg-green-50" },
+              { label: "Experience", score: 65, icon: Briefcase, color: "text-orange-500", bg: "bg-orange-50" },
+              { label: "Skills", score: 88, icon: Zap, color: "text-blue-500", bg: "bg-blue-50" },
+              { label: "Education", score: 100, icon: Award, color: "text-purple-500", bg: "bg-purple-50" },
+            ].map((item, i) => (
+              <div key={i} className="p-6 rounded-3xl border border-gray-100 bg-white hover:shadow-lg transition-all group">
+                <div className={`w-12 h-12 rounded-2xl ${item.bg} ${item.color} flex items-center justify-center mb-4 group-hover:scale-110 transition-transform`}>
+                  <item.icon size={24} />
+                </div>
+                <h3 className="text-gray-400 text-xs font-bold uppercase tracking-widest mb-1">{item.label}</h3>
+                <div className="flex items-baseline gap-1">
+                  <span className="text-3xl font-black text-[#1a2e52]">{item.score}</span>
+                  <span className="text-sm text-gray-400">/100</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* 4) HOW WE CALCULATE (New Section) */}
+      <section className="px-6 py-20 bg-gray-50/50">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl font-black text-[#1a2e52]">How We Calculate Your Score</h2>
+            <p className="mt-4 text-gray-500 max-w-2xl mx-auto">
+              Our engine analyzes 25+ data points across three core pillars to determine your interview readiness.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-8">
+            {[
+              {
+                title: "Impact & Metrics",
+                desc: "We scan for numbers, percentages, and dollar amounts that prove your value.",
+                items: ["Quantifiable results", "Action verb strength", "Role scope"]
+              },
+              {
+                title: "Relevance & Keywords",
+                desc: "We check if your skills match the job description and industry standards.",
+                items: ["Hard skill density", "Job title alignment", "Tech stack match"]
+              },
+              {
+                title: "Clarity & Brevity",
+                desc: "We ensure your writing is concise, error-free, and easy to skim.",
+                items: ["Bullet point length", "Active voice usage", "Readability score"]
+              }
+            ].map((col, i) => (
+              <div key={i} className="bg-white p-8 rounded-[2rem] shadow-sm border border-gray-100">
+                <div className="w-12 h-12 rounded-2xl bg-blue-50 text-[#0077cc] flex items-center justify-center mb-6 font-bold text-xl">
+                  {i + 1}
+                </div>
+                <h3 className="text-xl font-bold text-[#1a2e52] mb-3">{col.title}</h3>
+                <p className="text-sm text-gray-500 mb-6 leading-relaxed">{col.desc}</p>
+                <ul className="space-y-3">
+                  {col.items.map((item, j) => (
+                    <li key={j} className="flex items-center gap-2 text-sm font-semibold text-slate-600">
+                      <CheckCircle2 size={16} className="text-green-500" />
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* 5) WHY IT MATTERS (New Section) */}
+      <section className="px-6 py-20 bg-white">
+        <div className="max-w-6xl mx-auto grid lg:grid-cols-2 gap-16 items-center">
+          <div>
+            <h2 className="text-3xl md:text-5xl font-black text-[#1a2e52] leading-tight mb-8">
+              Why aim for a <br />
+              <span className="text-[#e65100]">90+ Score?</span>
+            </h2>
+            <div className="space-y-6">
+              <div className="flex gap-4">
+                <div className="w-12 h-12 rounded-full bg-orange-50 text-[#e65100] flex items-center justify-center shrink-0">
+                  <TrendingUp size={24} />
+                </div>
+                <div>
+                  <h4 className="text-xl font-bold text-[#1a2e52]">3x More Interviews</h4>
+                  <p className="text-gray-500 leading-relaxed mt-2">
+                    Candidates with optimized scores get significantly more callbacks than those with generic resumes.
+                  </p>
+                </div>
+              </div>
+              <div className="flex gap-4">
+                <div className="w-12 h-12 rounded-full bg-blue-50 text-[#0077cc] flex items-center justify-center shrink-0">
+                  <User size={24} />
+                </div>
+                <div>
+                  <h4 className="text-xl font-bold text-[#1a2e52]">Pass the HUMAN Test</h4>
+                  <p className="text-gray-500 leading-relaxed mt-2">
+                    High scores mean better readability. Recruiters spend only 6 seconds scanning; make them count.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="relative">
+            <div className="absolute inset-0 bg-gradient-to-tr from-orange-100 to-blue-50 rounded-[3rem] transform rotate-3" />
+            <div className="relative bg-[#1a2e52] p-10 rounded-[3rem] text-white shadow-2xl">
+              <div className="flex items-center justify-between mb-8 border-b border-white/10 pb-8">
+                <div>
+                  <p className="text-blue-200 text-sm font-bold uppercase tracking-widest">Average Callback Rate</p>
+                  <p className="text-4xl font-black mt-2">2.5%</p>
+                  <p className="text-sm text-gray-400 mt-1">Generic Resume</p>
+                </div>
+                <div className="text-right">
+                  <p className="text-[#e65100] text-sm font-bold uppercase tracking-widest">Optimized Rate</p>
+                  <p className="text-4xl font-black mt-2 text-[#ffb700]">18%</p>
+                  <p className="text-sm text-gray-400 mt-1">Score 90+</p>
+                </div>
+              </div>
+              <p className="text-lg font-medium leading-relaxed opacity-90">
+                "I used the live scoring to tweak my bullet points. I went from 0 interviews in a month to 5 calls in one week."
+              </p>
+              <div className="mt-6 flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-white/20" />
+                <div>
+                  <p className="font-bold">Alex Chen</p>
+                  <p className="text-xs text-blue-200">Software Engineer at TechCorp</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 6) FAQ (New Section) */}
+      <section className="px-6 py-20 bg-[#F8F9FC]">
+        <div className="max-w-3xl mx-auto">
+          <h2 className="text-3xl font-black text-center text-[#1a2e52] mb-12">Frequently Asked Questions</h2>
+          <div className="space-y-4">
+            {[
+              { q: "How is this different from the ATS Checker?", a: "The ATS Checker focuses on formatting and parseability (can a bot read it?). The Quality Score focuses on content impact (will a human be impressed?). You need both." },
+              { q: "Does a 100 score guarantee a job?", a: "No tool can guarantee a job, but a perfect score ensures your resume has no red flags, maximizing your chances of passing the initial screening." },
+              { q: "What if my score is stuck at 70?", a: "Try adding more numbers! 'Managed a team' is okay, but 'Managed a team of 12 and increased output by 40%' is much stronger." },
+            ].map((item, i) => (
+              <div key={i} className="bg-white p-6 rounded-2xl border border-gray-100 hover:border-blue-100 transition-colors">
+                <h3 className="text-lg font-bold text-[#1a2e52] mb-2">{item.q}</h3>
+                <p className="text-gray-500 leading-relaxed">{item.a}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* CTA (keeps your style) */}
+      <section className="relative px-8 py-20 overflow-hidden bg-white text-center">
+        <div className="absolute top-0 right-0 w-1/3 h-full bg-orange-50 rounded-full blur-[120px] -z-10 opacity-60" />
+        <div className="absolute bottom-0 left-0 w-1/3 h-full bg-blue-50 rounded-full blur-[120px] -z-10 opacity-60" />
+
+        <div className="relative z-10 max-w-3xl mx-auto">
+          <h2 className="mb-6 text-4xl font-black text-[#1a2e52] tracking-tight">
+            Ready to <span className="text-[#0077cc]">optimize</span> your entire resume?
+          </h2>
+          <p className="mb-10 text-lg text-gray-500">
+            Join thousands of job seekers using our real-time scoring to land interviews 3x faster.
+          </p>
+
+          <button
+            onClick={() => handleFeatureClick("/user/ats-checker")}
+            className="inline-flex items-center gap-3 px-10 py-5 bg-[#1a2e52] text-white rounded-xl font-bold text-lg transition-all shadow-xl hover:bg-[#0077cc] hover:-translate-y-1"
+          >
+            Start Editing Now <ArrowRight size={20} />
+          </button>
+        </div>
+      </section>
 
       <Footer />
     </div>
