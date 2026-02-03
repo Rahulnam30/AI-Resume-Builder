@@ -17,32 +17,33 @@ function Footer() {
   const isLoggedIn =
     typeof window !== "undefined" && !!localStorage.getItem("token");
 
-  // Updated socialLinks to use React Icon Components directly
+  // Updated socialLinks with responsive icon sizes
   const socialLinks = [
     { 
-        icon: <SiYoutube size={18} />, 
+        icon: <SiYoutube className="w-4 h-4 sm:w-[18px] sm:h-[18px]" />, 
         bgColor: "bg-[#ff0000]", 
         href: "https://www.youtube.com/channel/UCJzITNWKW5njk0AWkEZxSrw" 
     },
     { 
-        icon: <SiInstagram size={18} />, 
+        icon: <SiInstagram className="w-4 h-4 sm:w-[18px] sm:h-[18px]" />, 
         bgColor: "bg-gradient-to-tr from-[#f9ce34] via-[#ee2a7b] to-[#6228d7]", 
         href: "https://www.instagram.com/uptoskills?utm_medium=copy_link" 
     },
     { 
-        icon: <SiLinkedin size={18} />, 
+        icon: <SiLinkedin className="w-4 h-4 sm:w-[18px] sm:h-[18px]" />, 
         bgColor: "bg-[#0077b5]", 
         href: "https://www.linkedin.com/company/uptoskills/posts/?feedView=all" 
     },
     { 
-        icon: <SiFacebook size={18} />, 
+        icon: <SiFacebook className="w-4 h-4 sm:w-[18px] sm:h-[18px]" />, 
         bgColor: "bg-[#1877f2]", 
         href: "https://www.facebook.com/Uptoskills/" 
     },
   ];
 
-  const headerStyle = "text-[13px] font-black uppercase tracking-wider text-[#1a2e52] mb-5 flex items-center gap-2";
-  const linkStyle = "text-sm text-gray-500 hover:text-[#e65100] transition-all duration-300 cursor-pointer flex items-center";
+  // Responsive header and link styles
+  const headerStyle = "text-[11px] sm:text-[13px] font-black uppercase tracking-wider text-[#1a2e52] mb-3 sm:mb-5 flex items-center gap-2";
+  const linkStyle = "text-xs sm:text-sm text-gray-500 hover:text-[#e65100] transition-all duration-300 cursor-pointer flex items-center";
 
   return (
     <footer className="relative font-['Outfit'] bg-white border-t border-gray-100 overflow-hidden">
@@ -50,30 +51,31 @@ function Footer() {
       <div className="absolute top-0 right-0 w-64 h-64 translate-x-1/2 -translate-y-1/2 rounded-full bg-blue-50 blur-3xl -z-10 opacity-40"></div>
       <div className="absolute bottom-0 left-0 w-64 h-64 -translate-x-1/2 translate-y-1/2 rounded-full bg-orange-50 blur-3xl -z-10 opacity-40"></div>
 
-      <div className="max-w-[1400px] mx-auto px-8 pt-16 pb-10">
-        <div className="grid grid-cols-1 gap-10 mb-12 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5">
+      <div className="max-w-[1400px] mx-auto px-4 sm:px-8 pt-8 sm:pt-16 pb-6 sm:pb-10">
+        {/* Mobile: 2 columns, Tablet: 3 columns, Desktop: 5 columns */}
+        <div className="grid grid-cols-2 gap-6 mb-8 sm:gap-10 sm:mb-12 md:grid-cols-3 lg:grid-cols-5">
           
-          {/* 1. BRAND & NEWSLETTER */}
-          <div className="flex flex-col h-full">
+          {/* 1. BRAND & NEWSLETTER - Full width on mobile */}
+          <div className="flex flex-col col-span-2 md:col-span-1 h-full">
             <img
               src={UpToSkillsImg}
               alt="Logo"
-              className="w-32 mb-4 transition-opacity cursor-pointer hover:opacity-80"
+              className="w-24 sm:w-32 mb-3 sm:mb-4 transition-opacity cursor-pointer hover:opacity-80"
               onClick={() => navigate("/")}
             />
-            <p className="text-[13px] leading-relaxed text-gray-400 font-medium mb-6">
+            <p className="text-[11px] sm:text-[13px] leading-relaxed text-gray-400 font-medium mb-4 sm:mb-6">
               Empowering <span className="font-bold text-blue-500">skills</span>, connecting <span className="font-bold text-orange-500">talent</span> worldwide.
             </p>
 
-            {/* Social Icons using React Icons */}
-            <div className="flex gap-2 mb-8">
+            {/* Social Icons with responsive sizing */}
+            <div className="flex gap-2 mb-6 sm:mb-8">
               {socialLinks.map((social, index) => (
                 <a
                   key={index}
                   href={social.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className={`${social.bgColor} w-9 h-9 flex items-center justify-center rounded-xl text-white shadow-sm hover:-translate-y-1 hover:shadow-lg transition-all duration-300`}
+                  className={`${social.bgColor} w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center rounded-xl text-white shadow-sm hover:-translate-y-1 hover:shadow-lg transition-all duration-300`}
                 >
                   {social.icon}
                 </a>
@@ -81,15 +83,15 @@ function Footer() {
             </div>
 
             <div className="mt-auto">
-              <h4 className="text-[11px] font-black uppercase tracking-widest text-[#1a2e52] mb-3">Stay Connected</h4>
+              <h4 className="text-[10px] sm:text-[11px] font-black uppercase tracking-widest text-[#1a2e52] mb-2 sm:mb-3">Stay Connected</h4>
               <div className="flex items-center p-1 border border-gray-200 bg-gray-50 rounded-xl focus-within:ring-2 focus-within:ring-orange-500/10 transition-all max-w-[240px]">
                 <input
                   type="email"
                   placeholder="Your Email"
-                  className="w-full px-3 text-[12px] bg-transparent outline-none py-1.5"
+                  className="w-full px-2 sm:px-3 text-[11px] sm:text-[12px] bg-transparent outline-none py-1.5"
                 />
-                <button className="p-2 text-white transition-colors bg-orange-500 rounded-lg hover:bg-orange-600">
-                  <FaArrowRight size={12} />
+                <button className="p-1.5 sm:p-2 text-white transition-colors bg-orange-500 rounded-lg hover:bg-orange-600">
+                  <FaArrowRight className="w-3 h-3 sm:w-3 sm:h-3" />
                 </button>
               </div>
             </div>
@@ -98,7 +100,7 @@ function Footer() {
           {/* 2. RESUME - UPDATED */}
           <div className="flex flex-col h-full">
             <h4 className={headerStyle}>Resume & CV</h4>
-            <ul className="space-y-4">
+            <ul className="space-y-2 sm:space-y-4">
               <li className={linkStyle}><Link to="/score-checker">ATS Scorer</Link></li>
               <li className={linkStyle}><Link to="/#free-templates">Resume Templates</Link></li>
               <li className={linkStyle}><Link to="/resume-examples">Resume Examples</Link></li>
@@ -110,7 +112,7 @@ function Footer() {
           {/* 3. COVER LETTER - NEW CATEGORY */}
           <div className="flex flex-col h-full">
             <h4 className={headerStyle}>Cover Letter</h4>
-            <ul className="space-y-4">
+            <ul className="space-y-2 sm:space-y-4">
               <li className={linkStyle}><Link to="/cover-letter-examples">Cover Letter Examples</Link></li>
               <li className={linkStyle}><Link to="/cover-letter-templates">Cover Letter Templates</Link></li>
               <li className={linkStyle}><Link to="/WritingCoverLetter">Writing A Cover Letter</Link></li>
@@ -120,7 +122,7 @@ function Footer() {
           {/* 4. OUR COMPANY - UPDATED */}
           <div className="flex flex-col h-full">
             <h4 className={headerStyle}>Our Company</h4>
-            <ul className="space-y-4">
+            <ul className="space-y-2 sm:space-y-4">
               <li className={linkStyle}><Link to="/about">About Us</Link></li>
               <li className={linkStyle}><Link to={`${isLoggedIn ? "/pricing" : "/login"}`}>Pricing</Link></li>
               <li className={linkStyle}><Link to="/blog">Updates</Link></li>
@@ -131,7 +133,7 @@ function Footer() {
           {/* 5. SUPPORT - UPDATED */}
           <div className="flex flex-col h-full">
             <h4 className={headerStyle}>Support</h4>
-            <ul className="space-y-4">
+            <ul className="space-y-2 sm:space-y-4">
               <li className={linkStyle}><Link to="/faq">FAQ</Link></li>
               <li className={linkStyle}><Link to="/contact">Contact Us</Link></li>
               <li className={linkStyle}><Link to="/terms">Terms Of Service</Link></li>
@@ -141,12 +143,12 @@ function Footer() {
         </div>
 
         {/* BOTTOM BAR */}
-        <div className="flex flex-col items-center justify-between gap-6 pt-8 border-t border-gray-100 md:flex-row">
-          <p className="text-[11px] font-bold text-gray-400 uppercase tracking-widest">
+        <div className="flex flex-col items-center justify-between gap-4 sm:gap-6 pt-6 sm:pt-8 border-t border-gray-100 md:flex-row">
+          <p className="text-[10px] sm:text-[11px] font-bold text-gray-400 uppercase tracking-widest text-center md:text-left">
             ©️ {new Date().getFullYear()} UptoSkills Inc.
           </p>
 
-          <div className="flex items-center gap-1 text-[13px] font-black tracking-tight">
+          <div className="flex items-center gap-1 text-[11px] sm:text-[13px] font-black tracking-tight">
             <span className="text-[#1a2e52]">Dream Big.</span>
             <span className="text-[#0077cc]">Skill Up.</span>
             <span className="text-[#e65100]">Fly High!</span>
