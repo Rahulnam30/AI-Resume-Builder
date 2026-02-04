@@ -11,7 +11,7 @@
   background: #ffffff;
   border-radius: 16px;
   padding: 24px;
-  box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
 }
 
 .upload-area {
@@ -50,7 +50,7 @@
   border-radius: 14px;
   padding: 20px;
   text-align: center;
-  box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
 }
 
 .ats-score-badge span {
@@ -70,7 +70,7 @@
   background: white;
   border-radius: 16px;
   padding: 20px;
-  box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
   height: 100%;
   display: flex;
   flex-direction: column;
@@ -94,7 +94,7 @@
 }
 
 .placeholder-text p {
-  font-size: 16px;       
+  font-size: 16px;
 }
 
 .resume-page {
@@ -102,7 +102,7 @@
   max-width: 100%;
   aspect-ratio: auto;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
-              0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
   margin-bottom: 0;
   overflow: hidden;
 }
@@ -137,6 +137,7 @@ canvas {
   max-width: 100% !important;
   overflow-wrap: break-word;
   word-wrap: break-word;
+  max-width: 100%;
 }
 
 /* Prevent text content from overflowing */
@@ -144,4 +145,9 @@ canvas {
   white-space: pre-wrap;
   word-break: break-word;
   max-width: 100%;
+}
+
+/* Ensure Navbar is above relative content on mobile */
+.ats-checker-page header {
+  z-index: 50 !important;
 }
