@@ -9,6 +9,7 @@ const PersonalInfoForm = ({ formData, onInputChange }) => {
             type="text"
             placeholder="John Doe"
             className='px-2.5 py-2 border text-sm rounded border-1.5 focus:border-[#007bff] focus:outline-none focus:bg-white focus:shadow-[0_2px_8px_rgba(0,123,255,0.07)]'
+            data-required="true"
             value={formData?.fullName || ''}
             onChange={(e) => onInputChange('fullName', e.target.value)}
           />
@@ -19,6 +20,7 @@ const PersonalInfoForm = ({ formData, onInputChange }) => {
             type="email"
             placeholder="john.doe@example.com"
             className='px-2.5 py-2 border text-sm rounded border-1.5 focus:border-[#007bff] focus:outline-none focus:bg-white focus:shadow-[0_2px_8px_rgba(0,123,255,0.07)]'
+            data-required="true"
             value={formData?.email || ''}
             onChange={(e) => onInputChange('email', e.target.value)}
           />

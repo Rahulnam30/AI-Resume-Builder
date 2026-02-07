@@ -118,6 +118,7 @@ const EducationForm = ({ formData, setFormData }) => {
                     placeholder="Bachelor of Science in Computer Science"
                     value={edu.degree || ""}
                     className="px-2.5 py-2 border text-sm rounded border-1.5 focus:border-[#007bff] focus:outline-none focus:bg-white focus:shadow-[0_2px_8px_rgba(0,123,255,0.07)]"
+                    data-required="true"
                     onChange={(e) => {
                       const val = e.target.value;
                       const updated = (formData?.education ?? []).map((item) =>
@@ -134,6 +135,7 @@ const EducationForm = ({ formData, setFormData }) => {
                     placeholder="University Name"
                     value={edu.school || ""}
                     className="px-2.5 py-2 border text-sm rounded border-1.5 focus:border-[#007bff] focus:outline-none focus:bg-white focus:shadow-[0_2px_8px_rgba(0,123,255,0.07)]"
+                    data-required="true"
                     onChange={(e) => {
                       const val = e.target.value;
                       const updated = (formData?.education ?? []).map((item) =>

@@ -57,6 +57,7 @@ const ExperienceForm = ({ formData, setFormData }) => {
                 placeholder="Software Engineer"
                 value={exp.title || ""}
                 className="px-2.5 py-2 border text-sm rounded border-1.5 focus:border-[#007bff] focus:outline-none focus:bg-white focus:shadow-[0_2px_8px_rgba(0,123,255,0.07)]"
+                data-required="true"
                 onChange={(e) =>
                   updateExperience(exp.id, "title", e.target.value)
                 }
@@ -69,6 +70,7 @@ const ExperienceForm = ({ formData, setFormData }) => {
                 placeholder="Tech Company Inc."
                 value={exp.company || ""}
                 className="px-2.5 py-2 border text-sm rounded border-1.5 focus:border-[#007bff] focus:outline-none focus:bg-white focus:shadow-[0_2px_8px_rgba(0,123,255,0.07)]"
+                data-required="true"
                 onChange={(e) =>
                   updateExperience(exp.id, "company", e.target.value)
                 }
