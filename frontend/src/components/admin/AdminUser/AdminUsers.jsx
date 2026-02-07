@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { Pencil, Trash2, Check, X, AlertCircle, Search, Filter, UserCheck, Users, Crown, RefreshCw } from "lucide-react";
-import AdminNavbar from "../AdminNavBar/AdminNavBar";
 import axiosInstance from "../../../api/axios";
 import toast, { Toaster } from "react-hot-toast";
 
@@ -151,62 +150,53 @@ export default function AdminUsers({ head = "Manage Users" }) {
   if (error) return <div className="p-6 text-red-500">{error}</div>;
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <AdminNavbar />
+    <div className="p-6">
       <Toaster
         position="top-right"
         containerStyle={{
           top: 80 // Offset below navbar
         }}
       />
+      <h1 className="text-2xl font-bold mb-6 text-gray-800">{head}</h1>
 
-      <div className="p-6">
-        <h1 className="text-2xl font-bold mb-6 text-gray-800">{head}</h1>
-
-        {/* Modern Search and Filter Box */}
-        <div className="mb-6">
-          {/* Search Bar and Filters Row */}
-          <div className="flex flex-col lg:flex-row items-stretch lg:items-center gap-4">
-            {/* Search Bar */}
-            <div className="flex-1 min-w-0">
-              <div className="relative group">
-                <Search className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4 sm:w-5 sm:h-5 group-hover:text-gray-500 transition-colors" />
-                <input
-                  type="text"
-                  placeholder="Search users..."
-                  value={search}
-                  onChange={e => setSearch(e.target.value)}
-                  className="w-full pl-10 sm:pl-12 pr-3 sm:pr-4 py-2.5 sm:py-3.5 border border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 text-sm text-gray-700 bg-white hover:bg-gray-50 hover:border-gray-300 transition-all placeholder:text-gray-400"
-                />
-              </div>
-            </div>
-
-            {/* Filter Pills/Cards */}
-            <div className="flex flex-wrap items-center gap-2 sm:gap-3">
-            {/* Role Filter */}
+      {/* Modern Search and Filter Box */}
+      <div className="mb-6">
+        {/* Search Bar and Filters Row */}
+        <div className="flex flex-col lg:flex-row items-stretch lg:items-center gap-4">
+          {/* Search Bar */}
+          <div className="flex-1 min-w-0">
             <div className="relative group">
-              <label className="absolute -top-2 left-3 px-2 text-xs font-medium text-gray-600 rounded z-10 group-hover:text-blue-600 transition-colors">
-                Role
-              </label>
-              <div className="flex items-center gap-2 px-3 sm:px-4 py-2.5 border-2 border-gray-200 rounded-xl bg-white hover:border-blue-400 hover:bg-blue-50 transition-colors">
-                <UserCheck className="w-4 h-4 text-gray-500 group-hover:text-blue-600 transition-colors" />
-                <select
-                  value={roleFilter}
-                  onChange={(e) => setRoleFilter(e.target.value)}
-                  className="bg-transparent focus:outline-none text-sm font-medium text-gray-700 cursor-pointer pr-1 sm:pr-2"
-                >
-                  <option value="all">All Roles</option>
-                  <option value="admin">Admin</option>
-                  <option value="user">User</option>
-                </select>
-              </div>
+              <Search className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4 sm:w-5 sm:h-5 group-hover:text-gray-500 transition-colors" />
+              <input
+                type="text"
+                placeholder="Search users..."
+                value={search}
+                onChange={e => setSearch(e.target.value)}
+                className="w-full pl-10 sm:pl-12 pr-3 sm:pr-4 py-2.5 sm:py-3.5 border border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 text-sm text-gray-700 bg-white hover:bg-gray-50 hover:border-gray-300 transition-all placeholder:text-gray-400"
+              />
             </div>
+          </div>
+
+          {/* Filter Pills/Cards */}
+          <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+          {/* Role Filter */}
+          <div className="relative group">
+            <div className="flex items-center gap-2 px-3 sm:px-4 py-2.5 border-2 border-gray-200 rounded-xl bg-white hover:border-blue-400 hover:bg-blue-50 transition-colors">
+              <UserCheck className="w-4 h-4 text-gray-500 group-hover:text-blue-600 transition-colors" />
+              <select
+                value={roleFilter}
+                onChange={(e) => setRoleFilter(e.target.value)}
+                className="bg-transparent focus:outline-none text-sm font-medium text-gray-700 cursor-pointer pr-1 sm:pr-2"
+              >
+                <option value="all">All Roles</option>
+                <option value="admin">Admin</option>
+                <option value="user">User</option>
+              </select>
+            </div>
+          </div>
 
             {/* Plan Filter */}
             <div className="relative group">
-              <label className="absolute -top-2 left-3 px-2 text-xs font-medium text-gray-600 rounded z-10 group-hover:text-purple-600 transition-colors">
-                Plan
-              </label>
               <div className="flex items-center gap-2 px-3 sm:px-4 py-2.5 border-2 border-gray-200 rounded-xl bg-white hover:border-purple-400 hover:bg-purple-50 transition-colors">
                 <Crown className="w-4 h-4 text-gray-500 group-hover:text-purple-600 transition-colors" />
                 <select
@@ -223,9 +213,6 @@ export default function AdminUsers({ head = "Manage Users" }) {
 
             {/* Status Filter */}
             <div className="relative group">
-              <label className="absolute -top-2 left-3 px-2 text-xs font-medium text-gray-600 rounded z-10 group-hover:text-green-600 transition-colors">
-                Status
-              </label>
               <div className="flex items-center gap-2 px-3 sm:px-4 py-2.5 border-2 border-gray-200 rounded-xl bg-white hover:border-green-400 hover:bg-green-50 transition-colors">
                 <Users className="w-4 h-4 text-gray-500 group-hover:text-green-600 transition-colors" />
                 <select
@@ -416,106 +403,21 @@ export default function AdminUsers({ head = "Manage Users" }) {
             </tbody>
           </table>
         </div>
-      </div>
-
-      {/* EDIT MODAL */}
-      {/* {isEditModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm">
-          <div className="bg-white rounded-xl shadow-2xl w-full max-w-md p-6 transform transition-all scale-100 opacity-100">
-            <h2 className="text-xl font-bold mb-4 text-gray-800">Edit User</h2>
-            <form onSubmit={handleUpdateUser}>
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-1">Username</label>
-                <input
-                  type="text"
-                  name="username"
-                  value={editFormData.username}
-                  onChange={handleEditChange}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
-                  required
-                />
-              </div>
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                <input
-                  type="email"
-                  name="email"
-                  value={editFormData.email}
-                  onChange={handleEditChange}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
-                  required
-                />
-              </div>
-
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-1">Created At</label>
-                <input
-                  type="date"
-                  name="createdAt"
-                  value={editFormData.createdAt}
-                  onChange={handleEditChange}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
-                />
-              </div>
-
-              <div className="mb-6">
-                <label className="block text-sm font-medium text-gray-700 mb-1">Role</label>
-                <select
-                  name="isAdmin"
-                  value={editFormData.isAdmin}
-                  onChange={handleRoleChange}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
-                >
-                  <option value={false}>User</option>
-                  <option value={true}>Admin</option>
-                </select>
-              </div>
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-1">Plan</label>
-                <select
-                  name="plan"
-                  value={editFormData.plan}
-                  onChange={handleEditChange}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
-                >
-                  <option value="Free">Free</option>
-                  <option value="Pro">Pro</option>
-                </select>
-              </div>
-
-              <div className="flex justify-end gap-3">
-                <button
-                  type="button"
-                  onClick={() => setIsEditModalOpen(false)}
-                  className="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 font-medium"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="px-4 py-2 text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 font-medium"
-                >
-                  Save Changes
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )} */}
 
       {/* DELETE CONFIRMATION MODAL */}
-      {deleteConfirmId && (() => {
-        const userToDelete = users.find(u => u._id === deleteConfirmId);
-        const userName = userToDelete?.username || userToDelete?.email || "this user";
-        return (
+      {deleteConfirmId && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm">
           <div className="bg-white rounded-xl shadow-2xl w-full max-w-sm p-6 text-center transform transition-all">
             <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4 text-red-600">
               <AlertCircle size={24} />
             </div>
-            <h2 className="text-xl font-bold mb-2 text-gray-800">Delete {userName}?</h2>
+            <h2 className="text-xl font-bold mb-2 text-gray-800">
+              Delete {users.find(u => u._id === deleteConfirmId)?.username || users.find(u => u._id === deleteConfirmId)?.email || "this user"}?
+            </h2>
             <p className="text-gray-500 mb-6">
-              Are you sure you want to delete <span className="font-semibold text-gray-700">{userName}</span>? This action cannot be undone.
+              Are you sure you want to delete <span className="font-semibold text-gray-700">
+                {users.find(u => u._id === deleteConfirmId)?.username || users.find(u => u._id === deleteConfirmId)?.email || "this user"}
+              </span>? This action cannot be undone.
             </p>
             <div className="flex justify-center gap-3">
               <button
@@ -533,8 +435,7 @@ export default function AdminUsers({ head = "Manage Users" }) {
             </div>
           </div>
         </div>
-        );
-      })()}
+      )}
     </div>
   );
 }
