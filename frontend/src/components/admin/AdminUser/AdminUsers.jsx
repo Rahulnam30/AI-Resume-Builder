@@ -185,9 +185,6 @@ export default function AdminUsers({ head = "Manage Users" }) {
             <div className="flex flex-wrap items-center gap-2 sm:gap-3">
             {/* Role Filter */}
             <div className="relative group">
-              <label className="absolute -top-2 left-3 px-2 text-xs font-medium text-gray-600 rounded z-10 group-hover:text-blue-600 transition-colors">
-                Role
-              </label>
               <div className="flex items-center gap-2 px-3 sm:px-4 py-2.5 border-2 border-gray-200 rounded-xl bg-white hover:border-blue-400 hover:bg-blue-50 transition-colors">
                 <UserCheck className="w-4 h-4 text-gray-500 group-hover:text-blue-600 transition-colors" />
                 <select
@@ -204,9 +201,6 @@ export default function AdminUsers({ head = "Manage Users" }) {
 
             {/* Plan Filter */}
             <div className="relative group">
-              <label className="absolute -top-2 left-3 px-2 text-xs font-medium text-gray-600 rounded z-10 group-hover:text-purple-600 transition-colors">
-                Plan
-              </label>
               <div className="flex items-center gap-2 px-3 sm:px-4 py-2.5 border-2 border-gray-200 rounded-xl bg-white hover:border-purple-400 hover:bg-purple-50 transition-colors">
                 <Crown className="w-4 h-4 text-gray-500 group-hover:text-purple-600 transition-colors" />
                 <select
@@ -223,9 +217,6 @@ export default function AdminUsers({ head = "Manage Users" }) {
 
             {/* Status Filter */}
             <div className="relative group">
-              <label className="absolute -top-2 left-3 px-2 text-xs font-medium text-gray-600 rounded z-10 group-hover:text-green-600 transition-colors">
-                Status
-              </label>
               <div className="flex items-center gap-2 px-3 sm:px-4 py-2.5 border-2 border-gray-200 rounded-xl bg-white hover:border-green-400 hover:bg-green-50 transition-colors">
                 <Users className="w-4 h-4 text-gray-500 group-hover:text-green-600 transition-colors" />
                 <select
