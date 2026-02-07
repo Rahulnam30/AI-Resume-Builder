@@ -177,6 +177,7 @@ function LandingPage() {
   const location = useLocation();
   useEffect(() => {
     // Handle State Navigation (From Back to Home button)
+    window.scrollTo(0, 0)
     if (location.state?.scrollTo === "features") {
       const el = document.getElementById("features");
       if (el) {
@@ -187,7 +188,7 @@ function LandingPage() {
     // Handle Hash Navigation (Existing logic for #free-templates)
     else if (location.hash === "#free-templates") {
       const el = document.getElementById("free-templates");
-      if (el) el.scrollIntoView({ behavior: "smooth" });
+      if (el) el.scrollIntoView({ behavior: "auto", block: "start" });
     }
   }, [location]);
 
