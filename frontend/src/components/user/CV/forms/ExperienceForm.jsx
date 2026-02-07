@@ -1,122 +1,225 @@
-import { Trash2 } from "lucide-react";
 
-const ExperienceForm = ({ formData, setFormData }) => {
-  const addExperience = () => {
-    console.log(formData);
+
+import { Check, EditIcon, Trash2 } from "lucide-react";
+import { useState } from "react";
+
+const EducationForm = ({ formData, setFormData }) => {
+  const [editingId, setEditingId] = useState(formData?.education?.[0]?.id || null);
+
+  const addEducation = () => {
+    const id = Date.now();
     setFormData((prev) => ({
       ...prev,
-      experience: [
-        ...(prev?.experience ?? []),
+      education: [
+        ...(prev?.education ?? []),
         {
-          id: Date.now(),
-          title: "",
-          company: "",
-          location: "",
+          id,
+          school: "",
+          degree: "",
+          gpa: "",
           startDate: "",
-          endDate: "",
-          description: "",
+          graduationDate: "",
         },
       ],
     }));
+    setEditingId(id);
   };
 
-  const removeExperience = (id) => {
-    setFormData((prev) => ({
-      ...prev,
-      experience: (prev?.experience ?? []).filter((e) => e.id !== id),
-    }));
-  };
+  function formatMonthYear(value) {
+    if (!value) return "";
+    const [year, month] = value.split("-");
+    const months = [
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec",
+    ];
+    return `${months[Number(month) - 1]}-${year}`;
+  }
 
-  const updateExperience = (id, field, value) => {
+  const removeEducation = (id) => {
     setFormData((prev) => ({
       ...prev,
-      experience: prev.experience.map((exp) =>
-        exp.id === id ? { ...exp, [field]: value } : exp,
-      ),
+      education: (prev?.education ?? []).filter((e) => e.id !== id),
     }));
   };
 
   return (
     <div className="flex flex-col gap-4">
-      <h3 className="text-[15px] font-semibold text-[#1a1a2e] mb-3 leading-[1.2]">Work Experience</h3>
-      {(formData?.experience ?? []).map((exp, index) => (
-        <div key={exp.id} className="">
-          <div className="flex items-center gap-2 mb-2">
-            <span>Experience {index + 1}</span>
-            {formData.experience.length > 1 && (
-              <button onClick={() => removeExperience(exp.id)}>
-                <Trash2 size={14} />
-              </button>
-            )}
-          </div>
-          <div className="pr-0.5">
-            <div className="flex flex-col gap-[6px] mb-[10px] mt-2">
-              <label>Job Title *</label>
-              <input
-                type="text"
-                placeholder="Software Engineer"
-                value={exp.title || ""}
-                className="px-2.5 py-2 border text-sm rounded border-1.5 focus:border-[#007bff] focus:outline-none focus:bg-white focus:shadow-[0_2px_8px_rgba(0,123,255,0.07)]"
-                onChange={(e) =>
-                  updateExperience(exp.id, "title", e.target.value)
-                }
-              />
+      {(formData?.education ?? []).map((edu, index) => (
+        <div
+          key={edu.id}
+          className="shadow-sm border border-gray-300 rounded-lg p-2"
+        >
+          {/* Card UI */}
+          {editingId !== edu.id && (
+            <div className="rounded-lg p-3 flex flex-col justify-between items-center">
+              {/* Option Header */}
+              <div className="w-full flex gap-4 justify-between items-center">
+                <div className=" text-md">
+                  <span className="font-medium">Education {index + 1}</span>
+                </div>
+                <div className="flex gap-4 items-center">
+                  <button
+                    className="hover:text-blue-600 transition-colors"
+                    onClick={() => setEditingId(edu.id)}
+                  >
+                    <EditIcon size={18} />
+                  </button>
+                  <button
+                    className="hover:text-red-600 transition-colors"
+                    onClick={() => removeEducation(edu.id)}
+                  >
+                    <Trash2 size={18} />
+                  </button>
+                </div>
+              </div>
+              {/* Card Content */}
+              <div className="w-full mt-2 text-left">
+                <div className="w-[90%] flex gap-4 justify-start items-center break-all">
+                  <span className="text-left text-md font-semibold">
+                    {edu.school}
+                  </span>
+                </div>
+                <span className="text-sm font-medium break-words">{edu.degree}</span>
+                <div className="w-full py-1 flex gap-2 justify-between items-center">
+                  <div className="">
+                    {edu?.gpa && (
+                      <span className="text-sm text-slate-500">
+                        GPA: {edu.gpa}
+                      </span>
+                    )}
+                  </div>
+                  {edu?.startDate && edu?.graduationDate && (
+                    <span className="text-xs text-slate-500">
+                      {formatMonthYear(edu?.startDate)} -{" "}
+                      {formatMonthYear(edu?.graduationDate)}
+                    </span>
+                  )}
+                </div>
+              </div>
             </div>
-            <div className="flex flex-col gap-[6px] mb-[10px] mt-2">
-              <label>Company *</label>
-              <input
-                type="text"
-                placeholder="Tech Company Inc."
-                value={exp.company || ""}
-                className="px-2.5 py-2 border text-sm rounded border-1.5 focus:border-[#007bff] focus:outline-none focus:bg-white focus:shadow-[0_2px_8px_rgba(0,123,255,0.07)]"
-                onChange={(e) =>
-                  updateExperience(exp.id, "company", e.target.value)
-                }
-              />
-            </div>
-            <div className="flex flex-col gap-[6px] mb-[10px] mt-2">
-              <label>Start Date</label>
-              <input
-                type="month"
-                value={exp.startDate || ""}
-                className="px-2.5 py-2 border text-sm rounded border-1.5 focus:border-[#007bff] focus:outline-none focus:bg-white focus:shadow-[0_2px_8px_rgba(0,123,255,0.07)]"
-                onChange={(e) =>
-                  updateExperience(exp.id, "startDate", e.target.value)
-                }
-              />
-            </div>
-            <div className="flex flex-col gap-[6px] mb-[10px] mt-2">
-              <label>End Date</label>
-              <input
-                type="text"
-                placeholder="Present or YYYY-MM"
-                value={exp.endDate || ""}
-                className="px-2.5 py-2 border text-sm rounded border-1.5 focus:border-[#007bff] focus:outline-none focus:bg-white focus:shadow-[0_2px_8px_rgba(0,123,255,0.07)]"
-                onChange={(e) =>
-                  updateExperience(exp.id, "endDate", e.target.value)
-                }
-              />
-            </div>
-          </div>
-          <div className="flex flex-col gap-[6px] mb-[10px] mt-2 full-width">
-            <label>Description</label>
-            <textarea
-              placeholder="Describe your responsibilities and achievements..."
-              rows={3}
-              value={exp.description || ""}
-              className="h-40 px-2.5 py-2 border text-sm resize-none rounded border-1.5 focus:border-[#007bff] focus:outline-none focus:bg-white focus:shadow-[0_2px_8px_rgba(0,123,255,0.07)]"
-              onChange={(e) =>
-                updateExperience(exp.id, "description", e.target.value)
-              }
-            />
-          </div>
+          )}
+          {/* Education Form Fields */}
+
+          {editingId === edu.id && (
+            <>
+              <div className="px-3 py-4">
+                <div className="flex flex-col gap-[6px] mb-[10px] mt-2">
+                  <label>Degree *</label>
+                  <input
+                    type="text"
+                    placeholder="Bachelor of Science in Computer Science"
+                    value={edu.degree || ""}
+                    className="px-2.5 py-2 border text-sm rounded border-1.5 focus:border-[#007bff] focus:outline-none focus:bg-white focus:shadow-[0_2px_8px_rgba(0,123,255,0.07)]"
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      const updated = (formData?.education ?? []).map((item) =>
+                        item.id === edu.id ? { ...item, degree: val } : item,
+                      );
+                      setFormData((prev) => ({ ...prev, education: updated }));
+                    }}
+                  />
+                </div>
+                <div className="flex flex-col gap-[6px] mb-[10px]">
+                  <label>School *</label>
+                  <input
+                    type="text"
+                    placeholder="University Name"
+                    value={edu.school || ""}
+                    className="px-2.5 py-2 border text-sm rounded border-1.5 focus:border-[#007bff] focus:outline-none focus:bg-white focus:shadow-[0_2px_8px_rgba(0,123,255,0.07)]"
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      const updated = (formData?.education ?? []).map((item) =>
+                        item.id === edu.id ? { ...item, school: val } : item,
+                      );
+                      setFormData((prev) => ({ ...prev, education: updated }));
+                    }}
+                  />
+                </div>
+                <div className="flex flex-col gap-[6px] mb-[10px]">
+                  <label>Start Date</label>
+                  <input
+                    type="month"
+                    value={edu.startDate || ""}
+                    className="px-2.5 py-2 border text-sm rounded border-1.5 focus:border-[#007bff] focus:outline-none focus:bg-white focus:shadow-[0_2px_8px_rgba(0,123,255,0.07)]"
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      const updated = (formData?.education ?? []).map((item) =>
+                        item.id === edu.id ? { ...item, startDate: val } : item,
+                      );
+                      setFormData((prev) => ({ ...prev, education: updated }));
+                    }}
+                  />
+                </div>
+                <div className="flex flex-col gap-[6px] mb-[10px]">
+                  <label>Graduation Date</label>
+                  <input
+                    type="month"
+                    value={edu.graduationDate || ""}
+                    className="px-2.5 py-2 border text-sm rounded border-1.5 focus:border-[#007bff] focus:outline-none focus:bg-white focus:shadow-[0_2px_8px_rgba(0,123,255,0.07)]"
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      const updated = (formData?.education ?? []).map((item) =>
+                        item.id === edu.id
+                          ? { ...item, graduationDate: val }
+                          : item,
+                      );
+                      setFormData((prev) => ({ ...prev, education: updated }));
+                    }}
+                  />
+                </div>
+                <div className="flex flex-col gap-[6px] mb-[10px]">
+                  <label>GPA (Optional)</label>
+                  <input
+                    type="text"
+                    placeholder="7.8/10.0"
+                    value={edu.gpa || ""}
+                    className="px-2.5 py-2 border text-sm rounded border-1.5 focus:border-[#007bff] focus:outline-none focus:bg-white focus:shadow-[0_2px_8px_rgba(0,123,255,0.07)]"
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      const updated = (formData?.education ?? []).map((item) =>
+                        item.id === edu.id ? { ...item, gpa: val } : item,
+                      );
+                      setFormData((prev) => ({ ...prev, education: updated }));
+                    }}
+                  />
+                </div>
+              </div>
+              {/* Done Button */}
+              <div className="flex justify-end items-center gap-2 px-2 pb-4">
+                <button
+                  className="text-sm font-medium bg-red-500 py-2 px-4 rounded-lg text-white flex gap-2 items-center hover:bg-red-800"
+                  onClick={() => removeEducation(edu.id)}
+                >
+                  <Trash2 size={18} />
+                  Delete
+                </button>
+                <button
+                  className="text-sm font-medium bg-black py-2 px-4 rounded-lg text-white flex gap-2 items-center hover:bg-black/70"
+                  onClick={() => setEditingId(null)}
+                >
+                  <Check size={18} />
+                  Done
+                </button>
+              </div>
+            </>
+          )}
         </div>
       ))}
-      <button className="text-left" onClick={addExperience}>
-        + Add Experience
+      <button className="text-left" onClick={addEducation}>
+        + Add Education
       </button>
     </div>
   );
 };
 
-export default ExperienceForm;
+export default EducationForm;

@@ -1,9 +1,18 @@
-import React, { useState, useEffect ,useRef} from "react";
+import React, { useState, useEffect, useRef } from "react";
 import FormTabs from "./FormTabs";
 import UserNavBar from "../UserNavBar/UserNavBar";
 import axios from "axios";
 import { toast } from "react-hot-toast";
-import { Save, Upload, FileText, AlertTriangle, ArrowLeft, ArrowRight, PenTool, Download } from "lucide-react";
+import {
+  Save,
+  Upload,
+  FileText,
+  AlertTriangle,
+  ArrowLeft,
+  ArrowRight,
+  PenTool,
+  Download,
+} from "lucide-react";
 import {
   User,
   Briefcase,
@@ -11,9 +20,7 @@ import {
   Zap,
   FolderKanban,
   Award,
- 
 } from "lucide-react";
-
 
 // Import existing Forms
 import PersonalInfoForm from "./forms/PersonalInfoForm";
@@ -116,7 +123,7 @@ const CVBuilder = () => {
   useEffect(() => {
     window.scrollTo({
       top: 0,
-      behavior: "smooth"
+      behavior: "smooth",
     });
     if (formContainerRef.current) {
       formContainerRef.current.scrollTop = 0;
@@ -176,29 +183,34 @@ const CVBuilder = () => {
       <UserNavBar />
       <div className="p-2.5 mt-4">
         {/* main-header */}
-        <div className="flex justify-between items-start mb-5 p-2">
-          <h1 className="text-2xl font-['Outfit']">Create CV</h1>
-          <div className="flex gap-2">
-            {/* upload-btn &  export-btn */}
-            <button className="flex gap-2 py-2.5 px-5 text-white cursor-pointer bg-gradient-to-br from-blue-600 to-blue-700 border-0 rounded-lg text-sm transition-all duration-200 hover:from-blue-700 hover:to-blue-800">
+        <div className="flex flex-row gap-4 mb-5 p-2 justify-between items-center">
+          <h1 className="text-2xl font-['Outfit'] select-none">Create CV</h1>
+
+          <div className="flex flex-wrap justify-center md:justify-end items-center gap-2">
+            {/* upload-btn */}
+            <button className="flex gap-2 items-center text-white cursor-pointer bg-gradient-to-br from-blue-600 to-blue-700 border-0 rounded-lg text-sm transition-all duration-200 hover:from-blue-700 hover:to-blue-800 py-2 px-5 md:py-2.5 md:px-5">
               <Upload size={18} />
-              Upload
+              <span className="hidden md:inline">Upload</span>
             </button>
-            <button className="flex gap-2 py-2.5 px-5 text-white cursor-pointer bg-gradient-to-br from-blue-600 to-blue-700 border-0 rounded-lg text-sm transition-all duration-200 hover:from-blue-700 hover:to-blue-800">
-              <Download size={18} /> Export
+
+            {/* export-btn */}
+            <button className="flex gap-2 items-center text-white cursor-pointer bg-indigo-600 border-0 rounded-lg text-sm transition-all duration-200 hover:bg-indigo-700 py-2 px-5 md:py-2.5 md:px-5">
+              <Download size={18} />
+              <span className="hidden md:inline">Export</span>
             </button>
           </div>
         </div>
+
         {/* main-tabs */}
-        <div className="flex gap-1 bg-gray-100 rounded-lg p-1.5 mb-4 w-fit">
+        <div className="flex gap-1 bg-gray-100 rounded-lg md:p-1.5 py-2 px-3 mb-4 w-fit mx-auto md:mx-0">
           <button
-            className={`py-1 px-2.5 rounded-lg mr-1 ${activeTab === "builder" ? "bg-white text-slate-900 shadow-sm" : ""}`}
+            className={`mr-1 rounded-lg md:py-1 py-2.5 md:px-2.5 px-4 ${activeTab === "builder" ? "bg-white text-slate-900 shadow-sm" : ""} select-none`}
             onClick={() => setActiveTab("builder")}
           >
             Builder
           </button>
           <button
-            className={`py-1 px-2.5 rounded-lg ${activeTab === "templates" ? "bg-white text-slate-900 shadow-sm" : ""}`}
+            className={`py-1 px-2.5 rounded-lg ${activeTab === "templates" ? "bg-white text-slate-900 shadow-sm" : ""} select-none`}
             onClick={() => setActiveTab("templates")}
           >
             Templates
@@ -230,20 +242,43 @@ const CVBuilder = () => {
             </div>
           </div>
         )}
+        {/* MOBILE LIVE PREVIEW (below alert) */}
+        {activeTab === "builder" && (
+          <div className="block lg:hidden my-4">
+            {!isPreviewHidden && (
+              <CVPreview
+                formData={formData}
+                isMaximized={isPreviewMaximized}
+                onToggleMaximize={() =>
+                  setIsPreviewMaximized(!isPreviewMaximized)
+                }
+                onMinimize={() => setIsPreviewHidden(true)}
+              />
+            )}
+          </div>
+        )}
 
         {/* BUILDER + PREVIEW */}
         {activeTab === "builder" && (
           <div
-            className={`grid grid-cols-[32%_68%] gap-14 p-1.5 ml-2 mr-2 ${isPreviewMaximized ? "grid-cols-[0_100%]" : ""}`}
+            className={`
+    grid gap-6 p-1.5 mx-2
+    grid-cols-1
+    lg:grid-cols-[32%_68%]
+    ${isPreviewMaximized ? "lg:grid-cols-[0_100%]" : ""}
+  `}
           >
             {/* builder-section */}
-            <div className="bg-white rounded-xl h-full overflow-y-auto pl-0.5 overflow-hidden flex-1" ref={formContainerRef}>
+            <div
+              className="bg-white rounded-xl h-full overflow-y-auto pl-0.5 overflow-hidden flex-1"
+              ref={formContainerRef}
+            >
               <FormTabs
                 activeSection={activeSection}
                 setActiveSection={setActiveSection}
               />
               {/* form-content */}
-              <div className="w-full h-[72%] mt-5 overflow-auto cv-form-content-scrollable">
+              <div className="w-full max-h-[60vh] lg:max-h-none mt-5 overflow-auto cv-form-content-scrollable">
                 {renderFormContent()}
               </div>
               {/* Previous & Next */}
@@ -267,14 +302,19 @@ const CVBuilder = () => {
               </div>
             </div>
 
-            {!isPreviewHidden && (
-              <CVPreview
-                formData={formData}
-                isMaximized={isPreviewMaximized}
-                onToggleMaximize={() => setIsPreviewMaximized(!isPreviewMaximized)}
-                onMinimize={() => setIsPreviewHidden(true)}
-              />
-            )}
+            {/* DESKTOP LIVE PREVIEW */}
+            <div className="hidden lg:block">
+              {!isPreviewHidden && (
+                <CVPreview
+                  formData={formData}
+                  isMaximized={isPreviewMaximized}
+                  onToggleMaximize={() =>
+                    setIsPreviewMaximized(!isPreviewMaximized)
+                  }
+                  onMinimize={() => setIsPreviewHidden(true)}
+                />
+              )}
+            </div>
           </div>
         )}
         <div className="w-full h-4"></div>

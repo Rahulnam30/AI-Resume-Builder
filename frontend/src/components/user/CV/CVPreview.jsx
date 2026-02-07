@@ -3,6 +3,25 @@ import { FileText, Maximize2, Minimize2, ZoomIn, ZoomOut, RotateCcw, Mail, Phone
 
 const CVPreview = ({ formData = {}, isMaximized, onToggleMaximize, onMinimize }) => {
     const [zoom, setZoom] = React.useState(1);
+const [isMobileView, setIsMobileView] = React.useState(false);
+const [isMobilePreviewHidden, setIsMobilePreviewHidden] = React.useState(false);
+
+React.useEffect(() => {
+  const checkScreen = () => {
+    setIsMobileView(window.innerWidth <= 768);
+  };
+  checkScreen();
+  window.addEventListener("resize", checkScreen);
+  return () => window.removeEventListener("resize", checkScreen);
+}, []);
+
+React.useEffect(() => {
+  setIsMobilePreviewHidden(!isMobileView);
+}, [isMobileView]);
+const clamp = () => {
+  if (!isMobileView) return;
+  setIsMobilePreviewHidden((prev) => !prev);
+};
 
     const zoomIn = () => setZoom((z) => Math.min(z + 0.1, 2));
     const zoomOut = () => setZoom((z) => Math.max(z - 0.1, 0.5));
@@ -346,12 +365,13 @@ const CVPreview = ({ formData = {}, isMaximized, onToggleMaximize, onMinimize })
                             <button onClick={resetZoom}>
                                 <RotateCcw size={16} />
                             </button>
-                            <button
-                                onClick={() => {
-                                    onToggleMaximize();
-                                    setZoom(1);
-                                }}
-                            >
+                           <button
+  onClick={(e) => {
+    e.stopPropagation();
+    onToggleMaximize();
+  }}
+>
+
                                 <Minimize2 size={16} />
                             </button>
                         </div>
@@ -369,8 +389,11 @@ const CVPreview = ({ formData = {}, isMaximized, onToggleMaximize, onMinimize })
     /* NORMAL MODE */
     return (
         <div className="w-[90%] border rounded-xl shadow-sm mr-4 m-2">
-            <div className="flex items-center justify-between px-4 py-3 border-b">
-                <h3 className="flex items-center gap-2 text-sm font-semibold">
+            <div
+  className="flex items-center justify-between px-4 py-3 border-b"
+  onClick={clamp}
+>
+    <h3 className="flex items-center gap-2 text-sm font-semibold">
                     <FileText size={16} /> Live Preview
                 </h3>
                 <button onClick={onToggleMaximize}>
@@ -378,8 +401,17 @@ const CVPreview = ({ formData = {}, isMaximized, onToggleMaximize, onMinimize })
                 </button>
             </div>
 
-            <div className="overflow-auto flex justify-center p-4 rounded-b-xl bg-slate-200">
-                <CVContent />
+          <div
+  className="md:overflow-auto overflow-y-hidden flex justify-center md:p-4 rounded-b-xl bg-slate-200 transition-all duration-300"
+  style={{
+    height: isMobilePreviewHidden
+      ? isMobileView
+        ? "500px"
+        : "auto"
+      : "0",
+  }}
+>
+     <CVContent />
             </div>
         </div>
     );
