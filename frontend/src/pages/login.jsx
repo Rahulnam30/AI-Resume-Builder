@@ -36,13 +36,16 @@ export default function Login() {
 
       localStorage.setItem("token", response.data.token);
 
-      if (response.data.isAdmin) {
+      const isAdmin = response.data.isAdmin || false;
+      localStorage.setItem("isAdmin", JSON.stringify(isAdmin));
+
+      if (isAdmin) {
         toast.success("Welcome Admin!");
         setTimeout(() => navigate("/admin"), 1200);
       } else {
         const username = emailtext.split("@")[0];
         toast.success(`Welcome back, ${username}!`);
-        setTimeout(() => navigate("/user"), 1200);
+        setTimeout(() => navigate("/user/dashboard"), 1200);
       }
     } catch (error) {
       console.log(error);
@@ -139,11 +142,10 @@ export default function Login() {
               <button
                 type="submit"
                 disabled={loading}
-                className={`w-full py-2 rounded-lg text-white text-sm font-medium transition mt-3 ${
-                  loading
+                className={`w-full py-2 rounded-lg text-white text-sm font-medium transition mt-3 ${loading
                     ? "bg-blue-400 cursor-not-allowed"
                     : "bg-blue-600 hover:bg-blue-700"
-                }`}
+                  }`}
               >
                 {loading ? "Signing in..." : "Sign In"}
               </button>

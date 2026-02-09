@@ -73,14 +73,14 @@ export default function AdminTemplates() {
   }
 
   return (
-    <div className="p-6 space-y-10 bg-slate-50 min-h-screen">
+    <div className="p-4 sm:p-6 space-y-6 sm:space-y-10 bg-slate-50 min-h-screen">
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
-          <h1 className="text-xl font-semibold text-slate-900">
+          <h1 className="text-2xl sm:text-3xl font-bold text-slate-900">
             Resume Templates
           </h1>
-          <p className="text-sm text-slate-500">
+          <p className="text-sm sm:text-base text-slate-600 mt-1 sm:mt-2">
             Manage and organize all available resume templates.
           </p>
         </div>
@@ -88,18 +88,7 @@ export default function AdminTemplates() {
         <div className="flex flex-wrap items-center gap-3">
 
 
-          <button
-            onClick={handleCreateClick}
-            className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-700 transition-colors shadow-sm"
-          >
-            <Plus size={16} />
-            Create New Template
-          </button>
 
-          <button className="flex items-center gap-2 border border-slate-300 px-4 py-2 rounded-lg text-sm text-slate-600 bg-white hover:bg-slate-50 transition-colors">
-            <Filter size={16} />
-            Filter
-          </button>
         </div>
       </div>
 
@@ -107,7 +96,7 @@ export default function AdminTemplates() {
       {pendingTemplates.length > 0 && (
         <div className="space-y-4">
           <h2 className="text-lg font-semibold text-orange-600">Pending Reviews ({pendingTemplates.length})</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-6">
             {pendingTemplates.map((tpl) => (
               <div key={tpl._id} className="bg-orange-50 border border-orange-200 rounded-xl p-3">
                 <div className="relative w-full aspect-[210/297] bg-white rounded-lg overflow-hidden mb-3">
@@ -144,7 +133,7 @@ export default function AdminTemplates() {
             </div>
 
             {/* A4 Cards */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-6">
               {templates.map((tpl, index) => {
                 const active = isTemplateActive(tpl._id);
                 return (
@@ -184,7 +173,7 @@ export default function AdminTemplates() {
                     {/* Actions Overlay or Button Row */}
                     <div className="flex gap-2 mt-3 pt-3 border-t border-slate-100">
                       <button
-                        onClick={() => window.open(`/admin/resume-editor?id=${tpl._id}`, '_blank')}
+                        onClick={() => handlePreview(tpl.image)}
                         className="flex-1 py-1.5 flex items-center justify-center gap-1 bg-slate-50 text-slate-600 rounded text-xs hover:bg-slate-100 font-medium transition"
                       >
                         <Eye size={14} />

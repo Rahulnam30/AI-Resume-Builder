@@ -1,15 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { Bell, X } from "lucide-react";
+import { Bell, X, Menu } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import UptoSkillsLogo from "../../../assets/UptoSkills.webp";
 
-const SIDEBAR_WIDTH = {
-  expanded: 256,
-  collapsed: 80,
-};
-
-export default function AdminNavbar({ isCollapsed }) {
+export default function AdminNavbar({ isCollapsed, setIsCollapsed, isMobileOpen, setIsMobileOpen }) {
   const navigate = useNavigate();
   const [showNotifications, setShowNotifications] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
@@ -27,34 +22,29 @@ export default function AdminNavbar({ isCollapsed }) {
     { id: 3, text: "System maintenance scheduled at 10 PM." },
   ];
 
-  // Calculate spacer width based on sidebar state
-  const spacerWidth = isMobile
-    ? 72 // Fixed space for mobile (for the hamburger button)
-    : isCollapsed
-    ? SIDEBAR_WIDTH.collapsed
-    : SIDEBAR_WIDTH.expanded;
+  const handleToggle = () => {
+    if (isMobile) {
+      setIsMobileOpen(!isMobileOpen);
+    } else {
+      setIsCollapsed(!isCollapsed);
+    }
+  };
 
   return (
-    <header className="fixed top-0 left-0 right-0 h-16 bg-white border-b border-gray-200 z-30">
-      <div className="h-full flex items-center justify-between pr-6">
-        
-        {/* LEFT SECTION - Logo moves with sidebar */}
-        <div className="flex items-center">
-          {/* ANIMATED SPACER - Syncs with sidebar width */}
-          <motion.div
-            animate={{ width: spacerWidth }}
-            transition={{ 
-              type: "spring", 
-              stiffness: 220, 
-              damping: 25,
-              mass: 0.8 
-            }}
-            className="h-full flex-shrink-0"
-          />
+    <header className="fixed top-0 left-0 right-0 h-16 bg-white border-b border-gray-200 z-50">
+      <div className="h-full flex items-center justify-between px-4">
 
-          {/* LOGO - Moves smoothly as spacer changes */}
+        {/* LEFT SECTION - Toggle + Logo */}
+        <div className="flex items-center gap-4">
+          <button
+            onClick={handleToggle}
+            className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+          >
+            <Menu size={24} />
+          </button>
+
           <div
-            className="flex items-center cursor-pointer ml-4"
+            className="flex items-center cursor-pointer"
             onClick={() => navigate("/")}
           >
             <img
@@ -94,7 +84,7 @@ export default function AdminNavbar({ isCollapsed }) {
                   >
                     <div className="flex justify-between items-center px-4 py-3 border-b">
                       <h4 className="font-semibold">Notifications</h4>
-                      <button 
+                      <button
                         onClick={() => setShowNotifications(false)}
                         className="text-gray-500 hover:text-gray-700"
                       >

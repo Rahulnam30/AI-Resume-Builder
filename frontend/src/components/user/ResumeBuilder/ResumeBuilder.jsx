@@ -13,6 +13,7 @@ import {
   Upload,
   User,
   Zap,
+  Search,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
@@ -34,6 +35,7 @@ import { getCompletionStatus } from "./completion";
 
 import "./ResumeBuilder.css";
 import UserNavbar from "../UserNavBar/UserNavBar";
+import { dummyData } from "./dummyData";
 
 const sections = [
   "personal",
@@ -46,66 +48,11 @@ const sections = [
 
 const ResumeBuilder = ({ setActivePage = () => { } }) => {
   /* -------------------- CORE STATE -------------------- */
-  const [formData, setFormData] = useState({
-    fullname: "",
-    email: "",
-    linkedin: "",
-    location: "",
-    phone: "",
-    summary: "",
-    website: "",
-    education: [
-      {
-        id: Date.now(),
-        school: "",
-        degree: "",
-        gpa: "",
-        startDate: "",
-        graduationDate: "",
-        location: "",
-      },
-    ],
-    experience: [
-      {
-        id: Date.now(),
-        title: "",
-        company: "",
-        description: "",
-        startDate: "",
-        endDate: "",
-        location: "",
-      },
-    ],
-    projects: [
-      {
-        id: Date.now(),
-        name: "",
-        description: "",
-        technologies: "",
-        link: {
-          github: "",
-          liveLink: "",
-          other: "",
-        },
-      },
-    ],
-    skills: { technical: [], soft: [] },
-    certifications: [
-      {
-        id: Date.now(),
-        name: "",
-        issuer: "",
-        date: "",
-        link: "",
-      },
-    ],
-  });
+  const [formData, setFormData] = useState(dummyData);
   const navigate = useNavigate();
   const [templates, setTemplates] = useState(TEMPLATES);
   const [selectedTemplate, setSelectedTemplate] = useState(TEMPLATES[0]?.id || "jessica-claire");
-
-  // const [resumeMode, setResumeMode] = useState(null);
-  // const [uploadedResume, setUploadedResume] = useState(null);
+  const [templateSearch, setTemplateSearch] = useState("");
 
   const [activeTab, setActiveTab] = useState("builder");
   const [activeSection, setActiveSection] = useState("personal");
@@ -200,7 +147,7 @@ const ResumeBuilder = ({ setActivePage = () => { } }) => {
   const renderMainContent = () => {
     if (activeTab === "templates") {
       return (
-        <TemplatesPage onSelectTemplate={handleSelectTemplate} isEmbedded={true} />
+        <TemplatesPage onSelectTemplate={handleSelectTemplate} isEmbedded={true} externalSearchTerm={templateSearch} />
       );
     }
 
@@ -292,31 +239,6 @@ const ResumeBuilder = ({ setActivePage = () => { } }) => {
     );
   };
 
-  /* -------------------- MODE SELECTION -------------------- */
-  // if (!resumeMode) {
-  //   return (
-  //     // resume-builder-page
-  //     <div className="p-2.5">
-  //       <h1>📝 AI Resume Builder</h1>
-  //       <ModeSelection onSelectMode={setResumeMode} />
-  //     </div>
-  //   );
-  // }
-  // <ResumeUpload
-  //   onUpload={setUploadedResume}
-  //   onBack={() => setResumeMode(null)}
-  // />;
-
-  /* -------------------- UPLOAD MODE -------------------- */
-  // if (resumeMode === "edit" && !uploadedResume) {
-  //   return (
-  //     <ResumeUpload
-  //       onUpload={setUploadedResume}
-  //       onBack={() => setResumeMode(null)}
-  //     />
-  //   );
-  // }
-
   /* -------------------- BUILDER PAGE -------------------- */
   return (
     <>
@@ -324,40 +246,73 @@ const ResumeBuilder = ({ setActivePage = () => { } }) => {
       {/* resume-builder-page */}
       <div className="p-2.5 mt-4">
         {/* main-header */}
-        <div className="flex justify-between items-start mb-5 p-2">
-          <h1 className="text-2xl font-['Outfit']">Create Resume</h1>
-          <div className="flex gap-2">
-            {/* upload-btn &  export-btn */}
-            <button
-              onClick={() => navigate("/user/cv")}
-              className="flex items-center gap-2 px-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-800 font-medium shadow-sm hover:bg-gray-50 hover:shadow-md transition-all"
-            >
-              <PenTool size={18} />
-              CV Designer
-            </button>
-            <button className="flex gap-2 py-2.5 px-5 text-white cursor-pointer bg-gradient-to-br from-blue-600 to-blue-700 border-0 rounded-lg text-sm transition-all duration-200 hover:from-blue-700 hover:to-blue-800">
-              <Upload size={18} />
-              Upload
-            </button>
-            <button className="flex gap-2 py-2.5 px-5 text-white cursor-pointer bg-gradient-to-br from-blue-600 to-blue-700 border-0 rounded-lg text-sm transition-all duration-200 hover:from-blue-700 hover:to-blue-800">
-              <Download size={18} /> Export
-            </button>
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-5 p-2 min-h-[50px] gap-4">
+          {/* LEFT SIDE: Heading + Toggle */}
+          <div className="flex flex-col md:flex-row md:items-center gap-4 w-full md:w-auto">
+            {/* Title Section */}
+            <div>
+              <h1 className="text-2xl font-['Outfit']">
+                {activeTab === "builder" ? "Create Resume" : "Resume Templates"}
+              </h1>
+              {/* {activeTab === "templates" && (
+                <p className="text-sm text-slate-500 mt-1 hidden md:block">
+                  Choose a professionally designed template to get started.
+                </p>
+              )} */}
+            </div>
+
+            {/* Toggle Switch */}
+            <div className="flex gap-1 bg-gray-100 rounded-lg p-1.5 w-fit shrink-0">
+              <button
+                className={`py-1 px-2.5 rounded-lg text-sm font-medium transition-all ${activeTab === "builder" ? "bg-white text-slate-900 shadow-sm" : "text-slate-500 hover:text-slate-900"
+                  }`}
+                onClick={() => setActiveTab("builder")}
+              >
+                Builder
+              </button>
+              <button
+                className={`py-1 px-2.5 rounded-lg text-sm font-medium transition-all ${activeTab === "templates" ? "bg-white text-slate-900 shadow-sm" : "text-slate-500 hover:text-slate-900"
+                  }`}
+                onClick={() => setActiveTab("templates")}
+              >
+                Templates
+              </button>
+            </div>
           </div>
-        </div>
-        {/* main-tabs */}
-        <div className="flex gap-1 bg-gray-100 rounded-lg p-1.5 mb-4 w-fit">
-          <button
-            className={`py-1 px-2.5 rounded-lg mr-1 ${activeTab === "builder" ? "bg-white text-slate-900 shadow-sm" : ""}`}
-            onClick={() => setActiveTab("builder")}
-          >
-            Builder
-          </button>
-          <button
-            className={`py-1 px-2.5 rounded-lg ${activeTab === "templates" ? "bg-white text-slate-900 shadow-sm" : ""}`}
-            onClick={() => setActiveTab("templates")}
-          >
-            Templates
-          </button>
+
+          {/* RIGHT SIDE: Actions or Search */}
+          <div className="w-full md:w-auto flex items-center justify-end gap-2">
+            {activeTab === "builder" ? (
+              <>
+                <button
+                  onClick={() => navigate("/user/cv")}
+                  className="flex items-center gap-2 px-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-800 font-medium shadow-sm hover:bg-gray-50 hover:shadow-md transition-all whitespace-nowrap"
+                >
+                  <PenTool size={18} />
+                  CV Designer
+                </button>
+                <button className="flex gap-2 py-2.5 px-5 text-white cursor-pointer bg-gradient-to-br from-blue-600 to-blue-700 border-0 rounded-lg text-sm transition-all duration-200 hover:from-blue-700 hover:to-blue-800 whitespace-nowrap">
+                  <Upload size={18} />
+                  Upload
+                </button>
+                <button className="flex gap-2 py-2.5 px-5 text-white cursor-pointer bg-gradient-to-br from-blue-600 to-blue-700 border-0 rounded-lg text-sm transition-all duration-200 hover:from-blue-700 hover:to-blue-800 whitespace-nowrap">
+                  <Download size={18} /> Export
+                </button>
+              </>
+            ) : (
+              /* Search Bar for Templates */
+              <div className="relative w-full md:w-80">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+                <input
+                  type="text"
+                  placeholder="Search templates..."
+                  value={templateSearch}
+                  onChange={(e) => setTemplateSearch(e.target.value)}
+                  className="pl-10 pr-4 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none w-full shadow-sm"
+                />
+              </div>
+            )}
+          </div>
         </div>
 
         {renderMainContent()}

@@ -142,8 +142,7 @@ export default function AdminUsers({ head = "Manage Users" }) {
   if (error) return <div className="p-6 text-red-500">{error}</div>;
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <AdminNavbar />
+    <div className="min-h-screen bg-slate-50 p-4 sm:p-6">
       <Toaster
         position="top-right"
         containerStyle={{
@@ -151,111 +150,177 @@ export default function AdminUsers({ head = "Manage Users" }) {
         }}
       />
 
-      <div className="p-6"> {/* Add top padding to account for fixed navbar if needed, or stick with p-6 if navbar handles it */}
-        <h1 className="text-2xl font-bold mb-6 text-gray-800">{head}</h1>
+      <div>
+        <h1 className="text-2xl sm:text-3xl font-bold mb-6 text-gray-800">{head}</h1>
 
-        <div className="bg-white border rounded-xl overflow-hidden shadow-sm">
-          <table className="w-full text-sm">
-            <thead className="bg-gray-50 text-gray-500">
-              <tr>
-                <th className="px-6 py-4 text-left">User Details</th>
-                <th className="px-6 py-4 text-center">Role</th>
-                <th className="px-6 py-4 text-center">Plan</th>
-                <th className="px-6 py-4 text-center">Status</th>
-                {/* <th className="px-6 py-4 text-center">User ID</th> */}
-                <th className="px-6 py-4 text-center">Created At</th>
-                <th className="px-6 py-4 text-center">Actions</th>
-              </tr>
-            </thead>
+        <div className="bg-white border rounded-xl shadow-sm overflow-hidden">
 
-            <tbody className="divide-y">
-              {users.map((u) => (
-                <tr key={u._id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-indigo-100 text-indigo-700 flex items-center justify-center font-bold text-lg uppercase shrink-0">
-                      {u.username ? u.username.charAt(0) : "U"}
-                    </div>
-                    <div>
-                      <p className="font-semibold text-gray-900">{u.username || "No Name"}</p>
-                      <p className="text-xs text-gray-500">{u.email}</p>
-                    </div>
-                  </td>
+          {/* Desktop Table */}
+          <div className="hidden md:block overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead className="bg-gray-50 text-gray-500">
+                <tr>
+                  <th className="px-6 py-4 text-left">User Details</th>
+                  <th className="px-6 py-4 text-center">Role</th>
+                  <th className="px-6 py-4 text-center">Plan</th>
+                  <th className="px-6 py-4 text-center">Status</th>
+                  <th className="px-6 py-4 text-center">Created At</th>
+                  <th className="px-6 py-4 text-center">Actions</th>
+                </tr>
+              </thead>
 
-                  <td className="px-6 py-4 text-center">
-                    <span
-                      className={`px-3 py-1 rounded-full text-xs font-semibold ${u.isAdmin
-                        ? "bg-purple-100 text-purple-700 border border-purple-200"
-                        : "bg-blue-50 text-blue-700 border border-blue-200"
-                        }`}
-                    >
-                      {u.isAdmin ? "Admin" : "User"}
-                    </span>
-                  </td>
+              <tbody className="divide-y">
+                {users.map((u) => (
+                  <tr key={u._id} className="hover:bg-gray-50">
+                    <td className="px-6 py-4 flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full bg-indigo-100 text-indigo-700 flex items-center justify-center font-bold text-lg uppercase shrink-0">
+                        {u.username ? u.username.charAt(0) : "U"}
+                      </div>
+                      <div>
+                        <p className="font-semibold text-gray-900">{u.username || "No Name"}</p>
+                        <p className="text-xs text-gray-500">{u.email}</p>
+                      </div>
+                    </td>
 
-                  <td className="px-6 py-4 text-center">
-                    <span
-                      className={`px-3 py-1 rounded-full text-xs font-semibold border ${u.plan === "Pro"
-                        ? "bg-amber-100 text-amber-800 border-amber-200"
-                        : "bg-gray-100 text-gray-700 border-gray-200"
-                        }`}
-                    >
-                      {u.plan || "Free"}
-                    </span>
-                  </td>
+                    <td className="px-6 py-4 text-center">
+                      <span
+                        className={`px-3 py-1 rounded-full text-xs font-semibold ${u.isAdmin
+                          ? "bg-purple-100 text-purple-700 border border-purple-200"
+                          : "bg-blue-50 text-blue-700 border border-blue-200"
+                          }`}
+                      >
+                        {u.isAdmin ? "Admin" : "User"}
+                      </span>
+                    </td>
 
-                  <td className="px-6 py-4 text-center">
-                    <button
-                      onClick={() => handleToggleActive(u)}
-                      className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 ${u.isActive ? 'bg-indigo-600' : 'bg-gray-200'
-                        }`}
-                    >
-                      <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${u.isActive ? 'translate-x-6' : 'translate-x-1'
-                        }`} />
-                    </button>
-                    <div className="text-[10px] text-gray-400 mt-1">
-                      {u.isActive ? 'Active' : 'Inactive'}
-                    </div>
-                  </td>
+                    <td className="px-6 py-4 text-center">
+                      <span
+                        className={`px-3 py-1 rounded-full text-xs font-semibold border ${u.plan === "Pro"
+                          ? "bg-amber-100 text-amber-800 border-amber-200"
+                          : "bg-gray-100 text-gray-700 border-gray-200"
+                          }`}
+                      >
+                        {u.plan || "Free"}
+                      </span>
+                    </td>
 
-                  {/* <td className="px-6 py-4 text-center">
-                    <code className="bg-gray-100 px-2 py-1 rounded text-xs text-gray-600 font-mono">
-                      {u._id}
-                    </code>
-                  </td> */}
+                    <td className="px-6 py-4 text-center">
+                      <button
+                        onClick={() => handleToggleActive(u)}
+                        className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 ${u.isActive ? 'bg-indigo-600' : 'bg-gray-200'
+                          }`}
+                      >
+                        <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${u.isActive ? 'translate-x-6' : 'translate-x-1'
+                          }`} />
+                      </button>
+                      <div className="text-[10px] text-gray-400 mt-1">
+                        {u.isActive ? 'Active' : 'Inactive'}
+                      </div>
+                    </td>
 
-                  <td className="px-6 py-4 text-center text-gray-500">
-                    {u.createdAt ? new Date(u.createdAt).toLocaleDateString() : "N/A"}
-                  </td>
+                    <td className="px-6 py-4 text-center text-gray-500">
+                      {u.createdAt ? new Date(u.createdAt).toLocaleDateString() : "N/A"}
+                    </td>
 
-                  <td className="px-6 py-4">
-                    <div className="flex justify-center gap-2">
-                      {/* <button
+                    <td className="px-6 py-4">
+                      <div className="flex justify-center gap-2">
+                        {/* <button
                         onClick={() => handleEditClick(u)}
                         title="Edit User"
                         className="p-2 rounded-lg hover:bg-indigo-50 text-indigo-600 transition-colors"
                       >
                         <Pencil size={18} />
                       </button> */}
+                        <button
+                          onClick={() => handleDeleteClick(u._id)}
+                          title="Delete User"
+                          className="p-2 rounded-lg hover:bg-red-50 text-red-500 transition-colors"
+                        >
+                          <Trash2 size={18} />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+                {users.length === 0 && (
+                  <tr>
+                    <td colSpan="7" className="px-6 py-8 text-center text-gray-500">
+                      No users found.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Mobile Card Grid */}
+          <div className="md:hidden p-4">
+            {users.length === 0 ? (
+              <div className="text-center text-gray-500 py-4">No users found.</div>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {users.map((u) => (
+                  <div key={u._id} className="bg-slate-50 border border-slate-200 rounded-xl p-4 shadow-sm flex flex-col gap-3">
+                    {/* Row 1: User Info + Active Toggle */}
+                    <div className="flex justify-between items-start">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-full bg-indigo-100 text-indigo-700 flex items-center justify-center font-bold text-lg uppercase shrink-0">
+                          {u.username ? u.username.charAt(0) : "U"}
+                        </div>
+                        <div>
+                          <p className="font-semibold text-gray-900 text-sm">{u.username || "No Name"}</p>
+                          <p className="text-xs text-gray-500 break-all">{u.email}</p>
+                        </div>
+                      </div>
+
+                      {/* Active Toggle (Top Right) */}
+                      <div className="flex flex-col items-end gap-1">
+                        <button
+                          onClick={() => handleToggleActive(u)}
+                          className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors focus:outline-none ${u.isActive ? 'bg-indigo-600' : 'bg-gray-200'}`}
+                        >
+                          <span className={`inline-block h-3 w-3 transform rounded-full bg-white transition-transform ${u.isActive ? 'translate-x-5' : 'translate-x-1'}`} />
+                        </button>
+                        <span className="text-[10px] text-slate-400 font-medium">{u.isActive ? 'Active' : 'Inactive'}</span>
+                      </div>
+                    </div>
+
+                    {/* Row 2: Badges + Delete Button */}
+                    <div className="flex items-center justify-between mt-1 pt-3 border-t border-slate-200">
+                      <div className="flex gap-2">
+                        <span
+                          className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide border ${u.isAdmin
+                            ? "bg-purple-100 text-purple-700 border-purple-200"
+                            : "bg-blue-50 text-blue-700 border-blue-200"
+                            }`}
+                        >
+                          {u.isAdmin ? "Admin" : "User"}
+                        </span>
+                        <span
+                          className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide border ${u.plan === "Pro"
+                            ? "bg-amber-100 text-amber-800 border-amber-200"
+                            : "bg-gray-100 text-gray-700 border-gray-200"
+                            }`}
+                        >
+                          {u.plan || "Free"}
+                        </span>
+                      </div>
+
+                      {/* Delete Button (Bottom Right) */}
                       <button
                         onClick={() => handleDeleteClick(u._id)}
+                        className="p-1.5 rounded-lg bg-red-50 text-red-500 hover:bg-red-100 transition-colors"
                         title="Delete User"
-                        className="p-2 rounded-lg hover:bg-red-50 text-red-500 transition-colors"
                       >
-                        <Trash2 size={18} />
+                        <Trash2 size={16} />
                       </button>
                     </div>
-                  </td>
-                </tr>
-              ))}
-              {users.length === 0 && (
-                <tr>
-                  <td colSpan="7" className="px-6 py-8 text-center text-gray-500">
-                    No users found.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
         </div>
       </div>
 
