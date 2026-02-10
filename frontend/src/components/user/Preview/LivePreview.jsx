@@ -12,9 +12,13 @@ import {
   Eye,
 } from "lucide-react";
 import { FaLinkedin } from "react-icons/fa";
-import { useEffect, useState } from "react";
-import { getTemplateComponent } from "../Templates/TemplateRegistry";
-
+import { useEffect, useState, useRef } from "react";
+import {
+  getTemplateComponent,
+  getTemplateCSS,
+} from "../Templates/TemplateRegistry";
+import { forwardRef, useImperativeHandle } from "react";
+import axios from "axios";
 function formatMonthYear(value) {
   if (!value) return "";
   const [year, month] = value.split("-");
@@ -46,13 +50,9 @@ function Section({ title, children }) {
   );
 }
 
-const LivePreview = ({
-  formData = {},
-  currentTemplate,
-  isExpanded,
-  onExpand,
-  onCollapse,
-}) => {
+const LivePreview = forwardRef((props, ref) => {
+  const { formData, currentTemplate, isExpanded, onExpand, onCollapse } = props;
+
   const [zoom, setZoom] = useState(1);
   const [isMobileView, setIsMobileView] = useState(false);
 
@@ -79,6 +79,42 @@ const LivePreview = ({
   const zoomIn = () => setZoom((z) => Math.min(z + 0.1, 2));
   const zoomOut = () => setZoom((z) => Math.max(z - 0.1, 0.5));
   const resetZoom = () => setZoom(1);
+
+  const resume_doc = useRef(null);
+  const getResumeHTML = () => {
+    if (!resume_doc.current) {
+      console.error("Resume DOM not found");
+      return "";
+    }
+    const resumeHTML = resume_doc.current.outerHTML;
+    const TemplateComponentCSSPath = getTemplateCSS(
+      currentTemplate?.id || currentTemplate,
+    );
+    return `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <meta charset="UTF-8" />
+          <title>resume</title>
+          <style>
+            body {
+              margin: 0;
+              padding: 0;
+              font-family: Arial, sans-serif;
+            }
+            ${TemplateComponentCSSPath}
+          </style>
+        </head>
+        <body>
+            ${resumeHTML}
+        </body>
+      </html>
+    `;
+  };
+
+  useImperativeHandle(ref, () => ({
+    getResumeHTML,
+  }));
 
   const {
     fullName,
@@ -488,7 +524,7 @@ const LivePreview = ({
       </div>
 
       <div
-        className="md:overflow-auto overflow-y-hidden flex justify-center md:p-4 rounded-b-xl bg-slate-200  transition-all duration-300"
+        className="bg-slate-200 overflow-y-hidden md:p-4 rounded-b-xl transition-all duration-300"
         style={{
           height: isMobilePreviewHidden
             ? isMobileView
@@ -497,10 +533,17 @@ const LivePreview = ({
             : "0",
         }}
       >
-        <PreviewContent />
+        <div className="md:overflow-auto overflow-y-hidden flex">
+          <div
+            ref={resume_doc}
+            className=" h-full overflow-hidden md:scale-y-100 scale-y-[0.9] origin-top-left"
+          >
+            <PreviewContent />
+          </div>
+        </div>
       </div>
     </div>
   );
-};
+});
 
 export default LivePreview;

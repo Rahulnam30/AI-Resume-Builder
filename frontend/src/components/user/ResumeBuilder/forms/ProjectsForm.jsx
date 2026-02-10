@@ -1,10 +1,26 @@
-import { Check, EditIcon, Plus, Trash2 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import {
+  Check,
+  EditIcon,
+  Plus,
+  RefreshCw,
+  Sparkles,
+  Trash2,
+} from "lucide-react";
+import { getCompletionStatus } from "../completion";
+import axiosInstance from "../../../../api/axios";
 
 const ProjectsForm = ({ formData, setFormData }) => {
-  const [editingId, setEditingId] = useState(
-    formData?.projects?.[0]?.id || null,
-  );
+  const [editingId, setEditingId] = useState(null);
+  const [generatingId, setGeneratingId] = useState(null);
+  useEffect(() => {
+    const { sectionValidationStatus } = getCompletionStatus(formData);
+    if (sectionValidationStatus.hasValidProject) {
+      setEditingId(null);
+    } else {
+      setEditingId(formData?.projects?.[0]?.id);
+    }
+  }, []);
 
   const addProject = () => {
     const id = crypto.randomUUID();
@@ -31,12 +47,59 @@ const ProjectsForm = ({ formData, setFormData }) => {
     }));
   };
 
+  const updateProject = (id, field, value) => {
+    const updated = formData.projects.map((item) =>
+      item.id === id ? { ...item, [field]: value } : item,
+    );
+    setFormData((prev) => ({
+      ...prev,
+      projects: updated,
+    }));
+  };
+
+  const generateProjectDetails = async (projectId) => {
+    try {
+      setGeneratingId(projectId);
+      // Convert experience and projects objects to strings
+      const projectStr = formData.projects.find((e) => e.id === projectId);
+      const data = {
+        id: projectId,
+        name: projectStr?.name || "",
+        technologies: projectStr?.technologies || "",
+        description: projectStr?.description ?? "",
+      };
+
+      if (!data.name || !data.description) {
+        alert(
+          "Please fill in the Project Name and Description fields before enhancing with AI.",
+        );
+        setGeneratingId(null);
+        return;
+      }
+      console.log("Data sent:", data);
+
+      const response = await axiosInstance.post(
+        "/api/resume/enhance-project-description",
+        data,
+      );
+      console.log("Response received:", response);
+      console.log("Description generated:", response.data.projectDescription);
+      console.log("Updating project with ID:", projectId);
+      console.log("Updating project with data:", formData.projects);
+      updateProject(projectId, "description", response.data.projectDescription);
+    } catch (error) {
+      console.error("Failed to generate description:", error);
+      console.error("Error details:", error.response?.data || error.message);
+      alert(
+        `Failed to generate description: ${error.response?.data?.error || error.message}`,
+      );
+    } finally {
+      setGeneratingId(null);
+    }
+  };
+
   return (
     <div className="flex flex-col gap-4">
-      <span className="text-xl text-[#1a1a2e] mb-3 leading-[1.2]">
-        Projects
-      </span>
-
       {(formData?.projects ?? []).map((project, index) => (
         <div
           key={project.id}
@@ -107,49 +170,44 @@ const ProjectsForm = ({ formData, setFormData }) => {
                     className="px-2.5 py-2 border text-sm rounded border-1.5 focus:border-[#007bff] focus:outline-none focus:bg-white focus:shadow-[0_2px_8px_rgba(0,123,255,0.07)]"
                     value={project.name || ""}
                     placeholder="E-commerce Platform"
-                    onChange={(e) => {
-                      const updated = formData.projects.map((item) =>
-                        item.id === project.id
-                          ? { ...item, name: e.target.value }
-                          : item,
-                      );
-                      setFormData((prev) => ({
-                        ...prev,
-                        projects: updated,
-                      }));
-                    }}
+                    onChange={(e) => updateProject(project.id, "name", e.target.value)}
                   />
                 </div>
 
                 <div className="flex flex-col gap-[6px] mb-[10px]">
-                  <label>Technologies Used</label>
+                  <label>Technologies Used *</label>
                   <input
                     type="text"
                     className="px-2.5 py-2 border text-sm rounded border-1.5 focus:border-[#007bff] focus:outline-none focus:bg-white focus:shadow-[0_2px_8px_rgba(0,123,255,0.07)]"
                     value={project.technologies || ""}
                     placeholder="React, Node.js, MongoDB"
-                    onChange={(e) => {
-                      const updated = formData.projects.map((item) =>
-                        item.id === project.id
-                          ? { ...item, technologies: e.target.value }
-                          : item,
-                      );
-                      setFormData((prev) => ({
-                        ...prev,
-                        projects: updated,
-                      }));
-                    }}
+                    onChange={(e) => updateProject(project.id, "technologies", e.target.value)}
                   />
                 </div>
 
                 <div className="flex flex-col gap-[6px] mb-[10px]">
-                  <label>Description</label>
+                  <div className="w-full flex items-center justify-between">
+                    <label>Description *</label>
+                    <button
+                      className="flex gap-2 ml-2 p-2 rounded-lg text-xs bg-blue-100 text-blue-600 hover:bg-blue-200 hover:text-blue-800"
+                      onClick={() => generateProjectDetails(project.id)}
+                    >
+                      {generatingId === project.id ? (
+                        <RefreshCw size={15} className={`ml-1 animate-spin`} />
+                      ) : (
+                        <Sparkles size={14} />
+                      )}
+                      Enhance with AI
+                    </button>
+                  </div>
                   <textarea
                     className="h-28 px-2.5 py-2 border text-sm rounded border-1.5 resize-none focus:border-[#007bff] focus:outline-none focus:bg-white focus:shadow-[0_2px_8px_rgba(0,123,255,0.07)]"
                     value={project.description || ""}
                     maxLength={500}
-                    onChange={(e) => {
-                      const updated = formData.projects.map((item) =>
+                    onChange={(e) => updateProject(project.id, "description", e.target.value)}
+                  />
+                  {/* 
+                  const updated = formData.projects.map((item) =>
                         item.id === project.id
                           ? { ...item, description: e.target.value }
                           : item,
@@ -158,15 +216,14 @@ const ProjectsForm = ({ formData, setFormData }) => {
                         ...prev,
                         projects: updated,
                       }));
-                    }}
-                  />
+                  */}
                   <span className="ml-2 text-xs text-slate-500">
                     {project.description?.length || 0}/500 Characters
                   </span>
                 </div>
 
                 <div className="flex flex-col gap-[6px] mb-[10px]">
-                  <label>GitHub Link</label>
+                  <label>GitHub Link *</label>
                   <input
                     type="text"
                     className="px-2.5 py-2 border text-sm rounded border-1.5 focus:border-[#007bff] focus:outline-none focus:bg-white focus:shadow-[0_2px_8px_rgba(0,123,255,0.07)]"
