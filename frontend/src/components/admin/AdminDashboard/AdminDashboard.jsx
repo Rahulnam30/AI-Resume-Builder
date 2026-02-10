@@ -96,30 +96,30 @@ export default function AdminDashboard() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
+    <div className="bg-slate-50 p-4 sm:p-6">
       {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold">Dashboard Overview</h1>
-        <p className="text-gray-500">Welcome back, here’s what’s happening</p>
+      <div className="mb-6 sm:mb-8">
+        <h1 className="text-2xl sm:text-3xl font-bold text-slate-900">Dashboard Overview</h1>
+        <p className="text-sm sm:text-base text-slate-600 mt-1 sm:mt-2">Welcome back, here’s what’s happening</p>
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6">
+      <div className="grid grid-cols-2 xl:grid-cols-4 gap-3 sm:gap-6">
         {stats.map((item) => {
           const Icon = item.icon;
           return (
             <div
               key={item.title}
-              className="bg-white border rounded-2xl p-5 shadow-sm"
+              className="bg-white border rounded-2xl p-3 sm:p-5 shadow-sm"
             >
               <div className="flex justify-between items-center">
                 <div>
-                  <p className="text-sm text-gray-500">{item.title}</p>
-                  <p className="text-2xl font-bold">{item.value}</p>
-                  <p className="text-sm text-green-600">{item.change}</p>
+                  <p className="text-xs sm:text-sm text-gray-500">{item.title}</p>
+                  <p className="text-xl sm:text-2xl font-bold">{item.value}</p>
+                  <p className="text-xs sm:text-sm text-green-600">{item.change}</p>
                 </div>
-                <div className={`p-3 rounded-xl ${item.bg} ${item.color}`}>
-                  <Icon size={22} />
+                <div className={`p-2 sm:p-3 rounded-xl ${item.bg} ${item.color}`}>
+                  <Icon size={20} className="sm:w-[22px] sm:h-[22px]" />
                 </div>
               </div>
             </div>
@@ -128,86 +128,92 @@ export default function AdminDashboard() {
       </div>
 
       {/* Analytics Section */}
-      <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 mt-10">
+      <div className="grid grid-cols-2 xl:grid-cols-2 gap-3 sm:gap-6 mt-10">
         {/* LEFT COLUMN */}
-        <div className="flex flex-col gap-6">
+        <div className="flex flex-col gap-3 sm:gap-6">
           {/* Resume Trend */}
-          <div className="bg-white border rounded-2xl p-6 shadow-sm h-[350px] xl:col-span-2">
-            <h3 className="text-base font-semibold mb-4">
-              Resume Generation Trend
+          <div className="bg-white border rounded-2xl p-3 sm:p-6 shadow-sm h-[250px] sm:h-[350px] xl:col-span-2 min-w-0 flex flex-col">
+            <h3 className="text-xs sm:text-base font-semibold mb-4 text-center sm:text-left">
+              Resume Generation
             </h3>
-            <ResponsiveContainer width="100%" height="90%" minWidth={0}>
-              <BarChart data={resumeChart}>
-                <XAxis dataKey="month" fontSize={12} />
-                <YAxis fontSize={12} />
-                <Tooltip />
-                <Bar dataKey="resumes" radius={[6, 6, 0, 0]}>
-                  {resumeChart.map((_, i) => (
-                    <Cell key={i} fill={colors[i % colors.length]} />
-                  ))}
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
+            <div className="flex-1 w-full min-h-0">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={resumeChart} margin={{ top: 5, right: 0, left: -20, bottom: 0 }}>
+                  <XAxis dataKey="month" fontSize={10} tickLine={false} axisLine={false} interval="preserveStartEnd" />
+                  <YAxis fontSize={10} tickLine={false} axisLine={false} />
+                  <Tooltip />
+                  <Bar dataKey="resumes" radius={[4, 4, 0, 0]}>
+                    {resumeChart.map((_, i) => (
+                      <Cell key={i} fill={colors[i % colors.length]} />
+                    ))}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
           </div>
 
           {/* User Growth */}
-          <div className="bg-white border rounded-2xl p-6 shadow-sm h-[350px] xl:col-span-2">
-            <h3 className="text-base font-semibold mb-4">User Growth</h3>
-            <ResponsiveContainer width="100%" height="90%" minWidth={0}>
-              <LineChart data={userGrowth}>
-                <XAxis dataKey="month" fontSize={12} />
-                <YAxis fontSize={12} />
-                <Tooltip />
-                <Line
-                  type="monotone"
-                  dataKey="users"
-                  stroke="#22C55E"
-                  strokeWidth={3}
-                  dot={{ r: 4 }}
-                  activeDot={{ r: 6 }}
-                />
-              </LineChart>
-            </ResponsiveContainer>
+          <div className="bg-white border rounded-2xl p-3 sm:p-6 shadow-sm h-[250px] sm:h-[350px] xl:col-span-2 min-w-0 flex flex-col">
+            <h3 className="text-xs sm:text-base font-semibold mb-4 text-center sm:text-left">User Growth</h3>
+            <div className="flex-1 w-full min-h-0">
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={userGrowth} margin={{ top: 5, right: 0, left: -20, bottom: 0 }}>
+                  <XAxis dataKey="month" fontSize={10} tickLine={false} axisLine={false} interval="preserveStartEnd" />
+                  <YAxis fontSize={10} tickLine={false} axisLine={false} />
+                  <Tooltip />
+                  <Line
+                    type="monotone"
+                    dataKey="users"
+                    stroke="#22C55E"
+                    strokeWidth={2}
+                    dot={{ r: 2 }}
+                    activeDot={{ r: 4 }}
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
           </div>
         </div>
 
         {/* RIGHT COLUMN */}
-        <div className="flex flex-col gap-6">
+        <div className="flex flex-col gap-3 sm:gap-6">
           {/* Subscription Plans */}
-          <div className="bg-white border rounded-2xl p-6 shadow-sm h-[350px]">
-            <h3 className="text-base font-semibold mb-4 text-center">
-              Subscription Distribution
+          <div className="bg-white border rounded-2xl p-3 sm:p-6 shadow-sm h-[250px] sm:h-[350px] min-w-0 flex flex-col">
+            <h3 className="text-xs sm:text-base font-semibold mb-4 text-center">
+              Subscriptions
             </h3>
 
-            <ResponsiveContainer width="100%" height="80%" minWidth={0}>
-              <PieChart>
-                <Pie
-                  data={subscriptionSplit}
-                  dataKey="value"
-                  innerRadius={60}
-                  outerRadius={90}
-                  paddingAngle={4}
-                >
-                  {subscriptionSplit.map((_, i) => (
-                    <Cell key={i} fill={colors[i]} />
-                  ))}
-                </Pie>
-                <Tooltip />
-              </PieChart>
-            </ResponsiveContainer>
+            <div className="flex-1 w-full min-h-0">
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={subscriptionSplit}
+                    dataKey="value"
+                    innerRadius="40%"
+                    outerRadius="70%"
+                    paddingAngle={4}
+                  >
+                    {subscriptionSplit.map((_, i) => (
+                      <Cell key={i} fill={colors[i]} />
+                    ))}
+                  </Pie>
+                  <Tooltip />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
 
             {/* Custom Legend */}
-            <div className="flex justify-center gap-6 mt-4">
+            <div className="flex flex-wrap justify-center gap-2 sm:gap-6 mt-2 sm:mt-4">
               {subscriptionSplit.map((item, i) => (
                 <div
                   key={item.name}
-                  className="flex items-center gap-2 text-sm"
+                  className="flex items-center gap-1 sm:gap-2 text-[10px] sm:text-sm"
                 >
                   <span
-                    className="w-3 h-3 rounded-full"
+                    className="w-2 h-2 sm:w-3 sm:h-3 rounded-full"
                     style={{ backgroundColor: colors[i] }}
                   />
-                  <span className="text-gray-600">
+                  <span className="text-gray-600 whitespace-nowrap">
                     {item.name} ({item.value}%)
                   </span>
                 </div>
@@ -216,16 +222,18 @@ export default function AdminDashboard() {
           </div>
 
           {/* Daily Active Users */}
-          <div className="bg-white border rounded-2xl p-6 shadow-sm h-[350px]">
-            <h3 className="text-base font-semibold mb-4">Daily Active Users</h3>
-            <ResponsiveContainer width="100%" height="90%" minWidth={0}>
-              <BarChart data={dailyActivity}>
-                <XAxis dataKey="day" fontSize={12} />
-                <YAxis fontSize={12} />
-                <Tooltip />
-                <Bar dataKey="users" fill="#6366F1" radius={[6, 6, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
+          <div className="bg-white border rounded-2xl p-3 sm:p-6 shadow-sm h-[250px] sm:h-[350px] min-w-0 flex flex-col">
+            <h3 className="text-xs sm:text-base font-semibold mb-4 text-center sm:text-left">Active Users</h3>
+            <div className="flex-1 w-full min-h-0">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={dailyActivity} margin={{ top: 5, right: 0, left: -20, bottom: 0 }}>
+                  <XAxis dataKey="day" fontSize={10} tickLine={false} axisLine={false} />
+                  <YAxis fontSize={10} tickLine={false} axisLine={false} />
+                  <Tooltip />
+                  <Bar dataKey="users" fill="#6366F1" radius={[4, 4, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
           </div>
         </div>
       </div>

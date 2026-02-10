@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   LayoutDashboard,
   Plus,
@@ -10,12 +10,21 @@ import {
 import { useNavigate, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
 
-export default function AdminSidebar({ isCollapsed, setIsCollapsed }) {
-  const [isMobileOpen, setIsMobileOpen] = useState(false);
+export default function AdminSidebar({ isCollapsed, setIsCollapsed, isMobileOpen, setIsMobileOpen }) {
   const [hoveredItem, setHoveredItem] = useState(null);
+  const [isMobile, setIsMobile] = useState(false);
 
   const navigate = useNavigate();
   const location = useLocation();
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    handleResize(); // Init
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   const menuItems = [
     {
@@ -27,8 +36,8 @@ export default function AdminSidebar({ isCollapsed, setIsCollapsed }) {
     {
       id: "create",
       icon: Plus,
-      label: "Templates",
-      path: "/admin/create-templates",
+      label: "Manage Templates",
+      path: "/admin/manage-templates",
     },
     {
       id: "subscription",
@@ -48,7 +57,7 @@ export default function AdminSidebar({ isCollapsed, setIsCollapsed }) {
   // Navigate to page
   const handleNavigate = (path) => {
     navigate(path);
-    setIsMobileOpen(false);
+    if (isMobile) setIsMobileOpen(false);
   };
 
   const handleLogout = () => {
@@ -63,43 +72,27 @@ export default function AdminSidebar({ isCollapsed, setIsCollapsed }) {
 
   return (
     <>
-      {/* Toggle Buttons */}
-      <div className="fixed top-4 left-4 z-[60] flex gap-2">
-        <button onClick={() => setIsMobileOpen(!isMobileOpen)} className="md:hidden">
-          <div className="lines">
-            <span className={`line transition-all duration-300 ${isMobileOpen ? 'rotate-45 translate-y-2 block' : 'block'}`}></span>
-            <span className={`line transition-all duration-300 ${isMobileOpen ? 'opacity-0' : 'opacity-100'}`}></span>
-            <span className={`line transition-all duration-300 ${isMobileOpen ? '-rotate-45 -translate-y-2 block' : 'block'}`}></span>
-          </div>
-        </button>
-        <button
-          onClick={() => setIsCollapsed(!isCollapsed)}
-          className="hidden md:flex nav-item toggle"
-        >
-          <div className="lines">
-            <span className="line"></span>
-            <span className="line"></span>
-            <span className="line"></span>
-          </div>
-        </button>
-      </div>
-
       {/* Overlay for mobile */}
       {isMobileOpen && (
         <div
           onClick={() => setIsMobileOpen(false)}
-          className="fixed inset-0 bg-black/30 z-30 md:hidden"
+          className="fixed inset-0 bg-black/30 z-[60] md:hidden"
         />
       )}
 
       {/* Sidebar */}
       <motion.aside
-        className="fixed top-0 left-0 z-40 bg-white border-r border-slate-200 flex flex-col"
-        style={{ width: isCollapsed ? 80 : 256, height: "100vh" }}
-        animate={{ x: isMobileOpen || window.innerWidth >= 768 ? 0 : "-100%" }}
+        className={`fixed left-0 border-r border-slate-200 flex flex-col bg-white
+          ${isMobile ? "top-0 z-[70] h-screen" : "top-16 z-40 h-[calc(100vh-64px)]"}
+        `}
+        initial={false}
+        animate={{
+          x: isMobile ? (isMobileOpen ? 0 : "-100%") : 0,
+          width: isMobile ? 256 : (isCollapsed ? 80 : 256),
+        }}
         transition={{ type: "spring", stiffness: 220, damping: 25 }}
       >
-        <nav className="p-3 space-y-2 mt-16 flex-1">
+        <nav className="p-3 space-y-2 flex-1 mt-4">
           {menuItems.map((item, index) => {
             const Icon = item.icon;
             const active =
@@ -108,20 +101,20 @@ export default function AdminSidebar({ isCollapsed, setIsCollapsed }) {
                 : location.pathname.startsWith(item.path);
 
             return (
-              <div key={item.id} className={`relative group ${index !== 0 ? "mt-[45px]" : ""}`}>
+              <div key={item.id} className={`relative group`}>
                 <button
                   onClick={() => handleNavigate(item.path)}
-                  onMouseEnter={() => isCollapsed && setHoveredItem(item.id)}
+                  onMouseEnter={() => !isMobile && isCollapsed && setHoveredItem(item.id)}
                   onMouseLeave={() => setHoveredItem(null)}
                   className={`w-full flex items-center rounded-xl transition-all
-                    ${isCollapsed ? "justify-center px-0" : "gap-3 px-4"} py-3
+                    ${!isMobile && isCollapsed ? "justify-center px-0" : "gap-3 px-4"} py-3
                     ${active ? "bg-blue-50 text-blue-600 font-semibold" : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"}`}
                 >
                   <Icon size={22} />
-                  {!isCollapsed && <span className="whitespace-nowrap">{item.label}</span>}
+                  {(!isCollapsed || isMobile) && <span className="whitespace-nowrap">{item.label}</span>}
                 </button>
                 {/* Tooltip for collapsed state */}
-                {isCollapsed && hoveredItem === item.id && (
+                {!isMobile && isCollapsed && hoveredItem === item.id && (
                   <div className="tooltip">
                     {item.label}
                   </div>
@@ -135,16 +128,16 @@ export default function AdminSidebar({ isCollapsed, setIsCollapsed }) {
         <div className="p-3 border-t border-slate-200 mt-auto relative">
           <button
             onClick={handleLogout}
-            onMouseEnter={() => isCollapsed && setHoveredItem("logout")}
+            onMouseEnter={() => !isMobile && isCollapsed && setHoveredItem("logout")}
             onMouseLeave={() => setHoveredItem(null)}
             className={`w-full flex items-center rounded-xl transition-all text-red-500 hover:bg-red-50
-              ${isCollapsed ? "justify-center px-0" : "gap-3 px-4"} py-3`}
+              ${!isMobile && isCollapsed ? "justify-center px-0" : "gap-3 px-4"} py-3`}
           >
             <LogOut size={22} />
-            {!isCollapsed && <span>Logout</span>}
+            {(!isCollapsed || isMobile) && <span>Logout</span>}
           </button>
           {/* Tooltip for logout in collapsed state */}
-          {isCollapsed && hoveredItem === "logout" && (
+          {!isMobile && isCollapsed && hoveredItem === "logout" && (
             <div className="tooltip">
               Logout
             </div>
@@ -152,10 +145,7 @@ export default function AdminSidebar({ isCollapsed, setIsCollapsed }) {
         </div>
       </motion.aside>
 
-      {/* Right Panel (Navbar + Content) */}
-      <div className="transition-all duration-300" style={{ marginLeft: isCollapsed ? 80 : 256 }}>
-        {/* Content goes here via Outlet if used */}
-      </div>
+      {/* Note: Removed the redundant 'Right Panel' div from here as it should be handled by AdminLayout */}
     </>
   );
 }

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate, Link } from 'react-router-dom';
 import UpToSkillsImg from '../assets/UptoSkills.webp';
-import { 
+import {
   Menu, LogIn, UserPlus, LogOut, X,
   CheckCircle, Layout, FileSearch, Zap, Edit3,
   BarChart3, Layers, Activity, Palette, PenTool,
@@ -215,7 +215,9 @@ export default function NavBar() {
 
               {isLoggedIn && (
                 <li className="cursor-pointer hover:text-orange-600 transition-colors">
-                  <Link to="/user/dashboard">Dashboard</Link>
+                  <Link to={JSON.parse(localStorage.getItem("isAdmin") || "false") ? "/admin" : "/user/dashboard"}>
+                    Dashboard
+                  </Link>
                 </li>
               )}
               <li className="cursor-pointer hover:text-orange-600 transition-colors">
@@ -275,9 +277,8 @@ export default function NavBar() {
 
       {/* Mobile Sidebar - Now slides from LEFT */}
       <div
-        className={`fixed top-0 left-0 h-full w-80 bg-white shadow-2xl z-50 transform transition-transform duration-300 ease-in-out md:hidden ${
-          mobileMenuOpen ? "translate-x-0" : "-translate-x-full"
-        }`}
+        className={`fixed top-0 left-0 h-full w-80 bg-white shadow-2xl z-50 transform transition-transform duration-300 ease-in-out md:hidden ${mobileMenuOpen ? "translate-x-0" : "-translate-x-full"
+          }`}
       >
         <div className="flex flex-col h-full">
           {/* Sidebar Header */}
