@@ -1,10 +1,18 @@
+import { useEffect, useState } from "react";
 import { Check, EditIcon, Plus, Trash2 } from "lucide-react";
-import { useState } from "react";
+import { getCompletionStatus } from "../completion";
 
 const EducationForm = ({ formData, setFormData }) => {
-  const [editingId, setEditingId] = useState(
-    formData?.education?.[0]?.id || null,
-  );
+  const [editingId, setEditingId] = useState(null);
+
+  useEffect(() => {
+    const { sectionValidationStatus } = getCompletionStatus(formData);
+    if (sectionValidationStatus.hasValidEducation) {
+      setEditingId(null);
+    } else {
+      setEditingId(formData?.education?.[0]?.id || null);
+    }
+  }, []);
 
   const addEducation = () => {
     const id = crypto.randomUUID();
@@ -57,7 +65,7 @@ const EducationForm = ({ formData, setFormData }) => {
       {(formData?.education ?? []).map((edu, index) => (
         <div
           key={edu.id}
-          className="shadow-sm border border-gray-300 rounded-lg p-2"
+          className="shadow-sm border border-gray-300 rounded-md p-2"
         >
           {/* Card UI */}
           {editingId !== edu.id && (
@@ -148,7 +156,7 @@ const EducationForm = ({ formData, setFormData }) => {
                   />
                 </div>
                 <div className="flex flex-col gap-[6px] mb-[10px]">
-                  <label>Start Date</label>
+                  <label>Start Date *</label>
                   <input
                     type="month"
                     className="px-2.5 py-2 border text-sm rounded border-1.5 focus:border-[#007bff] focus:outline-none focus:bg-white focus:shadow-[0_2px_8px_rgba(0,123,255,0.07)]"
@@ -163,7 +171,7 @@ const EducationForm = ({ formData, setFormData }) => {
                   />
                 </div>
                 <div className="flex flex-col gap-[6px] mb-[10px]">
-                  <label>Graduation Date</label>
+                  <label>Graduation Date *</label>
                   <input
                     type="month"
                     className="px-2.5 py-2 border text-sm rounded border-1.5 focus:border-[#007bff] focus:outline-none focus:bg-white focus:shadow-[0_2px_8px_rgba(0,123,255,0.07)]"

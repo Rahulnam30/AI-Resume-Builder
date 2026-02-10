@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import UpToSkillsImg from '../assets/UptoSkills.webp';
 import Footer from "./Footer"
+import NavBar from "../components/NavBar";
 // Add MapPin and Mail to your existing lucide-react import
 import { Mail, Phone, LifeBuoy, Users, MessageSquare, ChevronRight, Zap, MapPin } from 'lucide-react';
 import BlurCircle from './BlurCircle';
@@ -25,23 +26,8 @@ function Contact() {
   return (
     <div className="min-h-screen bg-white font-['Outfit'] overflow-hidden">
       {/* NAVIGATION */}
-<nav className="fixed top-0 z-50 w-full py-4 border-b border-gray-100 bg-white/95 backdrop-blur-md">
-  <div className="max-w-[1400px] mx-auto px-8 flex items-center justify-between">
-    {/* Logo */}
-    <div onClick={() => navigate('/')} className="cursor-pointer">
-      <img src={UpToSkillsImg} alt="UpToSkills Logo" className="w-[150px]" />
-    </div>
-
-    {/* Login Button */}
-    <div className="flex items-center gap-6">
-      <button onClick={() => navigate('/login')} className="flex items-center gap-3 px-6 py-2.5 bg-[#e65100] text-white rounded-xl font-bold transition-all duration-300 border-2 border-transparent hover:bg-[#ff6d00] hover:shadow-xl hover:shadow-orange-200 hover:-translate-y-1 active:scale-95">
-              <i className="fas fa-sign-in-alt"></i>
-              <span>Login</span>
-            </button>
-    </div>
-  </div>
-</nav>
-
+    <NavBar />
+    <div className="h-12" />
       {/* HERO SECTION - MATCHING REFERENCE IMAGE */}
      <section className="relative px-8 pt-32 pb-16 overflow-hidden bg-white isolate">
   
