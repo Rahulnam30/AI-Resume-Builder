@@ -15,8 +15,8 @@ import NavBar from "../components/NavBar";
 import Footer from "./Footer";
 import growth from "../assets/growth1.png";
 
-const StrategicInsightsPage = () => {
-  const navigate = useNavigate();
+const StrategicInsightsPage = () => {<section className="py-12"></section>
+  const navigate = useNavigate();<div className="mt-1 grid gap-10 lg:grid-cols-3"></div>
   const isLoggedIn =
     typeof window !== "undefined" && !!localStorage.getItem("token");
 
@@ -29,12 +29,10 @@ const StrategicInsightsPage = () => {
     }
   };
 
-  const handleBackHome = () => {
-    navigate("/?scrollTo=features");
-  };
+  
 
   return (
-    <div className="min-h-screen bg-white font-['Outfit'] text-[#1a2e52] selection:bg-orange-100 overflow-x-hidden select-none">
+    <div className="min-h-[80vh] bg-white font-['Outfit'] text-[#1a2e52] selection:bg-orange-100 overflow-x-hidden select-none">
       <NavBar />
 
       {/* --- HERO SECTION --- */}
@@ -44,16 +42,7 @@ const StrategicInsightsPage = () => {
         <div className="absolute bottom-0 left-0 w-1/3 h-1/2 bg-blue-50 rounded-full blur-[120px] -z-10 opacity-50" />
 
         <div className="relative z-10 pt-10 mx-auto max-w-7xl">
-          {/* Back To Home Button */}
-          <div className="mb-8">
-            <button
-              onClick={handleBackHome}
-              className="group inline-flex items-center gap-2 text-sm font-bold text-[#0077cc] transition-all duration-200"
-            >
-              <ArrowLeft size={16} className="transition-transform duration-200 group-hover:-translate-x-1" />
-              <span>Back to home</span>
-            </button>
-          </div>
+         
 
 <div className="grid items-center gap-2 lg:gap-1 lg:grid-cols-2">
             <div className="text-center lg:text-left">

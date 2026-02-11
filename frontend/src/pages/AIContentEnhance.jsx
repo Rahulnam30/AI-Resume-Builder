@@ -28,22 +28,14 @@ const AIEnhancementPage = () => {
       <NavBar />
       
       {/* --- 1. HERO SECTION --- */}
-      <section className="relative  px-6 overflow-hidden bg-white">
+     <section className="relative px-6 pt-16 overflow-hidden bg-white">
+
   {/* Soft background glow */}
   <div className="absolute top-0 right-0 w-[40%] h-[60%] bg-blue-50 rounded-full blur-[140px] -z-10 opacity-60" />
   <div className="absolute bottom-0 left-0 w-[40%] h-[60%] bg-orange-50 rounded-full blur-[140px] -z-10 opacity-60" />
 
   <div className="mx-auto max-w-7xl">
-    {/* Back Button */}
-    <div className="pt-20 mb-8">
-      <button
-        onClick={handleBackHome}
-        className="group inline-flex items-center gap-2 text-sm font-bold text-[#0077cc]"
-      >
-        <ArrowLeft size={16} className="transition-transform group-hover:-translate-x-1" />
-        Back to home
-      </button>
-    </div>
+    
 
     {/* HERO GRID */}
     <div className="grid items-center min-h-[80vh] gap-4 pb-16 lg:grid-cols-[1fr_1.2fr] xl:grid-cols-[1fr_1.4fr]">
