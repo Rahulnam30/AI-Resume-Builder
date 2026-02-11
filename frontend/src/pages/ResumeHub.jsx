@@ -34,9 +34,6 @@ const ResumeHubPage = () => {
     }
   };
 
-  const handleBackHome = () => {
-    navigate("/?scrollTo=features");
-  };
 
   return (
     <div className="min-h-screen bg-white font-['Outfit'] text-[#1a2e52] selection:bg-orange-100 overflow-x-hidden select-none">
@@ -48,16 +45,8 @@ const ResumeHubPage = () => {
         <div className="absolute top-0 right-0 w-1/3 h-1/2 bg-orange-50 rounded-full blur-[120px] -z-10 opacity-50" />
         <div className="absolute bottom-0 left-0 w-1/3 h-1/2 bg-blue-50 rounded-full blur-[120px] -z-10 opacity-50" />
 
-        <div className="relative z-10 px-8 mx-auto max-w-7xl">
-          {/* Back To Home Button */}
+        <div className="relative  mt-16 z-10 px-8 mx-auto max-w-7xl">
           
-            <button
-              onClick={handleBackHome}
-              className="group inline-flex items-center gap-2 pt-20 text-sm font-bold text-[#0077cc] transition-all duration-200"
-            >
-              <ArrowLeft size={16} className="transition-transform duration-200 group-hover:-translate-x-1" />
-              <span>Back to home</span>
-            </button>
           
 
           <div className="flex flex-col items-center gap-4 pt-16 lg:flex-row lg:text-left -mt-12">
@@ -107,7 +96,8 @@ const ResumeHubPage = () => {
 
       {/* 2.--- WHAT IS RESUME HUB --- */}
 <section className="px-8 py-20 bg-white font-['Outfit']">
-  <div className="max-w-4xl mx-auto">
+  <div className="relative mx-auto w-full max-w-5xl px-4 sm:px-6">
+
     <h2 className="text-4xl font-bold text-center text-[#1a2e52] mb-12">What is Resume Hub?</h2>
     
     <div className="mb-12 space-y-6 text-lg text-gray-600">
@@ -120,7 +110,7 @@ const ResumeHubPage = () => {
     </div>
 
     {/* Featured Blue Box - Consistent with Image Design */}
-    <div className="bg-[#f0f7ff] border-l-4 border-[#0077cc] rounded-2xl p-8 shadow-sm">
+    <div className="bg-[#f0f7ff] border-l-4 border-[#0077cc] rounded-2xl p-5 shadow-xl sm:p-8">
       <h3 className="text-xl font-bold text-[#1a2e52] mb-6">Resume Hub Features:</h3>
       <ul className="space-y-4">
         {[

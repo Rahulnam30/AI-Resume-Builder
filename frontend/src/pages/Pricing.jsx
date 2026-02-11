@@ -89,7 +89,7 @@ const Pricing = () => {
   return (
     <>
       <NavBar />
-      <section className="bg-white px-6 md:px-16 py-12">
+      <section className="bg-white pt-20 px-6 md:px-16 py-12">
         <div className="max-w-7xl mx-auto">
           {/* Header */}
           <div className="text-center mb-14 select-none">

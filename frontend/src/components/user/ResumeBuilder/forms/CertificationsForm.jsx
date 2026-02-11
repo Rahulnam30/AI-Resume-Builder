@@ -1,10 +1,18 @@
+import { useEffect, useState } from "react";
 import { Check, EditIcon, Plus, Trash2 } from "lucide-react";
-import { useState } from "react";
+import { getCompletionStatus } from "../completion";
 
 const CertificationsForm = ({ formData, setFormData }) => {
-  const [editingId, setEditingId] = useState(
-    formData?.certifications?.[0]?.id || null,
-  );
+  const [editingId, setEditingId] = useState(null);
+
+  useEffect(() => {
+    const { sectionValidationStatus } = getCompletionStatus(formData);
+    if (sectionValidationStatus.hasValidCertificationInfo) {
+      setEditingId(null);
+    } else {
+      setEditingId(formData?.certifications?.[0]?.id || null);
+    }
+  }, []);
 
   const addCertification = () => {
     const id = crypto.randomUUID();
@@ -118,7 +126,7 @@ const CertificationsForm = ({ formData, setFormData }) => {
                 </div>
 
                 <div className="flex flex-col gap-[6px] mb-[10px]">
-                  <label>Issuing Organization</label>
+                  <label>Issuing Organization *</label>
                   <input
                     type="text"
                     className="px-2.5 py-2 border text-sm rounded border-1.5 focus:border-[#007bff] focus:outline-none focus:bg-white focus:shadow-[0_2px_8px_rgba(0,123,255,0.07)]"
@@ -140,7 +148,7 @@ const CertificationsForm = ({ formData, setFormData }) => {
                 </div>
 
                 <div className="flex flex-col gap-[6px] mb-[10px]">
-                  <label>Date Obtained</label>
+                  <label>Date Obtained *</label>
                   <input
                     type="month"
                     className="px-2.5 py-2 border text-sm rounded border-1.5 focus:border-[#007bff] focus:outline-none focus:bg-white focus:shadow-[0_2px_8px_rgba(0,123,255,0.07)]"

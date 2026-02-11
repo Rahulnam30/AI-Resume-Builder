@@ -113,9 +113,6 @@ const TermsAndConditions = () => {
                 AI Content & User Responsibility
               </h2>
               <div className="bg-slate-50 border border-slate-100 p-8 rounded-[2rem] relative overflow-hidden">
-                <div className="absolute top-0 right-0 p-4 opacity-10">
-                  <AlertCircle size={80} className="text-[#0077cc]" />
-                </div>
                 <h3 className="text-lg font-bold mb-3 text-[#0077cc] flex items-center gap-2">
                   Disclaimer on AI Accuracy
                 </h3>

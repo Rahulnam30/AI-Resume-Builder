@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Search, FileText, Star, Sparkles, ChevronRight, PenTool, Eye } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { Search, Sparkles, ChevronRight, PenTool, ChevronLeft } from 'lucide-react';
 import NavBar from '../components/NavBar';
 import Footer from "./Footer";
 import { Link, useNavigate } from 'react-router-dom';
@@ -18,7 +18,7 @@ const CoverLetterExamples = () => {
     const navigate = useNavigate();
     const [activeCategory, setActiveCategory] = useState('All Examples');
     const [searchQuery, setSearchQuery] = useState('');
-    const [visibleCount, setVisibleCount] = useState(6);
+    const scrollContainerRef = useRef(null);
 
     const categories = [
         'All Examples',
@@ -113,22 +113,47 @@ const CoverLetterExamples = () => {
         return matchesCategory && matchesSearch;
     });
 
-    const colorMap = {
-        blue: { gradient: "from-blue-400 to-blue-600", bg: "bg-blue-50", text: "text-blue-600" },
-        orange: { gradient: "from-orange-400 to-orange-600", bg: "bg-orange-50", text: "text-orange-600" },
-        purple: { gradient: "from-purple-400 to-purple-600", bg: "bg-purple-50", text: "text-purple-600" },
-        indigo: { gradient: "from-indigo-400 to-indigo-600", bg: "bg-indigo-50", text: "text-indigo-600" },
-        teal: { gradient: "from-teal-400 to-teal-600", bg: "bg-teal-50", text: "text-teal-600" },
-        yellow: { gradient: "from-yellow-400 to-yellow-600", bg: "bg-yellow-50", text: "text-yellow-600" },
-        cyan: { gradient: "from-cyan-400 to-cyan-600", bg: "bg-cyan-50", text: "text-cyan-600" }
+// Horizontal scroll function for the examples carousel
+    const scroll = (direction) => {
+        if (scrollContainerRef.current) {
+            const cardWidth = 320 + 32; // card width + gap
+            const scrollAmount = direction === 'left' ? -cardWidth : cardWidth;
+            scrollContainerRef.current.scrollBy({
+                left: scrollAmount,
+                behavior: 'smooth',
+            });
+        }
     };
+
+    useEffect(() => {
+        const scrollInterval = setInterval(() => {
+            if (scrollContainerRef.current) {
+                const cardWidth = 320 + 32;
+                const maxScroll =
+                    scrollContainerRef.current.scrollWidth -
+                    scrollContainerRef.current.clientWidth;
+                const currentScroll = scrollContainerRef.current.scrollLeft;
+
+                if (currentScroll >= maxScroll) {
+                    scrollContainerRef.current.scrollTo({ left: 0, behavior: 'smooth' });
+                } else {
+                    scrollContainerRef.current.scrollBy({
+                        left: cardWidth,
+                        behavior: 'smooth',
+                    });
+                }
+            }
+        }, 3000);
+
+        return () => clearInterval(scrollInterval);
+    }, []);
 
     return (
         <div className="min-h-screen bg-slate-50 font-['Outfit'] selection:bg-blue-100">
             <NavBar />
 
             {/* ✅ HERO SECTION (Updated to match screenshot) */}
-            <section className="relative pt-16 pb-20 px-12 pr-16 overflow-hidden bg-white">
+            <section className="relative pt-16 pb-20 px-12 pr-16 overflow-hidden bg-white mt-12">
                 {/* subtle background */}
                 <div className="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-blue-50/50 to-transparent rounded-bl-[100px] pointer-events-none" />
                 <div className="absolute bottom-0 left-0 w-1/3 h-1/2 bg-gradient-to-t from-orange-50/50 to-transparent rounded-tr-[100px] pointer-events-none" />
@@ -160,7 +185,7 @@ const CoverLetterExamples = () => {
                         </div>
 
                         {/* RIGHT: image (Animated) */}
-                        <div className="flex justify-center lg:justify-end">
+                        <div className="flex justify-center lg:justify-end hidden sm:flex">
                             <div className="relative w-full max-w-[450px] float-slow">
 
                                     {/* Inner Frame */}
@@ -239,19 +264,29 @@ const CoverLetterExamples = () => {
             <section className="px-6 pb-24 bg-slate-50">
                 <div className="max-w-7xl mx-auto">
                     {filteredExamples.length > 0 ? (
-                        <>
-                            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-y-12 ">
-                                {filteredExamples.slice(0, visibleCount).map((example, idx) => {
-                                    // Using a cleaner, more minimal card design based on the user's reference
+                        <div className="relative group/main">
+                            {/* Scroll Buttons */}
+                            <button
+                                onClick={() => scroll('left')}
+                                className="absolute left-0 top-1/2 -translate-y-1/2 z-10 w-12 h-12 bg-white shadow-xl rounded-full flex items-center justify-center text-[#0077cc] border border-gray-100 opacity-0 group-hover/main:opacity-100 transition-opacity duration-300 -translate-x-6 hover:bg-[#0077cc] hover:text-white"
+                            >
+                                <ChevronLeft size={24} />
+                            </button>
+
+                            <div
+                                ref={scrollContainerRef}
+                                className="flex gap-8 px-4 py-10 overflow-x-auto snap-x snap-mandatory scroll-smooth scrollbar-hide"
+                                style={{ perspective: '1000px' }}
+                            >
+                                {filteredExamples.map((example, idx) => {
                                     return (
                                         <div
                                             key={example.id}
-                                            className="group flex flex-col items-center bg-transparent relative max-w-[320px] w-full mx-auto"
+                                            className="min-w-[320px] max-w-[320px] snap-center group flex flex-col items-center bg-transparent relative flex-shrink-0"
                                             style={{ animationDelay: `${idx * 50}ms` }}
                                         >
                                             {/* Image Container with Shadow & Hover Effect */}
                                             <div className="relative w-full bg-white shadow-2xl shadow-slate-200/50 overflow-hidden group-hover:scale-[1.1] transition-transform duration-300 ease-out cursor-pointer">
-
                                                 {/* Image */}
                                                 <div className="bg-slate-100 w-full aspect-[3/4] overflow-hidden">
                                                     <img
@@ -278,21 +313,13 @@ const CoverLetterExamples = () => {
                                 })}
                             </div>
 
-                            {filteredExamples.length > 6 && (
-                                <div className="mt-12 text-center">
-                                    <button
-                                        onClick={() => setVisibleCount(visibleCount === 6 ? filteredExamples.length : 6)}
-                                        className="inline-flex items-center gap-2 px-8 py-3 bg-white border border-gray-200 text-[#1a2e52] rounded-full font-bold hover:bg-gray-50 hover:border-gray-300 transition-all shadow-sm"
-                                    >
-                                        {visibleCount === 6 ? (
-                                            <>Show More Examples <ChevronRight size={16} className="rotate-90" /></>
-                                        ) : (
-                                            <>Show Less <ChevronRight size={16} className="-rotate-90" /></>
-                                        )}
-                                    </button>
-                                </div>
-                            )}
-                        </>
+                            <button
+                                onClick={() => scroll('right')}
+                                className="absolute right-0 top-1/2 -translate-y-1/2 z-10 w-12 h-12 bg-white shadow-xl rounded-full flex items-center justify-center text-[#0077cc] border border-gray-100 opacity-0 group-hover/main:opacity-100 transition-opacity duration-300 translate-x-6 hover:bg-[#0077cc] hover:text-white"
+                            >
+                                <ChevronRight size={24} />
+                            </button>
+                        </div>
                     ) : (
                         <div className="text-center py-20 bg-white rounded-[3rem] border border-dashed border-gray-200 shadow-sm">
                             <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-blue-50 text-blue-500 mb-6 animate-bounce">

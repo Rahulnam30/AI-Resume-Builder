@@ -280,7 +280,7 @@ function LandingPage() {
   return (
     <div className="min-h-screen flex flex-col bg-white text-[#1a2e52] font-['Outfit']">
       <NavBar />
-
+      <div className="h-12" />
       {/*  OVERLAY */}
       <div
         onClick={toggleMobileMenu}
@@ -289,8 +289,19 @@ function LandingPage() {
         }`}
       ></div>
 
-      {/* HERO SECTION - Reduced mobile padding */}
-      <section className="relative px-4 md:px-8 bg-white ml-2 md:ml-5 min-h-screen flex items-center pt-[100px] md:pt-[120px] lg:pt-0 -mt-12">
+      {/* HERO SECTION - padding added and mobile padding reudced */}
+      <section
+        className="
+  relative 
+  px-4 md:px-8 
+  bg-white 
+  ml-2 md:ml-5 
+  lg:min-h-[calc(100vh-80px)]
+  flex items-center lg:items-start
+  pt-[100px] md:pt-[120px] lg:pt-16
+  -mt-12 lg:mt-0
+"
+      >
         <div className="absolute top-0 right-0 w-1/3 h-1/4 bg-orange-50 rounded-full blur-[120px] -z-10 opacity-50"></div>
         <div className="absolute bottom-0 left-0 w-1/3 h-1/4 bg-blue-50 rounded-full blur-[120px] -z-10 opacity-50"></div>
 
@@ -338,9 +349,9 @@ function LandingPage() {
             </div>
           </div>
 
-          {/* Image carousel - Hidden on mobile, visible on md and up */}
+          {/* Image carousel -  size reduced, Hidden on mobile, visible on md and up */}
           <div className="hidden md:flex items-center justify-center">
-            <div className="w-full max-w-2xl relative h-[400px] md:h-[600px] lg:h-[700px]">
+            <div className="w-full max-w-2xl lg:max-w-[90%] relative h-[400px] md:h-[600px] lg:h-[600px]">
               {templates.map((template, idx) => (
                 <div
                   key={idx}
@@ -523,7 +534,8 @@ function LandingPage() {
                 <div className="relative inline-flex items-center justify-center p-3 md:p-4 mb-4 md:mb-8 transition-all duration-500 rounded-2xl bg-blue-50 border border-blue-100 group-hover:scale-110 group-hover:bg-[#0077cc] group-hover:shadow-[0_10px_20px_rgba(0,119,204,0.3)] group-hover:rotate-6">
                   <div className="transition-colors duration-500 text-[#0077cc] group-hover:text-white">
                     {React.cloneElement(feature.icon, {
-                      className: "size-6 md:size-7 transition-colors duration-500",
+                      className:
+                        "size-6 md:size-7 transition-colors duration-500",
                     })}
                   </div>
                 </div>
