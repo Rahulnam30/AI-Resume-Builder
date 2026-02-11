@@ -4,6 +4,7 @@ import User from "../Models/User.js";
 import Payment from "../Models/payment.js";
 import Resume from "../Models/resume.js";
 import Subscription from "../Models/subscription.js";
+import DeletedUser from "../Models/deletedUser.js";
 
 // Helper: last month date
 const getLastMonthDate = () => {
@@ -110,8 +111,21 @@ export const updateUser = async (req, res) => {
 export const deleteUser = async (req, res) => {
   try {
     const userId = req.params.id;
-    const user = await User.findByIdAndDelete(userId);
+    const user = await User.findById(userId);
     if (!user) return res.status(404).json({ message: "User not found" });
+
+    // Save deleted user record for analytics
+    await DeletedUser.create({
+      originalUserId: user._id,
+      username: user.username,
+      email: user.email,
+      plan: user.plan || "Free",
+      deletedAt: new Date(),
+      deletedBy: "admin"
+    });
+
+    // Now delete the user
+    await User.findByIdAndDelete(userId);
     res.status(200).json({ message: "User deleted successfully" });
   } catch (error) {
     res.status(500).json({ message: "Something went wrong", error: error.message });
@@ -134,13 +148,8 @@ export const getAnalyticsStats = async (req, res) => {
     last7Days.setDate(last7Days.getDate() - 7);
     const activeUsersLast7Days = await User.countDocuments({ updatedAt: { $gte: last7Days } });
 
-    // ---------- CHURN RATE (Last Quarter) ----------
-    const lastQuarter = new Date();
-    lastQuarter.setMonth(lastQuarter.getMonth() - 3);
-    const churnedUsers = await Subscription.countDocuments({
-      status: { $in: ["cancelled", "expired"] },
-      updatedAt: { $gte: lastQuarter },
-    });
+    // ---------- DELETED USERS COUNT ----------
+    const deletedUsersCount = await DeletedUser.countDocuments();
 
     const activeSubscriptions = await Subscription.countDocuments({ status: "active" });
 
@@ -247,9 +256,9 @@ export const getAnalyticsStats = async (req, res) => {
         count: activeUsersLast7Days,
         note: "Active users in last 7 days",
       },
-      churnRate: {
-        count: churnedUsers,
-        note: "Churned users this quarter",
+      deletedUsers: {
+        count: deletedUsersCount,
+        note: "Total users deleted by admin",
       },
       mostUsedTemplates: mostUsedTemplates,
       revenueTrend: revenueTrend,

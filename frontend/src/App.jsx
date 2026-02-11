@@ -45,6 +45,7 @@ import AdminSubscription from "./components/admin/AdminSubscription/AdminSubscri
 import AdminAcceptUser from "./components/admin/AdminAcceptUserTemplate/AdminAcceptUser";
 import AdminAnalytics from "./components/admin/AdminAnalytics/AdminAnalytics";
 import AdminTemplates from "./components/admin/AdminCreateTemplates/Template";
+import AdminNotification from "./components/admin/AdminNotification/AdminNotification";
 
 // User routes
 import UserRoutes from "./pages/UserRoutes";
@@ -113,7 +114,7 @@ function App() {
             <Route path="templates" element={<Resume />} />
             <Route path="users" element={<AdminUsers />} />
             <Route path="subscription" element={<AdminSubscription />} />
-
+            <Route path="notifications" element={<AdminNotification />} />
             <Route path="analytics" element={<AdminAnalytics />} />
           </Route>
 

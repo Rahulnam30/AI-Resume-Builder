@@ -6,6 +6,7 @@ import {
   User,
   BarChart,
   LogOut,
+  Bell,
 } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
@@ -46,6 +47,12 @@ export default function AdminSidebar({ isCollapsed, setIsCollapsed, isMobileOpen
       path: "/admin/subscription",
     },
     { id: "users", icon: User, label: "Users", path: "/admin/users" },
+    {
+      id: "notifications",
+      icon: Bell,
+      label: "Notifications",
+      path: "/admin/notifications",
+    },
     {
       id: "analytics",
       icon: BarChart,
