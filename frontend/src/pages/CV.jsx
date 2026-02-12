@@ -228,7 +228,7 @@ const CVFormattingPage = () => {
       </section>
 
       {/* --- 3. CV ARCHITECTURE PROCESS (MATCHING REFERENCE UI) --- */}
-      <section className="px-8 py-24 bg-white font-['Outfit']">
+      <section className="px-8 py-15 bg-white font-['Outfit']">
         <div className="mx-auto max-w-7xl">
           <div className="mb-16 text-center">
             <h2 className="mb-4 text-4xl md:text-5xl font-black text-[#1a2e52]">
@@ -285,11 +285,6 @@ const CVFormattingPage = () => {
                 <p className="font-medium leading-relaxed text-gray-500">
                   {step.d}
                 </p>
-
-                {/* Interactive hover indicator */}
-                <div className="mt-8 opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-2 text-sm font-bold text-[#0077cc]">
-                  Learn More <MousePointer2 size={14} />
-                </div>
               </div>
             ))}
           </div>
@@ -297,7 +292,7 @@ const CVFormattingPage = () => {
       </section>
 
       {/* --- 4. STYLE BENTO GRID --- */}
-      <section className="px-8 mx-auto py-14 max-w-7xl">
+      <section className="px-8 mx-auto py-10 max-w-7xl">
         <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
           <div className="p-10 bg-slate-50 rounded-[40px] flex flex-col justify-between transition-all duration-500 hover:bg-slate-100 hover:-translate-y-2 hover:shadow-xl group cursor-default">
             <MousePointerSquareDashed className="mb-6 text-blue-600 transition-transform duration-500 group-hover:scale-125" size={32} />
@@ -324,7 +319,7 @@ const CVFormattingPage = () => {
       </section>
 
       {/* --- CTA SECTION --- */}
-      <section className="relative px-8 pt-12 pb-24 overflow-hidden bg-white">
+      <section className="relative px-8 pt-12 pb-15 overflow-hidden bg-white">
         <div className="absolute top-0 right-0 w-1/3 h-full bg-orange-50 rounded-full blur-[120px] -z-10 opacity-60" />
         <div className="absolute bottom-0 left-0 w-1/3 h-full bg-blue-50 rounded-full blur-[120px] -z-10 opacity-60" />
 

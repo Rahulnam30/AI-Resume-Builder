@@ -92,6 +92,13 @@ const CVBuilder = () => {
 
   const [isPreviewMaximized, setIsPreviewMaximized] = useState(false);
   const [isPreviewHidden, setIsPreviewHidden] = useState(false);
+  const [showErrors, setShowErrors] = useState({
+    personal: false,
+    work: false,
+    education: false,
+    projects: false,
+    certs: false,
+  });
 
   /* -------------------- LOAD DATA -------------------- */
   useEffect(() => {
@@ -128,11 +135,100 @@ const CVBuilder = () => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
+  const isEmpty = (value) =>
+    value === undefined || value === null || String(value).trim() === "";
+
+  const scrollToFirstErrorField = () => {
+    if (!formContainerRef.current) return;
+
+    const container = formContainerRef.current;
+    const fields = container.querySelectorAll(
+      'input[data-required="true"], textarea[data-required="true"]',
+    );
+
+    for (const field of fields) {
+      const value = field.value;
+      if (isEmpty(value)) {
+        field.scrollIntoView({ behavior: "smooth", block: "center" });
+        if (typeof field.focus === "function") {
+          field.focus();
+        }
+        break;
+      }
+    }
+  };
+
+  const validateCurrentSection = () => {
+    switch (activeSection) {
+      case "personal": {
+        if (isEmpty(formData.fullName) || isEmpty(formData.email)) {
+          return false;
+        }
+        break;
+      }
+      case "work": {
+        const experiences = formData?.experience ?? [];
+        if (
+          experiences.length === 0 ||
+          experiences.some(
+            (exp) => isEmpty(exp.title) || isEmpty(exp.company),
+          )
+        ) {
+          return false;
+        }
+        break;
+      }
+      case "education": {
+        const educations = formData?.education ?? [];
+        if (
+          educations.length === 0 ||
+          educations.some(
+            (edu) => isEmpty(edu.degree) || isEmpty(edu.school),
+          )
+        ) {
+          return false;
+        }
+        break;
+      }
+      case "projects": {
+        const projects = formData?.projects ?? [];
+        if (
+          projects.length === 0 ||
+          projects.some((proj) => isEmpty(proj.name))
+        ) {
+          return false;
+        }
+        break;
+      }
+      case "certs": {
+        const certs = formData?.certifications ?? [];
+        if (certs.length === 0 || certs.some((cert) => isEmpty(cert.name))) {
+          return false;
+        }
+        break;
+      }
+      default:
+        break;
+    }
+
+    return true;
+  };
+
   /* ---------- STEP NAVIGATION ---------- */
   const currentIndex = sections.indexOf(activeSection);
 
   const goNext = () => {
     if (currentIndex < sections.length - 1) {
+      const isValid = validateCurrentSection();
+      if (!isValid) {
+        setShowErrors((prev) => ({
+          ...prev,
+          [activeSection]: true,
+        }));
+        scrollToFirstErrorField();
+        return;
+      }
+      setShowErrors((prev) => ({ ...prev, [activeSection]: false }));
       setActiveSection(sections[currentIndex + 1]);
     }
   };
@@ -154,16 +250,34 @@ const CVBuilder = () => {
           />
         );
       case "work":
-        return <ExperienceForm formData={formData} setFormData={setFormData} />;
+        return (
+          <ExperienceForm
+            formData={formData}
+            setFormData={setFormData}
+          />
+        );
       case "education":
-        return <EducationForm formData={formData} setFormData={setFormData} />;
+        return (
+          <EducationForm
+            formData={formData}
+            setFormData={setFormData}
+          />
+        );
       case "skills":
         return <SkillsForm formData={formData} setFormData={setFormData} />;
       case "projects":
-        return <ProjectsForm formData={formData} setFormData={setFormData} />;
+        return (
+          <ProjectsForm
+            formData={formData}
+            setFormData={setFormData}
+          />
+        );
       case "certs":
         return (
-          <CertificationsForm formData={formData} setFormData={setFormData} />
+          <CertificationsForm
+            formData={formData}
+            setFormData={setFormData}
+          />
         );
       default:
         return null;
@@ -244,6 +358,14 @@ const CVBuilder = () => {
               />
               {/* form-content */}
               <div className="w-full h-[72%] mt-5 overflow-auto cv-form-content-scrollable">
+                {showErrors[activeSection] && (
+                  <div className="flex items-center w-full gap-3 p-4 bg-amber-50 border border-amber-200 rounded-[10px] mb-4">
+                    <AlertTriangle size={20} className="text-amber-600 flex-shrink-0" />
+                    <p className="text-sm text-amber-800 m-0 font-medium">
+                      Please fill the required fields to continue.
+                    </p>
+                  </div>
+                )}
                 {renderFormContent()}
               </div>
               {/* Previous & Next */}
