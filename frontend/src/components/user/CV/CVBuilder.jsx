@@ -260,16 +260,6 @@ const scrollToTop = () => {
 
   const goNext = () => {
     if (currentIndex < sections.length - 1) {
-      const isValid = validateCurrentSection();
-      if (!isValid) {
-        setShowErrors((prev) => ({
-          ...prev,
-          [activeSection]: true,
-        }));
-        scrollToFirstErrorField();
-        return;
-      }
-      setShowErrors((prev) => ({ ...prev, [activeSection]: false }));
       setActiveSection(sections[currentIndex + 1]);
     }
   };
@@ -291,34 +281,16 @@ const scrollToTop = () => {
           />
         );
       case "work":
-        return (
-          <ExperienceForm
-            formData={formData}
-            setFormData={setFormData}
-          />
-        );
+        return <ExperienceForm formData={formData} setFormData={setFormData} />;
       case "education":
-        return (
-          <EducationForm
-            formData={formData}
-            setFormData={setFormData}
-          />
-        );
+        return <EducationForm formData={formData} setFormData={setFormData} />;
       case "skills":
         return <SkillsForm formData={formData} setFormData={setFormData} />;
       case "projects":
-        return (
-          <ProjectsForm
-            formData={formData}
-            setFormData={setFormData}
-          />
-        );
+        return <ProjectsForm formData={formData} setFormData={setFormData} />;
       case "certs":
         return (
-          <CertificationsForm
-            formData={formData}
-            setFormData={setFormData}
-          />
+          <CertificationsForm formData={formData} setFormData={setFormData} />
         );
       default:
         return null;

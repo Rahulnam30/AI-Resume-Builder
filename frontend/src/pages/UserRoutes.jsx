@@ -9,7 +9,6 @@ import Dashboard from "../components/user/Dashboard/Dashboard";
 import ATSChecker from "../components/user/ATSChecker/ATSChecker";
 import MyResumes from "../components/user/MyResumes/MyResumes";
 import Profile from "../components/user/Profile/EditProfile";
-import Security from "../components/user/Profile/Security";
 import ResumeBuilder from "../components/user/ResumeBuilder/ResumeBuilder";
 import Templates from "../components/user/Templates/TemplatesDashboardPage";
 import CVBuilder from "../components/user/CV/CVBuilder";
@@ -46,7 +45,6 @@ const UserRoutes = () => {
         <Route path="my-resumes" element={<MyResumes />} />
         <Route path="downloads" element={<Downloads />} />
         <Route path="edit-profile" element={<Profile />} />
-        <Route path="security" element={<Security />} />
 
 
 
