@@ -1,4 +1,5 @@
 import React, { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import NavBar from "../components/NavBar";
 import Footer from "./Footer";
 import { motion } from "framer-motion";
@@ -8,9 +9,15 @@ import Company from "../assets/AboutUs2.png";
 import Success from "../assets/AboutUs3.png";
 
 const AboutUs = () => {
+  const navigate = useNavigate();
+
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
+
+  const handleBuildResume = () => {
+    navigate('/login');
+  };
 
   // Animation Variants
   const fadeInUp = {
@@ -51,7 +58,7 @@ const AboutUs = () => {
       Built to help students and job seekers transform their skills into
       professional, ATS-friendly resumes that align with real industry expectations.
     </p><br></br>
-    <p className="text-base sm:text-lg md:text-xl text-slate-600 leading-relaxed max-w-lg mx-auto md:mx-0">Our AI-powered platform enhances your resume with impact-driven content, role-specific optimization, and recruiter-friendly formatting-helping students, graduates, and professionals stand out in today’s competitive job market.</p>
+    <p className="text-base sm:text-lg md:text-xl text-slate-600 leading-relaxed max-w-lg mx-auto md:mx-0">Our AI-powered platform enhances your resume with impact-driven content, role-specific optimization, and recruiter-friendly formatting-helping students, graduates, and professionals stand out in today's competitive job market.</p>
   </motion.div>
 
   <motion.div 
@@ -227,7 +234,7 @@ const AboutUs = () => {
                   {
                     year: "2015",
                     title: "The Idea Was Born",
-                    desc: "UptoSkills started with a mission to bridge India’s employability gap through practical skill development.",
+                    desc: "UptoSkills started with a mission to bridge India's employability gap through practical skill development.",
                     icon: "💡",
                   },
                   {
@@ -422,6 +429,7 @@ const AboutUs = () => {
               Build a professional AI-powered resume and take the next step toward your career goals.
             </p>
             <motion.button 
+              onClick={handleBuildResume}
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
               className="px-6 sm:px-8 py-3 bg-white text-blue-600 font-semibold rounded-full hover:bg-slate-100 transition shadow-2xl text-sm sm:text-base"
