@@ -1,67 +1,175 @@
-import React, { useState } from "react";
-import { Bell, User, X } from "lucide-react";
+import React, { useEffect, useRef, useState } from "react";
+import {
+  Bell,
+  UserCog,
+  Shield,
+  LogOut,
+  HelpCircle,
+  CreditCard,
+  Info,
+} from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import UptoSkillsLogo from "../../../assets/UptoSkills.webp";
 
-export default function UserNavbar() {
-  const [showNotifications, setShowNotifications] = useState(false);
-  const navigate = useNavigate();
+const API = "/api";
 
-  const notifications = [
-    { id: 1, text: "Your resume has been successfully updated." },
-    { id: 2, text: "You have a new suggestion for your skills." },
-    { id: 3, text: "Your subscription is expiring soon." },
-  ];
+export default function UserNavbar() {
+  const navigate = useNavigate();
+  const menuRef = useRef(null);
+
+  const [showUserMenu, setShowUserMenu] = useState(false);
+
+  const [user, setUser] = useState({
+    name: "User",
+    email: "",
+  });
+
+  /* ================= FETCH LOGGED-IN USER ================= */
+  useEffect(() => {
+    fetch(`${API}/user/me`, { credentials: "include" })
+      .then((res) => {
+        if (!res.ok) throw new Error("Unauthorized");
+        return res.json();
+      })
+      .then((data) => {
+        setUser({
+          name: data.username || "User",
+          email: data.email || "",
+        });
+      })
+      .catch(() => {
+        console.log("User not logged in");
+      });
+  }, []);
+
+  /* ================= CLOSE DROPDOWN ON OUTSIDE CLICK ================= */
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (menuRef.current && !menuRef.current.contains(e.target)) {
+        setShowUserMenu(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () =>
+      document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  /* ================= LOGOUT ================= */
+  const logout = async () => {
+    try {
+      await fetch(`${API}/auth/logout`, {
+        method: "POST",
+        credentials: "include",
+      });
+    } finally {
+      navigate("/login");
+    }
+  };
 
   return (
-    <header className="fixed top-0 left-0 right-0 flex items-center justify-between px-6 h-16 bg-white border-b border-gray-200 md:z-50">
-      {/* Logo */}
-      <img
-        src={UptoSkillsLogo}
-        alt="UptoSkills"
-        onClick={() => navigate("/")}
-        className="w-40 h-10 ml-8 object-contain cursor-pointer hover:opacity-90 transition-opacity"
-      />
+    <>
+      {/* ================= NAVBAR ================= */}
+      <header className="w-full h-16 bg-white border-b flex items-center justify-between px-6">
+        {/* LEFT */}
+        <img
+          src={UptoSkillsLogo}
+          alt="UptoSkills"
+          className="h-8 cursor-pointer"
+          onClick={() => navigate("/user/dashboard")}
+        />
 
-      {/* Right actions */}
-      <div className="flex items-center gap-6 relative">
-        {/* Notifications */}
-        <div className="relative">
-          <button
-            onClick={() => setShowNotifications((prev) => !prev)}
-            className="relative text-gray-600 hover:text-indigo-600"
-          >
-            <Bell size={22} />
-            <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-red-500 rounded-full"></span>
+        {/* RIGHT */}
+        <div className="flex items-center gap-4 relative">
+          <button className="p-2 rounded-full hover:bg-gray-100">
+            <Bell size={20} />
           </button>
 
-          {showNotifications && (
-            <div className="absolute right-0 mt-3 w-80 bg-white rounded-xl shadow-xl border border-gray-200 overflow-hidden z-50">
-              <div className="flex justify-between items-center px-4 py-2 border-b border-gray-200">
-                <h4 className="text-gray-800 font-semibold">Notifications</h4>
-                <button onClick={() => setShowNotifications(false)} className="text-gray-500 hover:text-gray-700">
-                  <X size={18} />
-                </button>
+          <div className="relative" ref={menuRef}>
+            <button
+              onClick={() => setShowUserMenu(!showUserMenu)}
+              className="p-1 rounded-full hover:bg-gray-100"
+            >
+              <div className="w-9 h-9 rounded-full bg-indigo-600 text-white flex items-center justify-center font-semibold">
+                {user.name?.charAt(0)?.toUpperCase() || "U"}
               </div>
-              <ul className="max-h-60 overflow-y-auto">
-                {notifications.map((n) => (
-                  <li key={n.id} className="px-4 py-3 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer">
-                    {n.text}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-        </div>
+            </button>
 
-        {/* User */}
-        <div className="flex items-center gap-2 cursor-pointer">
-          <div className="w-8 h-8 rounded-full bg-indigo-600 flex items-center justify-center text-white">
-            <User size={16} />
+            {showUserMenu && (
+              <div className="absolute right-0 mt-2 w-64 bg-white border rounded-xl shadow-lg z-50">
+                {/* USER INFO */}
+                <div className="px-4 py-3 border-b">
+                  <p className="text-sm font-semibold">{user.name}</p>
+                  <p className="text-xs text-gray-500 truncate">
+                    {user.email}
+                  </p>
+                </div>
+
+                <DropdownItem
+                  icon={<UserCog size={16} />}
+                  label="Edit Profile"
+                  onClick={() => {
+                    setShowUserMenu(false);
+                    navigate("/user/edit-profile");
+                  }}
+                />
+
+                {/* ✅ PASSWORD CHANGER → NEW PAGE */}
+                <DropdownItem
+                  icon={<Shield size={16} />}
+                  label="Password Changer"
+                  onClick={() => {
+                    setShowUserMenu(false);
+                    navigate("/user/security");
+                  }}
+                />
+
+                <DropdownItem
+                  icon={<CreditCard size={16} />}
+                  label="Plans & Billing"
+                  onClick={() => navigate("/pricing")}
+                />
+
+                <DropdownItem
+                  icon={<Info size={16} />}
+                  label="About Us"
+                  onClick={() => navigate("/about")}
+                />
+
+                <DropdownItem
+                  icon={<HelpCircle size={16} />}
+                  label="Help Center"
+                  onClick={() => navigate("/help-center")}
+                />
+
+                <div className="border-t my-1" />
+
+                <DropdownItem
+                  icon={<LogOut size={16} />}
+                  label="Logout"
+                  danger
+                  onClick={logout}
+                />
+              </div>
+            )}
           </div>
-          <span className="hidden sm:block text-sm text-gray-800 font-medium">User</span>
         </div>
-      </div>
-    </header>
+      </header>
+    </>
   );
 }
+
+/* ================= DROPDOWN ITEM ================= */
+const DropdownItem = ({ icon, label, onClick, danger }) => (
+  <button
+    onClick={onClick}
+    className={`w-full flex items-center gap-3 px-4 py-2 text-sm text-left
+      ${
+        danger
+          ? "text-red-600 hover:bg-red-50"
+          : "text-gray-700 hover:bg-gray-100"
+      }`}
+  >
+    {icon}
+    <span>{label}</span>
+  </button>
+);

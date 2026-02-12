@@ -189,7 +189,7 @@ export default function UserSidebar() {
 
       {/* Right Panel (Navbar + Content) */}
       <div
-        className={`transition-all duration-300 mt-16 ${isCollapsed ? "md:ml-[80px]" : "md:ml-[256px]"}`}
+        className={`transition-all duration-300 mt-0 ${isCollapsed ? "md:ml-[80px]" : "md:ml-[256px]"}`}
       >
         <Outlet />
       </div>
