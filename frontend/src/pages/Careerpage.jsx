@@ -96,7 +96,9 @@ const CareersPage = () => {
       <NavBar />
 
       {/* --- HERO SECTION --- */}
-<section className="relative px-8 pt-6 pb-24 overflow-hidden bg-white">
+<section className="relative px-4 pt-24 pb-10 md:px-8 md:pt-28 md:pb-24 overflow-hidden bg-white">
+
+
   {/* Soft Background Decorative Blurs */}
   <div className="absolute top-0 right-0 w-1/3 h-1/2 bg-orange-50 rounded-full blur-[120px] -z-10 opacity-50" />
   <div className="absolute bottom-0 left-0 w-1/3 h-1/2 bg-blue-50 rounded-full blur-[120px] -z-10 opacity-50" />
@@ -131,25 +133,29 @@ const CareersPage = () => {
       </div>
 
       {/* RIGHT CONTENT: Career Image */}
-      <div className="relative flex-1 w-full max-w-[600px] group">
-        {/* Decorative element behind image */}        
-          <img 
-            src={career} 
-            alt="UptoSkills Career" 
-            className="object-cover w-full h-auto"
-          />
-        
-        {/* Small floating badge on image */}
-        <div className="absolute flex items-center gap-3 p-4 bg-white shadow-xl -bottom-6 -left-6 rounded-2xl animate-bounce">
-           <div className="flex items-center justify-center w-10 h-10 text-green-600 bg-green-100 rounded-full">
-              <CheckCircle2 size={20} />
-           </div>
-           <div>
-              <p className="text-[10px] font-black uppercase text-gray-400">Hiring status</p>
-              <p className="text-sm font-bold text-[#1a2e52]">Actively Recruiting</p>
-           </div>
-        </div>
-      </div>
+<div className="relative hidden flex-1 w-full max-w-[600px] group md:block">
+  <img 
+    src={career} 
+    alt="UptoSkills Career" 
+    className="object-cover w-full h-auto"
+  />
+
+  {/* Floating badge */}
+  <div className="absolute flex items-center gap-3 p-4 bg-white shadow-xl -bottom-6 -left-6 rounded-2xl animate-bounce">
+    <div className="flex items-center justify-center w-10 h-10 text-green-600 bg-green-100 rounded-full">
+      <CheckCircle2 size={20} />
+    </div>
+    <div>
+      <p className="text-[10px] font-black uppercase text-gray-400">
+        Hiring status
+      </p>
+      <p className="text-sm font-bold text-[#1a2e52]">
+        Actively Recruiting
+      </p>
+    </div>
+  </div>
+</div>
+
 
     </div>
   </div>
@@ -171,7 +177,9 @@ const CareersPage = () => {
       </section>
 
       {/* --- UPDATED PERKS SECTION: White BG + Blue Text/Icon Hover --- */}
-      <section className="relative px-6 py-24 overflow-hidden bg-white">
+      {/* PERKS */}
+<section className="relative px-6 pt-16 pb-10 md:pt-24 md:pb-16 bg-white">
+
         <div className="relative z-10 mx-auto max-w-7xl">
           <div className="mb-16 text-center">
             <h2 className="mb-4 text-4xl font-[1000] tracking-tighter text-[#1a2e52] font-jakarta md:text-5xl">
@@ -210,7 +218,10 @@ const CareersPage = () => {
       </section>
 
       {/* --- OPEN POSITIONS --- */}
-      <section id="openings" className="max-w-6xl px-6 py-24 mx-auto">
+      <section
+  id="openings"
+  className="max-w-6xl px-6 pt-10 pb-24 md:pt-16 mx-auto"
+>
         <div className="mb-12 text-center">
           <h2 className="mb-4 text-4xl font-black text-[#1a2e52] font-jakarta tracking-tight">Join the Team</h2>
           <div className="flex flex-wrap justify-center gap-3 mt-8">
@@ -233,7 +244,7 @@ const CareersPage = () => {
         <div className="space-y-6">
           {filteredJobs.map((job) => (
             <div key={job.id} className="p-10 bg-white border border-gray-100 shadow-sm rounded-[2.5rem] hover:shadow-2xl hover:translate-x-2 transition-all group">
-              <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+              <div className="flex flex-col items-center gap-6 md:gap-12 lg:flex-row lg:justify-between">
                 <div>
                   <h3 className="mb-4 text-2xl font-black text-[#1a2e52] group-hover:text-[#0077cc] transition-colors font-jakarta tracking-tight">{job.title}</h3>
                   <div className="flex flex-wrap gap-6 mb-6 text-xs font-bold tracking-widest text-gray-400 uppercase">
@@ -253,14 +264,17 @@ const CareersPage = () => {
       </section>
 
       {/* --- FINAL CTA --- */}
-      <section className="max-w-5xl px-6 py-24 mx-auto">
-        <div className="relative p-12 overflow-hidden text-center bg-[#1a2e52] rounded-[3rem]">
+      <section className="max-w-5xl px-6 pt-8 pb-16 md:pt-16 md:pb-24 mx-auto">
+
+
+       <div className="relative p-6 md:p-12 overflow-hidden text-center bg-[#1a2e52] rounded-[2rem] md:rounded-[3rem]">
+
           <div className="absolute top-0 right-0 w-64 h-64 bg-[#0077cc]/20 blur-3xl" />
           <div className="relative z-10">
             <h2 className="mb-6 text-4xl font-black tracking-tighter text-white font-jakarta md:text-5xl">
               Want to Build Something Big?
             </h2>
-            <p className="max-w-2xl mx-auto mb-10 text-xl font-medium leading-relaxed text-blue-100/60">
+           <p className="max-w-2xl mx-auto mb-6 md:mb-10 text-lg md:text-xl font-medium leading-relaxed text-blue-100/60">
               If you don't see a role that fits but you're a wizard at AI, design, or engineering, reach out anyway.
             </p>
             <button className="inline-flex items-center gap-3 px-10 py-5 bg-white text-[#1a2e52] rounded-xl font-black text-lg transition-all hover:scale-105 shadow-2xl">
