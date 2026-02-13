@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate, Link } from 'react-router-dom';
-import UpToSkillsImg from '../assets/UptoSkills.webp';
-import {
+import UpToSkillsImg from '../assets/logo6.png';
+import { 
   Menu, LogIn, UserPlus, LogOut, X,
   CheckCircle, Layout, FileSearch, Zap, Edit3,
   BarChart3, Layers, Activity, Palette, PenTool,
@@ -127,11 +127,7 @@ export default function NavBar() {
             className="flex items-center gap-2 sm:gap-3 focus:outline-none flex-shrink-0 order-2 md:order-1"
             aria-label="Go to home"
           >
-            <img
-              src={UpToSkillsImg}
-              alt="UptoSkills Logo"
-              className="w-24 sm:w-32 md:w-36 lg:w-[140px]"
-            />
+            <img src={UpToSkillsImg} alt="UptoSkills Logo" className="w-24 sm:w-32 md:w-36 lg:w-[160px]" />
           </button>
 
           {/* Desktop Navigation */}

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import UpToSkillsImg from "../assets/UptoSkills.webp";
+import UpToSkillsImg from "../assets/logo6.png";
 
 // Import React Icons
 import {
