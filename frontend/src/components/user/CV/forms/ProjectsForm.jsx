@@ -1,13 +1,30 @@
-import { Check, EditIcon, Trash2 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import {
+  Check,
+  EditIcon,
+  Plus,
+  RefreshCw,
+  Sparkles,
+  Trash2,
+} from "lucide-react";
+import { getCompletionStatus } from "../completion";
+import axiosInstance from "../../../../api/axios";
 
 const ProjectsForm = ({ formData, setFormData }) => {
-  const [editingId, setEditingId] = useState(
-    formData?.projects?.[0]?.id || null
-  );
+  const [editingId, setEditingId] = useState(null);
+  const [generatingId, setGeneratingId] = useState(null);
+
+  useEffect(() => {
+    const { sectionValidationStatus } = getCompletionStatus(formData);
+    if (sectionValidationStatus.hasValidProject) {
+      setEditingId(null);
+    } else {
+      setEditingId(formData?.projects?.[0]?.id || null);
+    }
+  }, []);
 
   const addProject = () => {
-    const id = Date.now();
+    const id = crypto.randomUUID();
     setFormData((prev) => ({
       ...prev,
       projects: [
@@ -17,7 +34,7 @@ const ProjectsForm = ({ formData, setFormData }) => {
           name: "",
           description: "",
           technologies: "",
-          link: {},
+          link: { github: "" },
         },
       ],
     }));
@@ -31,24 +48,73 @@ const ProjectsForm = ({ formData, setFormData }) => {
     }));
   };
 
+  const updateProject = (id, field, value) => {
+    setFormData((prev) => ({
+      ...prev,
+      projects: prev.projects.map((p) =>
+        p.id === id ? { ...p, [field]: value } : p,
+      ),
+    }));
+  };
+
+  const updateGithub = (id, value) => {
+    setFormData((prev) => ({
+      ...prev,
+      projects: prev.projects.map((p) =>
+        p.id === id ? { ...p, link: { ...(p.link || {}), github: value } } : p,
+      ),
+    }));
+  };
+
+  const generateProjectDetails = async (projectId) => {
+    try {
+      setGeneratingId(projectId);
+      const project = formData.projects.find((p) => p.id === projectId);
+      const data = {
+        id: projectId,
+        name: project?.name || "",
+        technologies: project?.technologies || "",
+        description: project?.description ?? "",
+      };
+
+      if (!data.name || !data.description) {
+        alert(
+          "Please fill in the Project Name and Description fields before enhancing with AI.",
+        );
+        setGeneratingId(null);
+        return;
+      }
+
+      const response = await axiosInstance.post(
+        "/api/resume/enhance-project-description",
+        data,
+      );
+
+      updateProject(projectId, "description", response.data.projectDescription);
+    } catch (error) {
+      console.error("Failed to generate description:", error);
+      alert(
+        `Failed to generate description: ${
+          error.response?.data?.error || error.message
+        }`,
+      );
+    } finally {
+      setGeneratingId(null);
+    }
+  };
+
   return (
     <div className="flex flex-col gap-4">
-      <span className="text-xl text-[#1a1a2e] mb-3 leading-[1.2]">
-        Projects
-      </span>
-
       {(formData?.projects ?? []).map((project, index) => (
         <div
           key={project.id}
           className="shadow-sm border border-gray-300 rounded-lg p-2"
         >
-          {/* ===== COLLAPSED CARD ===== */}
+          {/* ===== COLLAPSED VIEW ===== */}
           {editingId !== project.id && (
             <div className="rounded-lg p-3 flex flex-col justify-between items-center">
-              {/* Header */}
               <div className="w-full flex gap-4 justify-between items-center">
                 <span className="font-medium">Project {index + 1}</span>
-
                 <div className="flex gap-4 items-center">
                   <button
                     className="hover:text-blue-600 transition-colors"
@@ -65,7 +131,6 @@ const ProjectsForm = ({ formData, setFormData }) => {
                 </div>
               </div>
 
-              {/* Content */}
               <div className="w-full mt-2 text-left">
                 <div className="text-md font-semibold break-all">
                   {project.name || "—"}
@@ -87,6 +152,7 @@ const ProjectsForm = ({ formData, setFormData }) => {
                   <a
                     href={project.link.github}
                     target="_blank"
+                    rel="noreferrer"
                     className="text-xs text-blue-600 mt-1 inline-block"
                   >
                     GitHub
@@ -104,92 +170,71 @@ const ProjectsForm = ({ formData, setFormData }) => {
                   <label>Project Name *</label>
                   <input
                     type="text"
-                    placeholder="E-commerce Platform"
+                    className="px-2.5 py-2 border text-sm rounded border-1.5 focus:border-[#007bff] focus:outline-none focus:bg-white focus:shadow-[0_2px_8px_rgba(0,123,255,0.07)]"
                     value={project.name || ""}
-                    className="px-2.5 py-2 border text-sm rounded border-1.5 focus:border-[#007bff] focus:outline-none focus:bg-white focus:shadow-[0_2px_8px_rgba(0,123,255,0.07)]"
-                    onChange={(e) => {
-                      const updated = formData.projects.map((item) =>
-                        item.id === project.id
-                          ? { ...item, name: e.target.value }
-                          : item
-                      );
-                      setFormData((prev) => ({
-                        ...prev,
-                        projects: updated,
-                      }));
-                    }}
+                    placeholder="E-commerce Platform"
+                    onChange={(e) =>
+                      updateProject(project.id, "name", e.target.value)
+                    }
                   />
                 </div>
 
                 <div className="flex flex-col gap-[6px] mb-[10px]">
-                  <label>Technologies Used</label>
+                  <label>Technologies Used *</label>
                   <input
                     type="text"
-                    placeholder="React, Node.js, MongoDB"
+                    className="px-2.5 py-2 border text-sm rounded border-1.5 focus:border-[#007bff] focus:outline-none focus:bg-white focus:shadow-[0_2px_8px_rgba(0,123,255,0.07)]"
                     value={project.technologies || ""}
-                    className="px-2.5 py-2 border text-sm rounded border-1.5 focus:border-[#007bff] focus:outline-none focus:bg-white focus:shadow-[0_2px_8px_rgba(0,123,255,0.07)]"
-                    onChange={(e) => {
-                      const updated = formData.projects.map((item) =>
-                        item.id === project.id
-                          ? { ...item, technologies: e.target.value }
-                          : item
-                      );
-                      setFormData((prev) => ({
-                        ...prev,
-                        projects: updated,
-                      }));
-                    }}
+                    placeholder="React, Node.js, MongoDB"
+                    onChange={(e) =>
+                      updateProject(project.id, "technologies", e.target.value)
+                    }
                   />
                 </div>
 
                 <div className="flex flex-col gap-[6px] mb-[10px]">
-                  <label>Description</label>
+                  <div className="w-full flex items-center justify-between">
+                    <label>Description *</label>
+                    <button
+                      className="flex gap-2 ml-2 p-2 rounded-lg text-xs bg-blue-100 text-blue-600 hover:bg-blue-200 hover:text-blue-800"
+                      onClick={() => generateProjectDetails(project.id)}
+                    >
+                      {generatingId === project.id ? (
+                        <RefreshCw size={15} className="ml-1 animate-spin" />
+                      ) : (
+                        <Sparkles size={14} />
+                      )}
+                      Enhance with AI
+                    </button>
+                  </div>
+
                   <textarea
-                    rows={3}
+                    className="h-28 px-2.5 py-2 border text-sm rounded border-1.5 resize-none focus:border-[#007bff] focus:outline-none focus:bg-white focus:shadow-[0_2px_8px_rgba(0,123,255,0.07)]"
                     value={project.description || ""}
-                    className="px-2.5 py-2 border text-sm rounded border-1.5 focus:border-[#007bff] focus:outline-none focus:bg-white focus:shadow-[0_2px_8px_rgba(0,123,255,0.07)]"
-                    onChange={(e) => {
-                      const updated = formData.projects.map((item) =>
-                        item.id === project.id
-                          ? { ...item, description: e.target.value }
-                          : item
-                      );
-                      setFormData((prev) => ({
-                        ...prev,
-                        projects: updated,
-                      }));
-                    }}
+                    maxLength={500}
+                    onChange={(e) =>
+                      updateProject(project.id, "description", e.target.value)
+                    }
                   />
+
+                  <span className="ml-2 text-xs text-slate-500">
+                    {project.description?.length || 0}/500 Characters
+                  </span>
                 </div>
 
                 <div className="flex flex-col gap-[6px] mb-[10px]">
-                  <label>GitHub Link</label>
+                  <label>GitHub Link *</label>
                   <input
                     type="text"
-                    value={project?.link?.github || ""}
                     className="px-2.5 py-2 border text-sm rounded border-1.5 focus:border-[#007bff] focus:outline-none focus:bg-white focus:shadow-[0_2px_8px_rgba(0,123,255,0.07)]"
-                    onChange={(e) => {
-                      const updated = formData.projects.map((item) =>
-                        item.id === project.id
-                          ? {
-                              ...item,
-                              link: {
-                                ...item.link,
-                                github: e.target.value,
-                              },
-                            }
-                          : item
-                      );
-                      setFormData((prev) => ({
-                        ...prev,
-                        projects: updated,
-                      }));
-                    }}
+                    value={project?.link?.github || ""}
+                    placeholder="github.com/username/project"
+                    onChange={(e) => updateGithub(project.id, e.target.value)}
                   />
                 </div>
               </div>
 
-              {/* Action Buttons */}
+              {/* ===== ACTION BUTTONS ===== */}
               <div className="flex justify-end items-center gap-2 px-2 pb-4">
                 <button
                   className="text-sm font-medium bg-red-500 py-2 px-4 rounded-lg text-white flex gap-2 items-center hover:bg-red-800"
@@ -211,8 +256,8 @@ const ProjectsForm = ({ formData, setFormData }) => {
         </div>
       ))}
 
-      <button className="text-left" onClick={addProject}>
-        + Add Project
+      <button className="flex items-center text-left" onClick={addProject}>
+        <Plus size={14} className="mr-1 inline" /> Add Project
       </button>
     </div>
   );

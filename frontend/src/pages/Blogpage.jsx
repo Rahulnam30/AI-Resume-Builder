@@ -1,11 +1,30 @@
 import React, { useState } from 'react';
-import { Search, ArrowRight, Calendar, Sparkles } from 'lucide-react';
+import { Search, ArrowRight, Calendar, Sparkles, Loader2, Check, AlertCircle, Mail } from 'lucide-react';
 import NavBar from '../components/NavBar';
 import Footer from "./Footer";
 
 const BlogPage = () => {
   const [activeCategory, setActiveCategory] = useState('All Articles');
   const [searchQuery, setSearchQuery] = useState('');
+
+  // Subscription Logic
+  const [email, setEmail] = useState("");
+  const [status, setStatus] = useState("idle"); // idle, loading, success, error
+
+  const handleSubscribe = (e) => {
+    e.preventDefault();
+    if (!email || !/\S+@\S+\.\S+/.test(email)) {
+      setStatus("error");
+      return;
+    }
+    setStatus("loading");
+    // Simulate API call
+    setTimeout(() => {
+      setStatus("success");
+      setEmail("");
+      setTimeout(() => setStatus("idle"), 3000); // Reset after 3s
+    }, 1500);
+  };
 
   const categories = [
     'All Articles',
@@ -76,7 +95,7 @@ const BlogPage = () => {
   const filteredPosts = blogPosts.filter(post => {
     const matchesCategory = activeCategory === 'All Articles' || post.category === activeCategory;
     const matchesSearch = post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         post.excerpt.toLowerCase().includes(searchQuery.toLowerCase());
+      post.excerpt.toLowerCase().includes(searchQuery.toLowerCase());
     return matchesCategory && matchesSearch;
   });
 
@@ -89,7 +108,7 @@ const BlogPage = () => {
         {/* Brand Blurs */}
         <div className="absolute top-0 right-0 w-1/3 h-1/2 bg-orange-50 rounded-full blur-[120px] -z-10 opacity-50" />
         <div className="absolute bottom-0 left-0 w-1/3 h-1/2 bg-blue-50 rounded-full blur-[120px] -z-10 opacity-50" />
-        
+
         <div className="relative z-10 max-w-5xl mx-auto text-center">
           <h1 className="mb-6 text-6xl font-black tracking-tighter leading-tight text-[#1a2e52] md:text-7xl font-jakarta">
             Career Insights
@@ -100,7 +119,7 @@ const BlogPage = () => {
           <p className="max-w-2xl mx-auto mb-10 text-xl font-medium text-gray-500">
             Master the art of job hunting with actionable advice from industry experts and career coaches.
           </p>
-          
+
           {/* Search Bar */}
           <div className="relative max-w-2xl mx-auto">
             <Search className="absolute w-5 h-5 text-gray-400 transform -translate-y-1/2 left-6 top-1/2" />
@@ -122,11 +141,11 @@ const BlogPage = () => {
             <button
               key={category}
               onClick={() => setActiveCategory(category)}
-              className={`px-6 py-3 rounded-xl font-bold transition-all duration-300 ${
-                activeCategory === category
-                  ? 'bg-[#1a2e52] text-white shadow-lg scale-105'
-                  : 'bg-white text-gray-500 border border-gray-100 hover:bg-gray-50 hover:shadow-md'
-              }`}
+              className={`px-6 py-3 rounded-xl font-bold transition-all duration-300 ${activeCategory === category
+                ? 'bg-[#1a2e52] text-white shadow-lg scale-105'
+                : 'bg-white text-gray-500 border border-gray-100 hover:bg-gray-50 hover:shadow-md'
+                }`}
+
             >
               {category}
             </button>
@@ -186,7 +205,7 @@ const BlogPage = () => {
                   </span>
                 </div>
               </div>
-              
+
               <div className="p-8">
                 <div className="flex items-center gap-4 mb-4 text-xs font-bold tracking-widest text-gray-400 uppercase">
                   <span className="flex items-center gap-1">
@@ -196,15 +215,15 @@ const BlogPage = () => {
                   <span>•</span>
                   <span>{post.readTime}</span>
                 </div>
-                
+
                 <h3 className="mb-4 text-xl font-black leading-tight text-[#1a2e52] transition-colors group-hover:text-[#0077cc] font-jakarta">
                   {post.title}
                 </h3>
-                
+
                 <p className="mb-6 text-sm font-medium leading-relaxed text-gray-400 line-clamp-3">
                   {post.excerpt}
                 </p>
-                
+
                 <button className="inline-flex items-center gap-2 font-bold text-[#0077cc] transition-all group-hover:gap-4">
                   Read More <ArrowRight className="w-4 h-4" />
                 </button>
@@ -224,25 +243,72 @@ const BlogPage = () => {
 
       {/* Newsletter Section */}
       <div className="px-6 pb-24 mx-auto max-w-7xl">
-        <div className="relative p-12 overflow-hidden text-center bg-[#1a2e52] rounded-[2.5rem]">
+        <div className="relative pt-12 px-12 pb-20 overflow-hidden text-center bg-[#1a2e52] rounded-[2.5rem]">
           <div className="absolute top-0 right-0 w-64 h-64 rounded-full bg-[#0077cc]/10 blur-3xl"></div>
           <div className="absolute bottom-0 left-0 w-64 h-64 rounded-full bg-orange-400/5 blur-3xl"></div>
-          
+
           <div className="relative z-10">
             <h2 className="mb-4 text-4xl font-black tracking-tighter text-white font-jakarta">Stay Updated</h2>
             <p className="max-w-xl mx-auto mb-10 text-lg font-medium text-blue-100/60">
               Get the latest career tips, industry insights, and resume strategies delivered to your inbox.
             </p>
-            <div className="flex flex-col max-w-lg gap-4 mx-auto sm:flex-row">
-              <input
-                type="email"
-                placeholder="Enter your email"
-                className="flex-1 px-6 py-4 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#0077cc] text-[#1a2e52] font-medium"
-              />
-              <button className="px-8 py-4 bg-gradient-to-r from-[#e65100] to-[#f4511e] text-white rounded-xl font-black transition-all hover:shadow-xl hover:scale-105 whitespace-nowrap">
-                Subscribe Now
-              </button>
-            </div>
+            <form onSubmit={handleSubscribe} className="max-w-lg mx-auto relative" noValidate>
+              <div className="flex flex-col sm:flex-row gap-4">
+                <div className={`flex-1 flex items-center p-1.5 border rounded-xl transition-all duration-300 bg-white
+                  ${status === "error" ? "border-red-200 ring-2 ring-red-500/10" : "border-gray-200 focus-within:ring-2 focus-within:ring-[#0077cc]/10 focus-within:border-[#0077cc]"}
+                  ${status === "success" ? "border-green-200 bg-green-50" : ""}
+                `}>
+                  <div className="pl-4 text-gray-400">
+                    {status === "success" ? (
+                      <Check size={20} className="text-green-500" />
+                    ) : status === "error" ? (
+                      <AlertCircle size={20} className="text-red-500" />
+                    ) : (
+                      <Mail size={20} />
+                    )}
+                  </div>
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={(e) => {
+                      setEmail(e.target.value);
+                      if (status === "error") setStatus("idle");
+                    }}
+                    disabled={status === "loading" || status === "success"}
+                    placeholder={status === "success" ? "Subscribed!" : "Enter your email"}
+                    className={`w-full px-4 py-3 bg-transparent outline-none font-medium text-sm placeholder-gray-400
+                      ${status === "success" ? "text-green-700 autofill:shadow-[inset_0_0_0_1000px_#f0fdf4]" : "text-[#1a2e52] autofill:shadow-[inset_0_0_0_1000px_white]"}
+                    `}
+                  />
+                </div>
+                <button
+                  type="submit"
+                  disabled={status === "loading" || status === "success"}
+                  className={`px-8 py-4 rounded-xl font-black transition-all shadow-xl hover:shadow-2xl whitespace-nowrap flex items-center justify-center min-w-[160px]
+                    ${status === "success"
+                      ? "bg-green-500 text-white cursor-default scale-100"
+                      : "bg-gradient-to-r from-[#e65100] to-[#f4511e] text-white hover:scale-105 active:scale-95"}
+                    ${status === "loading" ? "opacity-80 cursor-wait" : ""}
+                  `}
+                >
+                  {status === "loading" ? (
+                    <Loader2 size={24} className="animate-spin" />
+                  ) : status === "success" ? (
+                    <div className="flex items-center gap-2">
+                      <Check size={20} />
+                      <span>Subscribed!</span>
+                    </div>
+                  ) : (
+                    "Subscribe Now"
+                  )}
+                </button>
+              </div>
+              {status === "error" && (
+                <p className="mt-2 text-red-500 font-medium animate-in fade-in slide-in-from-top-1 text-left">
+                  Enter a valid email
+                </p>
+              )}
+            </form>
           </div>
         </div>
       </div>

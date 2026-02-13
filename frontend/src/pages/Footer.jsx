@@ -76,7 +76,7 @@ function Footer() {
         <div className="grid grid-cols-2 gap-6 mb-8 sm:gap-10 sm:mb-12 md:grid-cols-3 lg:grid-cols-5">
 
           {/* 1. BRAND & NEWSLETTER - Full width on mobile */}
-          <div className="flex flex-col col-span-2 md:col-span-1 h-full">
+           <div className="flex flex-col col-span-2 md:col-span-1 md:row-span-2 lg:row-span-1 h-full">
             <img
               src={UpToSkillsImg}
               alt="Logo"
@@ -202,7 +202,7 @@ function Footer() {
             <ul className="space-y-2 sm:space-y-4">
               <li className={linkStyle}><Link to="/about">About Us</Link></li>
               <li className={linkStyle}><Link to={`${isLoggedIn ? "/pricing" : "/login"}`}>Pricing</Link></li>
-              <li className={linkStyle}><Link to="/blog">Updates</Link></li>
+              <li className={linkStyle}><Link to="/blog">Blog</Link></li>
               <li className={linkStyle}><Link to="/careers">Careers</Link></li>
             </ul>
           </div>
@@ -214,7 +214,7 @@ function Footer() {
               <li className={linkStyle}><Link to="/faq">FAQ</Link></li>
               <li className={linkStyle}><Link to="/contact">Contact Us</Link></li>
               <li className={linkStyle}><Link to="/terms">Terms Of Service</Link></li>
-              <li className={linkStyle}><Link to="/privacy-policy">Privacy</Link></li>
+              <li className={linkStyle}><Link to="/privacy-policy">Privacy Policy</Link></li>
             </ul>
           </div>
         </div>

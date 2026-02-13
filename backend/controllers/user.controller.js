@@ -64,13 +64,38 @@ export const getDashboardData = async (req, res) => {
   }
 };
 
+// ------------------------USER: Username ---------------------
+export const getUserName = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const user = await User.findById(id).select("-password");
+
+    if (!user.username) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.status(200).json({
+      success: true,
+      username: user.username,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+    });
+  }
+};
+
 // -------------------- ADMIN: GET ALL USERS --------------------
 export const getAllUsers = async (req, res) => {
   try {
     const users = await User.find({}, { password: 0 });
     res.status(200).json(users);
   } catch (error) {
-    res.status(500).json({ message: "Something went wrong", error: error.message });
+    res
+      .status(500)
+      .json({ message: "Something went wrong", error: error.message });
   }
 };
 
@@ -85,24 +110,31 @@ export const updateUser = async (req, res) => {
 
     if (email && email !== user.email) {
       const existingUser = await User.findOne({ email });
-      if (existingUser) return res.status(400).json({ message: "Email already exists" });
+      if (existingUser)
+        return res.status(400).json({ message: "Email already exists" });
     }
 
     user.username = username || user.username;
     user.email = email || user.email;
     if (typeof isAdmin === "boolean") user.isAdmin = isAdmin;
     if (typeof isActive === "boolean") {
-      console.log(`Updating user ${user.email} isActive from ${user.isActive} to ${isActive}`);
+      console.log(
+        `Updating user ${user.email} isActive from ${user.isActive} to ${isActive}`,
+      );
       user.isActive = isActive;
     }
     if (req.body.createdAt) user.createdAt = req.body.createdAt;
     if (req.body.plan) user.plan = req.body.plan;
 
     await user.save();
-    console.log(`User ${user.email} updated - isActive is now: ${user.isActive}`);
+    console.log(
+      `User ${user.email} updated - isActive is now: ${user.isActive}`,
+    );
     res.status(200).json({ message: "User updated successfully", user });
   } catch (error) {
-    res.status(500).json({ message: "Something went wrong", error: error.message });
+    res
+      .status(500)
+      .json({ message: "Something went wrong", error: error.message });
   }
 };
 
@@ -114,7 +146,9 @@ export const deleteUser = async (req, res) => {
     if (!user) return res.status(404).json({ message: "User not found" });
     res.status(200).json({ message: "User deleted successfully" });
   } catch (error) {
-    res.status(500).json({ message: "Something went wrong", error: error.message });
+    res
+      .status(500)
+      .json({ message: "Something went wrong", error: error.message });
   }
 };
 
@@ -124,7 +158,9 @@ export const getAnalyticsStats = async (req, res) => {
     const last30Days = new Date();
     last30Days.setDate(last30Days.getDate() - 30);
 
-    const newUsersLast30Days = await User.countDocuments({ createdAt: { $gte: last30Days } });
+    const newUsersLast30Days = await User.countDocuments({
+      createdAt: { $gte: last30Days },
+    });
     const paidSubscriptions = await Subscription.countDocuments({
       plan: { $in: ["basic", "premium"] },
       status: "active",
@@ -132,7 +168,9 @@ export const getAnalyticsStats = async (req, res) => {
 
     const last7Days = new Date();
     last7Days.setDate(last7Days.getDate() - 7);
-    const activeUsersLast7Days = await User.countDocuments({ updatedAt: { $gte: last7Days } });
+    const activeUsersLast7Days = await User.countDocuments({
+      updatedAt: { $gte: last7Days },
+    });
 
     // ---------- CHURN RATE (Last Quarter) ----------
     const lastQuarter = new Date();
@@ -142,7 +180,9 @@ export const getAnalyticsStats = async (req, res) => {
       updatedAt: { $gte: lastQuarter },
     });
 
-    const activeSubscriptions = await Subscription.countDocuments({ status: "active" });
+    const activeSubscriptions = await Subscription.countDocuments({
+      status: "active",
+    });
 
     // ---------- MOST USED TEMPLATES (Top 5) ----------
     const mostUsedTemplatesAgg = await Resume.aggregate([
@@ -158,15 +198,16 @@ export const getAnalyticsStats = async (req, res) => {
 
     const totalTemplateUsage = mostUsedTemplatesAgg.reduce(
       (sum, item) => sum + item.count,
-      0
+      0,
     );
 
     const mostUsedTemplates = mostUsedTemplatesAgg.map((item) => ({
       templateId: item._id,
       count: item.count,
-      percentage: totalTemplateUsage > 0 
-        ? Math.round((item.count / totalTemplateUsage) * 100) 
-        : 0,
+      percentage:
+        totalTemplateUsage > 0
+          ? Math.round((item.count / totalTemplateUsage) * 100)
+          : 0,
     }));
 
     // ---------- REVENUE TREND (LAST 6 MONTHS) ----------
@@ -187,19 +228,23 @@ export const getAnalyticsStats = async (req, res) => {
       { $limit: 6 },
     ]);
 
-    const revenueTrend = revenueByMonth.length > 0 
-      ? revenueByMonth.map((item) => ({
-          month: new Date(item._id.year, item._id.month - 1).toLocaleString("default", { month: "short" }),
-          revenue: item.revenue,
-        }))
-      : [
-          { month: "Aug", revenue: 1200 },
-          { month: "Sep", revenue: 1850 },
-          { month: "Oct", revenue: 2300 },
-          { month: "Nov", revenue: 2800 },
-          { month: "Dec", revenue: 3500 },
-          { month: "Jan", revenue: 4200 },
-        ];
+    const revenueTrend =
+      revenueByMonth.length > 0
+        ? revenueByMonth.map((item) => ({
+            month: new Date(item._id.year, item._id.month - 1).toLocaleString(
+              "default",
+              { month: "short" },
+            ),
+            revenue: item.revenue,
+          }))
+        : [
+            { month: "Aug", revenue: 1200 },
+            { month: "Sep", revenue: 1850 },
+            { month: "Oct", revenue: 2300 },
+            { month: "Nov", revenue: 2800 },
+            { month: "Dec", revenue: 3500 },
+            { month: "Jan", revenue: 4200 },
+          ];
 
     // ---------- SUBSCRIPTION TREND (LAST 6 MONTHS) ----------
     const subscriptionsByMonth = await Subscription.aggregate([
@@ -219,19 +264,23 @@ export const getAnalyticsStats = async (req, res) => {
       { $limit: 6 },
     ]);
 
-    const subscriptionTrend = subscriptionsByMonth.length > 0
-      ? subscriptionsByMonth.map((item) => ({
-          month: new Date(item._id.year, item._id.month - 1).toLocaleString("default", { month: "short" }),
-          subscriptions: item.count,
-        }))
-      : [
-          { month: "Aug", subscriptions: 15 },
-          { month: "Sep", subscriptions: 28 },
-          { month: "Oct", subscriptions: 42 },
-          { month: "Nov", subscriptions: 58 },
-          { month: "Dec", subscriptions: 75 },
-          { month: "Jan", subscriptions: 92 },
-        ];
+    const subscriptionTrend =
+      subscriptionsByMonth.length > 0
+        ? subscriptionsByMonth.map((item) => ({
+            month: new Date(item._id.year, item._id.month - 1).toLocaleString(
+              "default",
+              { month: "short" },
+            ),
+            subscriptions: item.count,
+          }))
+        : [
+            { month: "Aug", subscriptions: 15 },
+            { month: "Sep", subscriptions: 28 },
+            { month: "Oct", subscriptions: 42 },
+            { month: "Nov", subscriptions: 58 },
+            { month: "Dec", subscriptions: 75 },
+            { month: "Jan", subscriptions: 92 },
+          ];
 
     // ---------- FINAL RESPONSE ----------
     res.status(200).json({
@@ -264,20 +313,191 @@ export const getAnalyticsStats = async (req, res) => {
 export const getAdminDashboardStats = async (req, res) => {
   try {
     const lastMonth = getLastMonthDate();
+
+    // ---------- USERS ----------
     const totalUsers = await User.countDocuments();
+    const lastMonthUsers = await User.countDocuments({
+      createdAt: { $lt: lastMonth },
+    });
+
+    const userChange =
+      lastMonthUsers === 0
+        ? 0
+        : ((totalUsers - lastMonthUsers) / lastMonthUsers) * 100;
+
+    // // ---------- RESUMES ----------
+    const totalResumes = await Resume.countDocuments();
+    const lastMonthResumes = await Resume.countDocuments({
+      createdAt: { $lt: lastMonth },
+    });
+
+    const resumeChange =
+      lastMonthResumes === 0
+        ? 0
+        : ((totalResumes - lastMonthResumes) / lastMonthResumes) * 100;
+
+    // ---------- ACTIVE SUBSCRIPTIONS ----------
+    const totalActiveSubs = await Subscription.countDocuments({
+      status: "active",
+    });
+
+    const lastMonthActiveSubs = await Subscription.countDocuments({
+      status: "active",
+      createdAt: { $lt: lastMonth },
+    });
+
+    const subsChange =
+      lastMonthActiveSubs === 0
+        ? 0
+        : ((totalActiveSubs - lastMonthActiveSubs) / lastMonthActiveSubs) * 100;
+
+    // ---------- REVENUE ----------
     const totalRevenueAgg = await Payment.aggregate([
       { $match: { status: "success" } },
       { $group: { _id: null, total: { $sum: "$amount" } } },
     ]);
 
+    const lastMonthRevenueAgg = await Payment.aggregate([
+      {
+        $match: {
+          status: "success",
+          createdAt: { $lt: lastMonth },
+        },
+      },
+      { $group: { _id: null, total: { $sum: "$amount" } } },
+    ]);
+
+    const totalRevenue = totalRevenueAgg[0]?.total || 0;
+    const lastMonthRevenue = lastMonthRevenueAgg[0]?.total || 0;
+
+    const revenueChange =
+      lastMonthRevenue === 0
+        ? 0
+        : ((totalRevenue - lastMonthRevenue) / lastMonthRevenue) * 100;
+
+    // ---------- RESUME GRAPH (LAST 6 MONTHS) ----------
+    const resumeGraph = await Resume.aggregate([
+      {
+        $group: {
+          _id: {
+            year: { $year: "$createdAt" },
+            month: { $month: "$createdAt" },
+          },
+          total: { $sum: 1 },
+        },
+      },
+      { $sort: { "_id.year": 1, "_id.month": 1 } },
+      { $limit: 6 },
+    ]);
+
+    // const resumeChart = resumeGraph.map((item) => ({
+    //   month: `${item._id.month}/${item._id.year}`,
+    //   resumes: item.total,
+    // }));
+    const resumeChart = [
+      { month: "Aug", resumes: 5 },
+      { month: "Sep", resumes: 12 },
+      { month: "Oct", resumes: 20 },
+      { month: "jan", resumes: 50 },
+      { month: "feb", resumes: 120 },
+      { month: "march", resumes: 2 },
+    ];
+
+    // ---------- SUBSCRIPTION DISTRIBUTION ----------
+    const subscriptionDistribution = await Subscription.aggregate([
+      {
+        $match: { status: "active" },
+      },
+      {
+        $group: {
+          _id: "$plan",
+          count: { $sum: 1 },
+        },
+      },
+    ]);
+
+    // const subscriptionSplit = subscriptionDistribution.map((item) => ({
+    //   name: item._id.charAt(0).toUpperCase() + item._id.slice(1),
+    //   value: item.count,
+    // }));
+    const subscriptionSplit = [
+      { name: "Free", value: 80 },
+      { name: "Basic", value: 20 },
+      { name: "Pro", value: 20 },
+    ];
+
+    // ---------- USER GROWTH (LAST 6 MONTHS) ----------
+    const userGrowthAgg = await User.aggregate([
+      {
+        $group: {
+          _id: {
+            year: { $year: "$createdAt" },
+            month: { $month: "$createdAt" },
+          },
+          total: { $sum: 1 },
+        },
+      },
+      { $sort: { "_id.year": 1, "_id.month": 1 } },
+      { $limit: 6 },
+    ]);
+
+    const userGrowth = userGrowthAgg.map((item) => ({
+      month: new Date(item._id.year, item._id.month - 1).toLocaleString(
+        "default",
+        { month: "short" },
+      ),
+      users: item.total,
+    }));
+
+    // ---------- DAILY ACTIVE USERS (LAST 7 DAYS) ----------
+    const last7Days = new Date();
+    last7Days.setDate(last7Days.getDate() - 7);
+
+    const dailyActiveUsersAgg = await User.aggregate([
+      {
+        $match: {
+          updatedAt: { $gte: last7Days },
+        },
+      },
+      {
+        $group: {
+          _id: {
+            day: { $dayOfWeek: "$updatedAt" },
+          },
+          users: { $sum: 1 },
+        },
+      },
+    ]);
+
+    const daysMap = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
+    const dailyActiveUsers = dailyActiveUsersAgg.map((item) => ({
+      day: daysMap[item._id.day - 1],
+      users: item.users,
+    }));
+
+    // ---------- FINAL RESPONSE ---------
     res.status(200).json({
-      users: { total: totalUsers },
-      revenue: { total: totalRevenueAgg[0]?.total || 0 },
-      resumeChart: [
-        { month: "jan", resumes: 50 },
-        { month: "feb", resumes: 120 },
-        { month: "march", resumes: 2 },
-      ],
+      users: {
+        total: totalUsers,
+        change: Number(userChange.toFixed(1)),
+      },
+      resumes: {
+        total: totalResumes,
+        change: Number(resumeChange.toFixed(1)),
+      },
+      subscriptions: {
+        total: totalActiveSubs,
+        change: Number(subsChange.toFixed(1)),
+      },
+      revenue: {
+        total: totalRevenue,
+        change: Number(revenueChange.toFixed(1)),
+      },
+      resumeChart,
+      subscriptionSplit,
+      userGrowth,
+      dailyActiveUsers,
     });
   } catch (error) {
     console.error(error);

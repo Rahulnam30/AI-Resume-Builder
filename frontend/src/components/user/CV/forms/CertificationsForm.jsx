@@ -1,17 +1,16 @@
-import { Check, EditIcon, Trash2 } from "lucide-react";
 import { useState } from "react";
+import { Trash2, EditIcon, Check, Plus } from "lucide-react";
 
 const CertificationsForm = ({ formData, setFormData }) => {
-  const [editingId, setEditingId] = useState(
-    formData?.certifications?.[0]?.id || null
-  );
+  const [editingId, setEditingId] = useState(null);
 
   const addCertification = () => {
-    const id = Date.now();
+    const id = crypto.randomUUID();
+
     setFormData((prev) => ({
       ...prev,
       certifications: [
-        ...(prev?.certifications ?? []),
+        ...(prev.certifications ?? []),
         {
           id,
           name: "",
@@ -21,33 +20,39 @@ const CertificationsForm = ({ formData, setFormData }) => {
         },
       ],
     }));
+
     setEditingId(id);
   };
 
   const removeCertification = (id) => {
     setFormData((prev) => ({
       ...prev,
-      certifications: (prev?.certifications ?? []).filter(
-        (c) => c.id !== id
+      certifications: (prev.certifications ?? []).filter((c) => c.id !== id),
+    }));
+  };
+
+  const handleChange = (id, field, value) => {
+    setFormData((prev) => ({
+      ...prev,
+      certifications: (prev.certifications ?? []).map((c) =>
+        c.id === id ? { ...c, [field]: value } : c,
       ),
     }));
   };
 
   return (
     <div className="flex flex-col gap-4">
-      {(formData?.certifications ?? []).map((cert, index) => (
+      {(formData.certifications ?? []).map((cert, index) => (
         <div
           key={cert.id}
           className="shadow-sm border border-gray-300 rounded-lg p-2"
         >
-          {/* ===== CARD MODE ===== */}
+          {/* ================= CARD MODE ================= */}
           {editingId !== cert.id && (
             <div className="rounded-lg p-3 flex flex-col justify-between items-center">
               {/* Header */}
-              <div className="w-full flex gap-4 justify-between items-center">
-                <span className="font-medium">
-                  Certification {index + 1}
-                </span>
+              <div className="w-full flex justify-between items-center">
+                <span className="font-medium">Certification {index + 1}</span>
 
                 <div className="flex gap-4 items-center">
                   <button
@@ -56,6 +61,7 @@ const CertificationsForm = ({ formData, setFormData }) => {
                   >
                     <EditIcon size={18} />
                   </button>
+
                   <button
                     className="hover:text-red-600 transition-colors"
                     onClick={() => removeCertification(cert.id)}
@@ -65,23 +71,19 @@ const CertificationsForm = ({ formData, setFormData }) => {
                 </div>
               </div>
 
-              {/* Content */}
+              {/* Preview Content */}
               <div className="w-full mt-2 text-left">
                 <div className="text-md font-semibold break-all">
                   {cert.name || "—"}
                 </div>
 
                 {cert.issuer && (
-                  <div className="text-sm font-medium">
-                    {cert.issuer}
-                  </div>
+                  <div className="text-sm font-medium">{cert.issuer}</div>
                 )}
 
                 <div className="w-full py-1 flex justify-between items-center">
                   {cert.date && (
-                    <span className="text-xs text-slate-500">
-                      {cert.date}
-                    </span>
+                    <span className="text-xs text-slate-500">{cert.date}</span>
                   )}
 
                   {cert.link && (
@@ -99,94 +101,58 @@ const CertificationsForm = ({ formData, setFormData }) => {
             </div>
           )}
 
-          {/* ===== EDIT MODE ===== */}
+          {/* ================= EDIT MODE ================= */}
           {editingId === cert.id && (
             <>
               <div className="px-3 py-4">
-                <div className="flex flex-col gap-[6px] mb-[10px] mt-2">
+                <div className="flex flex-col gap-2 mb-3">
                   <label>Certification Name *</label>
                   <input
                     type="text"
+                    className="px-2.5 py-2 border text-sm rounded focus:border-blue-500 focus:outline-none focus:shadow-sm"
                     placeholder="AWS Solutions Architect"
-                    value={cert.name || ""}
-                    className="px-2.5 py-2 border text-sm rounded border-1.5 focus:border-[#007bff] focus:outline-none focus:bg-white focus:shadow-[0_2px_8px_rgba(0,123,255,0.07)]"
-                    onChange={(e) => {
-                      const updated = (formData?.certifications ?? []).map(
-                        (item) =>
-                          item.id === cert.id
-                            ? { ...item, name: e.target.value }
-                            : item
-                      );
-                      setFormData((prev) => ({
-                        ...prev,
-                        certifications: updated,
-                      }));
-                    }}
+                    value={cert.name}
+                    onChange={(e) =>
+                      handleChange(cert.id, "name", e.target.value)
+                    }
                   />
                 </div>
 
-                <div className="flex flex-col gap-[6px] mb-[10px]">
-                  <label>Issuing Organization</label>
+                <div className="flex flex-col gap-2 mb-3">
+                  <label>Issuing Organization *</label>
                   <input
                     type="text"
+                    className="px-2.5 py-2 border text-sm rounded focus:border-blue-500 focus:outline-none focus:shadow-sm"
                     placeholder="Amazon Web Services"
-                    value={cert.issuer || ""}
-                    className="px-2.5 py-2 border text-sm rounded border-1.5 focus:border-[#007bff] focus:outline-none focus:bg-white focus:shadow-[0_2px_8px_rgba(0,123,255,0.07)]"
-                    onChange={(e) => {
-                      const updated = (formData?.certifications ?? []).map(
-                        (item) =>
-                          item.id === cert.id
-                            ? { ...item, issuer: e.target.value }
-                            : item
-                      );
-                      setFormData((prev) => ({
-                        ...prev,
-                        certifications: updated,
-                      }));
-                    }}
+                    value={cert.issuer}
+                    onChange={(e) =>
+                      handleChange(cert.id, "issuer", e.target.value)
+                    }
                   />
                 </div>
 
-                <div className="flex flex-col gap-[6px] mb-[10px]">
-                  <label>Date Obtained</label>
+                <div className="flex flex-col gap-2 mb-3">
+                  <label>Date Obtained *</label>
                   <input
                     type="month"
-                    value={cert.date || ""}
-                    className="px-2.5 py-2 border text-sm rounded border-1.5 focus:border-[#007bff] focus:outline-none focus:bg-white focus:shadow-[0_2px_8px_rgba(0,123,255,0.07)]"
-                    onChange={(e) => {
-                      const updated = (formData?.certifications ?? []).map(
-                        (item) =>
-                          item.id === cert.id
-                            ? { ...item, date: e.target.value }
-                            : item
-                      );
-                      setFormData((prev) => ({
-                        ...prev,
-                        certifications: updated,
-                      }));
-                    }}
+                    className="px-2.5 py-2 border text-sm rounded focus:border-blue-500 focus:outline-none focus:shadow-sm"
+                    value={cert.date}
+                    onChange={(e) =>
+                      handleChange(cert.id, "date", e.target.value)
+                    }
                   />
                 </div>
 
-                <div className="flex flex-col gap-[6px] mb-[10px]">
+                <div className="flex flex-col gap-2 mb-3">
                   <label>Credential Link (Optional)</label>
                   <input
                     type="text"
+                    className="px-2.5 py-2 border text-sm rounded focus:border-blue-500 focus:outline-none focus:shadow-sm"
                     placeholder="https://credential.url"
-                    value={cert.link || ""}
-                    className="px-2.5 py-2 border text-sm rounded border-1.5 focus:border-[#007bff] focus:outline-none focus:bg-white focus:shadow-[0_2px_8px_rgba(0,123,255,0.07)]"
-                    onChange={(e) => {
-                      const updated = (formData?.certifications ?? []).map(
-                        (item) =>
-                          item.id === cert.id
-                            ? { ...item, link: e.target.value }
-                            : item
-                      );
-                      setFormData((prev) => ({
-                        ...prev,
-                        certifications: updated,
-                      }));
-                    }}
+                    value={cert.link}
+                    onChange={(e) =>
+                      handleChange(cert.id, "link", e.target.value)
+                    }
                   />
                 </div>
               </div>
@@ -194,12 +160,13 @@ const CertificationsForm = ({ formData, setFormData }) => {
               {/* Action Buttons */}
               <div className="flex justify-end items-center gap-2 px-2 pb-4">
                 <button
-                  className="text-sm font-medium bg-red-500 py-2 px-4 rounded-lg text-white flex gap-2 items-center hover:bg-red-800"
+                  className="text-sm font-medium bg-red-500 py-2 px-4 rounded-lg text-white flex gap-2 items-center hover:bg-red-700"
                   onClick={() => removeCertification(cert.id)}
                 >
                   <Trash2 size={18} />
                   Delete
                 </button>
+
                 <button
                   className="text-sm font-medium bg-black py-2 px-4 rounded-lg text-white flex gap-2 items-center hover:bg-black/70"
                   onClick={() => setEditingId(null)}
@@ -213,8 +180,12 @@ const CertificationsForm = ({ formData, setFormData }) => {
         </div>
       ))}
 
-      <button className="text-left" onClick={addCertification}>
-        + Add Certification
+      {/* Add Button */}
+      <button
+        onClick={addCertification}
+        className="flex items-center gap-2 text-left text-sm font-medium"
+      >
+        <Plus size={14} /> Add Certification
       </button>
     </div>
   );
