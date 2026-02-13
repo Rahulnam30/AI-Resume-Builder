@@ -72,7 +72,7 @@ export default function AdminNavbar({ isCollapsed, setIsCollapsed, isMobileOpen,
             <img
               src={UptoSkillsLogo}
               alt="UptoSkills"
-              className="h-8 object-contain"
+              className="h-10 object-contain"
             />
           </div>
         </div>
@@ -134,56 +134,56 @@ export default function AdminNavbar({ isCollapsed, setIsCollapsed, isMobileOpen,
                     {/* Content */}
                     <div className="flex-1 px-8 py-6 overflow-y-auto">
 
-                      {/* TODAY SECTION */}
-                      {displayedNotifications.some(n => n.category === 'today') && (
-                        <div className="mb-0">
-                          <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-6">Today</h3>
-                          <div className="space-y-8">
-                            {displayedNotifications.filter(n => n.category === 'today').map(notification => (
-                              <NotificationItem
-                                key={notification.id}
-                                data={notification}
-                                onMarkRead={handleMarkRead}
-                                onClick={() => {
-                                  if (notification.isUnread) handleMarkRead(notification.id);
-                                  setShowNotifications(false);
-                                  navigate('/admin/notifications');
-                                }}
-                              />
-                            ))}
-                          </div>
-                        </div>
-                      )}
-
-                      {/* OLDER SECTION */}
-                      {displayedNotifications.some(n => n.category === 'older') && (
-                        <div className="mt-8">
-                          <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-6">Older</h3>
-                          <div className="space-y-8">
-                            {displayedNotifications.filter(n => n.category === 'older').map(notification => (
-                              <NotificationItem
-                                key={notification.id}
-                                data={notification}
-                                onMarkRead={handleMarkRead}
-                                onClick={() => {
-                                  if (notification.isUnread) handleMarkRead(notification.id);
-                                  setShowNotifications(false);
-                                  navigate('/admin/notifications');
-                                }}
-                              />
-                            ))}
-                          </div>
-                        </div>
-                      )}
-
-                      {/* No notifications state */}
-                      {displayedNotifications.length === 0 && (
+                      {displayedNotifications.length === 0 ? (
                         <div className="text-center py-12">
                           <Bell size={32} className="text-gray-300 mx-auto mb-3" />
                           <p className="text-gray-500 text-sm">No notifications yet</p>
                         </div>
+                      ) : (
+                        <>
+                          {/* TODAY SECTION */}
+                          {displayedNotifications.some(n => n.category === 'today') && (
+                            <div className="mb-0">
+                              <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-6">Today</h3>
+                              <div className="space-y-8">
+                                {displayedNotifications.filter(n => n.category === 'today').map(notification => (
+                                  <NotificationItem
+                                    key={notification.id}
+                                    data={notification}
+                                    onMarkRead={handleMarkRead}
+                                    onClick={() => {
+                                      if (notification.isUnread) handleMarkRead(notification.id);
+                                      setShowNotifications(false);
+                                      navigate('/admin/notifications');
+                                    }}
+                                  />
+                                ))}
+                              </div>
+                            </div>
+                          )}
+
+                          {/* OLDER SECTION */}
+                          {displayedNotifications.some(n => n.category === 'older') && (
+                            <div className="mt-8">
+                              <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-6">Older</h3>
+                              <div className="space-y-8">
+                                {displayedNotifications.filter(n => n.category === 'older').map(notification => (
+                                  <NotificationItem
+                                    key={notification.id}
+                                    data={notification}
+                                    onMarkRead={handleMarkRead}
+                                    onClick={() => {
+                                      if (notification.isUnread) handleMarkRead(notification.id);
+                                      setShowNotifications(false);
+                                      navigate('/admin/notifications');
+                                    }}
+                                  />
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                        </>
                       )}
-                    </div>
 
                     {/* Footer */}
                     <div className="p-4 border-t border-gray-100 bg-gray-50/50">

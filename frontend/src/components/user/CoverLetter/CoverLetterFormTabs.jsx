@@ -2,12 +2,14 @@ import {
   User,
   Briefcase,
   FileText,
-  Send
+  Send,
+  Building2
 } from 'lucide-react';
 import { useRef } from 'react';
 
 const tabs = [
-  { id: 'recipient', label: 'Recipient', icon: User },
+  { id: 'sender', label: 'Personal', icon: User },
+  { id: 'recipient', label: 'Recipient', icon: Building2 },
   { id: 'job', label: 'Job Details', icon: Briefcase },
   { id: 'body', label: 'Content', icon: FileText },
   { id: 'closing', label: 'Closing', icon: Send }
@@ -18,7 +20,7 @@ const CoverLetterFormTabs = ({ activeSection, setActiveSection }) => {
   const currentIdx = tabs.findIndex((tab) => tab.id === activeSection);
 
   return (
-    <div className="flex items-center justify-center bg-white rounded-xl px-3 py-2">
+    <div className="flex items-center justify-center bg-white rounded-xl py-2 pr-10">
       {/* TABS */}
       <div className="flex-1 overflow-hidden">
         <div
@@ -43,12 +45,12 @@ const CoverLetterFormTabs = ({ activeSection, setActiveSection }) => {
           {/* step progress */}
           <div className="flex flex-col gap-2 items-center text-xs flex-wrap">
             {/* Steps */}
-            <div className="">step {currentIdx + 1} of step 4</div>
+            <div className="">step {currentIdx + 1} of step 5</div>
             {/* Progress Bar */}
             <div className="w-28 h-2 bg-slate-200 rounded-lg">
               <div
                 className="h-full bg-blue-400 rounded-lg transition-all duration-200"
-                style={{ width: `${(currentIdx + 1) * 25}%` }}
+                style={{ width: `${(currentIdx + 1) * 20}%` }}
               ></div>
             </div>
           </div>

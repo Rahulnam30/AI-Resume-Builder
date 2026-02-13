@@ -24,29 +24,20 @@ import NavBar from "../components/NavBar";
 const CVFormattingPage = () => {
   const navigate = useNavigate();
 
-  const handleBackHome = () => {
-    navigate("/?scrollTo=features");
-  };
+  
   return (
     <div className="min-h-screen bg-white font-['Outfit'] text-[#1a2e52] selection:bg-blue-100 overflow-x-hidden">
       <NavBar />
       {/* --- 1. HERO SECTION --- */}
-      <section className="relative px-8 pt-8 pb-12 overflow-hidden bg-white">
+      <section className="relative px-6 pt-16 overflow-hidden bg-white">
+
         {/* Brand Decorative Blurs */}
         <div className="absolute top-0 right-0 w-1/3 h-1/2 bg-orange-50 rounded-full blur-[120px] -z-10 opacity-50" />
         <div className="absolute bottom-0 left-0 w-1/3 h-1/2 bg-blue-50 rounded-full blur-[120px] -z-10 opacity-50" />
 
-        <div className="relative z-10 pt-10 mx-auto max-w-7xl">
-          {/* Back To Home Button */}
-          <div className="mb-8">
-            <button
-              onClick={handleBackHome}
-              className="group inline-flex items-center gap-2 text-sm font-bold text-[#0077cc] transition-all duration-200"
-            >
-              <ArrowLeft size={16} className="transition-transform duration-200 group-hover:-translate-x-1" />
-              <span>Back to home</span>
-            </button>
-          </div>
+        <div className="relative z-10 mx-auto max-w-7xl pt-10">
+
+          
 
           <div className="flex flex-col items-center gap-16 lg:flex-row lg:text-left">
             <div className="flex-1 text-center lg:text-left">
@@ -237,7 +228,7 @@ const CVFormattingPage = () => {
       </section>
 
       {/* --- 3. CV ARCHITECTURE PROCESS (MATCHING REFERENCE UI) --- */}
-      <section className="px-8 py-24 bg-white font-['Outfit']">
+      <section className="px-8 py-15 bg-white font-['Outfit']">
         <div className="mx-auto max-w-7xl">
           <div className="mb-16 text-center">
             <h2 className="mb-4 text-4xl md:text-5xl font-black text-[#1a2e52]">
@@ -294,11 +285,6 @@ const CVFormattingPage = () => {
                 <p className="font-medium leading-relaxed text-gray-500">
                   {step.d}
                 </p>
-
-                {/* Interactive hover indicator */}
-                <div className="mt-8 opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-2 text-sm font-bold text-[#0077cc]">
-                  Learn More <MousePointer2 size={14} />
-                </div>
               </div>
             ))}
           </div>
@@ -306,7 +292,7 @@ const CVFormattingPage = () => {
       </section>
 
       {/* --- 4. STYLE BENTO GRID --- */}
-      <section className="px-8 mx-auto py-14 max-w-7xl">
+      <section className="px-8 mx-auto py-10 max-w-7xl">
         <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
           <div className="p-10 bg-slate-50 rounded-[40px] flex flex-col justify-between transition-all duration-500 hover:bg-slate-100 hover:-translate-y-2 hover:shadow-xl group cursor-default">
             <MousePointerSquareDashed className="mb-6 text-blue-600 transition-transform duration-500 group-hover:scale-125" size={32} />
@@ -333,7 +319,7 @@ const CVFormattingPage = () => {
       </section>
 
       {/* --- CTA SECTION --- */}
-      <section className="relative px-8 pt-12 pb-24 overflow-hidden bg-white">
+      <section className="relative px-8 pt-12 pb-15 overflow-hidden bg-white">
         <div className="absolute top-0 right-0 w-1/3 h-full bg-orange-50 rounded-full blur-[120px] -z-10 opacity-60" />
         <div className="absolute bottom-0 left-0 w-1/3 h-full bg-blue-50 rounded-full blur-[120px] -z-10 opacity-60" />
 

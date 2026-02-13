@@ -4,6 +4,7 @@
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }
+
 .no-scrollbar {
   -ms-overflow-style: none;
   scrollbar-width: none;
@@ -122,8 +123,13 @@
 }
 
 @keyframes spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* Content Tips */
@@ -230,6 +236,11 @@
   color: #78350f;
   padding: 4px 0;
   line-height: 1.5;
+}
+
+/* Date Settings */
+.date-settings {
+  margin-top: 24px;
 }
 
 
@@ -457,4 +468,3 @@
     padding: 30px;
   }
 }
-

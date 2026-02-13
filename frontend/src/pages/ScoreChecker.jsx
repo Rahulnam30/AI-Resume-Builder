@@ -11,12 +11,16 @@ import {
   BookOpen,
   Briefcase,
   User,
-  TrendingUp
+  TrendingUp,
+  ChevronDown,
+  Target,
+  FileSearch,
+  Eye
 } from "lucide-react";
 import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip, CartesianGrid } from "recharts";
 import NavBar from "../components/NavBar";
 import Footer from "./Footer";
-import write from "../assets/Live.png"; 
+import write from "../assets/Live.png";
 
 const ScoreChecker = () => {
   const navigate = useNavigate();
@@ -34,6 +38,8 @@ const ScoreChecker = () => {
   const [text, setText] = useState(
     "Senior Software Engineer\n\n- Spearheaded a team of 5 developers to build a scalable React application.\n- Improved page load speed by 40% using code splitting and lazy loading.\n- Integrated RESTful APIs and optimized database queries for better performance."
   );
+
+  const [openFaq, setOpenFaq] = useState(0);
 
   const scoreValue = useMemo(() => {
     const len = text.trim().length;
@@ -80,43 +86,43 @@ const ScoreChecker = () => {
 
       {/* 1) HERO SECTION (Centered, distinct from ATS) */}
       <section className="relative px-6 pt-20 pb-16 bg-white overflow-hidden">
-  <div className="mx-auto max-w-7xl">
-    <div className="grid items-center gap-12 lg:grid-cols-2">
+        <div className="mx-auto max-w-7xl">
+          <div className="grid items-center gap-12 lg:grid-cols-2">
 
-      {/* LEFT: TEXT */}
-      <div className="text-center lg:text-left">
-        <div className="inline-flex items-center gap-2 px-4 py-2 mb-6 bg-orange-50 border border-orange-100 rounded-full">
-          <Activity size={14} className="text-[#e65100]" />
-          <span className="text-xs font-bold tracking-widest text-[#e65100] uppercase">
-            Live Quality Scoring
-          </span>
+            {/* LEFT: TEXT */}
+            <div className="text-center lg:text-left">
+              <div className="inline-flex items-center gap-2 px-4 py-2 mb-6 bg-orange-50 border border-orange-100 rounded-full">
+                <Activity size={14} className="text-[#e65100]" />
+                <span className="text-xs font-bold tracking-widest text-[#e65100] uppercase">
+                  Live Quality Scoring
+                </span>
+              </div>
+
+              <h1 className="mb-6 text-6xl font-black leading-tight tracking-tight sm:text-7xl md:text-8xl xl:text-[96px] text-[#1a2e52]">
+                Write Better. <br />
+                <span className="text-transparent bg-gradient-to-r from-[#e65100] to-[#ff8f00] bg-clip-text">
+                  Rank Higher.
+                </span>
+              </h1>
+
+
+              <p className="max-w-xl mx-auto mb-10 text-xl font-light leading-relaxed text-gray-500 lg:mx-0">
+                See your resume score update in real-time as you type. Our AI highlights vague wording and suggests impactful improvements instantly.
+              </p>
+            </div>
+
+            {/* RIGHT: IMAGE */}
+            <div className="relative flex justify-center lg:justify-end">
+              <img
+                src={write}
+                alt="Resume scoring illustration"
+                className="w-full max-w-md lg:max-w-lg xl:max-w-xl object-contain"
+              />
+            </div>
+
+          </div>
         </div>
-
-       <h1 className="mb-6 text-6xl font-black leading-tight tracking-tight sm:text-7xl md:text-8xl xl:text-[96px] text-[#1a2e52]">
-  Write Better. <br />
-  <span className="text-transparent bg-gradient-to-r from-[#e65100] to-[#ff8f00] bg-clip-text">
-    Rank Higher.
-  </span>
-</h1>
-
-
-        <p className="max-w-xl mx-auto mb-10 text-xl font-light leading-relaxed text-gray-500 lg:mx-0">
-          See your resume score update in real-time as you type. Our AI highlights vague wording and suggests impactful improvements instantly.
-        </p>
-      </div>
-
-      {/* RIGHT: IMAGE */}
-      <div className="relative flex justify-center lg:justify-end">
-        <img
-          src={write}
-          alt="Resume scoring illustration"
-          className="w-full max-w-md lg:max-w-lg xl:max-w-xl object-contain"
-        />
-      </div>
-
-    </div>
-  </div>
-</section>
+      </section>
 
 
       {/* 2) MAIN LIVE DEMO (Split Layout) */}
@@ -272,7 +278,7 @@ const ScoreChecker = () => {
           <h2 className="text-2xl font-black text-[#1a2e52] mb-8 text-center md:text-left">
             Detailed Breakdown
           </h2>
-          <div className="grid md:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
             {[
               { label: "Summary", score: 92, icon: BookOpen, color: "text-green-500", bg: "bg-green-50" },
               { label: "Experience", score: 65, icon: Briefcase, color: "text-orange-500", bg: "bg-orange-50" },
@@ -309,29 +315,38 @@ const ScoreChecker = () => {
               {
                 title: "Impact & Metrics",
                 desc: "We scan for numbers, percentages, and dollar amounts that prove your value.",
-                items: ["Quantifiable results", "Action verb strength", "Role scope"]
+                items: ["Quantifiable results", "Action verb strength", "Role scope"],
+                icon: Target,
+                color: "text-red-500",
+                bg: "bg-red-50"
               },
               {
                 title: "Relevance & Keywords",
                 desc: "We check if your skills match the job description and industry standards.",
-                items: ["Hard skill density", "Job title alignment", "Tech stack match"]
+                items: ["Hard skill density", "Job title alignment", "Tech stack match"],
+                icon: FileSearch,
+                color: "text-blue-500",
+                bg: "bg-blue-50"
               },
               {
                 title: "Clarity & Brevity",
                 desc: "We ensure your writing is concise, error-free, and easy to skim.",
-                items: ["Bullet point length", "Active voice usage", "Readability score"]
+                items: ["Bullet point length", "Active voice usage", "Readability score"],
+                icon: Eye,
+                color: "text-purple-500",
+                bg: "bg-purple-50"
               }
             ].map((col, i) => (
-              <div key={i} className="bg-white p-8 rounded-[2rem] shadow-sm border border-gray-100">
-                <div className="w-12 h-12 rounded-2xl bg-blue-50 text-[#0077cc] flex items-center justify-center mb-6 font-bold text-xl">
-                  {i + 1}
+              <div key={i} className="bg-white p-8 rounded-[2rem] shadow-sm border border-gray-100 hover:-translate-y-2 hover:shadow-xl transition-all duration-300 group">
+                <div className={`w-14 h-14 rounded-2xl ${col.bg} ${col.color} flex items-center justify-center mb-6 font-bold text-xl group-hover:scale-110 transition-transform`}>
+                  <col.icon size={28} />
                 </div>
                 <h3 className="text-xl font-bold text-[#1a2e52] mb-3">{col.title}</h3>
                 <p className="text-sm text-gray-500 mb-6 leading-relaxed">{col.desc}</p>
                 <ul className="space-y-3">
                   {col.items.map((item, j) => (
                     <li key={j} className="flex items-center gap-2 text-sm font-semibold text-slate-600">
-                      <CheckCircle2 size={16} className="text-green-500" />
+                      <CheckCircle2 size={16} className="text-green-500 shrink-0" />
                       {item}
                     </li>
                   ))}
@@ -416,9 +431,24 @@ const ScoreChecker = () => {
               { q: "Does a 100 score guarantee a job?", a: "No tool can guarantee a job, but a perfect score ensures your resume has no red flags, maximizing your chances of passing the initial screening." },
               { q: "What if my score is stuck at 70?", a: "Try adding more numbers! 'Managed a team' is okay, but 'Managed a team of 12 and increased output by 40%' is much stronger." },
             ].map((item, i) => (
-              <div key={i} className="bg-white p-6 rounded-2xl border border-gray-100 hover:border-blue-100 transition-colors">
-                <h3 className="text-lg font-bold text-[#1a2e52] mb-2">{item.q}</h3>
-                <p className="text-gray-500 leading-relaxed">{item.a}</p>
+              <div
+                key={i}
+                className="bg-white rounded-2xl border border-gray-100 overflow-hidden cursor-pointer"
+                onClick={() => setOpenFaq(openFaq === i ? -1 : i)}
+              >
+                <div className="p-6 flex items-center justify-between">
+                  <h3 className={`font-bold text-lg ${openFaq === i ? "text-[#0077cc]" : "text-[#1a2e52]"}`}>
+                    {item.q}
+                  </h3>
+                  <ChevronDown
+                    className={`transition-transform duration-300 text-gray-400 ${openFaq === i ? "rotate-180 text-[#0077cc]" : ""}`}
+                  />
+                </div>
+                <div
+                  className={`px-6 text-gray-500 leading-relaxed overflow-hidden transition-all duration-300 ${openFaq === i ? "max-h-40 pb-6 opacity-100" : "max-h-0 opacity-0"}`}
+                >
+                  {item.a}
+                </div>
               </div>
             ))}
           </div>

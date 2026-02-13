@@ -1,15 +1,35 @@
 import React, { useEffect, useState } from 'react'
 import { Navigate } from 'react-router-dom'
 
-export default function RequireAuth({ children }) {
+export default function RequireAuth({ children, allowedRoles }) {
   const [isChecking, setIsChecking] = useState(true)
   const [hasToken, setHasToken] = useState(false)
+  const [isAuthorized, setIsAuthorized] = useState(false)
 
   useEffect(() => {
     const token = localStorage.getItem('token')
+    const isAdmin = JSON.parse(localStorage.getItem('isAdmin') || 'false')
+
     setHasToken(!!token)
+
+    if (token) {
+      // Check if roles are specified and if user matches
+      if (allowedRoles && allowedRoles.length > 0) {
+        if (allowedRoles.includes('admin') && isAdmin) {
+          setIsAuthorized(true)
+        } else if (allowedRoles.includes('user') && !isAdmin) {
+          setIsAuthorized(true)
+        } else {
+          setIsAuthorized(false)
+        }
+      } else {
+        // No specific role required, just token
+        setIsAuthorized(true)
+      }
+    }
+
     setIsChecking(false)
-  }, [])
+  }, [allowedRoles])
 
   if (isChecking) {
     return null // Or a loading spinner
@@ -17,6 +37,17 @@ export default function RequireAuth({ children }) {
 
   if (!hasToken) {
     return <Navigate to="/login" replace />
+  }
+
+  // If role mismatch
+  if (!isAuthorized) {
+    const isAdmin = JSON.parse(localStorage.getItem('isAdmin') || 'false')
+    // Redirect to appropriate dashboard if authorized but wrong role
+    if (isAdmin) {
+      return <Navigate to="/admin" replace />
+    } else {
+      return <Navigate to="/user/dashboard" replace />
+    }
   }
 
   return children

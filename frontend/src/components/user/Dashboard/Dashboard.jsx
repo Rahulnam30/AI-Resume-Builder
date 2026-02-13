@@ -49,8 +49,6 @@ const Dashboard = ({ setActivePage }) => {
       <UserNavBar />
 
       <div className="dashboard-content-container">
-        <p className="breadcrumb-text">Home / Dashboard</p>
-
         <div className="page-header">
           <h1>Welcome back, {dashboardData?.user.name || "User"}</h1>
           <button

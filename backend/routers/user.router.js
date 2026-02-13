@@ -10,6 +10,7 @@ import {
   changePassword,
   getAdminDashboardStats,
   getAnalyticsStats,
+  getUserName
 } from "../controllers/user.controller.js";
 
 const userRouter = express.Router();
@@ -20,6 +21,7 @@ userRouter.get("/dashboard", isAuth, getDashboardData);
 userRouter.get("/profile", isAuth, getProfile);
 userRouter.put("/profile", isAuth, updateProfile);
 userRouter.put("/password", isAuth, changePassword);
+userRouter.get("/profile/:id", isAuth, getUserName);
 
 // ---- Admin Stats Routes (STATIC FIRST) ----
 userRouter.get("/dashboard-stat", isAuth, getAdminDashboardStats);

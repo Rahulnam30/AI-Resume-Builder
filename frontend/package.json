@@ -20,6 +20,7 @@
     "docx-preview": "^0.3.7",
     "framer-motion": "^12.23.26",
     "html2canvas": "^1.4.1",
+    "html2pdf.js": "^0.14.0",
     "lucide-react": "^0.562.0",
     "mammoth": "^1.11.0",
     "react": "^19.2.0",

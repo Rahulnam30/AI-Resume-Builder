@@ -38,13 +38,16 @@ export default function Login() {
 
       localStorage.setItem("token", response.data.token);
 
-      if (response.data.isAdmin) {
+      const isAdmin = response.data.isAdmin || false;
+      localStorage.setItem("isAdmin", JSON.stringify(isAdmin));
+
+      if (isAdmin) {
         toast.success("Welcome Admin!");
         setTimeout(() => navigate("/admin"), 1200);
       } else {
         const username = emailtext.split("@")[0];
         toast.success(`Welcome back, ${username}!`);
-        setTimeout(() => navigate("/user"), 1200);
+        setTimeout(() => navigate("/user/dashboard"), 1200);
       }
     } catch (error) {
       console.log(error);
@@ -65,12 +68,12 @@ export default function Login() {
   return (
     <>
       <Toaster position="top-right" reverseOrder={false} />
-      
+
       <div className="min-h-screen flex">
         {/* Left Side - Illustration */}
         <div className="hidden md:flex md:w-1/2 bg-gradient-to-br from-blue-50 to-orange-50 p-12 flex-col justify-center items-center">
           <img
-            src= {images.resumeexample || "/resumeexample.jpg"}
+            src={images.resumeexample || "/resumeexample.jpg"}
             alt="Resume Building Illustration"
             className="w-full max-w-lg"
           />
@@ -91,7 +94,7 @@ export default function Login() {
               <p className="text-xs text-gray-500 mt-1">by</p>
               <Link to="/" className="inline-block">
                 <img
-                  src={images.logo || "/logo.png"}
+                  src={images.logo6 || "/logo6.png"}
                   alt="UptoSkills Logo"
                   className="w-28 mx-auto mt-2 mb-4"
                 />
@@ -162,11 +165,10 @@ export default function Login() {
               <button
                 onClick={handleLogin}
                 disabled={loading}
-                className={`w-full py-3 rounded-lg text-white font-semibold transition transform ${
-                  loading
+                className={`w-full py-3 rounded-lg text-white font-semibold transition transform ${loading
                     ? 'bg-blue-400 cursor-not-allowed'
                     : 'bg-blue-600 hover:bg-blue-700 hover:shadow-lg hover:scale-105'
-                }`}
+                  }`}
               >
                 {loading ? (
                   <span className="flex items-center justify-center gap-2">

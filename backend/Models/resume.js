@@ -1,49 +1,82 @@
 import mongoose from "mongoose";
 
-const resumeSchema = new mongoose.Schema(
+/* ================= SUB SCHEMAS ================= */
+
+const educationSchema = new mongoose.Schema(
   {
-    /* ================= USER (optional for manual resumes) ================= */
-    user: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-      required: false, // important: manual resumes may not have user
-    },
+    id: String,
+    school: String,
+    degree: String,
+    gpa: String,
+    startDate: String,
+    graduationDate: String,
+  },
+  { _id: false }
+);
 
-    /* ================= BASIC RESUME INFO ================= */
+const experienceSchema = new mongoose.Schema(
+  {
+    id: String,
+    title: String,
+    company: String,
+    description: String,
+    startDate: String,
+    endDate: String,
+  },
+  { _id: false }
+);
+
+const projectSchema = new mongoose.Schema(
+  {
+    id: String,
     name: String,
-    email: String,
-    phone: String,
-    location: String,
-    linkedin: String,
-    github: String,
-
-    /* ================= AI / MANUAL CONTENT ================= */
-    summary: String,
-    skills: String,
-    education: String,
-    projects: String,
-    certificates: String,
-    languages: String,
-
-    /* ================= BUILDER / TEMPLATE BASED ================= */
-    title: {
-      type: String,
-      required: false,
-    },
-
-    templateId: {
-      type: String,
-      required: false,
-    },
-
-    // For advanced resume builder JSON structure
-    data: {
-      type: Object,
-      required: false,
+    description: String,
+    technologies: String,
+    link: {
+      github: String,
+      liveLink: String,
+      other: String,
     },
   },
+  { _id: false }
+);
+
+const certificationSchema = new mongoose.Schema(
   {
-    timestamps: true, // createdAt & updatedAt
+    id: String,
+    name: String,
+    issuer: String,
+    date: String,
+    link: String,
+  },
+  { _id: false }
+);
+
+/* ================= MAIN RESUME SCHEMA ================= */
+
+const resumeSchema = new mongoose.Schema(
+  {
+    fullName: String,
+    email: String,
+    linkedin: String,
+    location: String,
+    phone: String,
+    summary: String,
+    website: String,
+
+    education: [educationSchema],
+    experience: [experienceSchema],
+    projects: [projectSchema],
+
+    skills: {
+      technical: [String],
+      soft: [String],
+    },
+
+    certifications: [certificationSchema],
+  },
+  {
+    timestamps: true,
   }
 );
 

@@ -23,29 +23,29 @@ const CoverLetterPreview = ({
 
   const formatDate = (dateStr) => {
     if (!dateStr) {
-      return new Date().toLocaleDateString('en-US', { 
-        year: 'numeric', 
-        month: 'long', 
-        day: 'numeric' 
+      return new Date().toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
       });
     }
-    return new Date(dateStr).toLocaleDateString('en-US', { 
-      year: 'numeric', 
-      month: 'long', 
-      day: 'numeric' 
+    return new Date(dateStr).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
     });
   };
 
   const PreviewContent = () => {
-    const hasContent = formData.fullName || formData.email || formData.phone || 
-                       formData.recipientName || formData.companyName || 
-                       formData.openingParagraph || formData.bodyParagraph1;
+    const hasContent = formData.fullName || formData.email || formData.phone ||
+      formData.recipientName || formData.companyName ||
+      formData.openingParagraph || formData.bodyParagraph1;
 
     if (!hasContent) {
       return (
         <div className="mt-10 mb-4">
           <div
-            className="bg-white w-[694px] min-h-[1023px] p-8 lg:p-12 text-slate-800 text-sm leading-relaxed relative shadow-lg"
+            className="bg-white w-[794px] min-h-[1123px] p-8 lg:p-12 text-slate-800 text-sm leading-relaxed relative shadow-lg"
             style={{
               transform: `scale(${zoom})`,
             }}
@@ -58,7 +58,7 @@ const CoverLetterPreview = ({
     return (
       <div className="mt-10 mb-4">
         <div
-          className="bg-white w-[694px] min-h-[1023px] p-8 lg:p-12 text-slate-800 text-sm leading-relaxed relative shadow-lg"
+          className="bg-white w-[794px] min-h-[1123px] p-8 lg:p-12 text-slate-800 text-sm leading-relaxed relative shadow-lg"
           style={{
             transform: `scale(${zoom})`,
           }}
@@ -166,19 +166,15 @@ const CoverLetterPreview = ({
     <div className="w-[90%] border rounded-xl shadow-sm mr-4 m-2">
       <div className="flex items-center justify-between px-4 py-3 border-b">
         <h3 className="flex items-center gap-2 text-sm font-semibold">
-          <FileText size={16} /> Live Preview
+          <FileText size={16} /> Live Preview <span className="text-slate-500 font-normal">- {selectedTemplate}</span>
         </h3>
         <button onClick={onExpand}>
           <Maximize2 size={16} />
         </button>
       </div>
 
-      <div className="overflow-auto flex justify-center p-4 bg-slate-200">
+      <div className="overflow-auto flex justify-center p-4 bg-slate-200 rounded-b-xl">
         <PreviewContent />
-      </div>
-
-      <div className="px-4 py-2 border-t text-xs text-slate-500">
-        Template: {selectedTemplate}
       </div>
     </div>
   );

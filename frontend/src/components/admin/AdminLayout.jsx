@@ -11,19 +11,23 @@ export default function AdminLayout() {
   return (
     <NotificationProvider>
       <AdminNavbar 
-        isCollapsed={isCollapsed} 
+        isCollapsed={isCollapsed}
         setIsCollapsed={setIsCollapsed}
         isMobileOpen={isMobileOpen}
         setIsMobileOpen={setIsMobileOpen}
       />
 
-      <AdminSidebar isCollapsed={isCollapsed} setIsCollapsed={setIsCollapsed} />
+      <AdminSidebar
+        isCollapsed={isCollapsed}
+        setIsCollapsed={setIsCollapsed}
+        isMobileOpen={isMobileOpen}
+        setIsMobileOpen={setIsMobileOpen}
+      />
 
       <main
         className={`
           pt-16 min-h-screen bg-slate-50
           transition-all duration-300 ease-in-out
-          ml-0
           ${isCollapsed ? "md:ml-20" : "md:ml-64"}
         `}
       >

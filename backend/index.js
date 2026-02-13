@@ -6,10 +6,12 @@ import path from "path";
 import { fileURLToPath } from "url";
 import notificationRoutes from "./routers/notification.router.js";
 
+
 // Routers
 import authRouter from "./routers/auth.router.js";
 import userRouter from "./routers/user.router.js";
 import templateRouter from "./routers/template.router.js";
+import resumeRouter from "./routers/resume.router.js";
 
 // Config
 import connectDB from "./config/db.js";
@@ -45,6 +47,7 @@ app.use("/api/auth", authRouter);
 app.use("/api/user", userRouter);
 app.use("/api/template", templateRouter);
 app.use("/api/notifications", notificationRoutes);
+app.use("/api/resume", resumeRouter);
 
 // Serve uploads directory (for images/resumes)
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));

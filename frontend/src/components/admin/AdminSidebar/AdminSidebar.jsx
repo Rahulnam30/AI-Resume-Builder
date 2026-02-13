@@ -20,13 +20,14 @@ const SIDEBAR_WIDTH = {
   collapsed: 80,
 };
 
-export default function AdminSidebar({ isCollapsed, setIsCollapsed, notifications = [] }) {  // ← ADDED notifications prop
-  const [isMobileOpen, setIsMobileOpen] = useState(false);
+export default function AdminSidebar({ isCollapsed, setIsCollapsed, isMobileOpen, setIsMobileOpen, notifications = [] }) {
+  const [hoveredItem, setHoveredItem] = useState(null);
   const [isMobile, setIsMobile] = useState(false);
 
   const navigate = useNavigate();
   const location = useLocation();
 
+<<<<<<< HEAD
   // Check if mobile on mount and resize
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth < 768);
@@ -123,7 +124,6 @@ export default function AdminSidebar({ isCollapsed, setIsCollapsed, notification
       >
         {isMobileOpen ? <X size={24} className="text-slate-700" /> : <Menu size={24} className="text-slate-700" />}
       </button>
-
       {/* Overlay for mobile */}
       {isMobileOpen && (
         <div
@@ -145,7 +145,6 @@ export default function AdminSidebar({ isCollapsed, setIsCollapsed, notification
       >
         {/* Menu */}
         <nav className="p-3 space-y-2 mt-20 flex-1 overflow-y-auto">
-          {menuItems.map((item) => {
             const Icon = item.icon;
             const active = isActive(item.path);
 

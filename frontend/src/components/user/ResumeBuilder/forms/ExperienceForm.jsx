@@ -1,10 +1,28 @@
-import { Check, EditIcon, Plus, Trash2 } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import {
+  Check,
+  EditIcon,
+  Plus,
+  RefreshCw,
+  Sparkles,
+  Trash2,
+} from "lucide-react";
+import { getCompletionStatus } from "./../completion";
+import axiosInstance from "../../../../api/axios";
 
 const ExperienceForm = ({ formData, setFormData }) => {
-  const [editingId, setEditingId] = useState(
-    formData?.experience?.[0]?.id || null,
-  );
+  const [editingId, setEditingId] = useState(null);
+  const [generatingId, setGeneratingId] = useState(null);
+  // initial load effect
+  useEffect(() => {
+    const { sectionValidationStatus } = getCompletionStatus(formData);
+    if (sectionValidationStatus.hasValidExperience) {
+      setEditingId(null);
+    } else {
+      setEditingId(formData?.experience?.[0]?.id || null);
+    }
+  }, []);
+
   const addExperience = () => {
     const id = crypto.randomUUID();
     setFormData((prev) => ({
@@ -39,6 +57,7 @@ const ExperienceForm = ({ formData, setFormData }) => {
         exp.id === id ? { ...exp, [field]: value } : exp,
       ),
     }));
+    console.log("ddd");
   };
 
   function formatMonthYear(value) {
@@ -61,12 +80,52 @@ const ExperienceForm = ({ formData, setFormData }) => {
     return `${months[Number(month) - 1]}${year}`;
   }
 
+  const handleAIEnhance = async (id) => {
+    try {
+      setGeneratingId(id);
+      // Convert experience and projects objects to strings
+      const experienceStr = formData.experience.find((e) => e.id === id);
+      const data = {
+        id,
+        title: experienceStr?.title || "",
+        company: experienceStr?.company || "",
+        startDate: experienceStr?.startDate || "",
+        endDate: experienceStr?.endDate || "",
+        description: experienceStr?.description ?? "",
+      };
+
+      if (!data.title || !data.company || !data.startDate || !data.endDate) {
+        alert(
+          "Please fill in the Job Title, Company, Start Date, and End Date fields before enhancing with AI.",
+        );
+        setGeneratingId(null);
+        return;
+      }
+      console.log("Data sent:", data);
+
+      const response = await axiosInstance.post(
+        "/api/resume/enhance-work-experience",
+        data,
+      );
+      console.log("Response received:", response);
+      console.log("Description generated:", response.data.aiResume);
+      console.log("Updating experience with ID:", id);
+      console.log("Updating experience with data:", formData.experience);
+      updateExperience(id, "description", response.data.aiResume);
+    } catch (error) {
+      console.error("Failed to generate description:", error);
+      console.error("Error details:", error.response?.data || error.message);
+      alert(
+        `Failed to generate description: ${error.response?.data?.error || error.message}`,
+      );
+    } finally {
+      setGeneratingId(null);
+    }
+  };
+
   return (
     <>
       <div className="flex flex-col gap-4">
-        <h3 className="text-[15px] font-semibold text-[#1a1a2e] mb-3 leading-[1.2]">
-          Work Experience
-        </h3>
         {(formData?.experience ?? []).map((exp, index) => (
           <div
             key={exp.id}
@@ -154,7 +213,7 @@ const ExperienceForm = ({ formData, setFormData }) => {
                     />
                   </div>
                   <div className="flex flex-col gap-[6px] mb-[10px] mt-2">
-                    <label>Start Date</label>
+                    <label>Start Date *</label>
                     <input
                       type="month"
                       className="px-2.5 py-2 border text-sm rounded border-1.5 focus:border-[#007bff] focus:outline-none focus:bg-white focus:shadow-[0_2px_8px_rgba(0,123,255,0.07)]"
@@ -165,7 +224,7 @@ const ExperienceForm = ({ formData, setFormData }) => {
                     />
                   </div>
                   <div className="flex flex-col gap-[6px] mb-[10px] mt-2">
-                    <label>End Date</label>
+                    <label>End Date *</label>
                     <input
                       type="text"
                       className="px-2.5 py-2 border text-sm rounded border-1.5 focus:border-[#007bff] focus:outline-none focus:bg-white focus:shadow-[0_2px_8px_rgba(0,123,255,0.07)]"
@@ -178,7 +237,20 @@ const ExperienceForm = ({ formData, setFormData }) => {
                   </div>
                 </div>
                 <div className="flex flex-col gap-[6px] mb-[10px] mt-2 full-width">
-                  <label>Description</label>
+                  <div className="w-full flex items-center justify-between">
+                    <label>Description *</label>
+                    <button
+                      className="flex gap-2 ml-2 p-2 rounded-lg text-xs bg-blue-100 text-blue-600 hover:bg-blue-200 hover:text-blue-800"
+                      onClick={() => handleAIEnhance(exp.id)}
+                    >
+                      {generatingId === exp.id ? (
+                        <RefreshCw size={15} className={`ml-1 animate-spin`} />
+                      ) : (
+                        <Sparkles size={14} />
+                      )}
+                      Enhance with AI
+                    </button>
+                  </div>
                   <textarea
                     placeholder="Describe your responsibilities and achievements..."
                     className="h-40 px-2.5 py-2 border text-sm resize-none rounded border-1.5 focus:border-[#007bff] focus:outline-none focus:bg-white focus:shadow-[0_2px_8px_rgba(0,123,255,0.07)]"
