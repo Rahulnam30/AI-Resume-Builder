@@ -5,7 +5,7 @@ import {
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import UptoSkillsLogo from "../../../assets/UptoSkills.webp";
+import UptoSkillsLogo from "../../../assets/logo6.png";
 import { useNotifications } from "../../../context/NotificationContext";
 
 // Notification type configurations - simple, soft colors
@@ -72,7 +72,7 @@ export default function AdminNavbar({ isCollapsed, setIsCollapsed, isMobileOpen,
             <img
               src={UptoSkillsLogo}
               alt="UptoSkills"
-              className="h-8 object-contain"
+              className="h-10 object-contain"
             />
           </div>
         </div>
