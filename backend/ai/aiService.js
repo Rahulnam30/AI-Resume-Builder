@@ -1,12 +1,27 @@
-const Groq = require("groq-sdk");
+import Groq from "groq-sdk";
 
-const groq = new Groq({
-  apiKey: process.env.GROQ_API_KEY
-});
+let groq;
+
+try {
+  const apiKey = process.env.GROQ_API_KEY;
+  if (apiKey && apiKey !== "gsk_placeholder" && apiKey.trim() !== "") {
+    groq = new Groq({ apiKey });
+  } else {
+    console.warn("⚠️ GROQ_API_KEY is missing or invalid. AI features will be disabled.");
+  }
+} catch (error) {
+  console.warn("⚠️ Failed to initialize Groq client:", error.message);
+}
 
 async function generateResumeAI(data) {
   try {
     console.log("🧠 AI FUNCTION CALLED");
+
+    if (!groq) {
+      console.warn("⚠️ AI Service is disabled due to missing API Key.");
+      return "This is a placeholder AI summary. Please add a valid GROQ_API_KEY to your backend .env file to generate real AI content based on your profile.";
+    }
+
     console.log("🧠 INPUT DATA:", data);
 
     const prompt = `
@@ -43,8 +58,9 @@ Example format: "I am a skilled software developer with expertise in..."
 
   } catch (error) {
     console.error("❌ AI SERVICE ERROR:", error);
-    throw error;
+    // Return a fallback message instead of crashing the request
+    return "AI generation failed. Please try again later or check server logs.";
   }
 }
 
-module.exports = generateResumeAI;
+export default generateResumeAI;

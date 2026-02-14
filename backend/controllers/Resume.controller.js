@@ -30,16 +30,127 @@ import {
 /* =====================================================
    SAVE NORMAL RESUME (Manual Save)
 ===================================================== */
+/* =====================================================
+   SAVE NORMAL RESUME (Manual Save)
+===================================================== */
 export const saveResume = async (req, res) => {
   try {
-    const resume = new Resume(req.body);
-    await resume.save();
+    const userId = req.userId;
+    const resumeData = req.body;
+    const resumeId = resumeData._id; // Check if we are updating an existing resume
+
+    // Remove immutable fields
+    delete resumeData.user;
+    delete resumeData.userId;
+    delete resumeData._id;
+
+    let resume;
+
+    if (resumeId) {
+      // Setup: Update existing resume
+      resume = await Resume.findOneAndUpdate(
+        { _id: resumeId, user: userId },
+        { $set: { ...resumeData, user: userId } },
+        { new: true } // Return updated document
+      );
+    } else {
+      // Setup: Create NEW resume
+      resume = new Resume({
+        ...resumeData,
+        user: userId,
+      });
+      await resume.save();
+    }
 
     res.json({
       success: true,
-      message: "Resume saved to database",
+      message: "Resume saved successfully",
+      data: resume,
     });
   } catch (error) {
+    console.error("Save Resume Error:", error);
+    res.status(500).json({
+      success: false,
+      error: error.message,
+    });
+  }
+};
+
+/* =====================================================
+   GET USER RESUME (LATEST)
+===================================================== */
+export const getUserResume = async (req, res) => {
+  try {
+    const userId = req.userId;
+    // Get the most recently updated resume
+    const resume = await Resume.findOne({ user: userId }).sort({ updatedAt: -1 });
+
+    if (!resume) {
+      return res.status(200).json({
+        success: true,
+        message: "No resume found",
+        data: null,
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      data: resume,
+    });
+  } catch (error) {
+    console.error("Get Resume Error:", error);
+    res.status(500).json({
+      success: false,
+      error: error.message,
+    });
+  }
+};
+
+/* =====================================================
+   GET ALL USER RESUMES
+===================================================== */
+export const getAllUserResumes = async (req, res) => {
+  try {
+    const userId = req.userId;
+    const resumes = await Resume.find({ user: userId }).sort({ updatedAt: -1 });
+
+    res.status(200).json({
+      success: true,
+      count: resumes.length,
+      data: resumes,
+    });
+  } catch (error) {
+    console.error("Get All Resumes Error:", error);
+    res.status(500).json({
+      success: false,
+      error: error.message,
+    });
+  }
+};
+
+/* =====================================================
+   GET RESUME BY ID
+===================================================== */
+export const getResumeById = async (req, res) => {
+  try {
+    const userId = req.userId;
+    const resumeId = req.params.id;
+
+    const resume = await Resume.findOne({ _id: resumeId, user: userId });
+
+    if (!resume) {
+      return res.status(404).json({
+        success: false,
+        message: "Resume not found",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      data: resume,
+    });
+  } catch (error) {
+    console.error("Get Resume By ID Error:", error);
     res.status(500).json({
       success: false,
       error: error.message,

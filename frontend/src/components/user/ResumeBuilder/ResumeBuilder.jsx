@@ -15,7 +15,10 @@ import {
   Zap,
   Search,
 } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import axios from "axios";
+import { toast } from "react-hot-toast";
+import { Loader2, Save } from "lucide-react";
 
 import FormTabs from "./FormTabs";
 
@@ -40,12 +43,117 @@ const ResumeBuilder = ({ setActivePage = () => { } }) => {
   /* -------------------- CORE STATE -------------------- */
   const [formData, setFormData] = useState(dummyData);
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams(); // Get URL params
+
   const [templates, setTemplates] = useState(TEMPLATES);
   const [selectedTemplate, setSelectedTemplate] = useState(TEMPLATES[0]?.id || "jessica-claire");
   const [templateSearch, setTemplateSearch] = useState("");
 
   const [activeTab, setActiveTab] = useState("builder");
   const [activeSection, setActiveSection] = useState("personal");
+  const [isAiMode, setIsAiMode] = useState(false); // AI State
+
+
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
+  const [lastSaved, setLastSaved] = useState(null);
+
+  /* -------------------- DATA PERSISTENCE -------------------- */
+  // 1. Fetch Resume on Mount
+  useEffect(() => {
+    const fetchResume = async () => {
+      try {
+        setIsLoading(true);
+
+        const isNew = searchParams.get("new") === "true";
+        const resumeId = searchParams.get("id");
+
+        if (isNew) {
+          // Reset to default state for new resume
+          setFormData({ ...dummyData, _id: undefined });
+          setIsLoading(false);
+          return;
+        }
+
+        let url = "http://localhost:5000/api/resume/user-resume";
+        if (resumeId) {
+          url = `http://localhost:5000/api/resume/detail/${resumeId}`;
+        }
+
+        const res = await axios.get(url, {
+          withCredentials: true,
+        });
+
+        if (res.data.success && res.data.data) {
+          // Merge fetched data with dummy data structure to ensure all fields exist
+          setFormData((prev) => ({
+            ...prev,
+            ...res.data.data,
+            // Ensure nested objects are merged correctly if they exist in DB
+            skills: res.data.data.skills || prev.skills,
+            socialLinks: res.data.data.socialLinks || prev.socialLinks,
+          }));
+          if (res.data.data.templateId) {
+            setSelectedTemplate(res.data.data.templateId);
+          }
+          toast.success("Resume loaded successfully");
+        }
+      } catch (error) {
+        console.error("Failed to load resume:", error);
+        // Don't toast error on 404 (new user), only on actual errors
+        if (error.response?.status !== 404 && error.response?.data?.message !== "No resume found") {
+          toast.error("Failed to load saved resume");
+        }
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchResume();
+  }, [searchParams]);
+
+  // 2. Save Function
+  const saveResume = async (isManual = false) => {
+    try {
+      setIsSaving(true);
+      const res = await axios.post(
+        "http://localhost:5000/api/resume/save",
+        {
+          ...formData,
+          templateId: selectedTemplate,
+          title: formData.title || "Untitled Resume",
+        },
+        { withCredentials: true }
+      );
+
+      if (res.data.success) {
+        setLastSaved(new Date());
+        // Update _id so subsequent saves are updates, not creates
+        if (res.data.data && res.data.data._id) {
+          setFormData((prev) => ({ ...prev, _id: res.data.data._id }));
+        }
+
+        if (isManual) toast.success("Resume saved successfully");
+      }
+    } catch (error) {
+      console.error("Save error:", error);
+      if (isManual) toast.error("Failed to save resume");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  // 3. Auto-Save Effect (Debounce 2s)
+  useEffect(() => {
+    // Skip auto-save on initial load to avoid overwriting with empty/dummy data before fetch completes
+    if (isLoading) return;
+
+    const timeoutId = setTimeout(() => {
+      saveResume();
+    }, 2000);
+
+    return () => clearTimeout(timeoutId);
+  }, [formData, selectedTemplate, isLoading]);
 
   /* -------------------- PREVIEW STATE -------------------- */
   const [isPreviewExpanded, setIsPreviewExpanded] = useState(false);
@@ -154,6 +262,7 @@ const ResumeBuilder = ({ setActivePage = () => { } }) => {
         <FullPreview
           formData={formData}
           setActiveTab={setActiveTab}
+          currentTemplate={currentTemplate}
         />
       );
     }
@@ -301,15 +410,24 @@ const ResumeBuilder = ({ setActivePage = () => { } }) => {
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-5 p-2 min-h-[50px] gap-4">
           {/* LEFT SIDE: Heading + Toggle */}
           <div className="flex flex-col md:flex-row md:items-center gap-4 w-full md:w-auto">
-            {/* Title Section */}
-            <div>
-              <h1 className="text-2xl font-['Outfit']">
-                {activeTab === "builder" ? "Create Resume" : "Resume Templates"}
-              </h1>
-              {activeTab === "templates" && (
-                <p className="text-sm text-slate-500 mt-1 hidden md:block">
-                  Choose a professionally designed template to get started.
-                </p>
+            {/* Title Section - Editable */}
+            <div className="flex flex-col">
+              {activeTab === "builder" ? (
+                <>
+                  <div className="flex items-center gap-2 group">
+                    <input
+                      type="text"
+                      value={formData.title || "Untitled Resume"}
+                      onChange={(e) => handleInputChange("title", e.target.value)}
+                      className="text-2xl font-['Outfit'] font-bold bg-transparent border-b-2 border-dashed border-slate-200 hover:border-slate-400 focus:border-blue-500 focus:border-solid focus:outline-none transition-colors w-full md:w-auto min-w-[200px]"
+                      placeholder="Resume Title"
+                    />
+                    <PenTool size={16} className="text-slate-400 group-hover:text-blue-500 transition-colors shrink-0" />
+                  </div>
+                  <span className="text-[11px] text-slate-400 mt-0.5 select-none">Click to rename your document</span>
+                </>
+              ) : (
+                <h1 className="text-2xl font-['Outfit']">Resume Templates</h1>
               )}
             </div>
 
@@ -330,12 +448,55 @@ const ResumeBuilder = ({ setActivePage = () => { } }) => {
                 Templates
               </button>
             </div>
+
+            {/* AI Mode Toggle */}
+            {activeTab === "builder" && (
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setIsAiMode(!isAiMode)}
+                  className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium transition-all border ${isAiMode
+                    ? "bg-purple-50 border-purple-200 text-purple-700 shadow-sm"
+                    : "bg-white border-slate-200 text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+                    }`}
+                >
+                  <Zap size={16} className={`transition-colors ${isAiMode ? "fill-purple-700 text-purple-700" : "text-slate-400"}`} />
+                  <span>AI Mode</span>
+                  <div
+                    className={`relative w-8 h-4 rounded-full transition-colors ml-1 ${isAiMode ? "bg-purple-600" : "bg-slate-300"
+                      }`}
+                  >
+                    <div
+                      className={`absolute top-0.5 w-3 h-3 bg-white rounded-full transition-transform shadow-sm ${isAiMode ? "left-[18px]" : "left-0.5"
+                        }`}
+                    />
+                  </div>
+                </button>
+              </div>
+            )}
           </div>
 
           {/* RIGHT SIDE: Actions or Search */}
           <div className="w-full md:w-auto flex items-center justify-end gap-2">
             {activeTab === "builder" ? (
               <>
+                {/* Save Status / Last Saved */}
+                <div className="flex flex-col items-end mr-2 hidden md:flex">
+                  <span className="text-xs text-slate-500">
+                    {isSaving ? "Saving..." : lastSaved ? `Saved ${lastSaved.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}` : "Unsaved changes"}
+                  </span>
+                </div>
+
+                {/* Manual Save Button */}
+                <button
+                  onClick={() => saveResume(true)}
+                  disabled={isSaving || isLoading}
+                  className="flex items-center gap-2 px-4 py-2 rounded-lg border border-slate-300 bg-white text-slate-700 font-medium shadow-sm hover:bg-slate-50 transition-all disabled:opacity-50"
+                  title="Save Resume"
+                >
+                  {isSaving ? <Loader2 size={18} className="animate-spin" /> : <Save size={18} />}
+                  <span className="hidden sm:inline">Save</span>
+                </button>
+
                 <button
                   onClick={() => navigate("/user/cv")}
                   className="flex items-center gap-2 px-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-800 font-medium shadow-sm hover:bg-gray-50 hover:shadow-md transition-all whitespace-nowrap"

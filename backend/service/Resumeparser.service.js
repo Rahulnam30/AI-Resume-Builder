@@ -1,4 +1,6 @@
-import pdfParse from "pdf-parse";
+import { createRequire } from "module";
+const require = createRequire(import.meta.url);
+const pdfParse = require("pdf-parse");
 import mammoth from "mammoth";
 import fs from "fs";
 
@@ -49,7 +51,7 @@ export const parseDOCX = async (filePath) => {
 export const parseResume = async (file) => {
   const filePath = file.path;
   const fileType = file.mimetype;
-  
+
   if (fileType === "application/pdf") {
     return await parsePDF(filePath);
   } else if (
@@ -100,9 +102,9 @@ export const extractResumeData = (text) => {
 
   // Extract skills keywords
   const skillKeywords = [
-    "JavaScript", "Python", "Java", "React", "Node.js", "HTML", "CSS", 
-    "SQL", "MongoDB", "AWS", "Docker", "Kubernetes", "Git", "Agile", 
-    "Scrum", "Leadership", "Communication", "Problem Solving", 
+    "JavaScript", "Python", "Java", "React", "Node.js", "HTML", "CSS",
+    "SQL", "MongoDB", "AWS", "Docker", "Kubernetes", "Git", "Agile",
+    "Scrum", "Leadership", "Communication", "Problem Solving",
     "Teamwork", "Project Management"
   ];
 

@@ -6,8 +6,12 @@ import {
   deleteScan,
   downloadResume,
   getScanStatistics,
+  saveResume,
+  getUserResume,
+  getAllUserResumes,
+  getResumeById,
 }
-from "../controllers/Resume.controller.js";
+  from "../controllers/Resume.controller.js";
 import isAuth from "../middlewares/isAuth.js";
 import {
   uploadSingleResume,
@@ -24,6 +28,18 @@ resumeRouter.post(
   handleUploadError,
   uploadAndAnalyzeResume
 );
+
+// Save User Resume (Upsert)
+resumeRouter.post("/save", isAuth, saveResume);
+
+// Get User Resume
+resumeRouter.get("/user-resume", isAuth, getUserResume);
+
+// Get ALL User Resumes
+resumeRouter.get("/all", isAuth, getAllUserResumes);
+
+// Get Specific Resume
+resumeRouter.get("/detail/:id", isAuth, getResumeById);
 
 // Get all user scans
 resumeRouter.get("/scans", isAuth, getUserScans);

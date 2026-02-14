@@ -1,7 +1,11 @@
 import mongoose from "mongoose";
+import dns from "dns";
 
 const connectDB = async () => {
   try {
+    // Force usage of Google Public DNS to resolve SRV records (fixes querySrv ECONNREFUSED)
+    dns.setServers(["8.8.8.8", "8.8.4.4"]);
+
     // Support both environment variable names
     const mongoURL =
       process.env.MONGO_URI || process.env.MONGO_DB_URL;
