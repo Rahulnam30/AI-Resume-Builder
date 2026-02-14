@@ -94,7 +94,7 @@ export default function Login() {
               <p className="text-xs text-gray-500 mt-1">by</p>
               <Link to="/" className="inline-block">
                 <img
-                  src={images.logo || "/logo.png"}
+                  src={images.logo6 || "/logo6.png"}
                   alt="UptoSkills Logo"
                   className="w-28 mx-auto mt-2 mb-4"
                 />

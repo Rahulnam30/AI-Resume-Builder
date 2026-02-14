@@ -1,211 +1,245 @@
+import Notification from "../Models/notification.js";
 import Template from "../Models/template.js";
 import fs from "fs";
 import path from "path";
 import mammoth from "mammoth";
 
+/* ================= GET TEMPLATE HTML ================= */
 export const getTemplateHtml = async (req, res) => {
-    try {
-        const { id } = req.params;
-        const template = await Template.findById(id);
+  try {
+    const { id } = req.params;
+    const template = await Template.findById(id);
 
-        if (!template) {
-            return res.status(404).json({ msg: "Template not found" });
-        }
-
-        if (!fs.existsSync(template.filePath)) {
-            return res.status(404).json({ msg: "File not found on server" });
-        }
-
-        const options = {
-            styleMap: [
-                "p[style-name='Section Title'] => h2:fresh",
-                "p[style-name='Subsection Title'] => h3:fresh",
-                "table => table.docx-table",
-                "tr => tr.docx-tr",
-                "td => td.docx-td",
-                "p[style-name='List Paragraph'] => li:fresh"
-            ],
-            includeDefaultStyleMap: true
-        };
-
-        const result = await mammoth.convertToHtml({ path: template.filePath }, options);
-        res.status(200).json({ html: result.value });
-
-    } catch (error) {
-        console.error("Error parsing DOCX:", error);
-        res.status(500).json({ msg: "Parsing failed", error: error.message });
+    if (!template) {
+      return res.status(404).json({ msg: "Template not found" });
     }
+
+    if (!fs.existsSync(template.filePath)) {
+      return res.status(404).json({ msg: "File not found on server" });
+    }
+
+    const options = {
+      styleMap: [
+        "p[style-name='Section Title'] => h2:fresh",
+        "p[style-name='Subsection Title'] => h3:fresh",
+        "table => table.docx-table",
+        "tr => tr.docx-tr",
+        "td => td.docx-td",
+        "p[style-name='List Paragraph'] => li:fresh",
+      ],
+      includeDefaultStyleMap: true,
+    };
+
+    const result = await mammoth.convertToHtml(
+      { path: template.filePath },
+      options
+    );
+
+    res.status(200).json({ html: result.value });
+  } catch (error) {
+    console.error("Error parsing DOCX:", error);
+    res.status(500).json({ msg: "Parsing failed", error: error.message });
+  }
 };
 
-// Upload a new template
+/* ================= UPLOAD TEMPLATE ================= */
 export const uploadTemplate = async (req, res) => {
-    try {
-        const { name, category } = req.body;
+  try {
+    const { name, category } = req.body;
 
-        // Check if files are present
-        if (!req.files || !req.files.templateFile || !req.files.thumbnail) {
-            return res.status(400).json({ msg: "Both template file and thumbnail are required." });
-        }
-
-        const templatePath = req.files.templateFile[0].path;
-        const thumbnailPath = req.files.thumbnail[0].path;
-
-        // Create new template entry
-        const newTemplate = new Template({
-            name,
-            category,
-            filePath: templatePath,
-            previewimage: thumbnailPath,
-            status: "pending",
-        });
-
-        await newTemplate.save();
-
-        res.status(201).json({ msg: "Template uploaded successfully and is pending approval.", template: newTemplate });
-    } catch (error) {
-        console.error("Error uploading template:", error);
-        res.status(500).json({ msg: "Server Error", error: error.message });
+    if (!req.files?.templateFile || !req.files?.thumbnail) {
+      return res
+        .status(400)
+        .json({ msg: "Template file & thumbnail required" });
     }
+
+    const templatePath = req.files.templateFile[0].path;
+    const thumbnailPath = req.files.thumbnail[0].path;
+
+    const newTemplate = new Template({
+      name,
+      category,
+      filePath: templatePath,
+      previewimage: thumbnailPath,
+      status: "pending",
+    });
+
+    await newTemplate.save();
+
+    // 🔔 ADMIN NOTIFICATION
+await Notification.create({
+  actor: "user",
+  type: "TEMPLATE_CREATED",
+  message: `New template submitted: ${name} (${category})`,
+  userId: req.userId,
+});
+
+// 🔔 USER NOTIFICATION
+await Notification.create({
+  actor: "system",
+  type: "TEMPLATE_CREATED",
+  message: "Your template has been submitted for approval",
+  userId: req.userId,
+});
+
+
+    res.status(201).json({
+      msg: "Template uploaded & pending approval",
+      template: newTemplate,
+    });
+  } catch (error) {
+    console.error("Error uploading template:", error);
+    res.status(500).json({ msg: "Server Error", error: error.message });
+  }
 };
 
-// Get templates (with filter for pending/approved)
+/* ================= GET TEMPLATES ================= */
 export const getTemplates = async (req, res) => {
-    try {
-        const { status } = req.query;
-        // If status is provided, filter by it; otherwise return all
-        const query = status ? { status } : {}; 
+  try {
+    const { status } = req.query;
+    const query = status ? { status } : {};
 
-        const templates = await Template.find(query).sort({ createdAt: -1 });
+    const templates = await Template.find(query).sort({ createdAt: -1 });
 
-        // We need to transform the paths to be accessible URLs if we are serving them statically
-        const templatesWithUrls = templates.map(t => {
-            const fileUrl = `${process.env.BACKEND_URL || 'http://localhost:5000'}/uploads/templates/${path.basename(t.filePath)}`;
-            const imageUrl = `${process.env.BACKEND_URL || 'http://localhost:5000'}/uploads/templates/${path.basename(t.previewimage)}`;
-            return {
-                ...t._doc,
-                fileUrl,
-                imageUrl
-            };
-        });
+    const templatesWithUrls = templates.map((t) => ({
+      ...t._doc,
+      fileUrl: `${process.env.BACKEND_URL || "http://localhost:5000"}/uploads/templates/${path.basename(
+        t.filePath
+      )}`,
+      imageUrl: `${process.env.BACKEND_URL || "http://localhost:5000"}/uploads/templates/${path.basename(
+        t.previewimage
+      )}`,
+    }));
 
-        res.status(200).json(templatesWithUrls);
-    } catch (error) {
-        console.error("Error fetching templates:", error);
-        res.status(500).json({ msg: "Server Error", error: error.message });
-    }
+    res.status(200).json(templatesWithUrls);
+  } catch (error) {
+    console.error("Error fetching templates:", error);
+    res.status(500).json({ msg: "Server Error", error: error.message });
+  }
 };
 
-// Get single template by ID
+/* ================= GET TEMPLATE BY ID ================= */
 export const getTemplateById = async (req, res) => {
-    try {
-        const { id } = req.params;
-        const template = await Template.findById(id);
+  try {
+    const template = await Template.findById(req.params.id);
 
-        if (!template) {
-            return res.status(404).json({ msg: "Template not found" });
-        }
-
-        const fileUrl = `${process.env.BACKEND_URL || 'http://localhost:5000'}/uploads/templates/${path.basename(template.filePath)}`;
-        const imageUrl = `${process.env.BACKEND_URL || 'http://localhost:5000'}/uploads/templates/${path.basename(template.previewimage)}`;
-
-        res.status(200).json({
-            ...template._doc,
-            fileUrl,
-            imageUrl
-        });
-    } catch (error) {
-        console.error("Error fetching template:", error);
-        res.status(500).json({ msg: "Server Error" });
+    if (!template) {
+      return res.status(404).json({ msg: "Template not found" });
     }
+
+    res.status(200).json({
+      ...template._doc,
+      fileUrl: `${process.env.BACKEND_URL || "http://localhost:5000"}/uploads/templates/${path.basename(
+        template.filePath
+      )}`,
+      imageUrl: `${process.env.BACKEND_URL || "http://localhost:5000"}/uploads/templates/${path.basename(
+        template.previewimage
+      )}`,
+    });
+  } catch (error) {
+    console.error("Error fetching template:", error);
+    res.status(500).json({ msg: "Server Error" });
+  }
 };
 
-// Approve a template
+/* ================= APPROVE TEMPLATE ================= */
 export const approveTemplate = async (req, res) => {
-    try {
-        const { id } = req.params;
-        const template = await Template.findByIdAndUpdate(id, { status: "approved" }, { new: true });
+  try {
+    const template = await Template.findByIdAndUpdate(
+      req.params.id,
+      { status: "approved" },
+      { new: true }
+    );
 
-        if (!template) {
-            return res.status(404).json({ msg: "Template not found" });
-        }
-
-        res.status(200).json({ msg: "Template approved", template });
-    } catch (error) {
-        console.error("Error approving template:", error);
-        res.status(500).json({ msg: "Server Error" });
+    if (!template) {
+      return res.status(404).json({ msg: "Template not found" });
     }
+
+    await Notification.create({
+  actor: "system",
+  type: "TEMPLATE_APPROVED",
+  message: "Your template has been approved 🎉",
+  userId: template.createdBy || null,
+});
+
+
+    res.status(200).json({ msg: "Template approved", template });
+  } catch (error) {
+    console.error("Error approving template:", error);
+    res.status(500).json({ msg: "Server Error" });
+  }
 };
 
-// Update a template (File and/or Thumbnail)
+/* ================= UPDATE TEMPLATE ================= */
 export const updateTemplate = async (req, res) => {
-    try {
-        const { id } = req.params;
-        const template = await Template.findById(id);
+  try {
+    const template = await Template.findById(req.params.id);
 
-        if (!template) {
-            return res.status(404).json({ msg: "Template not found" });
-        }
-
-        // Delete old files if new ones are uploaded
-        if (req.files) {
-            if (req.files.templateFile && req.files.templateFile[0]) {
-                if (fs.existsSync(template.filePath)) {
-                    try { fs.unlinkSync(template.filePath); } catch (e) { console.error("Error deleting old file:", e); }
-                }
-                template.filePath = req.files.templateFile[0].path;
-            }
-
-            if (req.files.thumbnail && req.files.thumbnail[0]) {
-                if (fs.existsSync(template.previewimage)) {
-                    try { fs.unlinkSync(template.previewimage); } catch (e) { console.error("Error deleting old thumbnail:", e); }
-                }
-                template.previewimage = req.files.thumbnail[0].path;
-            }
-        }
-
-        // Update other fields if sent
-        if (req.body.name) template.name = req.body.name;
-        if (req.body.category) template.category = req.body.category;
-
-        // If we switched to HTML, we might want to note that? 
-        // For now, thefilePath extension handles it.
-
-        await template.save();
-
-        // Return updated URLs
-        const fileUrl = `${process.env.BACKEND_URL || 'http://localhost:5000'}/uploads/templates/${path.basename(template.filePath)}`;
-        const imageUrl = `${process.env.BACKEND_URL || 'http://localhost:5000'}/uploads/templates/${path.basename(template.previewimage)}`;
-
-        res.status(200).json({ msg: "Template updated successfully", template: { ...template._doc, fileUrl, imageUrl } });
-
-    } catch (error) {
-        console.error("Error updating template:", error);
-        res.status(500).json({ msg: "Server Error" });
+    if (!template) {
+      return res.status(404).json({ msg: "Template not found" });
     }
+
+    if (req.files?.templateFile?.[0]) {
+      if (fs.existsSync(template.filePath)) fs.unlinkSync(template.filePath);
+      template.filePath = req.files.templateFile[0].path;
+    }
+
+    if (req.files?.thumbnail?.[0]) {
+      if (fs.existsSync(template.previewimage))
+        fs.unlinkSync(template.previewimage);
+      template.previewimage = req.files.thumbnail[0].path;
+    }
+
+    if (req.body.name) template.name = req.body.name;
+    if (req.body.category) template.category = req.body.category;
+
+    await template.save();
+
+    // 🔔 ADMIN NOTIFICATION
+    await Notification.create({
+  actor: "user",
+  type: "TEMPLATE_UPDATED",
+  message: "Template updated",
+  userId: req.userId,
+});
+
+    res.status(200).json({
+      msg: "Template updated successfully",
+      template,
+    });
+  } catch (error) {
+    console.error("Error updating template:", error);
+    res.status(500).json({ msg: "Server Error" });
+  }
 };
 
-// Delete a template
+/* ================= DELETE TEMPLATE ================= */
 export const deleteTemplate = async (req, res) => {
-    try {
-        const { id } = req.params;
-        const template = await Template.findById(id);
+  try {
+    const template = await Template.findById(req.params.id);
 
-        if (!template) {
-            return res.status(404).json({ msg: "Template not found" });
-        }
-
-        // Delete files from filesystem
-        try {
-            if (fs.existsSync(template.filePath)) fs.unlinkSync(template.filePath);
-            if (fs.existsSync(template.previewimage)) fs.unlinkSync(template.previewimage);
-        } catch (err) {
-            console.error("Error deleting files:", err);
-        }
-
-        await Template.findByIdAndDelete(id);
-        res.status(200).json({ msg: "Template deleted successfully" });
-    } catch (error) {
-        console.error("Error deleting template:", error);
-        res.status(500).json({ msg: "Server Error" });
+    if (!template) {
+      return res.status(404).json({ msg: "Template not found" });
     }
+
+    if (fs.existsSync(template.filePath)) fs.unlinkSync(template.filePath);
+    if (fs.existsSync(template.previewimage))
+      fs.unlinkSync(template.previewimage);
+
+    await Template.findByIdAndDelete(req.params.id);
+
+    // 🔔 ADMIN NOTIFICATION
+    await Notification.create({
+  actor: "user",
+  type: "TEMPLATE_DELETED",
+  message: "Template deleted",
+  userId: req.userId,
+});
+
+
+    res.status(200).json({ msg: "Template deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting template:", error);
+    res.status(500).json({ msg: "Server Error" });
+  }
 };

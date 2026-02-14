@@ -1,187 +1,257 @@
 import {
-  FileText,
-  Maximize2,
-  Minimize2,
-  ZoomIn,
-  ZoomOut,
-  RotateCcw,
-} from 'lucide-react';
-import { useState } from 'react';
+  FileText,
+  Maximize2,
+  Minimize2,
+  ZoomIn,
+  ZoomOut,
+  RotateCcw,
+  Eye,
+} from "lucide-react";
+import { useEffect, useState } from "react";
+
+function formatDate(value) {
+  if (!value)
+    return new Date().toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+
+  return new Date(value).toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
+}
 
 const CoverLetterPreview = ({
-  formData,
-  selectedTemplate,
-  isExpanded,
-  onExpand,
-  onCollapse,
+  formData = {},
+  currentTemplate,
+  isExpanded,
+  onExpand,
+  onCollapse,
 }) => {
-  const [zoom, setZoom] = useState(1);
+  const [zoom, setZoom] = useState(1);
+  const [isMobileView, setIsMobileView] = useState(false);
+  const [isMobilePreviewHidden, setIsMobilePreviewHidden] = useState(false);
 
-  const zoomIn = () => setZoom((z) => Math.min(z + 0.1, 2));
-  const zoomOut = () => setZoom((z) => Math.max(z - 0.1, 0.5));
-  const resetZoom = () => setZoom(1);
+  useEffect(() => {
+    const checkScreen = () => {
+      setIsMobileView(window.innerWidth <= 768);
+    };
+    checkScreen();
+    window.addEventListener("resize", checkScreen);
+    return () => window.removeEventListener("resize", checkScreen);
+  }, []);
 
-  const formatDate = (dateStr) => {
-    if (!dateStr) {
-      return new Date().toLocaleDateString('en-US', { 
-        year: 'numeric', 
-        month: 'long', 
-        day: 'numeric' 
-      });
-    }
-    return new Date(dateStr).toLocaleDateString('en-US', { 
-      year: 'numeric', 
-      month: 'long', 
-      day: 'numeric' 
-    });
-  };
+  useEffect(() => {
+    setIsMobilePreviewHidden(!isMobileView);
+  }, [isMobileView]);
 
-  const PreviewContent = () => {
-    const hasContent = formData.fullName || formData.email || formData.phone || 
-                       formData.recipientName || formData.companyName || 
-                       formData.openingParagraph || formData.bodyParagraph1;
+  function clamp() {
+    if (!isMobileView) return;
+    setIsMobilePreviewHidden((prev) => !prev);
+  }
 
-    if (!hasContent) {
-      return (
-        <div className="mt-10 mb-4">
-          <div
-            className="bg-white w-[694px] min-h-[1023px] p-8 lg:p-12 text-slate-800 text-sm leading-relaxed relative shadow-lg"
-            style={{
-              transform: `scale(${zoom})`,
-            }}
-          >
-          </div>
-        </div>
-      );
-    }
+  const zoomIn = () => setZoom((z) => Math.min(z + 0.1, 2));
+  const zoomOut = () => setZoom((z) => Math.max(z - 0.1, 0.5));
+  const resetZoom = () => setZoom(1);
 
-    return (
-      <div className="mt-10 mb-4">
-        <div
-          className="bg-white w-[694px] min-h-[1023px] p-8 lg:p-12 text-slate-800 text-sm leading-relaxed relative shadow-lg"
-          style={{
-            transform: `scale(${zoom})`,
-          }}
-        >
-          {/* Sender Info */}
-          {formData.fullName && (
-            <div className="pb-6 border-b border-slate-200">
-              <h1 className="text-2xl font-semibold text-gray-900 mb-2 tracking-tight">
-                {formData.fullName}
-              </h1>
-              <div className="text-slate-500 text-sm space-y-1">
-                {formData.address && <p>{formData.address}</p>}
-                {formData.email && <p>{formData.email}</p>}
-                {formData.phone && <p>{formData.phone}</p>}
-                {formData.linkedin && <p>{formData.linkedin}</p>}
-              </div>
-            </div>
-          )}
+  const {
+    fullName = "Your Name",
+    email = "",
+    phone = "",
+    address = "",
+    linkedin = "",
+    recipientName = "Hiring Manager",
+    recipientTitle = "",
+    companyName = "",
+    companyAddress = "",
+    jobTitle = "",
+    jobReference = "",
+    openingParagraph = "",
+    bodyParagraph1 = "",
+    bodyParagraph2 = "",
+    closingParagraph = "",
+    salutation = "Sincerely",
+    customSalutation = "",
+  } = formData;
 
-          {/* Date */}
-          <p className="text-slate-600 text-sm mt-6 mb-6">
-            {formatDate(formData.letterDate)}
-          </p>
+  const PreviewContent = () => (
+    <div className="w-full h-full flex items-start justify-center p-2 md:p-4">
+      <div
+        className="bg-white text-slate-800 text-xs md:text-sm leading-relaxed w-full max-w-[8in] md:max-w-[8.5in]"
+        style={{
+          transform: `scale(${zoom})`,
+          transformOrigin: "top center",
+          padding: "0.4in",      // Reduced from 0.6in
+          minHeight: "7.5in",    // Reduced from 8.5in  
+          maxHeight: "7.5in",    // Added maxHeight to prevent overflow
+        }}
+      >
+        <div className="flex flex-col h-full max-h-full overflow-hidden">
+          {/* YOUR INFO - TOP RIGHT */}
+          <div className="ml-auto mb-2 text-right">
+            <div className="text-xs space-y-0.5 leading-tight">
+              <div className="font-semibold text-slate-900">{fullName}</div>
+              {address && <div>{address}</div>}
+              {email && <div>{email}</div>}
+              {phone && <div>{phone}</div>}
+              {linkedin && (
+                <div className="text-blue-600 text-xs">{linkedin}</div>
+              )}
+            </div>
+          </div>
 
-          {/* Recipient Info */}
-          {(formData.recipientName || formData.companyName) && (
-            <div className="mb-6 text-slate-700 text-sm">
-              {formData.recipientName && <p className="font-medium">{formData.recipientName}</p>}
-              {formData.recipientTitle && <p>{formData.recipientTitle}</p>}
-              {formData.companyName && <p>{formData.companyName}</p>}
-              {formData.companyAddress && <p>{formData.companyAddress}</p>}
-            </div>
-          )}
+          {/* DATE */}
+          <div className="ml-auto mb-3 text-right text-xs font-medium text-slate-700">
+            {formatDate()}
+          </div>
 
-          {/* Greeting */}
-          {(formData.recipientName || formData.openingParagraph) && (
-            <p className="text-slate-800 font-medium mb-4">
-              Dear {formData.recipientName || 'Hiring Manager'},
-            </p>
-          )}
+          {/* RECIPIENT INFO - HARD LEFT */}
+          <div className="mb-3 w-full text-left">
+            <div className="text-xs space-y-0.5 leading-tight text-slate-700 max-w-[4in]">
+              {recipientName && (
+                <div className="font-medium text-slate-900">
+                  {recipientName}
+                </div>
+              )}
+              {recipientTitle && <div>{recipientTitle}</div>}
+              {companyName && (
+                <div className="font-semibold text-slate-900">
+                  {companyName}
+                </div>
+              )}
+              {companyAddress && <div>{companyAddress}</div>}
+            </div>
+          </div>
 
-          {/* Body */}
-          <div className="space-y-4 text-slate-700 leading-relaxed">
-            {formData.openingParagraph && <p>{formData.openingParagraph}</p>}
-            {formData.bodyParagraph1 && <p>{formData.bodyParagraph1}</p>}
-            {formData.bodyParagraph2 && <p>{formData.bodyParagraph2}</p>}
-            {formData.closingParagraph && <p>{formData.closingParagraph}</p>}
-          </div>
+          {/* SALUTATION */}
+          <div className="mb-3 text-sm text-slate-900">
+            Dear {recipientName},
+          </div>
 
-          {/* Closing */}
-          {(formData.salutation || formData.fullName) && (
-            <div className="mt-8 text-slate-800">
-              {formData.salutation && (
-                <p className="mb-6">
-                  {formData.salutation === 'custom' ? formData.customSalutation : formData.salutation},
-                </p>
-              )}
-              {formData.fullName && <p className="font-medium">{formData.fullName}</p>}
-            </div>
-          )}
-        </div>
-      </div>
-    );
-  };
+          {/* SUBJECT */}
+          {(jobTitle || jobReference) && (
+            <div className="text-center mb-3 py-1.5 border-t border-b border-slate-300">
+              {jobTitle && (
+                <div className="text-xs font-semibold uppercase tracking-wide">
+                  Re: {jobTitle}
+                </div>
+              )}
+              {jobReference && (
+                <div className="text-xs text-slate-600 mt-1">
+                  Reference: {jobReference}
+                </div>
+              )}
+            </div>
+          )}
 
-  /* FULLSCREEN MODE */
-  if (isExpanded) {
-    return (
-      <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center">
-        <div className="bg-white w-full h-full max-w-[95vw] max-h-[95vh] rounded-xl shadow-lg flex flex-col">
-          <div className="flex items-center justify-between px-6 py-4 border-b bg-slate-50">
-            <h3 className="flex items-center gap-2 text-sm font-semibold text-slate-700">
-              <FileText size={18} /> Live Preview
-            </h3>
+          {/* BODY */}
+          <div className="flex-1 space-y-2 text-left overflow-hidden">
+            {openingParagraph && (
+              <p className="indent-8 text-sm leading-relaxed">{openingParagraph}</p>
+            )}
+            {bodyParagraph1 && (
+              <p className="indent-8 text-sm leading-relaxed">{bodyParagraph1}</p>
+            )}
+            {bodyParagraph2 && (
+              <p className="indent-8 text-sm leading-relaxed">{bodyParagraph2}</p>
+            )}
+            {closingParagraph && (
+              <p className="indent-8 text-sm leading-relaxed">{closingParagraph}</p>
+            )}
+          </div>
 
-            <div className="flex items-center gap-3">
-              <button onClick={zoomOut} className="p-1.5 text-slate-400 hover:text-slate-600 transition-colors border border-slate-200 rounded-lg hover:bg-slate-100">
-                <ZoomOut size={18} />
-              </button>
-              <span className="text-sm font-medium text-slate-600 min-w-[50px] text-center">
-                {Math.round(zoom * 100)}%
-              </span>
-              <button onClick={zoomIn} className="p-1.5 text-slate-400 hover:text-slate-600 transition-colors border border-slate-200 rounded-lg hover:bg-slate-100">
-                <ZoomIn size={18} />
-              </button>
-              <button onClick={resetZoom} className="p-1.5 text-slate-400 hover:text-slate-600 transition-colors border border-slate-200 rounded-lg hover:bg-slate-100">
-                <RotateCcw size={18} />
-              </button>
-              <button onClick={onCollapse} className="p-1.5 text-slate-400 hover:text-slate-600 transition-colors border border-slate-200 rounded-lg hover:bg-slate-100">
-                <Minimize2 size={18} />
-              </button>
-            </div>
-          </div>
+          {/* CLOSING */}
+          <div className="ml-auto pt-4 text-right"> {/* Reduced from pt-6 */}
+            <div className="mb-1">
+              {salutation === "custom" ? customSalutation : salutation}
+            </div>
+            <div className="font-semibold text-slate-900">
+              {fullName}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 
-          <div className="flex-1 overflow-auto bg-slate-300 p-6 flex justify-center">
-            <PreviewContent />
-          </div>
-        </div>
-      </div>
-    );
-  }
+  /* FULLSCREEN MODE */
+  if (isExpanded) {
+    return (
+      <div className="fixed inset-0 z-[99] bg-black/40 backdrop-blur-md flex items-center justify-center">
+        <div className="bg-slate-200 w-full max-w-[90%] md:max-w-[70%] max-h-[95vh] rounded-xl shadow-lg flex flex-col">
+          <div className="bg-white rounded-t-xl flex items-center justify-between px-4 py-3 border-b">
+            <div className="flex items-center gap-2 text-sm font-semibold">
+              <FileText size={16} />
+              <span className="font-normal text-xs">
+                Cover Letter Preview
+                {currentTemplate?.name && ` - ${currentTemplate.name}`}
+              </span>
+            </div>
 
-  /* NORMAL MODE */
-  return (
-    <div className="w-[90%] border rounded-xl shadow-sm mr-4 m-2">
-      <div className="flex items-center justify-between px-4 py-3 border-b">
-        <h3 className="flex items-center gap-2 text-sm font-semibold">
-          <FileText size={16} /> Live Preview
-        </h3>
-        <button onClick={onExpand}>
-          <Maximize2 size={16} />
-        </button>
-      </div>
+            <div className="flex items-center gap-2">
+              <button onClick={zoomOut}><ZoomOut size={16} /></button>
+              <span className="text-sm">{Math.round(zoom * 100)}%</span>
+              <button onClick={zoomIn}><ZoomIn size={16} /></button>
+              <button onClick={resetZoom}><RotateCcw size={16} /></button>
+              <button onClick={() => { onCollapse(); setZoom(1); }}>
+                <Minimize2 size={16} />
+              </button>
+            </div>
+          </div>
 
-      <div className="overflow-auto flex justify-center p-4 bg-slate-200">
-        <PreviewContent />
-      </div>
+          <div className="flex-1 overflow-auto bg-slate-100">
+            <PreviewContent />
+          </div>
+        </div>
+      </div>
+    );
+  }
 
-      <div className="px-4 py-2 border-t text-xs text-slate-500">
-        Template: {selectedTemplate}
-      </div>
-    </div>
-  );
+  /* NORMAL MODE */
+  return (
+    <div className="w-[90%] border rounded-xl shadow-sm mr-4 m-2">
+      <div
+        className="flex items-center justify-between px-4 py-3 border-b bg-white"
+        onClick={clamp}
+      >
+        <div className="flex items-center gap-2 text-xs md:text-sm font-semibold">
+          <FileText size={16} />
+          Cover Letter Preview
+          {currentTemplate?.name && (
+            <span className="text-slate-500 font-normal">
+              {" "} - {currentTemplate.name}
+            </span>
+          )}
+        </div>
+
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            onExpand();
+          }}
+        >
+          <Eye size={20} className="block md:hidden" />
+          <Maximize2 size={16} className="hidden md:block" />
+        </button>
+      </div>
+
+      <div
+        className="bg-slate-100 transition-all duration-300 overflow-hidden"
+        style={{
+          height: isMobilePreviewHidden
+            ? isMobileView
+              ? "400px"  // Reduced from 500px
+              : "auto"
+            : "0",
+        }}
+      >
+        <PreviewContent />
+      </div>
+    </div>
+  );
 };
 
-export default CoverLetterPreview;
+export default CoverLetterPreview; 

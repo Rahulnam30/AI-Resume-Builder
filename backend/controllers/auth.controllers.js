@@ -2,13 +2,14 @@ import User from "../Models/User.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { genrateToken } from "../config/token.js";
+import Notification from "../Models/notification.js";
 
-// -------------------- REGISTER --------------------
+/* ================= REGISTER ================= */
 export const register = async (req, res) => {
   try {
     const { username, email, password } = req.body;
 
-    if (!email || !password) {
+    if (!username || !email || !password) {
       return res.status(400).json({ message: "All fields are required" });
     }
 
@@ -25,27 +26,32 @@ export const register = async (req, res) => {
 
     const hashedPass = await bcrypt.hash(password, 10);
 
-    // Decide admin from backend only
+    // admin sirf backend se decide hoga
     const isAdmin = email === process.env.ADMIN_EMAIL;
 
     const newUser = new User({
       username,
       email,
-      isAdmin,
       password: hashedPass,
+      isAdmin,
+      isActive: true,
     });
 
     await newUser.save();
 
-    res.status(201).json({ message: "User created successfully" });
+    res.status(201).json({
+      success: true,
+      message: "User created successfully",
+    });
   } catch (error) {
-    res
-      .status(500)
-      .json({ message: "Something went wrong", error: error.message });
+    res.status(500).json({
+      message: "Register failed",
+      error: error.message,
+    });
   }
 };
 
-// -------------------- LOGIN --------------------
+/* ================= LOGIN ================= */
 export const login = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -56,66 +62,91 @@ export const login = async (req, res) => {
         .json({ message: "Email and password are required" });
     }
 
-    // --- Check if admin login from .env ---
+    /* ---------- STATIC ADMIN LOGIN ---------- */
     if (
       email === process.env.ADMIN_EMAIL &&
       password === process.env.ADMIN_PASSWORD
     ) {
-      // Check if admin exists in database and is active
-      const adminUser = await User.findOne({ email: process.env.ADMIN_EMAIL, isAdmin: true });
-      
-      console.log(`Admin login attempt - Admin found: ${!!adminUser}, isActive: ${adminUser?.isActive}`);
-      
-      if (adminUser && adminUser.isActive === false) {
-        console.log(`Admin login blocked - Admin account is inactive`);
-        return res.status(403).json({ 
-          message: "Your admin account has been deactivated. Please contact the super administrator." 
+        // Ensure there is an admin user in DB and use its ObjectId in the token
+        let adminUser = await User.findOne({ email: process.env.ADMIN_EMAIL });
+        if (!adminUser) {
+          const hashedPass = await bcrypt.hash(password, 10);
+          adminUser = new User({
+            username: 'Admin',
+            email: process.env.ADMIN_EMAIL,
+            password: hashedPass,
+            isAdmin: true,
+            isActive: true,
+          });
+          await adminUser.save();
+        }
+
+        const token = genrateToken({
+          id: adminUser._id,
+          isAdmin: true,
         });
-      }
 
-      const token = genrateToken({ id: adminUser?._id || "admin-id", isAdmin: true });
+        res.cookie("token", token, {
+          httpOnly: true,
+          secure: false,
+          sameSite: "Strict",
+          maxAge: 7 * 24 * 60 * 60 * 1000,
+        });
 
-      // Set cookie for admin
-      res.cookie("token", token, {
-        httpOnly: true,
-        // secure: process.env.NODE_ENV === "production", 
-        secure: false, // keeping false for localhost development
-        sameSite: "Strict",
-        maxAge: 7 * 24 * 60 * 60 * 1000,
-      });
-
-      return res.status(200).json({
-        token,
-        userID: adminUser?._id || "admin-id",
-        isAdmin: true,
-        message: "Admin login successful",
-      });
+        return res.status(200).json({
+          success: true,
+          token,
+          userID: adminUser._id,
+          isAdmin: true,
+          message: "Admin login successful",
+        });
     }
 
-    // --- Check normal users from DB ---
+    /* ---------- NORMAL USER LOGIN ---------- */
     const user = await User.findOne({ email });
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
 
-    console.log(`Login attempt for user: ${user.email}, isActive: ${user.isActive}`);
+    if (user.isActive === false) {
+      return res
+        .status(403)
+        .json({ message: "Your account is deactivated" });
+    }
 
     const isPassMatch = await bcrypt.compare(password, user.password);
     if (!isPassMatch) {
       return res.status(401).json({ message: "Invalid credentials" });
     }
 
-    // Check if user is active
-    if (user.isActive === false) {
-      console.log(`Login blocked - User ${user.email} is inactive`);
-      return res.status(403).json({ 
-        message: "Your account has been deactivated. Please contact the administrator." 
+    /* ---------- FIRST TIME LOGIN ---------- */
+    if (!user.lastLogin) {
+      // 🔔 ADMIN notification
+      await Notification.create({
+        type: "FIRST_LOGIN",
+        message: `${user.username} logged in for the first time`,
+        userId: user._id,
+        actor: "user",
+      });
+
+      // 🔔 USER notification
+      await Notification.create({
+        type: "FIRST_LOGIN",
+        message: "Welcome to UptoSkills AI Resume Builder 🎉",
+        userId: user._id,
+        actor: "system",
       });
     }
 
-    const token = genrateToken({ id: user._id, isAdmin: user.isAdmin });
+    // update last login every time
+    user.lastLogin = new Date();
+    await user.save();
 
-    // Set cookie
+    const token = genrateToken({
+      id: user._id,
+      isAdmin: user.isAdmin,
+    });
+
     res.cookie("token", token, {
       httpOnly: true,
       secure: false,
@@ -124,19 +155,21 @@ export const login = async (req, res) => {
     });
 
     res.status(200).json({
+      success: true,
       token,
       userID: user._id,
       isAdmin: user.isAdmin,
       message: "Login successful",
     });
   } catch (error) {
-    res
-      .status(500)
-      .json({ message: "Something went wrong", error: error.message });
+    res.status(500).json({
+      message: "Login failed",
+      error: error.message,
+    });
   }
 };
 
-// -------------------- FORGOT PASSWORD --------------------
+/* ================= FORGOT PASSWORD ================= */
 export const forgotPassword = async (req, res) => {
   try {
     const { email } = req.body;
@@ -150,11 +183,15 @@ export const forgotPassword = async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
-    // TODO: implement real email logic here
-    res.status(200).json({ message: "Password reset link sent (simulated)" });
+    // future me email logic
+    res.status(200).json({
+      success: true,
+      message: "Password reset link sent (simulated)",
+    });
   } catch (error) {
-    res
-      .status(500)
-      .json({ message: "Something went wrong", error: error.message });
+    res.status(500).json({
+      message: "Forgot password failed",
+      error: error.message,
+    });
   }
 };

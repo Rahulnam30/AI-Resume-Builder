@@ -1,11 +1,21 @@
-import { Check, EditIcon, Trash2 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { Check, EditIcon, Plus, Trash2 } from "lucide-react";
+import { getCompletionStatus } from "../completion";
 
 const EducationForm = ({ formData, setFormData }) => {
-  const [editingId, setEditingId] = useState(formData?.education?.[0]?.id || null);
+  const [editingId, setEditingId] = useState(null);
+
+  useEffect(() => {
+    const { sectionValidationStatus } = getCompletionStatus(formData);
+    if (sectionValidationStatus.hasValidEducation) {
+      setEditingId(null);
+    } else {
+      setEditingId(formData?.education?.[0]?.id || null);
+    }
+  }, []);
 
   const addEducation = () => {
-    const id = Date.now();
+    const id = crypto.randomUUID();
     setFormData((prev) => ({
       ...prev,
       education: [
@@ -55,7 +65,7 @@ const EducationForm = ({ formData, setFormData }) => {
       {(formData?.education ?? []).map((edu, index) => (
         <div
           key={edu.id}
-          className="shadow-sm border border-gray-300 rounded-lg p-2"
+          className="shadow-sm border border-gray-300 rounded-md p-2"
         >
           {/* Card UI */}
           {editingId !== edu.id && (
@@ -87,7 +97,9 @@ const EducationForm = ({ formData, setFormData }) => {
                     {edu.school}
                   </span>
                 </div>
-                <span className="text-sm font-medium break-words">{edu.degree}</span>
+                <span className="text-sm font-medium break-words">
+                  {edu.degree}
+                </span>
                 <div className="w-full py-1 flex gap-2 justify-between items-center">
                   <div className="">
                     {edu?.gpa && (
@@ -115,9 +127,9 @@ const EducationForm = ({ formData, setFormData }) => {
                   <label>Degree *</label>
                   <input
                     type="text"
-                    placeholder="Bachelor of Science in Computer Science"
-                    value={edu.degree || ""}
                     className="px-2.5 py-2 border text-sm rounded border-1.5 focus:border-[#007bff] focus:outline-none focus:bg-white focus:shadow-[0_2px_8px_rgba(0,123,255,0.07)]"
+                    value={edu.degree || ""}
+                    placeholder="Bachelor of Science in Computer Science"
                     onChange={(e) => {
                       const val = e.target.value;
                       const updated = (formData?.education ?? []).map((item) =>
@@ -131,9 +143,9 @@ const EducationForm = ({ formData, setFormData }) => {
                   <label>School *</label>
                   <input
                     type="text"
-                    placeholder="University Name"
-                    value={edu.school || ""}
                     className="px-2.5 py-2 border text-sm rounded border-1.5 focus:border-[#007bff] focus:outline-none focus:bg-white focus:shadow-[0_2px_8px_rgba(0,123,255,0.07)]"
+                    value={edu.school || ""}
+                    placeholder="University Name"
                     onChange={(e) => {
                       const val = e.target.value;
                       const updated = (formData?.education ?? []).map((item) =>
@@ -144,11 +156,11 @@ const EducationForm = ({ formData, setFormData }) => {
                   />
                 </div>
                 <div className="flex flex-col gap-[6px] mb-[10px]">
-                  <label>Start Date</label>
+                  <label>Start Date *</label>
                   <input
                     type="month"
-                    value={edu.startDate || ""}
                     className="px-2.5 py-2 border text-sm rounded border-1.5 focus:border-[#007bff] focus:outline-none focus:bg-white focus:shadow-[0_2px_8px_rgba(0,123,255,0.07)]"
+                    value={edu.startDate || ""}
                     onChange={(e) => {
                       const val = e.target.value;
                       const updated = (formData?.education ?? []).map((item) =>
@@ -159,11 +171,11 @@ const EducationForm = ({ formData, setFormData }) => {
                   />
                 </div>
                 <div className="flex flex-col gap-[6px] mb-[10px]">
-                  <label>Graduation Date</label>
+                  <label>Graduation Date *</label>
                   <input
                     type="month"
-                    value={edu.graduationDate || ""}
                     className="px-2.5 py-2 border text-sm rounded border-1.5 focus:border-[#007bff] focus:outline-none focus:bg-white focus:shadow-[0_2px_8px_rgba(0,123,255,0.07)]"
+                    value={edu.graduationDate || ""}
                     onChange={(e) => {
                       const val = e.target.value;
                       const updated = (formData?.education ?? []).map((item) =>
@@ -179,9 +191,9 @@ const EducationForm = ({ formData, setFormData }) => {
                   <label>GPA (Optional)</label>
                   <input
                     type="text"
-                    placeholder="7.8/10.0"
-                    value={edu.gpa || ""}
                     className="px-2.5 py-2 border text-sm rounded border-1.5 focus:border-[#007bff] focus:outline-none focus:bg-white focus:shadow-[0_2px_8px_rgba(0,123,255,0.07)]"
+                    value={edu.gpa || ""}
+                    placeholder="7.8/10.0"
                     onChange={(e) => {
                       const val = e.target.value;
                       const updated = (formData?.education ?? []).map((item) =>
@@ -213,8 +225,8 @@ const EducationForm = ({ formData, setFormData }) => {
           )}
         </div>
       ))}
-      <button className="text-left" onClick={addEducation}>
-        + Add Education
+      <button className="flex items-center text-left" onClick={addEducation}>
+        <Plus size={14} className="mr-1 inline" /> Add Education
       </button>
     </div>
   );

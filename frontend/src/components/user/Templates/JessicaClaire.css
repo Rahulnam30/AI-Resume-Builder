@@ -140,6 +140,10 @@
         box-shadow: none;
     }
 
+    .jessica-claire-template .firstsection {
+        padding: 10px;
+    }
+
     .jessica-claire-template .sectiontitle {
         font-size: 9px;
         line-height: 0px;

@@ -171,7 +171,7 @@ Warm regards,
       <NavBar />
 
       {/* Hero Section (NO heavy effect on image) */}
-      <section className="w-full bg-white">
+      <section className="w-full bg-white mt-20">
         <div className="max-w-6xl mx-auto px-6 pt-6 pb-20">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             {/* LEFT */}
@@ -214,7 +214,7 @@ Warm regards,
               initial="hidden"
               whileInView="show"
               viewport={{ once: true, amount: 0.25 }}
-              className="relative flex justify-center lg:justify-end"
+              className="relative flex justify-center lg:justify-end hidden sm:flex"
             >
               <div className="absolute -inset-6 bg-blue-100/60 blur-3xl rounded-full" />
 
@@ -285,7 +285,7 @@ Warm regards,
                   key={idx}
                   className="bg-white/5 border border-white/10 p-4 rounded-2xl transition-all duration-300 hover:bg-white/10 hover:border-white/20 hover:-translate-y-1"
                 >
-                  <div className="text-blue-400 font-bold mb-1">{item.label}</div>
+                  <div className="text-blue-400 font-bold text-xs md:text-sm mb-0 md:mb-1">{item.label}</div>
                   <div className="text-xs text-slate-400">{item.desc}</div>
                 </div>
               ))}

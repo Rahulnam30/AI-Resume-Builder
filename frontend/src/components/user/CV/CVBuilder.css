@@ -1,568 +1,162 @@
-/* CVBuilder.css - Simple, Clean, Professional */
+/* ===============================
+   CV BUILDER FORM STYLES
+================================ */
 
-:root {
-  --primary: #2563eb;
-  /* Brand Blue */
-  --bg-app: #f8fafc;
-  /* Lightest Slate */
-  --bg-white: #ffffff;
-  --text-main: #1e293b;
-  --text-muted: #64748b;
-  --border-color: #e2e8f0;
-  --gap-layout: 24px;
-  /* Clear gap between layouts */
-}
-
-/* --- MAIN LAYOUT --- */
-.cv-builder-page {
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
-  background-color: var(--bg-app);
-  font-family: 'Inter', sans-serif;
-  overflow: hidden;
-}
-
-.cv-builder-container {
-  width: 100%;
-  margin: 0 auto;
-   background-color:white;
-}
-
-.cv-builder-content {
-  display: flex;
-  flex: 1;
-  gap: var(--gap-layout);
-  overflow: hidden;
-  position: relative;
-  /* Use full height minus header - adjusted for new header + padding + navbar */
-  height: calc(100vh - 160px);
-}
-
-/* --- LEFT PANEL: FORM --- */
-.cv-form-section {
-  flex: 0.33;
-  /* Reduced to 1/3 */
-  min-width: 0;
-  /* background: var(--bg-white); */
-  border-radius: 12px;
- 
-  /* Simple card feel */
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-/* border: 1px solid var(--border-color); */
-  height: 100%;
-  /* Match parent height */
-}
-
-/* Header/Tabs */
-.cv-form-header {
-  padding: 0.75rem 1rem;
-  /* border-bottom: 1px solid var(--border-color); */
-  /* background: var(--bg-white); */
-}
-
-.cv-form-header .form-tabs {
-  display: flex;
-  gap: 0.5rem;
-  overflow-x: auto;
-  scrollbar-width: none;
-}
-
-.cv-form-header .form-tabs::-webkit-scrollbar {
-  display: none;
-}
-
-.cv-form-header .form-tab {
-  padding: 0.6rem 1rem;
-  font-size: 0.9rem;
-  color: var(--text-muted);
-  background: transparent;
-  border: 1px solid transparent;
-  border-radius: 6px;
-  cursor: pointer;
-  white-space: nowrap;
-  transition: all 0.2s;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.cv-form-header .form-tab:hover {
-  background: #f1f5f9;
-  color: var(--text-main);
-}
-
-.cv-form-header .form-tab:focus {
-  outline: none;
-  box-shadow: none;
-}
-
-.cv-form-header .form-tab.active {
-  background: #EFF6FF;
-  /* Blue-50 */
-  color: #2563EB;
-  /* Blue-600 */
-  border-color: #BFDBFE;
-  /* Blue-200 */
-  font-weight: 600;
-}
-
-/* Form Container */
-.cv-form-container {
-  flex: 1;
-  overflow-y: auto;
-  padding: 0.5rem;
-  /* Hide scrollbar */
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-}
-
-.cv-form-container::-webkit-scrollbar {
-  display: none;
-}
-
-/* Hide scrollbar for form content area */
-.cv-form-content-scrollable {
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-}
-
-.cv-form-content-scrollable::-webkit-scrollbar {
-  display: none;
-}
-
-.cv-form-container h2 {
-  font-size: 1.4rem;
-  color: var(--text-main);
-  margin-bottom: 4px;
-  font-weight: 700;
-}
-
-.cv-form-container .subtitle {
-  font-size: 0.95rem;
-  color: var(--text-muted);
-  margin-top: 0;
-  margin-bottom: 1.25rem;
-  /* Standardized gap */
-}
-
+/* Form Section */
 .form-section {
-  padding-top: 0.5rem;
-}
-
-.cv-form-container .form-group {
-  margin-bottom: 1rem;
-}
-
-.cv-form-container label {
-  display: block;
-  font-size: 0.9rem;
-  font-weight: 600;
-  color: var(--text-main);
-  margin-bottom: 0.5rem;
-}
-
-.cv-form-container input,
-.cv-form-container textarea,
-.cv-form-container select {
-  width: 100%;
-  padding: 12px 16px;
-  /* More comfy padding */
-  font-size: 0.95rem;
-  color: var(--text-main);
- /* background: #f8fafc;*/
-  /* Slight grey background */
-  border: 1px solid #cbd5e1;
-  /* Clear border */
-  border-radius: 8px;
-  /* Distinct curve */
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-  /* Subtle depth */
-  transition: all 0.2s;
-}
-
-.cv-form-container input:focus,
-.cv-form-container textarea:focus {
-  outline: none;
-  border-color: var(--primary);
-  background: #fff;
-  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.15);
-  /* Stronger focus ring */
-}
-
-.cv-form-container .form-grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 0.75rem;
-}
-/* Alert Banner */
-.alert-banner {
-  display: flex;
-  align-items: flex-start;
-  gap: 12px;
-  padding: 16px;
-  background: #fffbeb;
-  border: 1px solid #fde68a;
-  border-radius: 10px;
-  margin-bottom: 20px;
-}
-
-.alert-icon {
-  font-size: 20px;
-}
-
-.alert-content strong {
-  display: block;
-  font-size: 14px;
-  color: #92400e;
-  margin-bottom: 2px;
-}
-
-.alert-content p {
-  font-size: 13px;
-  color: #a16207;
-  margin: 0;
-}
-
-.alert-tags {
-  display: flex;
-  gap: 8px;
-  margin-left: auto;
-  flex-wrap: wrap;
-}
-
-.alert-tag {
-  padding: 4px 10px;
-  border-radius: 6px;
-  font-size: 11px;
-  font-weight: 500;
-}
-
-.alert-tag.warning {
-  background: #fef3c7;
-  color: #92400e;
-}
-
-.alert-tag.success {
-  background: #d1fae5;
-  color: #065f46;
-}
-@media (max-width: 1200px) {
-  .content-area {
-  display: grid;
-  grid-template-columns: 35% 65%;   /* 👈 forms smaller, preview larger */
-  gap: 24px;
-  height: calc(100vh - 140px);
-  padding: 16px;
-}
-
-
-  .alert-tags {
-    margin-left: 0;
-    margin-top: 12px;
-  }
-
-  .alert-banner {
-    flex-wrap: wrap;
-  }
-}
-
-/* --- RIGHT PANEL: LIVE PREVIEW --- */
-.cv-preview-section {
-  flex: 0.67;
-  /* Increased to 2/3 */
-  display: flex;
-  flex-direction: column;
-  background: var(--bg-white);
-  border-radius: 12px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-  border: 1px solid var(--border-color);
-  overflow: hidden;
-  transition: all 0.3s ease;
-}
-
-/* Preview Header - Simple */
-.cv-preview-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0.75rem 1rem;
-  border-bottom: 1px solid var(--border-color);
-  background: var(--bg-white);
-}
-
-.cv-preview-title {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 1rem;
-  font-weight: 600;
-  color: var(--text-main);
-}
-
-.cv-preview-actions {
-  display: flex;
-  gap: 8px;
-}
-
-.cv-preview-action-btn {
-  background: transparent;
-  border: 1px solid transparent;
-  color: var(--text-muted);
-  width: 32px;
-  height: 32px;
-  border-radius: 6px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.cv-preview-action-btn:hover {
-  background: #f1f5f9;
-  color: var(--primary);
-}
-
-/* Preview Content Area is now handled by Tailwind in CVPreview.jsx */
-.cv-preview-scroll-container {
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-}
-
-.cv-preview-scroll-container::-webkit-scrollbar {
-  display: none;
-}
-
-
-
-
-
-/* --- MAXIMIZE STATE: True Full Screen Overlay --- */
-.cv-preview-section.maximized {
-  position: fixed;
-  inset: 0;
-  width: 100vw;
-  height: 100vh;
-  z-index: 9999;
-  background: rgba(241, 245, 249, 0.4);
-  backdrop-filter: blur(4px);
-  /* Professional gallery/PDF background */
-  border-radius: 0;
-  border: none;
-  box-shadow: none;
-  flex: none;
-}
-
-.cv-preview-section.maximized .cv-preview-header {
-  border-radius: 0;
-  border-top: none;
-  border-left: none;
-  border-right: none;
-  border-bottom: 1px solid var(--border-color);
-}
-
-/* Maximized preview spacing */
-@media (max-width: 900px) {
-  .cv-preview-section.maximized .cv-preview-scroll-container {
-    padding: 1rem;
-  }
-}
-
-/* Responsive */
-@media (max-width: 900px) {
-  .cv-builder-content {
+    display: flex;
     flex-direction: column;
-    padding: 1rem;
-    
-  }
+    gap: 20px;
+}
 
-  .cv-form-section {
+.form-section-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #1a1a2e;
+    margin: 0 0 4px 0;
+}
+
+/* Form Grid — single column so fields stack vertically */
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+/* Form Group */
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.form-group.full-width {
+    grid-column: 1 / -1;
+}
+
+.form-group label {
+    font-size: 13px;
+    font-weight: 500;
+    color: #374151;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    padding: 10px 14px;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    font-size: 14px;
+    color: #1a1a2e;
+    background: #fff;
+    transition: all 0.2s;
     width: 100%;
-    min-width: 0;
-  }
-
-  .cv-form-container .form-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .custom-social-row {
-    grid-template-columns: 1fr !important;
-  }
 }
 
-.custom-social-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  gap: 1.25rem;
-  margin-top: 1.25rem;
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
 }
 
-/* --- REPEATER FORMS (Experience, Education) --- */
+.form-group textarea {
+    resize: vertical;
+    min-height: 100px;
+    font-family: inherit;
+    line-height: 1.5;
+}
+
+/* Entry Card — each experience / education / project / cert block */
 .entry-card {
-  /*background: #f8fafc;
-  border: 1px solid #e2e8f0;*/
-  border-radius: 8px;
-  padding: 1.25rem;
-  margin-bottom: 1.5rem;
-  position: relative;
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
 }
 
+/* Entry Header — title + delete button row */
 .entry-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1rem;
-  font-weight: 600;
-  font-size: 0.95rem;
-  color: var(--text-main);
-  border-bottom: 1px solid #e2e8f0;
-  padding-bottom: 0.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 14px;
+    font-weight: 600;
+    color: #1a1a2e;
 }
 
+/* Remove Entry Button */
 .remove-entry-btn {
-  background: #fee2e2;
-  color: #ef4444;
-  border: none;
-  width: 28px;
-  height: 28px;
-  border-radius: 4px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    background: #fee2e2;
+    border: none;
+    border-radius: 8px;
+    color: #dc2626;
+    cursor: pointer;
+    transition: all 0.2s;
 }
 
 .remove-entry-btn:hover {
-  background: #fecaca;
+    background: #fecaca;
+    color: #b91c1c;
 }
 
+/* Add Entry Button */
 .add-entry-btn {
-  width: 100%;
-  padding: 12px;
-  background: transparent;
-  border: 1px dashed #cbd5e1;
-  color: var(--primary);
-  font-weight: 500;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.2s;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 12px 20px;
+    background: #f0f9ff;
+    border: 1px dashed #93c5fd;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #2563eb;
+    cursor: pointer;
+    transition: all 0.2s;
+    width: 100%;
 }
 
 .add-entry-btn:hover {
-  background: #f1f5f9;
-  border-color: var(--primary);
+    background: #dbeafe;
+    border-color: #60a5fa;
 }
 
-/* --- SKILLS FORM --- */
-.skills-type-tabs {
-  display: flex;
-  gap: 1rem;
-  margin-bottom: 1.5rem;
-  border-bottom: 1px solid #e2e8f0;
+/* Responsive: stack form-grid to single column on small screens */
+@media (max-width: 640px) {
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
 }
 
-.skill-type-tab {
-  padding: 0.5rem 1rem;
-  background: none;
-  border: none;
-  border-bottom: 2px solid transparent;
-  color: var(--text-muted);
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s;
+/* ===============================
+   PAGINATED PREVIEW OVERRIDES
+================================ */
+
+/* Remove min-height from templates inside paginated containers
+   so the measurement container can get the real content height */
+.paginated-measure-box .resume-root,
+.paginated-content-slice .resume-root {
+    min-height: unset !important;
+    max-width: unset !important;
+    border: none !important;
+    box-shadow: none !important;
+    width: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
 }
 
-.skill-type-tab.active {
-  color: var(--primary);
-  border-bottom-color: var(--primary);
-}
-
-.add-skill-row {
-  display: flex;
-  gap: 0.75rem;
-  margin-bottom: 1.5rem;
-}
-
-.add-skill-row input {
-  flex: 1;
-  /* Input styling inherited from global above */
-  margin-bottom: 0;
-  /* Override default input margin */
-}
-
-.add-skill-row button {
-  padding: 0 1.5rem;
-  background: var(--text-main);
-  /* Black/Slate */
-  color: white;
-  border: none;
-  border-radius: 8px;
-  font-weight: 500;
-  cursor: pointer;
-}
-
-.skills-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  margin-bottom: 1.5rem;
-}
-
-.skill-tag {
-  background: #e0f2fe;
-  color: #0369a1;
-  padding: 4px 10px;
-  border-radius: 20px;
-  font-size: 0.85rem;
-  font-weight: 500;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.skill-tag button {
-  background: none;
-  border: none;
-  color: #0369a1;
-  cursor: pointer;
-  font-size: 1.1rem;
-  line-height: 1;
-  padding: 0;
-  display: flex;
-}
-
-.suggested-skills p {
-  font-size: 0.85rem;
-  color: var(--text-muted);
-  margin-bottom: 0.5rem;
-}
-
-.suggested-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-}
-
-.suggested-tag {
-  background: #f1f5f9;
-  border: 1px solid #e2e8f0;
-  padding: 4px 10px;
-  border-radius: 20px;
-  font-size: 0.8rem;
-  color: var(--text-muted);
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.suggested-tag:hover {
-  background: #e2e8f0;
-  color: var(--text-main);
+/* Ensure content flows naturally within pages */
+.paginated-content-slice {
+    line-height: 1.6;
 }

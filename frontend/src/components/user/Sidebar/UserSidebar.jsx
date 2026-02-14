@@ -12,12 +12,15 @@ import {
   LogOut,
   Menu,
   X,
+  Bell,
 } from "lucide-react";
+import { useUserNotifications } from "../../../context/UserNotificationContext";
 import "./UserSidebar.css";
 
 export default function UserSidebar() {
   const navigate = useNavigate();
   const location = useLocation();
+  const { unreadCount } = useUserNotifications();
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [hoveredItem, setHoveredItem] = useState(null);
   const [isMobile, setIsMobile] = useState(false);
@@ -82,6 +85,13 @@ export default function UserSidebar() {
       icon: Download,
       label: "Downloads",
       path: "/user/downloads",
+    },
+    {
+      id: "notifications",
+      icon: Bell,
+      label: "Notifications",
+      path: "/user/notifications",
+      badge: unreadCount > 0 ? unreadCount : null,
     },
   ];
 
@@ -150,13 +160,22 @@ export default function UserSidebar() {
                   onClick={() => handleNavigate(item.path)}
                   onMouseEnter={() => isCollapsed && setHoveredItem(item.id)}
                   onMouseLeave={() => setHoveredItem(null)}
-                  className={`w-full flex items-center rounded-xl transition-all
+                  className={`w-full flex items-center relative rounded-xl transition-all
                     ${isCollapsed ? "justify-center px-0" : "gap-3 px-4"} py-3
                     ${active ? "bg-blue-50 text-blue-600 font-semibold" : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"}`}
                 >
                   <Icon size={22} />
                   {!isCollapsed && (
                     <span className="whitespace-nowrap">{item.label}</span>
+                  )}
+                  {item.badge && (
+                    <motion.span
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      className={`${isCollapsed ? 'absolute -top-1 -right-1' : 'ml-auto'} inline-flex items-center justify-center w-5 h-5 text-xs font-bold text-white rounded-full ${active ? 'bg-yellow-400' : 'bg-yellow-400'}`}
+                    >
+                      {item.badge}
+                    </motion.span>
                   )}
                 </button>
                 {/* Tooltip for collapsed state */}
@@ -189,7 +208,7 @@ export default function UserSidebar() {
 
       {/* Right Panel (Navbar + Content) */}
       <div
-        className={`transition-all duration-300 mt-16 ${isCollapsed ? "md:ml-[80px]" : "md:ml-[256px]"}`}
+        className={`transition-all duration-300 mt-0 ${isCollapsed ? "md:ml-[80px]" : "md:ml-[256px]"}`}
       >
         <Outlet />
       </div>

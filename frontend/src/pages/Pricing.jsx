@@ -89,7 +89,7 @@ const Pricing = () => {
   return (
     <>
       <NavBar />
-      <section className="bg-white px-6 md:px-16 py-12">
+      <section className="bg-white pt-20 px-6 md:px-16 py-12">
         <div className="max-w-7xl mx-auto">
           {/* Header */}
           <div className="text-center mb-14 select-none">
@@ -104,14 +104,25 @@ const Pricing = () => {
           </div>
 
           {/* Enhanced Pricing Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+<div
+  className="
+    flex overflow-x-auto gap-6 pt-6 pb-6
+    md:grid md:grid-cols-3 md:gap-8 md:overflow-visible md:pt-0
+    snap-x snap-mandatory
+    scrollbar-hide
+  "
+>
+
+
+
             {plans.map((plan, index) => (
               <div
-                key={index}
-                className={`rounded-2xl shadow-md p-8 relative ${
-                  plan.gradient ? "bg-gradient-to-b from-orange-50 to-white shadow-xl" : "bg-white"
-                }`}
-              >
+  key={index}
+  className={`snap-center min-w-[85%] md:min-w-0 rounded-2xl shadow-md p-8 relative ${
+    plan.gradient ? "bg-gradient-to-b from-orange-50 to-white shadow-xl" : "bg-white"
+  }`}
+>
+
                 {plan.badge && (
                   <span
                     className={`absolute -top-4 left-1/2 -translate-x-1/2 ${plan.badgeColor} text-white text-xs font-semibold px-4 py-1 rounded-full select-none shadow`}

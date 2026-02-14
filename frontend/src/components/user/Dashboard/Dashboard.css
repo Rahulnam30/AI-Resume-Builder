@@ -181,14 +181,16 @@
 
 @media (max-width: 600px) {
   .dashboard-page {
-    padding: 15px 20px;
+    padding: 0;
   }
+}
+
 
   .dashboard-stats > div {
     font-size: 1rem;
     padding: 14px 18px;
   }
-}
+
 
 /* ===============================
    TOP BAR
@@ -210,10 +212,32 @@
   gap: 20px;
 }
 .dashboard-content-container {
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: 0 30px 40px;
+  width: 100%;
+  max-width: none;      /* REMOVE constraint */
+  margin: 0;
+  padding: 0 24px 40px; /* controlled inner spacing */
 }
+
+
+/* Tablet */
+@media (min-width: 768px) {
+  .dashboard-content-container {
+    padding: 0 24px 36px;
+  }
+}
+
+/* Desktop */
+@media (min-width: 1024px) {
+  .dashboard-content-container {
+    padding: 0 30px 40px;
+  }
+}
+  @media (max-width: 360px) {
+  .dashboard-content-container {
+    padding: 0 12px 28px;
+  }
+}
+
 
 /* Search bar */
 .search-box input {

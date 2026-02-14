@@ -1,4 +1,11 @@
 import jwt from "jsonwebtoken";
+import mongoose from "mongoose";
+
+// lazy import User to avoid circular requires at module load
+const getUserModel = async () => {
+  const mod = await import("../Models/User.js");
+  return mod.default || mod.User || mod.User;
+};
 
 const isAuth = async (req, res, next) => {
   try {
@@ -13,7 +20,21 @@ const isAuth = async (req, res, next) => {
     }
     
     // FIX: Use 'id' instead of 'userId'
-    req.userId = verifyToken.id;
+    let tokenId = verifyToken.id;
+
+    // If tokenId is not a valid ObjectId (e.g., legacy 'admin-id'), try to map it to a real admin user id
+    if (!mongoose.Types.ObjectId.isValid(tokenId)) {
+      try {
+        const User = await getUserModel();
+        const admin = await User.findOne({ isAdmin: true });
+        if (admin) tokenId = admin._id;
+      } catch (e) {
+        // ignore and fall back to tokenId as-is
+        console.warn('isAuth: failed to map token id to admin user', e.message);
+      }
+    }
+
+    req.userId = tokenId;
     next();
   } catch (error) {
     console.log("isAuth error:", error);

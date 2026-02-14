@@ -1,12 +1,28 @@
-import { useState } from "react";
-import { useNavigate, Link } from 'react-router-dom';
-import UpToSkillsImg from '../assets/UptoSkills.webp';
+import { useEffect, useRef, useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
+import UpToSkillsImg from "../assets/UptoSkills.webp";
+import axiosInstance from "./../api/axios";
 import {
-  Menu, LogIn, UserPlus, LogOut, X,
-  CheckCircle, Layout, FileSearch, Zap, Edit3,
-  BarChart3, Layers, Activity, Palette, PenTool,
-  ChevronDown, ChevronRight
-} from 'lucide-react';
+  Menu,
+  LogIn,
+  UserPlus,
+  LogOut,
+  X,
+  CheckCircle,
+  Layout,
+  FileSearch,
+  Zap,
+  Edit3,
+  BarChart3,
+  Layers,
+  Activity,
+  Palette,
+  PenTool,
+  ChevronDown,
+  ChevronRight,
+  LayoutDashboard,
+  User,
+} from "lucide-react";
 
 export default function NavBar() {
   const navigate = useNavigate();
@@ -14,6 +30,12 @@ export default function NavBar() {
     typeof window !== "undefined" && !!localStorage.getItem("token");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [featuresOpen, setFeaturesOpen] = useState(false);
+  const [profileMenuOpen, setProfileMenuOpen] = useState(false);
+  const [userName, setUserName] = useState("");
+  const [loading, setLoadingStatus] = useState(false);
+
+  const menuRef = useRef(null);
+  const profileMenuOpenRef = useRef(null);
 
   const toggleMobileMenu = () => {
     setMobileMenuOpen(!mobileMenuOpen);
@@ -31,77 +53,132 @@ export default function NavBar() {
     closeMobileMenu();
   };
 
+  //To decode JWT token
+  function decodeJWT(token) {
+    if (!token) return null;
+    try {
+      const payload = token.split(".")[1];
+      const base64 = payload.replace(/-/g, "+").replace(/_/g, "/");
+      const jsonPayload = decodeURIComponent(
+        atob(base64)
+          .split("")
+          .map((c) => "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2))
+          .join(""),
+      );
+
+      return JSON.parse(jsonPayload);
+    } catch (err) {
+      console.error("Invalid JWT", err);
+      return null;
+    }
+  }
+  // getting the username from db
+  useEffect(() => {
+    if (!isLoggedIn) return;
+    const fetchUsers = async () => {
+      try {
+        setLoadingStatus(true);
+        const token = localStorage.getItem("token");
+        if (!token) return;
+        const { id } = decodeJWT(token);
+        const res = await axiosInstance.get(`/api/user/profile/${id}`);
+        setUserName(res.data.username);
+        setLoadingStatus(false);
+      } catch (err) {
+        console.error(err.response?.data || err.message);
+      }
+    };
+
+    fetchUsers();
+  }, []);
+
+  //profile dropdown menu click outside handler
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (
+        menuRef.current &&
+        profileMenuOpenRef.current &&
+        !menuRef.current.contains(e.target) &&
+        !profileMenuOpenRef.current.contains(e.target)
+      ) {
+        setProfileMenuOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
   const features = [
     {
       name: "AI Resume Checker",
       path: "/resume-checker",
       icon: CheckCircle,
       colorClass: "text-blue-500",
-      hoverClass: "hover:bg-blue-50"
+      hoverClass: "hover:bg-blue-50",
     },
     {
       name: "Categorized Templates",
       path: "/TemplatesFeature",
       icon: Layout,
       colorClass: "text-emerald-500",
-      hoverClass: "hover:bg-emerald-50"
+      hoverClass: "hover:bg-emerald-50",
     },
     {
       name: "ATS Score Checker",
       path: "/ats-checker",
       icon: FileSearch,
       colorClass: "text-purple-500",
-      hoverClass: "hover:bg-purple-50"
+      hoverClass: "hover:bg-purple-50",
     },
     {
       name: "Guilded AI Builder",
       path: "/AI-builder",
       icon: Zap,
       colorClass: "text-cyan-500",
-      hoverClass: "hover:bg-cyan-50"
+      hoverClass: "hover:bg-cyan-50",
     },
     {
       name: "Content Enhancement",
       path: "/content-enhance",
       icon: Edit3,
       colorClass: "text-rose-500",
-      hoverClass: "hover:bg-rose-50"
+      hoverClass: "hover:bg-rose-50",
     },
     {
       name: "Live Quality Scoring",
       path: "/score-checker",
       icon: BarChart3,
       colorClass: "text-amber-500",
-      hoverClass: "hover:bg-amber-50"
+      hoverClass: "hover:bg-amber-50",
     },
     {
       name: "Resume Manager",
       path: "/resume-hub",
       icon: Layers,
       colorClass: "text-indigo-500",
-      hoverClass: "hover:bg-indigo-50"
+      hoverClass: "hover:bg-indigo-50",
     },
     {
       name: "Growth Insights",
       path: "/growths",
       icon: Activity,
       colorClass: "text-green-500",
-      hoverClass: "hover:bg-green-50"
+      hoverClass: "hover:bg-green-50",
     },
     {
       name: "CV Formatting",
       path: "/cv",
       icon: Palette,
       colorClass: "text-violet-500",
-      hoverClass: "hover:bg-violet-50"
+      hoverClass: "hover:bg-violet-50",
     },
     {
       name: "Cover Letter Builder",
       path: "/cover-letter",
       icon: PenTool,
       colorClass: "text-teal-500",
-      hoverClass: "hover:bg-teal-50"
-    }
+      hoverClass: "hover:bg-teal-50",
+    },
   ];
 
   return (
@@ -127,11 +204,7 @@ export default function NavBar() {
             className="flex items-center gap-2 sm:gap-3 focus:outline-none flex-shrink-0 order-2 md:order-1"
             aria-label="Go to home"
           >
-            <img
-              src={UpToSkillsImg}
-              alt="UptoSkills Logo"
-              className="w-24 sm:w-32 md:w-36 lg:w-[140px]"
-            />
+            <img src={UpToSkillsImg} alt="UptoSkills Logo" className="w-24 sm:w-32 md:w-36 lg:w-[160px]" />
           </button>
 
           {/* Desktop Navigation */}
@@ -215,7 +288,13 @@ export default function NavBar() {
 
               {isLoggedIn && (
                 <li className="cursor-pointer hover:text-orange-600 transition-colors">
-                  <Link to={JSON.parse(localStorage.getItem("isAdmin") || "false") ? "/admin" : "/user/dashboard"}>
+                  <Link
+                    to={
+                      JSON.parse(localStorage.getItem("isAdmin") || "false")
+                        ? "/admin"
+                        : "/user/dashboard"
+                    }
+                  >
                     Dashboard
                   </Link>
                 </li>
@@ -227,6 +306,74 @@ export default function NavBar() {
                 <Link to="/contact">Contact</Link>
               </li>
             </ul>
+          </div>
+
+          {isLoggedIn && (
+            <div
+              title="Profile"
+              ref={profileMenuOpenRef}
+              onClick={() => setProfileMenuOpen(!profileMenuOpen)}
+              className="flex items-center gap-2 p-1 md:pr-2 rounded-full cursor-pointer md:hover:bg-gray-100 order-3"
+            >
+              <div className="bg-gray-200 p-2 rounded-full items-center md:flex">
+                <User size={20} />
+              </div>
+              <div className="md:flex hidden items-center gap-1">
+                {loading && (
+                  <div className="w-24 h-4 bg-gray-200 rounded-xl flex justify-center items-center">
+                    <div className="w-2 h-2 border border-black border-b-black/30 rounded-xl animate-spin"></div>
+                  </div>
+                )}
+                <span>{userName}</span>
+                <ChevronDown
+                  size={16}
+                  className={`transition-transform duration-300 ease-in-out ${
+                    profileMenuOpen ? "rotate-180" : "rotate-0"
+                  }`}
+                />
+              </div>
+            </div>
+          )}
+          {/* DROPDOWN MENU FOR LOGGED IN USER */}
+          <div
+            ref={menuRef}
+            className={`absolute md:top-20 top-16 right-3 w-48 rounded bg-slate-100 border border-slate-200 shadow-lg p-2
+                        transition-all duration-200 ease-out origin-top-right
+                        ${
+                          profileMenuOpen
+                            ? "opacity-100 scale-100 visible"
+                            : "opacity-0 scale-95 invisible"
+                        }`}
+          >
+            <Link
+              className="flex items-center gap-3 px-4 py-2 rounded cursor-pointer 
+                  hover:bg-gray-300 hover:text-white transition-colors"
+              to="/user/edit-profile"
+            >
+              <User size={18} />
+              <span className="text-sm font-medium">Profile</span>
+            </Link>
+
+            <Link
+              className="flex items-center gap-3 px-4 py-2 rounded cursor-pointer 
+                  hover:bg-gray-300 hover:text-white transition-colors"
+              to="/user/dashboard"
+            >
+              <LayoutDashboard size={18} />
+              <span className="text-sm font-medium">Dashboard</span>
+            </Link>
+
+            <div
+              className="flex items-center gap-3 px-4 py-2 rounded cursor-pointer bg-red-500 text-white mt-2 
+                  hover:bg-red-700 hover:text-white transition-colors"
+              onClick={() => {
+                localStorage.removeItem("token");
+                navigate("/login");
+              }}
+            >
+              <LogOut size={18} />
+              <span className="text-sm font-medium">Logout</span>
+            </div>
           </div>
 
           {/* Desktop Auth Buttons */}
@@ -249,21 +396,6 @@ export default function NavBar() {
               </button>
             </div>
           )}
-
-          {isLoggedIn && (
-            <div className="items-center hidden gap-3 lg:gap-4 xl:gap-6 md:flex order-3">
-              <button
-                onClick={handleLogout}
-                className="flex items-center gap-2 lg:gap-3 px-3 lg:px-5 xl:px-6 py-2 lg:py-2.5 bg-[#e65100] text-white rounded-xl font-bold text-sm lg:text-base transition-all duration-300 border-2 border-transparent hover:bg-[#ff6d00] hover:shadow-xl hover:shadow-orange-200 hover:-translate-y-1 active:scale-95"
-              >
-                <LogOut size={18} className="lg:w-5 lg:h-5" />
-                <span>Logout</span>
-              </button>
-            </div>
-          )}
-
-          {/* Spacer for mobile to balance layout - Now on RIGHT */}
-          <div className="w-6 sm:w-7 md:hidden order-3"></div>
         </div>
       </nav>
 
@@ -277,8 +409,9 @@ export default function NavBar() {
 
       {/* Mobile Sidebar - Now slides from LEFT */}
       <div
-        className={`fixed top-0 left-0 h-full w-80 bg-white shadow-2xl z-50 transform transition-transform duration-300 ease-in-out md:hidden ${mobileMenuOpen ? "translate-x-0" : "-translate-x-full"
-          }`}
+        className={`fixed top-0 left-0 h-full w-80 bg-white shadow-2xl z-50 transform transition-transform duration-300 ease-in-out md:hidden ${
+          mobileMenuOpen ? "translate-x-0" : "-translate-x-full"
+        }`}
       >
         <div className="flex flex-col h-full">
           {/* Sidebar Header */}

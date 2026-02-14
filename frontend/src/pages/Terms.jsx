@@ -50,12 +50,11 @@ const TermsAndConditions = () => {
                 Acceptance of Terms
               </h2>
               <p className="text-lg leading-relaxed text-gray-600">
-                By accessing and using the UptoSkills website and our AI-Resume
-                Builder, you explicitly agree to comply with and be bound by
-                these Terms & Conditions. These terms apply to all visitors,
-                users, and others who wish to access or use the Service. If you
-                do not agree with any part of these terms, you are prohibited
-                from using this website.
+              By accessing or using the UptoSkills website and our AI Resume Builder,
+              you agree to comply with and be bound by these Terms of Service.
+              These terms apply to all visitors, users, and others who access or use
+              the Service. If you do not agree with any part of these terms, you are
+              prohibited from using this website.
               </p>
             </section>
 
@@ -67,11 +66,11 @@ const TermsAndConditions = () => {
                 Intellectual Property
               </h2>
               <p className="text-lg leading-relaxed text-gray-600">
-                All content on the UptoSkills website, including but not limited
-                to text, graphics, logos, resume templates, AI algorithms, and
-                software, is the exclusive property of UptoSkills. You may not
-                modify, reproduce, or exploit any content without our express
-                prior written permission.
+               All content available on the UptoSkills website, including but not limited
+               to text, graphics, logos, resume templates, AI algorithms, and software,
+               is the exclusive property of UptoSkills and is protected by applicable
+               intellectual property laws. You may not use, modify, reproduce, distribute,
+               or create derivative works from any content without our prior written permission.
               </p>
             </section>
 
@@ -83,9 +82,8 @@ const TermsAndConditions = () => {
                 Use of the Website
               </h2>
               <p className="text-lg leading-relaxed text-gray-600">
-                You are permitted to use the UptoSkills AI-Resume Builder for
-                personal career advancement purposes. You agree not to engage
-                in:
+               You are permitted to use the UptoSkills AI Resume Builder solely for
+               personal career development purposes. You agree not to engage in:
               </p>
               <ul className="pl-6 mt-6 space-y-4 text-gray-600 list-none">
                 {[
@@ -113,18 +111,14 @@ const TermsAndConditions = () => {
                 AI Content & User Responsibility
               </h2>
               <div className="bg-slate-50 border border-slate-100 p-8 rounded-[2rem] relative overflow-hidden">
-                <div className="absolute top-0 right-0 p-4 opacity-10">
-                  <AlertCircle size={80} className="text-[#0077cc]" />
-                </div>
                 <h3 className="text-lg font-bold mb-3 text-[#0077cc] flex items-center gap-2">
                   Disclaimer on AI Accuracy
                 </h3>
                 <p className="relative z-10 text-lg leading-relaxed text-gray-600">
-                  Our AI provides suggestions based on industry patterns. While
-                  we strive for excellence, UptoSkills does not guarantee the
-                  factual accuracy of AI-generated text. It is the user's
-                  ultimate responsibility to review and verify all content
-                  within their resume before submission to employers.
+                Our AI provides suggestions based on industry patterns and available data.
+                UptoSkills does not guarantee the accuracy, completeness, or reliability
+                of AI-generated content. Users are responsible for reviewing and verifying
+                all information in their resumes before submission to employers.
                 </p>
               </div>
             </section>
@@ -137,12 +131,11 @@ const TermsAndConditions = () => {
                 Privacy Policy
               </h2>
               <p className="text-lg leading-relaxed text-gray-600">
-                Your privacy is of utmost importance to us. We collect and
-                process personal data to provide a seamless resume-building
-                experience. Our comprehensive Privacy Policy details how we
-                collect, use, and protect your personal information, including
-                resume data and contact details. By using our services, you
-                consent to the data practices described in our policy.
+              We collect, use, and process personal data in accordance with our Privacy Policy
+              to provide and improve our services. Our Privacy Policy explains how we collect,
+              use, store, and protect your personal information, including resume data and
+              contact details. By using our services, you consent to the data practices
+              described in our Privacy Policy.
               </p>
             </section>
 
@@ -154,11 +147,11 @@ const TermsAndConditions = () => {
                 Limitation of Liability
               </h2>
               <p className="p-6 text-lg italic leading-relaxed text-gray-600 border bg-slate-50 rounded-2xl border-slate-100">
-                In no event shall UptoSkills or its affiliates be liable for any
-                direct, indirect, incidental, or consequential damages
-                (including but not limited to loss of job opportunities) arising
-                from your use of the platform or the failure of a resume to
-                secure employment.
+               To the fullest extent permitted by applicable law, UptoSkills and its affiliates
+               shall not be liable for any direct, indirect, incidental, consequential, or
+               special damages (including but not limited to loss of job opportunities)
+               arising from your use of the platform or from any resume’s inability to
+              secure employment.
               </p>
             </section>
           </div>

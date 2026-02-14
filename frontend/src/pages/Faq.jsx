@@ -31,12 +31,28 @@ const faqs = [
     a: "Yes. You can use basic features completely free. Premium features unlock advanced optimization and templates.",
   },
   {
+    q: "How does ATS (Applicant Tracking System) work and why does it matter?",
+    a: "ATS software scans and parses your resume before any human sees it. Over 75% of resumes are rejected by ATS due to poor formatting, missing keywords, or incompatible file types. Our AI ensures your resume is ATS-friendly by using standard headings, readable fonts, and keyword optimization aligned with job descriptions.",
+  },
+  {
+    q: "How can I ace ATS and get my resume seen by recruiters?",
+    a: "To beat ATS: use simple formatting without tables or columns, include relevant keywords from the job posting, stick to standard section headings like 'Experience' and 'Education', save as PDF or DOCX, and avoid graphics or images. Our Pro and Premium plans include ATS Score Optimization that automatically analyzes and improves your resume's ATS compatibility.",
+  },
+  {
     q: "Can I download my resume?",
     a: "Absolutely. You can download your resume in PDF format once it's generated or optimized.",
   },
   {
     q: "Will my resume pass ATS systems?",
     a: "Our platform is built around ATS standards used by Fortune 500 companies, increasing your chances significantly.",
+  },
+  {
+    q: "What's the difference between Free, Pro, and Premium plans?",
+    a: "Free gives you basic AI resume building and section suggestions. Pro (₹299/month) adds premium templates, ATS score optimization, AI content enhancement, and unlimited downloads—perfect for active job seekers. Premium (₹999/year) includes everything in Pro plus priority support and all future updates, saving you money with annual billing.",
+  },
+  {
+    q: "What benefits do Pro and Premium users get that Free users don't?",
+    a: "Pro and Premium users unlock all premium templates, ATS Score Optimization to beat applicant tracking systems, AI Content Enhancement for stronger bullet points, and unlimited resume downloads. Premium users also get priority support and guaranteed access to all future features. These tools significantly boost your chances of landing interviews.",
   },
   {
     q: "Is my data safe?",

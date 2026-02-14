@@ -5,14 +5,15 @@ import {
   FiStar, FiEdit, FiCopy, FiRefreshCw, FiMoreVertical, FiLayout, FiList, FiGrid, FiChevronDown, FiCheck
 } from 'react-icons/fi';
 import { motion, AnimatePresence } from 'framer-motion';
-import { initializeSampleData } from '../../../utils/sampleDownloadsData';
+import { initializeSampleData, generateSampleDownloads } from '../../../utils/sampleDownloadsData';
 import UserNavBar from '../UserNavBar/UserNavBar';
 
 const Downloads = () => {
   const [downloads, setDownloads] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
-  const [filterType, setFilterType] = useState('all');
+  const [selectedTypes, setSelectedTypes] = useState([]);
+  const [selectedFormats, setSelectedFormats] = useState([]);
   const [sortBy, setSortBy] = useState('recent');
   const [viewMode, setViewMode] = useState('grid');
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -96,6 +97,13 @@ const Downloads = () => {
     }
   };
 
+  const handleResetSamples = () => {
+    const sampleData = generateSampleDownloads();
+    setDownloads(sampleData);
+    localStorage.setItem('resumeDownloads', JSON.stringify(sampleData));
+    setOpenMenuId(null);
+  };
+
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     const now = new Date();
@@ -116,24 +124,32 @@ const Downloads = () => {
   };
 
   const getFilteredDownloads = () => {
-    let filtered = downloads;
+    let filtered = [...downloads];
 
-    if (filterType === 'resume' || filterType === 'cover-letter') {
-      filtered = filtered.filter(d => d.type === filterType);
+    // Filter by Type
+    if (selectedTypes.length > 0) {
+      filtered = filtered.filter(d => selectedTypes.includes(d.type));
     }
 
+    // Filter by Format
+    if (selectedFormats.length > 0) {
+      filtered = filtered.filter(d => selectedFormats.includes(d.format));
+    }
+
+    // Search term filter
     if (searchTerm) {
       filtered = filtered.filter(d =>
         d.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        d.template?.toLowerCase().includes(searchTerm.toLowerCase())
+        (d.template && d.template.toLowerCase().includes(searchTerm.toLowerCase()))
       );
     }
 
-    if (filterType === 'recent' || filterType === 'all') {
+    // Sort
+    if (sortBy === 'recent') {
       filtered = filtered.sort((a, b) => new Date(b.downloadDate) - new Date(a.downloadDate));
-    } else if (filterType === 'name') {
+    } else if (sortBy === 'name') {
       filtered = filtered.sort((a, b) => a.name.localeCompare(b.name));
-    } else if (filterType === 'views') {
+    } else if (sortBy === 'views') {
       filtered = filtered.sort((a, b) => (b.views || 0) - (a.views || 0));
     }
 
@@ -144,20 +160,42 @@ const Downloads = () => {
     total: downloads.length,
     resumes: downloads.filter(d => d.type === 'resume').length,
     coverLetters: downloads.filter(d => d.type === 'cover-letter').length,
+    cvs: downloads.filter(d => d.type === 'cv').length,
     totalViews: downloads.reduce((sum, d) => sum + (d.views || 0), 0)
   };
 
   const filteredDownloads = getFilteredDownloads();
 
-  const filterOptions = [
-    { value: 'all', label: 'All Documents' },
-    { value: 'resume', label: 'Resumes Only' },
+  const typeOptions = [
+    { value: 'resume', label: 'Resumes' },
     { value: 'cover-letter', label: 'Cover Letters' },
-    { value: 'recent', label: 'Most Recent' },
-    { value: 'views', label: 'Most Viewed' },
+    { value: 'cv', label: 'CVs' },
   ];
 
-  const activeFilterLabel = filterOptions.find(f => f.value === filterType)?.label || 'Filter';
+  const formatOptions = [
+    { value: 'PDF', label: 'PDF' },
+    { value: 'DOCX', label: 'DOCX' },
+  ];
+
+  const sortOptions = [
+    { value: 'recent', label: 'Most Recent' },
+    { value: 'views', label: 'Most Viewed' },
+    { value: 'name', label: 'By Name' },
+  ];
+
+  const toggleType = (type) => {
+    setSelectedTypes(prev =>
+      prev.includes(type) ? prev.filter(t => t !== type) : [...prev, type]
+    );
+  };
+
+  const toggleFormat = (format) => {
+    setSelectedFormats(prev =>
+      prev.includes(format) ? prev.filter(f => f !== format) : [...prev, format]
+    );
+  };
+
+  const activeFilterCount = selectedTypes.length + selectedFormats.length;
 
   if (loading) {
     return (
@@ -175,147 +213,201 @@ const Downloads = () => {
       <UserNavBar />
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 font-outfit">
         <div className="container mx-auto px-3 sm:px-4 lg:px-6 py-4 sm:py-6 lg:py-8 max-w-7xl">
-        
-        {/* Header Section */}
-        <div className="mb-8">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8">
-            <div>
-              <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
-                Download Manager
-              </h1>
-              <p className="text-sm sm:text-base text-gray-500 flex items-center gap-2">
-                Manage and track all your ResumeAI documents
-              </p>
-            </div>
-          </div>
 
-          {/* Stats Cards */}
-          <div className="grid grid-cols-2 gap-4 sm:gap-5 mb-12">
-            <StatsCard
-              label="Total Files"
-              value={stats.total}
-              icon={<FiFolder />}
-            />
-            <StatsCard
-              label="Resumes"
-              value={stats.resumes}
-              icon={<FiFileText />}
-            />
-            <StatsCard
-              label="Cover Letters"
-              value={stats.coverLetters}
-              icon={<FiEdit />}
-            />
-            <StatsCard
-              label="Total Views"
-              value={stats.totalViews}
-              icon={<FiTrendingUp />}
-            />
-          </div>
-        </div>
-
-        {/* Controls Section*/}
-        <div className="sticky top-4 z-30 mb-8">
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-2">
-            <div className="flex flex-col sm:flex-row gap-2 items-center justify-between">
-
-              {/* Search Pill */}
-              <div className="relative flex-1 group">
-                <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-blue-500 transition-colors">
-                  <FiSearch size={20} />
-                </div>
-                <input
-                  type="text"
-                  placeholder="Search your documents..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-12 pr-4 py-3 bg-transparent rounded-xl outline-none text-gray-700 placeholder-gray-400 focus:bg-gray-50/50 transition-all text-[15px]"
-                />
+          {/* Header Section */}
+          <div className="mb-8">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8">
+              <div>
+                <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
+                  Download Manager
+                </h1>
+                <p className="text-sm sm:text-base text-gray-500 flex items-center gap-2">
+                  Manage and track all your ResumeAI documents
+                </p>
               </div>
-
-              <div className="h-8 w-[1px] bg-gray-200 hidden lg:block"></div>
-
-              <div className="flex items-center gap-2 w-full lg:w-auto p-1">
-
-                {/* Custom Filter Dropdown */}
-                <div className="relative flex-1 lg:flex-none">
-                  <button
-                    onClick={() => setIsFilterOpen(!isFilterOpen)}
-                    className={`filter-trigger flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 border w-full lg:w-48 justify-between ${isFilterOpen
-                      ? 'bg-blue-50 text-blue-700 border-blue-200'
-                      : 'bg-gray-50 text-gray-700 border-transparent hover:bg-gray-100'
-                      }`}
-                  >
-                    <div className="flex items-center gap-2 truncate">
-                      <FiFilter size={16} className={isFilterOpen ? 'text-blue-500' : 'text-gray-500'} />
-                      <span>{activeFilterLabel}</span>
-                    </div>
-                    <FiChevronDown size={14} className={`transition-transform duration-200 ${isFilterOpen ? 'rotate-180' : ''}`} />
-                  </button>
-
-                  <AnimatePresence>
-                    {isFilterOpen && (
-                      <motion.div
-                        initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                        animate={{ opacity: 1, y: 0, scale: 1 }}
-                        exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                        transition={{ duration: 0.1 }}
-                        className="filter-dropdown absolute right-0 mt-2 w-56 bg-white border border-gray-100 rounded-xl shadow-2xl py-1.5 z-50 origin-top-right"
-                      >
-                        <h6 className="px-4 py-2 text-xs font-semibold text-gray-400 uppercase tracking-wider">
-                          Filter Documents
-                        </h6>
-                        {filterOptions.map((option) => (
-                          <button
-                            key={option.value}
-                            onClick={() => {
-                              setFilterType(option.value);
-                              setIsFilterOpen(false);
-                            }}
-                            className={`w-full text-left px-4 py-2.5 text-sm flex items-center justify-between hover:bg-gray-50 transition-colors ${filterType === option.value ? 'text-blue-600 font-medium bg-blue-50/50' : 'text-gray-700'
-                              }`}
-                          >
-                            {option.label}
-                            {filterType === option.value && <FiCheck size={14} />}
-                          </button>
-                        ))}
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </div>
-              </div>
+              <button
+                onClick={handleResetSamples}
+                className="w-fit flex items-center gap-2 px-4 py-2 bg-indigo-50 text-indigo-700 rounded-lg text-sm font-semibold hover:bg-indigo-100 transition-colors border border-indigo-100"
+              >
+                <FiRefreshCw size={16} className={isRefreshing ? 'animate-spin' : ''} />
+                Refresh
+              </button>
             </div>
-          </div>
-        </div>
 
-        {/* Content Area */}
-        {filteredDownloads.length === 0 ? (
-          <EmptyState searchTerm={searchTerm} />
-        ) : (
-          <div
-            className={viewMode === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6' : 'flex flex-col gap-4'}
-          >
-            {filteredDownloads.map((download) => (
-              <DocumentCard
-                key={download.id}
-                download={download}
-                viewMode={viewMode}
-                openMenuId={openMenuId}
-                setOpenMenuId={setOpenMenuId}
-                handleDelete={handleDelete}
-                handleDownload={handleDownload}
-                formatDate={formatDate}
+            {/* Stats Cards */}
+            <div className="grid grid-cols-2 gap-4 sm:gap-5 mb-12">
+              <StatsCard
+                label="Total Files"
+                value={stats.total}
+                icon={<FiFolder />}
               />
-            ))}
+              <StatsCard
+                label="Resumes"
+                value={stats.resumes}
+                icon={<FiFileText />}
+              />
+              <StatsCard
+                label="Cover Letters"
+                value={stats.coverLetters}
+                icon={<FiEdit />}
+              />
+              <StatsCard
+                label="CVs"
+                value={stats.cvs}
+                icon={<FiFile />}
+              />
+              <StatsCard
+                label="Views"
+                value={stats.totalViews}
+                icon={<FiTrendingUp />}
+              />
+            </div>
           </div>
-        )}
 
-        {/* Footer */}
-        <footer className="mt-20 border-t border-gray-100 pt-8 text-center text-[13px] text-gray-400">
-          © {new Date().getFullYear()} ResumeAI Inc. All rights reserved.
-        </footer>
+          {/* Controls Section*/}
+          <div className="sticky top-4 z-30 mb-8">
+            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-2">
+              <div className="flex flex-col sm:flex-row gap-2 items-center justify-between">
+
+                {/* Search Pill */}
+                <div className="relative flex-1 group">
+                  <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-blue-500 transition-colors">
+                    <FiSearch size={20} />
+                  </div>
+                  <input
+                    type="text"
+                    placeholder="Search your documents..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="w-full pl-12 pr-4 py-3 bg-transparent rounded-xl outline-none text-gray-700 placeholder-gray-400 focus:bg-gray-50/50 transition-all text-[15px]"
+                  />
+                </div>
+
+                <div className="h-8 w-[1px] bg-gray-200 hidden lg:block"></div>
+
+                <div className="flex items-center gap-2 w-full lg:w-auto p-1">
+
+                  {/* Custom Filter Dropdown */}
+                  <div className="relative flex-1 lg:flex-none">
+                    <button
+                      onClick={() => setIsFilterOpen(!isFilterOpen)}
+                      className={`filter-trigger flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 border w-full lg:w-48 justify-between ${isFilterOpen
+                        ? 'bg-blue-50 text-blue-700 border-blue-200'
+                        : 'bg-gray-50 text-gray-700 border-transparent hover:bg-gray-100'
+                        }`}
+                    >
+                      <div className="flex items-center gap-2 truncate">
+                        <FiFilter size={16} className={isFilterOpen || activeFilterCount > 0 ? 'text-blue-500' : 'text-gray-500'} />
+                        <span>{activeFilterCount > 0 ? `${activeFilterCount} Filters` : 'All Documents'}</span>
+                      </div>
+                      <FiChevronDown size={14} className={`transition-transform duration-200 ${isFilterOpen ? 'rotate-180' : ''}`} />
+                    </button>
+
+                    <AnimatePresence>
+                      {isFilterOpen && (
+                        <motion.div
+                          initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                          animate={{ opacity: 1, y: 0, scale: 1 }}
+                          exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                          transition={{ duration: 0.1 }}
+                          className="filter-dropdown absolute right-0 mt-2 w-56 bg-white border border-gray-100 rounded-xl shadow-2xl py-1.5 z-50 origin-top-right"
+                        >
+                          <div className="px-4 py-3 border-b border-gray-50 flex items-center justify-between">
+                            <h6 className="text-[11px] font-bold text-gray-400 uppercase tracking-widest">
+                              Filter Documents
+                            </h6>
+                            {(selectedTypes.length > 0 || selectedFormats.length > 0) && (
+                              <button
+                                onClick={() => { setSelectedTypes([]); setSelectedFormats([]); }}
+                                className="text-[10px] text-blue-600 font-semibold hover:underline"
+                              >
+                                Reset
+                              </button>
+                            )}
+                          </div>
+
+                          <div className="p-2">
+                            <p className="px-2 py-1.5 text-[10px] font-bold text-gray-400 uppercase">Document Type</p>
+                            {typeOptions.map((option) => (
+                              <button
+                                key={option.value}
+                                onClick={() => toggleType(option.value)}
+                                className={`w-full text-left px-3 py-2 text-sm flex items-center gap-3 hover:bg-gray-50 rounded-lg transition-colors ${selectedTypes.includes(option.value) ? 'text-blue-600 font-medium bg-blue-50/50' : 'text-gray-600'}`}
+                              >
+                                <div className={`w-4 h-4 rounded border flex items-center justify-center transition-all ${selectedTypes.includes(option.value) ? 'bg-blue-600 border-blue-600' : 'border-gray-300'}`}>
+                                  {selectedTypes.includes(option.value) && <FiCheck size={10} className="text-white" />}
+                                </div>
+                                {option.label}
+                              </button>
+                            ))}
+                          </div>
+
+                          <div className="p-2 border-t border-gray-50">
+                            <p className="px-2 py-1.5 text-[10px] font-bold text-gray-400 uppercase">File Format</p>
+                            {formatOptions.map((option) => (
+                              <button
+                                key={option.value}
+                                onClick={() => toggleFormat(option.value)}
+                                className={`w-full text-left px-3 py-2 text-sm flex items-center gap-3 hover:bg-gray-50 rounded-lg transition-colors ${selectedFormats.includes(option.value) ? 'text-blue-600 font-medium bg-blue-50/50' : 'text-gray-600'}`}
+                              >
+                                <div className={`w-4 h-4 rounded border flex items-center justify-center transition-all ${selectedFormats.includes(option.value) ? 'bg-blue-600 border-blue-600' : 'border-gray-300'}`}>
+                                  {selectedFormats.includes(option.value) && <FiCheck size={10} className="text-white" />}
+                                </div>
+                                {option.label}
+                              </button>
+                            ))}
+                          </div>
+
+                          <div className="p-2 border-t border-gray-50">
+                            <p className="px-2 py-1.5 text-[10px] font-bold text-gray-400 uppercase">Sort By</p>
+                            {sortOptions.map((option) => (
+                              <button
+                                key={option.value}
+                                onClick={() => setSortBy(option.value)}
+                                className={`w-full text-left px-3 py-2 text-sm flex items-center justify-between hover:bg-gray-50 rounded-lg transition-colors ${sortBy === option.value ? 'text-blue-600 font-medium bg-blue-50/50' : 'text-gray-600'}`}
+                              >
+                                {option.label}
+                                {sortBy === option.value && <div className="w-1.5 h-1.5 rounded-full bg-blue-600" />}
+                              </button>
+                            ))}
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Content Area */}
+          {filteredDownloads.length === 0 ? (
+            <EmptyState searchTerm={searchTerm} />
+          ) : (
+            <div
+              className={viewMode === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6' : 'flex flex-col gap-4'}
+            >
+              {filteredDownloads.map((download) => (
+                <DocumentCard
+                  key={download.id}
+                  download={download}
+                  viewMode={viewMode}
+                  openMenuId={openMenuId}
+                  setOpenMenuId={setOpenMenuId}
+                  handleDelete={handleDelete}
+                  handleDownload={handleDownload}
+                  formatDate={formatDate}
+                />
+              ))}
+            </div>
+          )}
+
+          {/* Footer */}
+          <footer className="mt-20 border-t border-gray-100 pt-8 text-center text-[13px] text-gray-400">
+            © {new Date().getFullYear()} ResumeAI Inc. All rights reserved.
+          </footer>
+        </div>
       </div>
-    </div>
     </>
   );
 };
@@ -379,10 +471,15 @@ const DocumentCard = ({
 
       <div className={`flex items-center gap-4 ${isList ? 'flex-1' : 'mb-6'}`}>
         <div className={`
-          flex items-center justify-center rounded-lg bg-blue-50 text-blue-600
+          flex items-center justify-center rounded-lg
           ${isList ? 'w-10 h-10' : 'w-12 h-12'}
+          ${download.type === 'resume' ? 'bg-blue-50 text-blue-600' :
+            download.type === 'cover-letter' ? 'bg-purple-50 text-purple-600' :
+              'bg-emerald-50 text-emerald-600'}
         `}>
-          <FiFileText size={isList ? 18 : 22} />
+          {download.type === 'resume' ? <FiFileText size={isList ? 18 : 22} /> :
+            download.type === 'cover-letter' ? <FiEdit size={isList ? 18 : 22} /> :
+              <FiFile size={isList ? 18 : 22} />}
         </div>
 
         <div className="flex-1 min-w-0">
@@ -390,7 +487,11 @@ const DocumentCard = ({
             {download.name}
           </h3>
           <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mt-2 text-xs font-medium text-gray-500">
-            <span className="flex items-center gap-1.5 bg-gray-50 border border-gray-100 px-2.5 py-1 rounded-md text-gray-600 uppercase tracking-wide">
+            <span className={`flex items-center gap-1.5 border px-2.5 py-1 rounded-md uppercase tracking-wide
+              ${download.type === 'resume' ? 'bg-blue-50/50 border-blue-100 text-blue-700' :
+                download.type === 'cover-letter' ? 'bg-purple-50/50 border-purple-100 text-purple-700' :
+                  'bg-emerald-50/50 border-emerald-100 text-emerald-700'}
+            `}>
               {download.format}
             </span>
             <span className="flex items-center gap-1.5">

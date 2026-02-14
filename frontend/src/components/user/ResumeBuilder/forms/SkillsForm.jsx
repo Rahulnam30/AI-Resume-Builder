@@ -1,3 +1,4 @@
+import { Plus, X } from "lucide-react";
 import { useState } from "react";
 
 const SkillsForm = ({ formData, setFormData }) => {
@@ -45,9 +46,8 @@ const SkillsForm = ({ formData, setFormData }) => {
       : ["Leadership", "Communication", "Teamwork", "Problem Solving"];
 
   return (
-    <div className="form-section">
-      <h3 className="form-section-title">Skills</h3>
-      <div className="skills-type-tabs flex gap-2 p-3 rounded-xl bg-slate-900 w-fit my-2 mx-auto">
+    <div className="flex flex-col gap-0.5">
+      <div className="flex gap-2 p-3 rounded-xl bg-slate-900 w-fit my-2 mx-auto">
         <button
           onClick={() => setSkillType("technical")}
           className={`px-5 py-2 rounded-lg text-sm font-medium transition-all duration-300
@@ -76,9 +76,9 @@ const SkillsForm = ({ formData, setFormData }) => {
       <div className="add-skill-row">
         <input
           type="text"
-          placeholder={`Add a ${skillType} skill...`}
           className="border m-2 mr-1 w-4/5 p-2 rounded-lg outline-none"
           value={newSkill}
+          placeholder={`Add a ${skillType} skill...`}
           onChange={(e) => setNewSkill(e.target.value)}
           onKeyDown={(e) => {
             if (e.key === "Enter" && newSkill.trim()) {
@@ -97,10 +97,12 @@ const SkillsForm = ({ formData, setFormData }) => {
         {(formData?.skills?.[skillType] ?? []).map((skill, idx) => (
           <span
             key={idx}
-            className="inline-flex gap-2 bg-blue-200 text-sm text-blue-500 rounded-xl p-2 mr-2 mb-2"
+            className="inline-flex items-center gap-2 bg-blue-200 text-sm text-blue-500 rounded-xl p-2 mr-2 mb-2"
           >
             <span>{skill}</span>
-            <button onClick={() => removeSkill(skillType, idx)}>×</button>
+            <button onClick={() => removeSkill(skillType, idx)}>
+              <X size={14} className="text-blue-500" />
+            </button>
           </span>
         ))}
       </div>
@@ -110,10 +112,10 @@ const SkillsForm = ({ formData, setFormData }) => {
           {suggestedSkills.map((skill, idx) => (
             <button
               key={idx}
-              className="bg-black text-white m-1 p-2 text-sm rounded-lg"
+              className="flex items-center bg-black text-white m-1 p-2 text-sm rounded-lg"
               onClick={() => addSuggestedSkill(skill)}
             >
-              + {skill}
+              <Plus size={14} className="mr-1 inline" /> {skill}
             </button>
           ))}
         </div>

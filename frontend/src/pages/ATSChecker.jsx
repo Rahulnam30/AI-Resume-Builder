@@ -159,10 +159,10 @@ function ATSDonutCard({ score = 78 }) {
 
 const ATSCheckerFeature = () => {
   const navigate = useNavigate();
-  const isLoggedIn = !!localStorage.getItem("token");
-
+  
+  /** ✅ Updated: Changed to navigate to login page */
   const handleCTA = () => {
-    navigate(isLoggedIn ? "/user/ats-checker" : "/resume-checker");
+    navigate("/login");
   };
 
   const [heroRef, heroVisible] = useInView(0.2);
@@ -178,13 +178,11 @@ const ATSCheckerFeature = () => {
 
       {/* 1) HERO SECTION */}
       <section ref={heroRef} className="relative px-6 pt-16 pb-20 overflow-hidden bg-white">
-        {/* Background Accents (Clean Dashboard Look) */}
         <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-50/50 rounded-full blur-3xl -z-10 opacity-60" />
         <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-orange-50/50 rounded-full blur-3xl -z-10 opacity-60" />
 
         <div className="mx-auto max-w-7xl">
           <div className="grid items-center gap-16 lg:grid-cols-2">
-            {/* LEFT: Text */}
             <div className={`transition-all duration-700 ${heroVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"}`}>
               <div className="inline-flex items-center gap-2 px-4 py-2 mb-8 border rounded-full bg-slate-50 border-slate-100">
                 <Shield size={14} className="text-[#0077cc]" />
@@ -222,38 +220,25 @@ const ATSCheckerFeature = () => {
               </div>
             </div>
 
-
-{/* RIGHT: Chart Card + Character */}
-<div
-  className={`relative transition-all duration-700 delay-100 ${
-    heroVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-  }`}
->
-  <div className="relative max-w-md mx-auto lg:mr-0">
-
-    {/* Character Placeholder (LEFT of card) */}
-    <img
-      src={Lady}
-      alt="Character pointing to ATS score"
-      className="hidden lg:block absolute left-[-13rem] bottom-0 w-100 xl:w-48 2xl:w-56 object-contain"
-    />
-
-    {/* Score Card */}
-    <ATSDonutCard score={82} />
-  </div>
-</div>
-
+            <div className={`relative transition-all duration-700 delay-100 ${heroVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}>
+              <div className="relative max-w-md mx-auto lg:mr-0">
+                <img
+                  src={Lady}
+                  alt="Character pointing to ATS score"
+                  className="hidden lg:block absolute left-[-13rem] bottom-0 w-100 xl:w-48 2xl:w-56 object-contain"
+                />
+                <ATSDonutCard score={82} />
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* 2) PROCESS ROW (Step Bar) */}
+      {/* 2) PROCESS ROW */}
       <section ref={procRef} className="py-10 bg-white border-y border-gray-50">
         <div className={`max-w-4xl mx-auto px-6 transition-all duration-700 ${procVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}>
           <div className="flex flex-col md:flex-row items-center justify-between gap-8 relative">
-            {/* Connector Line (Desktop) */}
             <div className="absolute top-1/2 left-0 w-full h-0.5 bg-gray-100 -z-10 hidden md:block" />
-
             {[
               { step: "01", title: "Upload Resume", desc: "PDF or Word Doc" },
               { step: "02", title: "Smart Scan", desc: "AI Checks Keywords" },
@@ -275,7 +260,7 @@ const ATSCheckerFeature = () => {
       <section ref={uploadRef} className="px-6 py-24 bg-[#FAFAFA]">
         <div className="max-w-7xl mx-auto">
           <div className="grid lg:grid-cols-12 gap-12 items-start">
-
+            
             {/* LEFT: Upload Box */}
             <div className={`lg:col-span-5 transition-all duration-700 ${uploadVisible ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-8"}`}>
               <div
@@ -285,13 +270,14 @@ const ATSCheckerFeature = () => {
                 <div className="w-20 h-20 rounded-full bg-blue-50 text-[#0077cc] flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform">
                   <UploadCloud size={32} />
                 </div>
-                <h3 className="text-2xl font-black text-[#1a2e52] mb-3">Upload your resume</h3>
+                <h3 className="text-2xl font-black text-[#1a2e52] mb-3">Check your resume</h3>
                 <p className="text-gray-500 mb-8">
                   Drag and drop your file here, or click to browse. <br />
                   Supports PDF and Word.
                 </p>
+                {/* ✅ Updated: Button text to "Upload your resume" */}
                 <button className="px-6 py-3 bg-[#0077cc] text-white font-bold rounded-lg shadow-lg shadow-blue-200 group-hover:shadow-blue-300 transition-all">
-                  Select File
+                  Upload your resume
                 </button>
               </div>
             </div>
@@ -322,12 +308,11 @@ const ATSCheckerFeature = () => {
                 ))}
               </div>
             </div>
-
           </div>
         </div>
       </section>
 
-      {/* 4) TOP ATS FIXES (Cards) */}
+      {/* 4) TOP ATS FIXES */}
       <section ref={fixesRef} className="px-6 py-20 bg-white">
         <div className={`max-w-6xl mx-auto transition-all duration-700 ${fixesVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}>
           <div className="text-center mb-16">
@@ -360,7 +345,6 @@ const ATSCheckerFeature = () => {
           <h2 className="text-3xl font-black text-center text-[#1a2e52] mb-12">
             Frequently Asked Questions
           </h2>
-
           <div className="space-y-4">
             {faqData.map((item, i) => (
               <div
@@ -387,7 +371,6 @@ const ATSCheckerFeature = () => {
         </div>
       </section>
 
-      {/* FOOTER */}
       <Footer />
     </div>
   );

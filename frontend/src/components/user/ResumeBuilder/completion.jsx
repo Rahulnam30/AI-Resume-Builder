@@ -8,8 +8,7 @@ export const getCompletionStatus = (formData) => {
     formData?.linkedin?.trim() &&
     formData?.location?.trim() &&
     formData?.phone?.trim() &&
-    formData?.website?.trim() &&
-    formData?.summary?.trim();
+    formData?.website?.trim();
 
   if (!hasPersonalInfo) missing.push("Personal");
 
@@ -22,8 +21,8 @@ export const getCompletionStatus = (formData) => {
         exp.title?.trim() &&
         exp.company?.trim() &&
         exp.description?.trim() &&
-        exp.startDate.trim() &&
-        exp.endDate.trim(),
+        exp.startDate?.trim() &&
+        exp.endDate?.trim(),
     );
 
   if (!hasValidExperience) {
@@ -38,7 +37,6 @@ export const getCompletionStatus = (formData) => {
       (edu) =>
         edu.school?.trim() &&
         edu.degree?.trim() &&
-        edu.gpa?.trim() &&
         edu.startDate?.trim() &&
         edu.graduationDate?.trim(),
     );
@@ -70,11 +68,7 @@ export const getCompletionStatus = (formData) => {
     Array.isArray(formData?.certifications) &&
     formData.certifications.length > 0 &&
     formData.certifications.every(
-      (cert) =>
-        cert.name?.trim() &&
-        cert.issuer?.trim() &&
-        cert.date?.trim() &&
-        cert.link?.trim(),
+      (cert) => cert.name?.trim() && cert.issuer?.trim() && cert.date?.trim(),
     );
 
   if (!hasValidCertificationInfo) {
@@ -91,5 +85,13 @@ export const getCompletionStatus = (formData) => {
   return {
     isComplete: missing.length === 0,
     missingSections: missing || [],
+    //for ai generation
+    sectionValidationStatus: {
+      hasValidExperience,
+      hasValidEducation,
+      hasValidProject,
+      hasValidCertificationInfo,
+      hasSkills,
+    },
   };
 };
