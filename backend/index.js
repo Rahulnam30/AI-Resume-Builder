@@ -6,7 +6,6 @@ import path from "path";
 import { fileURLToPath } from "url";
 import notificationRoutes from "./routers/notification.router.js";
 
-
 // Routers
 import authRouter from "./routers/auth.router.js";
 import userRouter from "./routers/user.router.js";
@@ -34,8 +33,7 @@ app.use(cookieParser());
 app.use(
   cors({
     origin: (origin, callback) => {
-      if (!origin) return callback(null, true);
-      if (origin.startsWith("http://localhost")) return callback(null, true);
+      if (!origin || origin.startsWith("http://localhost")) return callback(null, true);
       const clientUrl = process.env.CLIENT_URL;
       if (clientUrl && origin === clientUrl) return callback(null, true);
       return callback(new Error(`CORS policy: origin ${origin} not allowed`));
@@ -56,7 +54,24 @@ app.use("/api/plans", planRouter);
 // Serve uploads directory (for images/resumes)
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
-app.listen(port, () => {
-  connectDB();
-  console.log(`Server Running at ${port}`);
+// Error handling middleware (add before listen)
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({ message: "Something went wrong!" });
 });
+
+// 🚨 FIX: Connect DB BEFORE starting server, not inside listen callback
+const startServer = async () => {
+  try {
+    await connectDB(); // Wait for DB connection
+    app.listen(port, () => {
+      console.log(`✅ Server Running at http://localhost:${port}`);
+      console.log(`✅ Database Connected`);
+    });
+  } catch (error) {
+    console.error("❌ Failed to connect to database:", error);
+    process.exit(1);
+  }
+};
+
+startServer();
