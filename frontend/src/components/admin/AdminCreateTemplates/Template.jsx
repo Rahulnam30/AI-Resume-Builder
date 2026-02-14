@@ -1,7 +1,6 @@
 import React from "react";
 import { Filter, Plus, Eye, X, Power, PowerOff } from "lucide-react";
 import { TEMPLATES } from '../../user/Templates/TemplateRegistry';
-import { getTemplateStatus, toggleTemplateStatus, getAllTemplateStatuses } from "../../../utils/templateVisibility";
 
 import axiosInstance from "../../../api/axios";
 
@@ -17,8 +16,9 @@ export default function AdminTemplates() {
 
   const refreshData = async () => {
     try {
-      // Sync statuses
-      setStatuses(getAllTemplateStatuses());
+      // Fetch statuses from backend
+      const statusRes = await axiosInstance.get('/api/template-visibility');
+      setStatuses(statusRes.data || {});
 
       // Categorize templates from Registry
       const modern = TEMPLATES.filter(t => ['modern', 'Modern', 'Modern Templates'].includes(t.category));
@@ -44,7 +44,7 @@ export default function AdminTemplates() {
       setPendingTemplates([]);
 
     } catch (err) {
-      console.error("Failed to fetch templates", err);
+      console.error("Failed to fetch templates or statuses", err);
     }
   };
 
@@ -52,9 +52,25 @@ export default function AdminTemplates() {
     refreshData();
   }, []);
 
-  const handleToggleStatus = (id) => {
-    const newStatus = toggleTemplateStatus(id);
-    setStatuses(prev => ({ ...prev, [id]: newStatus }));
+  const handleToggleStatus = async (id) => {
+    try {
+      // Optimistic update
+      setStatuses(prev => {
+        const isActive = prev[id] !== false;
+        return { ...prev, [id]: !isActive };
+      });
+
+      await axiosInstance.post('/api/template-visibility/toggle', { templateId: id });
+
+      // Optionally refetch to be sure
+      // refreshData();
+    } catch (error) {
+      console.error("Failed to toggle status", error);
+      // Revert on error
+      setStatuses(prev => ({ ...prev, [id]: prev[id] !== false })); // Revert to previous (approximate)
+      alert("Failed to update status");
+      refreshData();
+    }
   };
 
   const handlePreview = (imageUrl) => {

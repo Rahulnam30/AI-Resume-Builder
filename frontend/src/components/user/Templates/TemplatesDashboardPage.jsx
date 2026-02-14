@@ -2,9 +2,10 @@ import { useMemo, useState, useEffect, useRef } from 'react';
 import { Search, Filter, Eye, X, Check, ChevronLeft, ChevronRight } from "lucide-react";
 import UserNavBar from '../UserNavBar/UserNavBar';
 import { TEMPLATES } from './TemplateRegistry';
-import { getTemplateStatus } from '../../../utils/templateVisibility';
+import axiosInstance from "../../../api/axios";
 
 const TemplateCard = ({ tpl, onPreview, onUse }) => {
+  // ... (unchanged)
   return (
     <div
       className="min-w-[280px] w-[280px] bg-white border border-slate-200 rounded-xl p-2 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col flex-shrink-0 select-none overflow-hidden"
@@ -125,8 +126,12 @@ const TemplatesDashboardPage = ({ onSelectTemplate, isEmbedded = false, external
 
   const fetchTemplates = async () => {
     try {
+      // Fetch statuses from backend
+      const statusRes = await axiosInstance.get('/api/template-visibility');
+      const statuses = statusRes.data || {};
+
       // Filter out inactive templates
-      const activeTemplates = TEMPLATES.filter(t => getTemplateStatus(t.id));
+      const activeTemplates = TEMPLATES.filter(t => statuses[t.id] !== false);
 
       // Map registry templates to dashboard format
       const mappedData = activeTemplates.map(item => ({
@@ -142,6 +147,17 @@ const TemplatesDashboardPage = ({ onSelectTemplate, isEmbedded = false, external
       setLoading(false);
     } catch (err) {
       console.error("Error loading templates:", err);
+      // Fallback to showing everything or empty, showing empty is safer if network fails or show cached
+      // For now, let's show all if visibility check fails
+      const fallbackData = TEMPLATES.map(item => ({
+        id: item.id,
+        name: item.name,
+        category: item.category,
+        img: item.thumbnail,
+        description: item.description,
+        isDynamic: true
+      }));
+      setFetchedTemplates(fallbackData);
       setLoading(false);
     }
   };
