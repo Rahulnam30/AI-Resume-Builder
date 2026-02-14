@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 import User from "./User.js";
 import Template from "./template.js";
-import Resume from "./resume.js";
+import ResumeProfile from "./resumeProfile.js";
 
 const atsScansSchema = new mongoose.Schema(
   {
@@ -11,13 +11,13 @@ const atsScansSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
-
+    
     resumeprofileId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Resume",
+      ref: "ResumeProfile",
       required: true,
     },
-
+   
     templateId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Template",
@@ -64,7 +64,7 @@ const atsScansSchema = new mongoose.Schema(
       },
     ],
   },
-
+ 
   { timestamps: true }
 );
 

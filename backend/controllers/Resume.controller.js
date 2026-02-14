@@ -1,17 +1,17 @@
 import mongoose from "mongoose";
-
-// Models
-import Resume from "../Models/resume.js";
+import puppeteer from "puppeteer";
 import AtsScans from "../Models/atsScan.js";
+import Resume from "../Models/resume.js";
+import Notification from "../Models/notification.js";
 
-// AI Service
-import generateResumeAI from "../ai/aiService.js";
-
-// Resume Parsing Services
+// services
 import {
+  generateResumeAI,
+  refineExperienceDescription,
+  refineProjectDescription,
   parseResume,
   extractResumeData,
-} from "../service/ResumeParser.service.js";
+} from "../ai/aiService.js";
 
 // ATS Analyzer Services
 import {
@@ -22,183 +22,193 @@ import {
 
 // File Storage Services
 import {
-  saveFileMetadata, // (kept for future use)
+  saveFileMetadata,
   deleteFile,
   getFile,
 } from "../service/FileStorage.service.js";
 
-/* =====================================================
-   SAVE NORMAL RESUME (Manual Save)
-===================================================== */
-/* =====================================================
-   SAVE NORMAL RESUME (Manual Save)
-===================================================== */
+// ===============================
+// SAVE NORMAL RESUME (Manual Save)
+// ===============================
 export const saveResume = async (req, res) => {
   try {
-    const userId = req.userId;
-    const resumeData = req.body;
-    const resumeId = resumeData._id; // Check if we are updating an existing resume
-
-    // Remove immutable fields
-    delete resumeData.user;
-    delete resumeData.userId;
-    delete resumeData._id;
-
-    let resume;
-
-    if (resumeId) {
-      // Setup: Update existing resume
-      resume = await Resume.findOneAndUpdate(
-        { _id: resumeId, user: userId },
-        { $set: { ...resumeData, user: userId } },
-        { new: true } // Return updated document
-      );
-    } else {
-      // Setup: Create NEW resume
-      resume = new Resume({
-        ...resumeData,
-        user: userId,
-      });
-      await resume.save();
-    }
+    const resume = new Resume(req.body);
+    await resume.save();
 
     res.json({
-      success: true,
-      message: "Resume saved successfully",
-      data: resume,
+      message: "Resume saved to database"
     });
   } catch (error) {
-    console.error("Save Resume Error:", error);
     res.status(500).json({
-      success: false,
-      error: error.message,
+      error: error.message
     });
   }
 };
 
-/* =====================================================
-   GET USER RESUME (LATEST)
-===================================================== */
-export const getUserResume = async (req, res) => {
-  try {
-    const userId = req.userId;
-    // Get the most recently updated resume
-    const resume = await Resume.findOne({ user: userId }).sort({ updatedAt: -1 });
+// =======================================
+//      GENERATE RESUME PDF
+// =======================================
 
-    if (!resume) {
-      return res.status(200).json({
-        success: true,
-        message: "No resume found",
-        data: null,
-      });
-    }
+export const generateResume = async (req, res) => {
+  const { html } = req.body;
 
-    res.status(200).json({
-      success: true,
-      data: resume,
-    });
-  } catch (error) {
-    console.error("Get Resume Error:", error);
-    res.status(500).json({
-      success: false,
-      error: error.message,
-    });
-  }
-};
+  const browser = await puppeteer.launch({
+    headless: "new"
+  });
 
-/* =====================================================
-   GET ALL USER RESUMES
-===================================================== */
-export const getAllUserResumes = async (req, res) => {
-  try {
-    const userId = req.userId;
-    const resumes = await Resume.find({ user: userId }).sort({ updatedAt: -1 });
+  const page = await browser.newPage();
 
-    res.status(200).json({
-      success: true,
-      count: resumes.length,
-      data: resumes,
-    });
-  } catch (error) {
-    console.error("Get All Resumes Error:", error);
-    res.status(500).json({
-      success: false,
-      error: error.message,
-    });
-  }
-};
+  await page.setContent(html, {
+    waitUntil: "networkidle0"
+  });
 
-/* =====================================================
-   GET RESUME BY ID
-===================================================== */
-export const getResumeById = async (req, res) => {
-  try {
-    const userId = req.userId;
-    const resumeId = req.params.id;
+  const pdfBuffer = await page.pdf({
+    format: "A4",
+    printBackground: true
+  });
 
-    const resume = await Resume.findOne({ _id: resumeId, user: userId });
+  await browser.close();
 
-    if (!resume) {
-      return res.status(404).json({
-        success: false,
-        message: "Resume not found",
-      });
-    }
+  res.set({
+    "Content-Type": "application/pdf",
+    "Content-Disposition": "attachment; filename=resume.pdf",
+    "Content-Length": pdfBuffer.length
+  });
 
-    res.status(200).json({
-      success: true,
-      data: resume,
-    });
-  } catch (error) {
-    console.error("Get Resume By ID Error:", error);
-    res.status(500).json({
-      success: false,
-      error: error.message,
-    });
-  }
-};
+  res.end(pdfBuffer);
+}
 
-/* =====================================================
-   GENERATE AI RESUME + OPTIONAL SAVE TO DB
-===================================================== */
+// =======================================
+// GENERATE AI RESUME + SAVE TO MONGODB
+// =======================================
 export const generateAIResume = async (req, res) => {
   try {
-    console.log("📥 AI Resume request received");
-
-    // 1. Generate AI summary
+    console.log("Received AI generation request:", req.body);
+    // 1. Generate AI professional summary
     const aiText = await generateResumeAI(req.body);
-
-    console.log("✅ AI Summary generated");
-
-    // 2. Save to MongoDB (optional)
+    console.log("AI Summary generated successfully");
+    // 2. Try to save to MongoDB (optional - won't fail if DB is down)
     try {
       const resume = new Resume({
         ...req.body,
-        summary: aiText,
+        summary: aiText
       });
       await resume.save();
-      console.log("💾 AI Resume saved to DB");
+      console.log("Saved to database");
     } catch (dbError) {
-      console.log("⚠️ DB save skipped (MongoDB not connected)");
+      console.log("Database save skipped (MongoDB not connected)");
     }
 
-    // 3. Send response
+    // 3. Send AI summary back to frontend
     res.json({
-      success: true,
       message: "AI Resume generated successfully",
-      aiResume: aiText,
+      aiResume: aiText
     });
+
   } catch (error) {
-    console.error("❌ AI ERROR:", error);
+    console.error("AI ERROR:", error);
     res.status(500).json({
-      success: false,
-      error: "AI generation failed: " + error.message,
+      error: "AI generation failed: " + error.message
+    });
+  }
+};
+
+// ==========================================
+// ENHANCE WORK EXPERIENCE + SAVE TO MONGODB
+// ==========================================
+export const enhanceWorkExperience = async (req, res) => {
+  try {
+    console.log("Received AI generation request:", req.body);
+    // 1. Generate AI professional summary
+    const aiResponse = await refineExperienceDescription(req.body);
+    console.log(aiResponse);
+
+    console.log("AI Summary generated successfully");
+    const aiText = JSON.parse(aiResponse);
+    // 2. Try to save to MongoDB (optional - won't fail if DB is down)
+    if (aiText.status === "success") {
+      try {
+        await Resume.findOneAndUpdate(
+          {
+            "experience.id": req.body.id,
+          },
+          {
+            $set: {
+              "experience.$.description": aiText,
+            },
+          },
+          { new: true }
+        );
+        console.log("Experience description updated in database");
+
+      } catch (dbError) {
+        console.log("Database save skipped (MongoDB not connected)", dbError);
+      }
+
+      // 3. Send AI summary back to frontend
+      return res.json({
+        message: "Experience description enhanced successfully",
+        aiResume: aiText.text
+      });
+    }
+    throw new Error(aiText.text || "AI generation failed without specific error message");
+  } catch (error) {
+    console.error("AI ERROR:", error);
+    res.status(500).json({
+      error: "AI generation failed: " + error.message
+    });
+  }
+};
+
+// ==============================================
+// ENHANCE PROJECT DESCRIPTION + SAVE TO MONGODB
+// ==============================================
+export const enhanceProjectDescription = async (req, res) => {
+  try {
+    console.log("Received AI generation request:", req.body);
+    // 1. Generate AI professional summary
+    const aiResponse = await refineProjectDescription(req.body);
+    console.log(aiResponse);
+
+    console.log("AI Summary generated successfully");
+    const projectDescription = JSON.parse(aiResponse);
+    // 2. Try to save to MongoDB (optional - won't fail if DB is down)
+    if (projectDescription.status === "success") {
+      try {
+        await Resume.findOneAndUpdate(
+          {
+            "project.id": req.body.id,
+          },
+          {
+            $set: {
+              "project.$.description": projectDescription,
+            },
+          },
+          { new: true }
+        );
+        console.log("Project description updated in database");
+
+      } catch (dbError) {
+        console.log("Database save skipped (MongoDB not connected)", dbError);
+      }
+
+      // 3. Send AI summary back to frontend
+      return res.json({
+        message: "Project Description enhanced successfully",
+        projectDescription: projectDescription.text
+      });
+    }
+    throw new Error(projectDescription.text || "AI generation failed without specific error message");
+  } catch (error) {
+    console.error("AI ERROR:", error);
+    res.status(500).json({
+      error: "AI generation failed: " + error.message
     });
   }
 };
 
 /* =====================================================
-   UPLOAD & ANALYZE RESUME (ATS SCAN)
+    UPLOAD & ANALYZE RESUME (ATS SCAN)
 ===================================================== */
 export const uploadAndAnalyzeResume = async (req, res) => {
   try {
@@ -212,7 +222,6 @@ export const uploadAndAnalyzeResume = async (req, res) => {
     const userId = req.userId;
     const file = req.file;
 
-    // Parse resume
     const parseResult = await parseResume(file);
 
     if (!parseResult?.success || !parseResult?.text) {
@@ -224,16 +233,12 @@ export const uploadAndAnalyzeResume = async (req, res) => {
     }
 
     const resumeText = parseResult.text;
-
-    // Extract structured data
     const extractedData = extractResumeData(resumeText);
 
-    // ATS analysis
     const analysis = analyzeATSCompatibility(resumeText, extractedData);
     const passes = passesATSThreshold(analysis.overallScore);
     const recommendations = generateRecommendations(analysis);
 
-    // Save ATS scan
     const atsScan = new AtsScans({
       userId,
       filename: file.filename,
@@ -253,6 +258,22 @@ export const uploadAndAnalyzeResume = async (req, res) => {
 
     await atsScan.save();
 
+    // 🔔 USER NOTIFICATION
+    await Notification.create({
+      actor: "system",
+      type: "ATS_SCAN",
+      message: `You uploaded a resume. Your ATS score is ${analysis.overallScore}`,
+      userId,
+    });
+
+    // 🔔 ADMIN NOTIFICATION
+    await Notification.create({
+      actor: "user",
+      type: "ATS_SCAN",
+      message: `User uploaded a resume (ATS Score: ${analysis.overallScore})`,
+      userId,
+    });
+
     res.status(200).json({
       success: true,
       message: "Resume uploaded and analyzed successfully",
@@ -266,11 +287,10 @@ export const uploadAndAnalyzeResume = async (req, res) => {
         recommendations,
         passThreshold: passes,
         extractedData,
-        metrics: analysis.metrics,
       },
     });
   } catch (error) {
-    console.error("❌ Resume upload error:", error);
+    console.error("Resume upload error:", error);
     res.status(500).json({
       success: false,
       message: "Failed to upload and analyze resume",
@@ -279,64 +299,7 @@ export const uploadAndAnalyzeResume = async (req, res) => {
   }
 };
 
-/* =====================================================
-   GET ALL USER SCANS
-===================================================== */
-export const getUserScans = async (req, res) => {
-  try {
-    const scans = await AtsScans.find({ userId: req.userId })
-      .sort({ createdAt: -1 })
-      .select(
-        "filename originalName overallScore passThreshold createdAt sectionScores"
-      );
-
-    res.status(200).json({
-      success: true,
-      count: scans.length,
-      data: scans,
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: "Failed to fetch scans",
-      error: error.message,
-    });
-  }
-};
-
-/* =====================================================
-   GET SCAN BY ID
-===================================================== */
-export const getScanById = async (req, res) => {
-  try {
-    const scan = await AtsScans.findOne({
-      _id: req.params.id,
-      userId: req.userId,
-    });
-
-    if (!scan) {
-      return res.status(404).json({
-        success: false,
-        message: "Scan not found",
-      });
-    }
-
-    res.status(200).json({
-      success: true,
-      data: scan,
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: "Failed to fetch scan",
-      error: error.message,
-    });
-  }
-};
-
-/* =====================================================
-   DELETE SCAN
-===================================================== */
+/* ================= DELETE SCAN ================= */
 export const deleteScan = async (req, res) => {
   try {
     const scan = await AtsScans.findOne({
@@ -353,6 +316,22 @@ export const deleteScan = async (req, res) => {
 
     deleteFile(scan.filePath);
     await AtsScans.findByIdAndDelete(scan._id);
+
+    // USER
+    await Notification.create({
+      actor: "system",
+      type: "ATS_DELETED",
+      message: "You deleted an ATS scan",
+      userId: req.userId,
+    });
+
+    // ADMIN
+    await Notification.create({
+      actor: "user",
+      type: "ATS_DELETED",
+      message: "User deleted an ATS scan",
+      userId: req.userId,
+    });
 
     res.status(200).json({
       success: true,
@@ -393,6 +372,22 @@ export const downloadResume = async (req, res) => {
       });
     }
 
+    // USER
+    await Notification.create({
+      actor: "system",
+      type: "RESUME_DOWNLOADED",
+      message: "You downloaded your resume",
+      userId: req.userId,
+    });
+
+    // ADMIN
+    await Notification.create({
+      actor: "user",
+      type: "RESUME_DOWNLOADED",
+      message: "User downloaded a resume",
+      userId: req.userId,
+    });
+
     res.setHeader(
       "Content-Disposition",
       `attachment; filename="${scan.originalName}"`
@@ -403,52 +398,6 @@ export const downloadResume = async (req, res) => {
     res.status(500).json({
       success: false,
       message: "Failed to download resume",
-      error: error.message,
-    });
-  }
-};
-
-/* =====================================================
-   SCAN STATISTICS
-===================================================== */
-export const getScanStatistics = async (req, res) => {
-  try {
-    const userId = req.userId;
-
-    const totalScans = await AtsScans.countDocuments({ userId });
-
-    const avgScore = await AtsScans.aggregate([
-      { $match: { userId: new mongoose.Types.ObjectId(userId) } },
-      { $group: { _id: null, avgScore: { $avg: "$overallScore" } } },
-    ]);
-
-    const passedScans = await AtsScans.countDocuments({
-      userId,
-      passThreshold: true,
-    });
-
-    const recentScans = await AtsScans.find({ userId })
-      .sort({ createdAt: -1 })
-      .limit(5)
-      .select("filename overallScore createdAt");
-
-    res.status(200).json({
-      success: true,
-      data: {
-        totalScans,
-        averageScore: avgScore[0]?.avgScore?.toFixed(1) || 0,
-        passedScans,
-        passRate:
-          totalScans > 0
-            ? ((passedScans / totalScans) * 100).toFixed(1)
-            : 0,
-        recentScans,
-      },
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: "Failed to fetch statistics",
       error: error.message,
     });
   }

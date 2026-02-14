@@ -1,12 +1,9 @@
 import { LuEye } from "react-icons/lu";
-import { useNavigate } from "react-router-dom";
 
 const RecentResumes = ({ resumes = [], onViewAll }) => {
-  const navigate = useNavigate();
-
   return (
     <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-5 flex flex-col relative">
-
+      
       {/* Header - Now only contains the title */}
       <div className="recent-header">
         <h3 className="recent-title">
@@ -21,8 +18,7 @@ const RecentResumes = ({ resumes = [], onViewAll }) => {
           resumes.map((resume) => (
             <div
               key={resume.id}
-              onClick={() => navigate(`/user/resume-builder?id=${resume.id}`)}
-              className="flex items-center justify-between p-3 rounded-lg border border-gray-100 hover:bg-gray-50 transition cursor-pointer"
+              className="flex items-center justify-between p-3 rounded-lg border border-gray-100 hover:bg-gray-50 transition"
             >
               <div className="flex items-center gap-3">
                 <div className="p-2 rounded-md bg-blue-50 text-blue-600">

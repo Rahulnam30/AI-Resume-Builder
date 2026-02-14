@@ -12,9 +12,13 @@ import {
   Eye,
 } from "lucide-react";
 import { FaLinkedin } from "react-icons/fa";
-import { useEffect, useState } from "react";
-import { getTemplateComponent } from "../Templates/TemplateRegistry";
-
+import { useEffect, useState, useRef } from "react";
+import {
+  getTemplateComponent,
+  getTemplateCSS,
+} from "../Templates/TemplateRegistry";
+import { forwardRef, useImperativeHandle } from "react";
+import axios from "axios";
 function formatMonthYear(value) {
   if (!value) return "";
   const [year, month] = value.split("-");
@@ -46,13 +50,9 @@ function Section({ title, children }) {
   );
 }
 
-const LivePreview = ({
-  formData = {},
-  currentTemplate,
-  isExpanded,
-  onExpand,
-  onCollapse,
-}) => {
+const LivePreview = forwardRef((props, ref) => {
+  const { formData, currentTemplate, isExpanded, onExpand, onCollapse } = props;
+
   const [zoom, setZoom] = useState(1);
   const [isMobileView, setIsMobileView] = useState(false);
 
@@ -79,6 +79,42 @@ const LivePreview = ({
   const zoomIn = () => setZoom((z) => Math.min(z + 0.1, 2));
   const zoomOut = () => setZoom((z) => Math.max(z - 0.1, 0.5));
   const resetZoom = () => setZoom(1);
+
+  const resume_doc = useRef(null);
+  const getResumeHTML = () => {
+    if (!resume_doc.current) {
+      console.error("Resume DOM not found");
+      return "";
+    }
+    const resumeHTML = resume_doc.current.outerHTML;
+    const TemplateComponentCSSPath = getTemplateCSS(
+      currentTemplate?.id || currentTemplate,
+    );
+    return `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <meta charset="UTF-8" />
+          <title>resume</title>
+          <style>
+            body {
+              margin: 0;
+              padding: 0;
+              font-family: Arial, sans-serif;
+            }
+            ${TemplateComponentCSSPath}
+          </style>
+        </head>
+        <body>
+            ${resumeHTML}
+        </body>
+      </html>
+    `;
+  };
+
+  useImperativeHandle(ref, () => ({
+    getResumeHTML,
+  }));
 
   const {
     fullName,
@@ -172,42 +208,42 @@ const LivePreview = ({
                 edu.graduationDate ||
                 edu.location,
             ) && (
-                <Section title="Education">
-                  {education.map(
-                    (edu) =>
-                      (edu?.degree ||
-                        edu?.startDate ||
-                        edu?.graduationDate ||
-                        edu?.school ||
-                        edu?.gpa) && (
-                        <div
-                          key={edu?.id}
-                          className="border-l-2 border-slate-200 pl-4 mb-2"
-                        >
-                          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1">
-                            <h3 className="font-medium text-slate-900">
-                              {edu?.degree}
-                            </h3>
-                            {edu?.startDate && edu?.graduationDate && (
-                              <span className="text-sm text-slate-500">
-                                {formatMonthYear(edu?.startDate)} -{" "}
-                                {formatMonthYear(edu?.graduationDate)}
-                              </span>
-                            )}
-                          </div>
-
-                          <p className="text-sm text-slate-600">{edu?.school}</p>
-
-                          {edu?.gpa && (
-                            <p className="text-sm text-slate-500">
-                              GPA: {edu?.gpa} / 10.0
-                            </p>
+              <Section title="Education">
+                {education.map(
+                  (edu) =>
+                    (edu?.degree ||
+                      edu?.startDate ||
+                      edu?.graduationDate ||
+                      edu?.school ||
+                      edu?.gpa) && (
+                      <div
+                        key={edu?.id}
+                        className="border-l-2 border-slate-200 pl-4 mb-2"
+                      >
+                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1">
+                          <h3 className="font-medium text-slate-900">
+                            {edu?.degree}
+                          </h3>
+                          {edu?.startDate && edu?.graduationDate && (
+                            <span className="text-sm text-slate-500">
+                              {formatMonthYear(edu?.startDate)} -{" "}
+                              {formatMonthYear(edu?.graduationDate)}
+                            </span>
                           )}
                         </div>
-                      ),
-                  )}
-                </Section>
-              )}
+
+                        <p className="text-sm text-slate-600">{edu?.school}</p>
+
+                        {edu?.gpa && (
+                          <p className="text-sm text-slate-500">
+                            GPA: {edu?.gpa} / 10.0
+                          </p>
+                        )}
+                      </div>
+                    ),
+                )}
+              </Section>
+            )}
 
             {experience?.some(
               (exp) =>
@@ -218,39 +254,39 @@ const LivePreview = ({
                 exp.endDate ||
                 exp.location,
             ) && (
-                <Section title="Experience">
-                  {experience.map(
-                    (exp) =>
-                      (exp?.title ||
-                        exp?.company ||
-                        exp?.startDate ||
-                        exp?.endDate ||
-                        exp?.description) && (
-                        <div key={exp?.id}>
-                          <div className="mb-6">
-                            <div className="flex justify-between items-start mb-1">
-                              <div>
-                                <h3 className="text-sm font-semibold text-slate-900">
-                                  {exp?.title}
-                                </h3>
-                                <p className="text-xs text-slate-500">
-                                  {exp?.company}
-                                </p>
-                              </div>
-                              <span className="text-xs text-slate-500 whitespace-nowrap">
-                                {formatMonthYear(exp?.startDate)} -{" "}
-                                {!/[a-zA-Z]/.test(exp?.endDate)
-                                  ? formatMonthYear(exp?.endDate)
-                                  : exp?.endDate}
-                              </span>
+              <Section title="Experience">
+                {experience.map(
+                  (exp) =>
+                    (exp?.title ||
+                      exp?.company ||
+                      exp?.startDate ||
+                      exp?.endDate ||
+                      exp?.description) && (
+                      <div key={exp?.id}>
+                        <div className="mb-6">
+                          <div className="flex justify-between items-start mb-1">
+                            <div>
+                              <h3 className="text-sm font-semibold text-slate-900">
+                                {exp?.title}
+                              </h3>
+                              <p className="text-xs text-slate-500">
+                                {exp?.company}
+                              </p>
                             </div>
-                            <p className="mt-2 break-words">{exp.description}</p>
+                            <span className="text-xs text-slate-500 whitespace-nowrap">
+                              {formatMonthYear(exp?.startDate)} -{" "}
+                              {!/[a-zA-Z]/.test(exp?.endDate)
+                                ? formatMonthYear(exp?.endDate)
+                                : exp?.endDate}
+                            </span>
                           </div>
+                          <p className="mt-2 break-words">{exp.description}</p>
                         </div>
-                      ),
-                  )}
-                </Section>
-              )}
+                      </div>
+                    ),
+                )}
+              </Section>
+            )}
 
             {projects?.some(
               (project) =>
@@ -261,106 +297,106 @@ const LivePreview = ({
                 project?.link?.liveLink ||
                 project?.link?.other,
             ) && (
-                <Section title="Projects">
-                  {projects.map(
-                    (prj) =>
-                      (prj?.name ||
-                        prj?.link?.github ||
-                        prj?.link?.liveLink ||
-                        prj?.link?.other ||
-                        prj?.technologies ||
-                        prj?.description) && (
-                        <div key={prj?.id} className="space-y-4">
-                          {/* Project Item */}
-                          <div className="space-y-1">
-                            <div className="flex items-start justify-between gap-4">
-                              <h3 className="font-bold text-slate-900">
-                                {prj?.name}
-                              </h3>
+              <Section title="Projects">
+                {projects.map(
+                  (prj) =>
+                    (prj?.name ||
+                      prj?.link?.github ||
+                      prj?.link?.liveLink ||
+                      prj?.link?.other ||
+                      prj?.technologies ||
+                      prj?.description) && (
+                      <div key={prj?.id} className="space-y-4">
+                        {/* Project Item */}
+                        <div className="space-y-1">
+                          <div className="flex items-start justify-between gap-4">
+                            <h3 className="font-bold text-slate-900">
+                              {prj?.name}
+                            </h3>
 
-                              <div className="flex gap-2">
-                                {prj?.link?.github && (
-                                  <a
-                                    href={prj?.link?.github}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="text-sm text-slate-500 hover:text-slate-900 underline whitespace-nowrap"
-                                  >
-                                    GitHub
-                                  </a>
-                                )}
-                                {prj?.link?.liveLink && (
-                                  <a
-                                    href={prj?.link?.liveLink}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="text-sm text-slate-500 hover:text-slate-900 underline whitespace-nowrap"
-                                  >
-                                    Live
-                                  </a>
-                                )}
-                                {prj?.link?.other && (
-                                  <a
-                                    href={prj?.link?.other}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="text-sm text-slate-500 hover:text-slate-900 underline whitespace-nowrap"
-                                  >
-                                    Other
-                                  </a>
-                                )}
-                              </div>
+                            <div className="flex gap-2">
+                              {prj?.link?.github && (
+                                <a
+                                  href={prj?.link?.github}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="text-sm text-slate-500 hover:text-slate-900 underline whitespace-nowrap"
+                                >
+                                  GitHub
+                                </a>
+                              )}
+                              {prj?.link?.liveLink && (
+                                <a
+                                  href={prj?.link?.liveLink}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="text-sm text-slate-500 hover:text-slate-900 underline whitespace-nowrap"
+                                >
+                                  Live
+                                </a>
+                              )}
+                              {prj?.link?.other && (
+                                <a
+                                  href={prj?.link?.other}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="text-sm text-slate-500 hover:text-slate-900 underline whitespace-nowrap"
+                                >
+                                  Other
+                                </a>
+                              )}
                             </div>
-
-                            <p className="text-xs text-slate-600">
-                              {prj?.technologies}
-                            </p>
-
-                            <p className="text-sm text-slate-700 leading-relaxed">
-                              {prj?.description}
-                            </p>
                           </div>
+
+                          <p className="text-xs text-slate-600">
+                            {prj?.technologies}
+                          </p>
+
+                          <p className="text-sm text-slate-700 leading-relaxed">
+                            {prj?.description}
+                          </p>
                         </div>
-                      ),
-                  )}
-                </Section>
-              )}
+                      </div>
+                    ),
+                )}
+              </Section>
+            )}
 
             {certifications?.some(
               (cert) => cert.name || cert.issuer || cert.date || cert.link,
             ) && (
-                <Section title="Certifications">
-                  <section className="space-y-4">
-                    {certifications.map((cert) => (
-                      <div
-                        key={cert.id}
-                        className="flex items-start justify-between gap-4"
-                      >
-                        <div>
-                          <h3 className="text-sm font-medium text-slate-900">
-                            {cert.name}
-                          </h3>
+              <Section title="Certifications">
+                <section className="space-y-4">
+                  {certifications.map((cert) => (
+                    <div
+                      key={cert.id}
+                      className="flex items-start justify-between gap-4"
+                    >
+                      <div>
+                        <h3 className="text-sm font-medium text-slate-900">
+                          {cert.name}
+                        </h3>
 
-                          <p className="text-sm text-slate-600">{cert.issuer}</p>
+                        <p className="text-sm text-slate-600">{cert.issuer}</p>
 
-                          <p className="text-sm text-slate-500">{cert.date}</p>
-                        </div>
-
-                        {cert.link && (
-                          <a
-                            href={cert.link}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-sm text-slate-500 hover:text-slate-900 underline whitespace-nowrap"
-                          >
-                            Credential
-                          </a>
-                        )}
+                        <p className="text-sm text-slate-500">{cert.date}</p>
                       </div>
-                    ))}
-                  </section>
-                </Section>
-              )}
+
+                      {cert.link && (
+                        <a
+                          href={cert.link}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-sm text-slate-500 hover:text-slate-900 underline whitespace-nowrap"
+                        >
+                          Credential
+                        </a>
+                      )}
+                    </div>
+                  ))}
+                </section>
+              </Section>
+            )}
 
             {(skills?.technical.length !== 0 || skills?.soft.length !== 0) && (
               <Section title="Skills">
@@ -402,19 +438,6 @@ const LivePreview = ({
     );
   };
 
-  /* DYNAMIC MOBILE SCALING */
-  useEffect(() => {
-    if (isMobileView) {
-      // Calculate scale to fit 794px (A4 width) into screen width with some padding
-      const screenWidth = window.innerWidth;
-      const targetWidth = 794;
-      const scale = (screenWidth * 0.9) / targetWidth; // 90% of screen width
-      setZoom(scale);
-    } else {
-      setZoom(1);
-    }
-  }, [isMobileView]);
-
   /* FULLSCREEN MODE */
   if (isExpanded) {
     return (
@@ -424,7 +447,9 @@ const LivePreview = ({
             <div className="flex items-center gap-2 text-sm font-semibold">
               <FileText size={16} />{" "}
               <div className="flex flex-col md:flex-row md:items-center gap-1 md:gap-2 text-left">
-                <span className="font-normal text-xs md:text-sm">Live Preview</span>{" "}
+                <span className="font-normal text-xs md:text-sm">
+                  Live Preview
+                </span>{" "}
                 {currentTemplate?.name && (
                   <span className="text-slate-500 font-normal text-xs md:text-sm">
                     - {currentTemplate.name}
@@ -448,23 +473,19 @@ const LivePreview = ({
               <button
                 onClick={() => {
                   onCollapse();
-                  // Reset zoom logic handled by useEffect on isMobileView change or manually here
+                  setZoom(1);
                 }}
               >
                 <Minimize2 size={16} />
               </button>
             </div>
           </div>
-          <div className="flex-1 overflow-auto flex justify-center bg-slate-100 p-4">
+          <div className="flex-1 overflow-auto">
             <div
-              // Force width to 794px (A4) so layout doesn't break
-              className="bg-white shadow-lg origin-top-left"
+              className="w-[90%] max-w-[694px] h-[525px] mx-auto m-6"
               style={{
-                width: "794px",
-                minHeight: "1123px",
                 transform: `scale(${zoom})`,
-                marginBottom: `-${(1 - zoom) * 1123}px`,
-                marginRight: `-${(1 - zoom) * 794}px`, // Shrink logical width to match visual width
+                transformOrigin: "top center",
               }}
             >
               <PreviewContent />
@@ -484,8 +505,7 @@ const LivePreview = ({
       >
         <div className="flex items-center gap-2 font-semibold md:text-sm text-xs select-none">
           <FileText size={16} />
-          <span className="font-medium">Live Preview</span>
-          {" "}
+          <span className="font-medium">Live Preview</span>{" "}
           {currentTemplate?.name && (
             <span className="text-slate-500 font-normal">
               - {currentTemplate.name}
@@ -504,30 +524,26 @@ const LivePreview = ({
       </div>
 
       <div
-        className="md:overflow-auto overflow-hidden flex justify-center md:p-4 rounded-b-xl bg-slate-200 transition-all duration-300 relative"
+        className="bg-slate-200 overflow-y-hidden md:p-4 rounded-b-xl transition-all duration-300"
         style={{
           height: isMobilePreviewHidden
             ? isMobileView
-              ? `${1123 * zoom + 40}px` // Dynamic height based on scaled resume + padding
+              ? "530px"
               : "auto"
             : "0",
         }}
       >
-        <div
-          className="bg-white shadow-lg origin-top-left"
-          style={{
-            width: "794px",
-            minHeight: "1123px",
-            transform: `scale(${zoom})`,
-            marginBottom: isMobileView ? `-${(1 - zoom) * 1123}px` : "0",
-            marginRight: isMobileView ? `-${(1 - zoom) * 794}px` : "0", // Compel container to shrink wrap
-          }}
-        >
-          <PreviewContent />
+        <div className="md:overflow-auto overflow-y-hidden flex">
+          <div
+            ref={resume_doc}
+            className=" h-full overflow-hidden md:scale-y-100 scale-y-[0.9] origin-top-left"
+          >
+            <PreviewContent />
+          </div>
         </div>
       </div>
     </div>
   );
-};
+});
 
 export default LivePreview;

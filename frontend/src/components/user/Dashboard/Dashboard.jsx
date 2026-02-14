@@ -3,7 +3,7 @@ import RecentResumes from "./RecentResumes";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 // Corrected Import based on your file structure
-import UserNavBar from "../UserNavBar/UserNavBar";
+import UserNavBar from "../UserNavBar/UserNavBar"; 
 import axios from "axios";
 
 import {
@@ -53,7 +53,7 @@ const Dashboard = ({ setActivePage }) => {
           <h1>Welcome back, {dashboardData?.user.name || "User"}</h1>
           <button
             className="create-btn"
-            onClick={() => navigate("/user/resume-builder?new=true")}
+            onClick={() => navigate("/user/resume-builder")}
           >
             + Create New Resume
           </button>

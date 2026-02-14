@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
+import { RxHamburgerMenu } from "react-icons/rx";
 
 const SIDEBAR_WIDTH = {
   expanded: 256,
@@ -106,17 +107,17 @@ export default function AdminSidebar({ isCollapsed, setIsCollapsed, isMobileOpen
       {/* Desktop Hamburger Button - Only visible on desktop */}
       <button
         onClick={() => setIsCollapsed(!isCollapsed)}
-        className="hidden md:block fixed top-3 left-4 z-[105] p-3 hover:bg-slate-50 rounded-lg transition-colors bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white active:bg-white shadow-md border border-slate-200"
+        className="hidden md:block fixed top-4 left-4 z-50 p-2 hover:bg-slate-50 rounded-lg transition-colors bg-white shadow-md border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white active:bg-white"
         aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
         aria-expanded={!isCollapsed}
       >
-        <Menu size={24} className="text-slate-700" />
+        <RxHamburgerMenu size={24} className="text-slate-700" />
       </button>
 
       {/* Mobile menu toggle - Only visible on mobile */}
       <button
         onClick={() => setIsMobileOpen(!isMobileOpen)}
-        className="md:hidden fixed top-3 left-4 z-[105] p-3 bg-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white active:bg-white shadow-md border border-slate-200"
+        className="md:hidden fixed top-4 left-4 z-50 p-2 bg-white shadow-md border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white active:bg-white"
         aria-label={isMobileOpen ? "Close menu" : "Open menu"}
         aria-expanded={isMobileOpen}
       >
@@ -127,14 +128,14 @@ export default function AdminSidebar({ isCollapsed, setIsCollapsed, isMobileOpen
       {isMobileOpen && (
         <div
           onClick={() => setIsMobileOpen(false)}
-          className="fixed inset-0 bg-black/30 z-[80] md:hidden"
+          className="fixed inset-0 bg-black/30 z-40 md:hidden"
           aria-hidden="true"
         />
       )}
 
       {/* Sidebar */}
       <motion.aside
-        className="fixed top-0 left-0 z-[90] bg-white border-r border-slate-200 flex flex-col"
+        className="fixed top-0 left-0 z-40 bg-white border-r border-slate-200 flex flex-col"
         style={{
           width: isMobile ? SIDEBAR_WIDTH.expanded : isCollapsed ? SIDEBAR_WIDTH.collapsed : SIDEBAR_WIDTH.expanded,
           height: "100vh",
@@ -142,8 +143,8 @@ export default function AdminSidebar({ isCollapsed, setIsCollapsed, isMobileOpen
         animate={{ x: isMobile && !isMobileOpen ? -SIDEBAR_WIDTH.expanded : 0 }}
         transition={{ type: "spring", stiffness: 220, damping: 25 }}
       >
-        {/* Menu - FIXED */}
-        <nav className="p-3 space-y-2 mt-16 flex-1 overflow-y-auto">
+        {/* Menu */}
+        <nav className="p-3 space-y-2 mt-20 flex-1 overflow-y-auto">
           {menuItems.map((item) => {
             const Icon = item.icon;
             const active = isActive(item.path);
@@ -154,9 +155,10 @@ export default function AdminSidebar({ isCollapsed, setIsCollapsed, isMobileOpen
                   onClick={() => handleNavigate(item.path)}
                   className={`w-full flex items-center rounded-xl transition-all
                     ${isCollapsed && !isMobile ? "justify-center px-0" : "gap-3 px-4"} py-3
-                    ${active
-                      ? "bg-blue-50 text-blue-600 font-semibold"
-                      : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+                    ${
+                      active
+                        ? "bg-blue-50 text-blue-600 font-semibold"
+                        : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
                     }
                     ${item.id === 'notifications' && unreadCount > 0 ? 'relative' : ''}`}
                   aria-current={active ? "page" : undefined}
@@ -165,7 +167,7 @@ export default function AdminSidebar({ isCollapsed, setIsCollapsed, isMobileOpen
                   {(!isCollapsed || isMobile) && (
                     <span className="whitespace-nowrap">{item.label}</span>
                   )}
-
+                  
                   {/* ← ADDED Notification Badge */}
                   {item.id === 'notifications' && unreadCount > 0 && (
                     <motion.div

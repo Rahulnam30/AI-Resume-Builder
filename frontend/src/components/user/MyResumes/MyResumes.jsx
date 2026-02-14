@@ -1,154 +1,138 @@
-import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import axios from "axios";
-import { Loader2, MoreVertical, FileText, Trash2, Download, Edit } from "lucide-react";
+import { useState } from "react";
 import "./myresumes.css";
-import UserNavBar from "../UserNavBar/UserNavBar";
+import UserNavBar from "../UserNavBar/UserNavBar"; // ✅ keep navbar
 
 export default function MyResumes({ onSidebarToggle }) {
   const [openMenu, setOpenMenu] = useState(null);
-  const [resumes, setResumes] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const navigate = useNavigate();
 
-  useEffect(() => {
-    const fetchResumes = async () => {
-      try {
-        const res = await axios.get("http://localhost:5000/api/resume/all", {
-          withCredentials: true,
-        });
-        if (res.data.success) {
-          setResumes(res.data.data);
-        }
-      } catch (error) {
-        console.error("Failed to fetch resumes:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchResumes();
-  }, []);
-
-  const handleDelete = async (id) => {
-    // Placeholder for delete functionality
-    console.log("Delete resume", id);
-  };
-
-  const formatDate = (dateString) => {
-    if (!dateString) return "N/A";
-    return new Date(dateString).toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-    });
-  };
+  const resumes = [
+    {
+      title: "Senior Software Engineer",
+      created: "2023-10-26",
+      modified: "2 hours ago",
+      format: "PDF",
+      score: "75/100",
+      color: "green",
+    },
+    {
+      title: "Marketing Manager - Tech",
+      created: "2023-10-20",
+      modified: "yesterday",
+      format: "Word",
+      score: "88/100",
+      color: "blue",
+    },
+    {
+      title: "Product Manager Resume (Entry)",
+      created: "2023-09-15",
+      modified: "3 days ago",
+      format: "PDF",
+      score: "62/100",
+      color: "orange",
+    },
+    {
+      title: "Data Analyst (Intern)",
+      created: "2023-08-01",
+      modified: "1 week ago",
+      format: "PDF",
+      score: "91/100",
+      color: "green",
+    },
+  ];
 
   return (
     <div className="myresumes-page user-page">
+      {/* ✅ Navbar */}
       <UserNavBar
         onMenuClick={onSidebarToggle || (() => console.log("Toggle sidebar"))}
       />
 
+      {/* CONTENT BELOW NAVBAR */}
       <div className="myresumes-wrapper">
+        {/* Page Header */}
         <div className="page-header">
           <div>
             <h1>My Resumes</h1>
             <p>Manage all your resume documents.</p>
           </div>
-          <button
-            className="create-btn"
-            onClick={() => navigate("/user/resume-builder?new=true")}
-          >
-            + Create New
-          </button>
+          <button className="create-btn">+ Create New</button>
         </div>
 
+        {/* Table / Card Section */}
         <div className="card">
           <div className="filter-row">
             <div className="filter-input">
-              <input placeholder="Search resumes..." />
+              <svg className="icon" viewBox="0 0 24 24">
+                <path d="M21 21l-4.35-4.35m1.85-5.4a7.25 7.25 0 11-14.5 0 7.25 7.25 0 0114.5 0z" />
+              </svg>
+              <input placeholder="Search templates accordingly..." />
             </div>
+            <button className="format-btn">All Formats</button>
           </div>
 
-          {isLoading ? (
-            <div className="flex justify-center items-center py-20">
-              <Loader2 className="animate-spin text-blue-600" size={32} />
-            </div>
-          ) : (
-            <>
-              {resumes.length === 0 ? (
-                <div className="text-center py-10 text-slate-500">
-                  No resumes found. Create your first one!
-                </div>
-              ) : (
-                <table className="resume-table">
-                  <thead>
-                    <tr>
-                      <th>Title</th>
-                      <th>Date Created</th>
-                      <th>Last Modified</th>
-                      <th>Template</th>
-                      <th>Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {resumes.map((resume, index) => (
-                      <tr key={resume._id || index}>
-                        <td>
-                          <div className="flex items-center gap-2">
-                            <FileText size={16} className="text-slate-400" />
-                            <span className="font-medium">{resume.title || "Untitled Resume"}</span>
-                          </div>
-                        </td>
-                        <td>{formatDate(resume.createdAt)}</td>
-                        <td>{formatDate(resume.updatedAt)}</td>
-                        <td className="capitalize">{resume.templateId || "Default"}</td>
-                        <td className="actions">
-                          <div className="dropdown-wrapper relative">
-                            <button
-                              className="dots-btn p-1.5 hover:bg-slate-100 rounded-full transition-colors"
-                              onClick={() => setOpenMenu(openMenu === index ? null : index)}
-                            >
-                              <MoreVertical size={18} className="text-slate-600" />
-                            </button>
-                            {openMenu === index && (
-                              <div className="dropdown-menu absolute right-0 top-full mt-1 bg-white shadow-lg rounded-lg border border-slate-100 z-10 w-32 py-1 flex flex-col">
-                                <button
-                                  className="text-left px-4 py-2 hover:bg-slate-50 text-sm flex items-center gap-2 text-slate-700"
-                                  onClick={() => navigate(`/user/resume-builder?id=${resume._id}`)}
-                                >
-                                  <Edit size={14} /> Edit
-                                </button>
-                                <button className="text-left px-4 py-2 hover:bg-slate-50 text-sm flex items-center gap-2 text-slate-700">
-                                  <Download size={14} /> Download
-                                </button>
-                                <button
-                                  className="text-left px-4 py-2 hover:bg-red-50 text-sm flex items-center gap-2 text-red-600 border-t border-slate-100"
-                                  onClick={() => handleDelete(resume._id)}
-                                >
-                                  <Trash2 size={14} /> Delete
-                                </button>
-                              </div>
-                            )}
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              )}
-            </>
-          )}
+          {/* Table */}
+          <table className="resume-table">
+            <thead>
+              <tr>
+                <th>Title</th>
+                <th>Date Created</th>
+                <th>Last Modified</th>
+                <th>Format</th>
+                <th>AI Score</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {resumes.map((resume, index) => (
+                <tr key={index}>
+                  <td>{resume.title}</td>
+                  <td>{resume.created}</td>
+                  <td>{resume.modified}</td>
+                  <td>{resume.format}</td>
+                  <td className={`score ${resume.color}`}>{resume.score}</td>
+                  <td className="actions">
+                    <button className="action-btn" title="View">
+                      <svg className="icon" viewBox="0 0 24 24">
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                        <circle cx="12" cy="12" r="3" />
+                      </svg>
+                    </button>
+                    <div className="dropdown-wrapper">
+                      <button
+                        className="dots-btn"
+                        onClick={() =>
+                          setOpenMenu(openMenu === index ? null : index)
+                        }
+                      >
+                        ⋮
+                      </button>
+                      {openMenu === index && (
+                        <div className="dropdown-menu">
+                          <button>Edit</button>
+                          <button>Download</button>
+                          <button className="danger">Delete</button>
+                        </div>
+                      )}
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
 
-          {!isLoading && resumes.length > 0 && (
-            <div className="table-bottom">
-              <span>Showing {resumes.length} resumes</span>
+          {/* Table Bottom */}
+          <div className="table-bottom">
+            <span>Showing 1 to 4 of 4 resumes</span>
+            <div className="pagination">
+              <button>‹</button>
+              <button className="active">1</button>
+              <button>›</button>
             </div>
-          )}
+          </div>
         </div>
 
-        <footer className="footer">© 2026 AI Resume Builder. All rights reserved.</footer>
+        {/* Footer */}
+        <footer className="footer">© 2023 ResumeAI Inc. All rights reserved.</footer>
       </div>
     </div>
   );

@@ -1,81 +1,79 @@
 import mongoose from "mongoose";
 
+/* ================= SUB SCHEMAS ================= */
+
+const educationSchema = new mongoose.Schema(
+  {
+    id: String,
+    school: String,
+    degree: String,
+    gpa: String,
+    startDate: String,
+    graduationDate: String,
+  },
+  { _id: false }
+);
+
+const experienceSchema = new mongoose.Schema(
+  {
+    id: String,
+    title: String,
+    company: String,
+    description: String,
+    startDate: String,
+    endDate: String,
+  },
+  { _id: false }
+);
+
+const projectSchema = new mongoose.Schema(
+  {
+    id: String,
+    name: String,
+    description: String,
+    technologies: String,
+    link: {
+      github: String,
+      liveLink: String,
+      other: String,
+    },
+  },
+  { _id: false }
+);
+
+const certificationSchema = new mongoose.Schema(
+  {
+    id: String,
+    name: String,
+    issuer: String,
+    date: String,
+    link: String,
+  },
+  { _id: false }
+);
+
+/* ================= MAIN RESUME SCHEMA ================= */
+
 const resumeSchema = new mongoose.Schema(
   {
-    /* ================= USER ASSOCIATION ================= */
-    user: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-      required: false,
-    },
-    title: { type: String, default: "My Resume" },
-    templateId: { type: String, default: "jessica-claire" },
+    fullName: String,
+    email: String,
+    linkedin: String,
+    location: String,
+    phone: String,
+    summary: String,
+    website: String,
 
-    /* ================= PERSONAL INFO ================= */
-    fullName: { type: String, default: "" },
-    email: { type: String, default: "" },
-    phone: { type: String, default: "" },
-    location: { type: String, default: "" },
-    linkedin: { type: String, default: "" },
-    website: { type: String, default: "" },
-    summary: { type: String, default: "" },
-
-    /* ================= SECTIONS ================= */
-    education: [
-      {
-        id: Number,
-        school: String,
-        degree: String,
-        gpa: String,
-        startDate: String,
-        graduationDate: String,
-        location: String,
-      },
-    ],
-
-    experience: [
-      {
-        id: Number,
-        title: String,
-        company: String,
-        description: String,
-        startDate: String,
-        endDate: String,
-        location: String,
-      },
-    ],
-
-    projects: [
-      {
-        id: Number,
-        name: String,
-        description: String,
-        technologies: String,
-        link: {
-          github: String,
-          liveLink: String,
-          other: String,
-        },
-      },
-    ],
+    education: [educationSchema],
+    experience: [experienceSchema],
+    projects: [projectSchema],
 
     skills: {
       technical: [String],
       soft: [String],
     },
 
-    certifications: [
-      {
-        id: Number,
-        name: String,
-        issuer: String,
-        date: String,
-        link: String,
-      },
-    ],
-
-    // Fallback for any other data
-    data: { type: Object },
+    certifications: [certificationSchema],
   },
   {
     timestamps: true,
