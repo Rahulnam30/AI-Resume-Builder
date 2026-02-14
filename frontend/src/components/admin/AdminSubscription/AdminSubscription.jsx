@@ -4,25 +4,40 @@ import axiosInstance from "../../../api/axios";
 import { usePricing } from "../../../context/Pricingcontext";
 
 const AdminSubscription = () => {
-  const { plans, setPlans, savePlans, fetchPlans } = usePricing(); // ⭐ Added fetchPlans
+  const { plans, setPlans, savePlans, fetchPlans } = usePricing();
   const [paidUsers, setPaidUsers] = useState([]);
+  const [freeUsersCount, setFreeUsersCount] = useState(0);
+  const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    fetchPaidUsers();
-    fetchPlans(); // ⭐ Refresh plans when component mounts
+    fetchData();
+    fetchPlans();
   }, []);
 
-  const fetchPaidUsers = async () => {
+  const fetchData = async () => {
     try {
-      const response = await axiosInstance.get("/api/user");
-      // Filter for Pro users
-      const proUsers = response.data.filter(user => user.plan === "Pro");
-      setPaidUsers(proUsers);
+      setLoading(true);
+
+      // Fetch all users
+      const usersResponse = await axiosInstance.get("/api/user");
+      const allUsers = usersResponse.data;
+
+      // Filter users
+      const pro = allUsers.filter(user => user.plan === "Pro" || user.plan === "Premium");
+      const free = allUsers.filter(user => !user.plan || user.plan === "Free");
+
+      setPaidUsers(pro);
+      setFreeUsersCount(free.length);
+
+      // Fetch stats for revenue
+      const statsResponse = await axiosInstance.get("/api/user/dashboard-stat");
+      setStats(statsResponse.data);
+
       setLoading(false);
     } catch (err) {
-      console.error("Failed to fetch users", err);
+      console.error("Failed to fetch data", err);
       setLoading(false);
     }
   };
@@ -72,7 +87,12 @@ const AdminSubscription = () => {
         <div className="bg-white p-6 rounded-xl shadow flex flex-col gap-2">
           <p className="text-sm text-gray-500">Total Revenue</p>
           <p className="text-2xl font-bold">
-            ₹124,500 <span className="text-green-500 text-sm">+12%</span>
+            ₹{stats?.revenue?.total?.toLocaleString() || 0}
+            {stats?.revenue?.change !== 0 && (
+              <span className={`text-sm ml-2 ${stats?.revenue?.change >= 0 ? 'text-green-500' : 'text-red-500'}`}>
+                {stats?.revenue?.change > 0 ? '+' : ''}{stats?.revenue?.change}%
+              </span>
+            )}
           </p>
         </div>
         <div className="bg-white p-6 rounded-xl shadow flex flex-col gap-2">
@@ -84,8 +104,8 @@ const AdminSubscription = () => {
         <div className="bg-white p-6 rounded-xl shadow flex flex-col gap-2">
           <p className="text-sm text-gray-500">Free Users</p>
           <p className="text-2xl font-bold">
-            15,400{" "}
-            <span className="text-gray-400 text-sm">(Potential leads)</span>
+            {freeUsersCount.toLocaleString()}
+            <span className="text-gray-400 text-sm ml-2">(Potential leads)</span>
           </p>
         </div>
       </div>
@@ -212,8 +232,8 @@ const AdminSubscription = () => {
                     <td className="px-6 py-4 text-center">
                       <span
                         className={`px-2 py-1 rounded text-xs font-medium ${user.isActive
-                            ? "bg-green-100 text-green-700"
-                            : "bg-red-100 text-red-700"
+                          ? "bg-green-100 text-green-700"
+                          : "bg-red-100 text-red-700"
                           }`}
                       >
                         {user.isActive ? "Active" : "Inactive"}
@@ -253,8 +273,8 @@ const AdminSubscription = () => {
                     </div>
                     <span
                       className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide border ${user.isActive
-                          ? "bg-green-100 text-green-700 border-green-200"
-                          : "bg-red-100 text-red-700 border-red-200"
+                        ? "bg-green-100 text-green-700 border-green-200"
+                        : "bg-red-100 text-red-700 border-red-200"
                         }`}
                     >
                       {user.isActive ? "Active" : "Inactive"}
