@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { 
-  Bell, X, Menu, FileCheck, Repeat, Star, DollarSign, 
-  UserPlus, Shield, AlertTriangle, Download, Upload, AlertCircle, Clock 
+import {
+  Bell, X, Menu, FileCheck, Repeat, Star, DollarSign,
+  UserPlus, Shield, AlertTriangle, Download, Upload, AlertCircle, Clock
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
@@ -53,17 +53,12 @@ export default function AdminNavbar({ isCollapsed, setIsCollapsed, isMobileOpen,
   };
 
   return (
-    <header className={`fixed top-0 left-0 right-0 h-16 bg-white border-b border-gray-200 transition-all ${showNotifications ? 'z-[60]' : 'z-50'}`}>
+    <header className={`fixed top-0 right-0 h-16 bg-white border-b border-gray-200 transition-all duration-300 left-0 pl-14 md:pl-0 ${isCollapsed ? "md:left-20" : "md:left-64"} ${showNotifications ? 'z-[110]' : 'z-[100]'}`}>
       <div className="h-full flex items-center justify-between px-4">
 
         {/* LEFT SECTION - Toggle + Logo */}
         <div className="flex items-center gap-4">
-          <button
-            onClick={handleToggle}
-            className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
-          >
-            <Menu size={24} />
-          </button>
+          {/* Toggle button removed as it is now in Sidebar */}
 
           <div
             className="flex items-center cursor-pointer"
@@ -72,13 +67,13 @@ export default function AdminNavbar({ isCollapsed, setIsCollapsed, isMobileOpen,
             <img
               src={UptoSkillsLogo}
               alt="UptoSkills"
-              className="h-10 object-contain"
+              className="w-44 h-11 object-contain transition-all duration-300"
             />
           </div>
         </div>
 
         {/* RIGHT ACTIONS */}
-        <div className="flex items-center gap-6 relative">
+        <div className="flex items-center gap-2 md:gap-6 relative z-50">
           <div className="relative">
             <motion.button
               onClick={() => setShowNotifications((p) => !p)}
@@ -99,104 +94,107 @@ export default function AdminNavbar({ isCollapsed, setIsCollapsed, isMobileOpen,
               )}
             </motion.button>
 
-            {/* ✅ FIXED AnimatePresence STRUCTURE */}
             <AnimatePresence>
               {showNotifications && (
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.2 }}
-                  className="fixed inset-0 bg-black/10 z-[60] backdrop-blur-[2px]"
-                  onClick={() => setShowNotifications(false)}
-                />
-              )}
-              {showNotifications && (
-                <motion.div
-                  initial={{ x: "100%" }}
-                  animate={{ x: 0 }}
-                  exit={{ x: "100%" }}
-                  transition={{ type: "spring", damping: 25, stiffness: 200 }}
-                  className="fixed top-0 right-0 bottom-0 w-[420px] bg-white shadow-2xl z-[70] flex flex-col overflow-hidden"
-                >
-                  {/* Header */}
-                  <div className="flex-shrink-0 px-8 py-6 bg-white flex items-center justify-between border-b border-gray-50">
-                    <h2 className="text-2xl font-bold text-gray-900">Notifications ({unreadCount})</h2>
-                    <button
-                      onClick={() => setShowNotifications(false)}
-                      className="p-1 text-gray-400 hover:text-gray-600 transition-colors"
-                    >
-                      <X size={24} />
-                    </button>
-                  </div>
+                <>
+                  {/* Backdrop */}
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.2 }}
+                    className="fixed inset-0 bg-black/10 z-[60] backdrop-blur-[2px]"
+                    onClick={() => setShowNotifications(false)}
+                  />
 
-                  {/* Content */}
-                  <div className="flex-1 px-8 py-6 overflow-y-auto">
-                    {displayedNotifications.length === 0 ? (
-                      <div className="text-center py-12">
-                        <Bell size={32} className="text-gray-300 mx-auto mb-3" />
-                        <p className="text-gray-500 text-sm">No notifications yet</p>
-                      </div>
-                    ) : (
-                      <>
-                        {/* TODAY SECTION */}
-                        {displayedNotifications.some(n => n.category === 'today') && (
-                          <div className="mb-0">
-                            <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-6">Today</h3>
-                            <div className="space-y-8">
-                              {displayedNotifications.filter(n => n.category === 'today').map(notification => (
-                                <NotificationItem
-                                  key={notification.id}
-                                  data={notification}
-                                  onMarkRead={handleMarkRead}
-                                  onClick={() => {
-                                    if (notification.isUnread) handleMarkRead(notification.id);
-                                    setShowNotifications(false);
-                                    navigate('/admin/notifications');
-                                  }}
-                                />
-                              ))}
+                  {/* Sidebar */}
+                  <motion.div
+                    initial={{ x: "100%" }}
+                    animate={{ x: 0 }}
+                    exit={{ x: "100%" }}
+                    transition={{ type: "spring", damping: 25, stiffness: 200 }}
+                    className="fixed top-0 right-0 bottom-0 w-full sm:w-[420px] bg-white shadow-2xl z-[120] flex flex-col overflow-hidden"
+                  >
+                    {/* Header */}
+                    <div className="flex-shrink-0 px-8 py-6 bg-white flex items-center justify-between border-b border-gray-50">
+                      <h2 className="text-2xl font-bold text-gray-900">Notifications ({unreadCount})</h2>
+                      <button
+                        onClick={() => setShowNotifications(false)}
+                        className="p-1 text-gray-400 hover:text-gray-600 transition-colors"
+                      >
+                        <X size={24} />
+                      </button>
+                    </div>
+
+                    {/* Content */}
+                    <div className="flex-1 px-8 py-6 overflow-y-auto">
+
+                      {displayedNotifications.length === 0 ? (
+                        <div className="text-center py-12">
+                          <Bell size={32} className="text-gray-300 mx-auto mb-3" />
+                          <p className="text-gray-500 text-sm">No notifications yet</p>
+                        </div>
+                      ) : (
+                        <>
+                          {/* TODAY SECTION */}
+                          {displayedNotifications.some(n => n.category === 'today') && (
+                            <div className="mb-0">
+                              <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-6">Today</h3>
+                              <div className="space-y-8">
+                                {displayedNotifications.filter(n => n.category === 'today').map(notification => (
+                                  <NotificationItem
+                                    key={notification.id}
+                                    data={notification}
+                                    onMarkRead={handleMarkRead}
+                                    onClick={() => {
+                                      if (notification.isUnread) handleMarkRead(notification.id);
+                                      setShowNotifications(false);
+                                      navigate('/admin/notifications');
+                                    }}
+                                  />
+                                ))}
+                              </div>
                             </div>
-                          </div>
-                        )}
+                          )}
 
-                        {/* OLDER SECTION */}
-                        {displayedNotifications.some(n => n.category === 'older') && (
-                          <div className="mt-8">
-                            <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-6">Older</h3>
-                            <div className="space-y-8">
-                              {displayedNotifications.filter(n => n.category === 'older').map(notification => (
-                                <NotificationItem
-                                  key={notification.id}
-                                  data={notification}
-                                  onMarkRead={handleMarkRead}
-                                  onClick={() => {
-                                    if (notification.isUnread) handleMarkRead(notification.id);
-                                    setShowNotifications(false);
-                                    navigate('/admin/notifications');
-                                  }}
-                                />
-                              ))}
+                          {/* OLDER SECTION */}
+                          {displayedNotifications.some(n => n.category === 'older') && (
+                            <div className="mt-8">
+                              <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-6">Older</h3>
+                              <div className="space-y-8">
+                                {displayedNotifications.filter(n => n.category === 'older').map(notification => (
+                                  <NotificationItem
+                                    key={notification.id}
+                                    data={notification}
+                                    onMarkRead={handleMarkRead}
+                                    onClick={() => {
+                                      if (notification.isUnread) handleMarkRead(notification.id);
+                                      setShowNotifications(false);
+                                      navigate('/admin/notifications');
+                                    }}
+                                  />
+                                ))}
+                              </div>
                             </div>
-                          </div>
-                        )}
-                      </>
-                    )}
-                  </div>
+                          )}
+                        </>
+                      )}
+                    </div>
 
-                  {/* Footer */}
-                  <div className="p-4 border-t border-gray-100 bg-gray-50/50">
-                    <button
-                      onClick={() => {
-                        setShowNotifications(false);
-                        navigate('/admin/notifications');
-                      }}
-                      className="w-full text-center text-sm font-semibold text-blue-600 hover:text-blue-700 hover:underline py-2 transition-all"
-                    >
-                      View all notifications
-                    </button>
-                  </div>
-                </motion.div>
+                    {/* Footer */}
+                    <div className="p-4 border-t border-gray-100 bg-gray-50/50">
+                      <button
+                        onClick={() => {
+                          setShowNotifications(false);
+                          navigate('/admin/notifications');
+                        }}
+                        className="w-full text-center text-sm font-semibold text-blue-600 hover:text-blue-700 hover:underline py-2 transition-all"
+                      >
+                        View all notifications
+                      </button>
+                    </div>
+                  </motion.div>
+                </>
               )}
             </AnimatePresence>
           </div>
@@ -212,7 +210,7 @@ function NotificationItem({ data, onMarkRead, onClick }) {
   const Icon = typeConfig.icon;
 
   return (
-    <div 
+    <div
       className="flex gap-4 group p-2 -m-2 rounded-xl cursor-pointer hover:bg-slate-50 transition-colors"
       onClick={onClick}
     >
