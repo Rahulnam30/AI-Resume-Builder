@@ -9,10 +9,11 @@ import {
   Drone,
   BarChart,
   LogOut,
-  Bell,  // ← ADDED
+  Bell,
 } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
+import "./AdminSidebar.css";
 
 
 const SIDEBAR_WIDTH = {
@@ -35,7 +36,6 @@ export default function AdminSidebar({ isCollapsed, setIsCollapsed, isMobileOpen
     return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
-  // ← ADDED unreadCount calculation
   const unreadCount = notifications.filter(n => n.unread).length;
 
   const menuItems = useMemo(
@@ -65,7 +65,6 @@ export default function AdminSidebar({ isCollapsed, setIsCollapsed, isMobileOpen
         label: "Accept User Template",
         path: "/admin/template-requests",
       },
-      // ← ADDED Notifications item
       {
         id: "notifications",
         icon: Bell,
@@ -143,7 +142,7 @@ export default function AdminSidebar({ isCollapsed, setIsCollapsed, isMobileOpen
         transition={{ type: "spring", stiffness: 220, damping: 25 }}
       >
         {/* Menu */}
-        <nav className="p-3 space-y-2 mt-16 flex-1 overflow-y-auto">
+        <nav className="p-3 space-y-2 mt-16 flex-1">
           {menuItems.map((item) => {
             const Icon = item.icon;
             const active = isActive(item.path);
@@ -152,13 +151,15 @@ export default function AdminSidebar({ isCollapsed, setIsCollapsed, isMobileOpen
               <div key={item.id} className="relative group">
                 <button
                   onClick={() => handleNavigate(item.path)}
-                  className={`w-full flex items-center rounded-xl transition-all
+                  onMouseEnter={() => setHoveredItem(item.id)}
+                  onMouseLeave={() => setHoveredItem(null)}
+                  className={`admin-sidebar-item w-full flex items-center rounded-xl transition-all
                     ${isCollapsed && !isMobile ? "justify-center px-0" : "gap-3 px-4"} py-3
                     ${active
-                      ? "bg-blue-50 text-blue-600 font-semibold"
-                      : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+                      ? "active font-semibold"
+                      : "text-slate-600"
                     }
-                    ${item.id === 'notifications' && unreadCount > 0 ? 'relative' : ''}`}  // ← Added for badge positioning
+                    ${item.id === 'notifications' && unreadCount > 0 ? 'relative' : ''}`}
                   aria-current={active ? "page" : undefined}
                 >
                   <Icon size={22} aria-hidden="true" />
@@ -166,7 +167,6 @@ export default function AdminSidebar({ isCollapsed, setIsCollapsed, isMobileOpen
                     <span className="whitespace-nowrap">{item.label}</span>
                   )}
 
-                  {/* ← ADDED Notification Badge */}
                   {item.id === 'notifications' && unreadCount > 0 && (
                     <motion.div
                       className={`ml-auto w-6 h-6 bg-red-500 text-white text-xs rounded-full flex items-center justify-center font-bold shadow-lg absolute -top-2 -right-2 transform translate-x-1/2 -translate-y-1/2 ${isCollapsed && !isMobile ? 'right-1 top-1' : ''}`}
@@ -179,21 +179,11 @@ export default function AdminSidebar({ isCollapsed, setIsCollapsed, isMobileOpen
                 </button>
 
                 {/* Tooltip when collapsed - Desktop only */}
-                <AnimatePresence>
-                  {isCollapsed && !isMobile && (
-                    <motion.div
-                      initial={{ opacity: 0, x: -6 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      exit={{ opacity: 0, x: -6 }}
-                      className="absolute left-full ml-3 top-1/2 -translate-y-1/2 hidden group-hover:flex pointer-events-none"
-                      role="tooltip"
-                    >
-                      <div className="bg-slate-900 text-white text-sm px-3 py-1.5 rounded-lg shadow-lg whitespace-nowrap">
-                        {item.label}
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
+                {isCollapsed && !isMobile && hoveredItem === item.id && (
+                  <div className="admin-sidebar-tooltip" role="tooltip">
+                    {item.label}
+                  </div>
+                )}
               </div>
             );
           })}
@@ -205,7 +195,9 @@ export default function AdminSidebar({ isCollapsed, setIsCollapsed, isMobileOpen
           <div className="relative group">
             <button
               onClick={() => navigate("/")}
-              className={`w-full flex items-center rounded-xl transition-all text-red-500 hover:bg-red-50
+              onMouseEnter={() => setHoveredItem("logout")}
+              onMouseLeave={() => setHoveredItem(null)}
+              className={`admin-sidebar-logout w-full flex items-center rounded-xl transition-all text-red-500
                 ${isCollapsed && !isMobile ? "justify-center px-0" : "gap-3 px-4"} py-3`}
               aria-label="Logout"
             >
@@ -214,14 +206,9 @@ export default function AdminSidebar({ isCollapsed, setIsCollapsed, isMobileOpen
             </button>
 
             {/* Tooltip when collapsed - Desktop only */}
-            {isCollapsed && !isMobile && (
-              <div
-                className="absolute left-full ml-3 top-1/2 -translate-y-1/2 hidden group-hover:flex pointer-events-none"
-                role="tooltip"
-              >
-                <div className="bg-slate-900 text-white text-sm px-3 py-1.5 rounded-lg shadow-lg">
-                  Logout
-                </div>
+            {isCollapsed && !isMobile && hoveredItem === "logout" && (
+              <div className="admin-sidebar-tooltip" role="tooltip">
+                Logout
               </div>
             )}
           </div>
