@@ -5,7 +5,7 @@ import Resume from "../Models/resume.js";
 import AtsScans from "../Models/atsScan.js";
 
 // AI Service
-import { generateResumeAI } from "../ai/aiService.js";
+import { generateResumeAI, generateCoverLetterAI } from "../ai/aiService.js";
 
 // Resume Parsing Services
 import {
@@ -27,9 +27,88 @@ import {
   getFile,
 } from "../service/FileStorage.service.js";
 
+// ... (rest of imports)
+
+/* ... (existing code) ... */
+
+/* =====================================================
+/* =====================================================
+   GENERATE AI RESUME + OPTIONAL SAVE TO DB
+===================================================== */
+export const generateAIResume = async (req, res) => {
+  try {
+    console.log("📥 AI Resume request received");
+
+    // 1. Generate AI summary
+    const aiText = await generateResumeAI(req.body);
+
+    console.log("✅ AI Summary generated");
+
+    // 2. Save to MongoDB (optional)
+    try {
+      const resume = new Resume({
+        ...req.body,
+        summary: aiText,
+      });
+      await resume.save();
+      console.log("💾 AI Resume saved to DB");
+    } catch (dbError) {
+      console.log("⚠️ DB save skipped (MongoDB not connected)");
+    }
+
+    // 3. Send response
+    res.json({
+      success: true,
+      message: "AI Resume generated successfully",
+      aiResume: aiText,
+    });
+  } catch (error) {
+    console.error("❌ AI ERROR:", error);
+    res.status(500).json({
+      success: false,
+      error: "AI generation failed: " + error.message,
+    });
+  }
+};
+
+/* =====================================================
+   GENERATE AI COVER LETTER SECTION
+===================================================== */
+export const generateAICoverLetter = async (req, res) => {
+  try {
+    const { sectionType, jobDetails } = req.body;
+
+    if (!sectionType || !jobDetails) {
+      return res.status(400).json({
+        success: false,
+        error: "Missing sectionType or jobDetails"
+      });
+    }
+
+    console.log(`📥 Generating Cover Letter AI for: ${sectionType}`);
+    console.log("📊 Request Body:", req.body);
+
+    const content = await generateCoverLetterAI(jobDetails, sectionType);
+
+    console.log("✅ AI Content Generated Length:", content?.length);
+
+    res.json({
+      success: true,
+      result: content
+    });
+
+  } catch (error) {
+    console.error("❌ COVER LETTER AI ERROR:", error);
+    res.status(500).json({
+      success: false,
+      error: "AI generation failed: " + error.message
+    });
+  }
+};
+
 /* =====================================================
    SAVE NORMAL RESUME (Manual Save)
-   Saves a resume document to MongoDB
+===================================================== */
 ===================================================== */
 export const saveResume = async (req, res) => {
   try {
@@ -49,48 +128,8 @@ export const saveResume = async (req, res) => {
 };
 
 /* =====================================================
-   GENERATE AI RESUME + OPTIONAL SAVE TO DB
-   Uses AI to generate a resume summary and optionally saves it
+   UPLOAD & ANALYZE RESUME (ATS SCAN)
 ===================================================== */
-export const generateAIResume = async (req, res) => {
-  try {
-    console.log("📥 AI Resume request received");
-
-    // Generate AI summary
-    const aiText = await generateResumeAI(req.body);
-    console.log("✅ AI Summary generated");
-
-    // Save AI-generated resume to DB (optional)
-    try {
-      const resume = new Resume({
-        ...req.body,
-        summary: aiText,
-      });
-      await resume.save();
-      console.log("💾 AI Resume saved to DB");
-    } catch (dbError) {
-      console.log("⚠️ DB save skipped (MongoDB not connected)");
-    }
-
-    // Send response
-    res.json({
-      success: true,
-      message: "AI Resume generated successfully",
-      aiResume: aiText,
-    });
-  } catch (error) {
-    console.error("❌ AI ERROR:", error);
-    res.status(500).json({
-      success: false,
-      error: "AI generation failed: " + error.message,
-    });
-  }
-};
-
-/* =====================================================
-   UPLOAD & ANALYZE RESUME (ATS Scan)
-   Uploads a resume, parses it, analyzes ATS compatibility,
-   saves results to MongoDB
 ===================================================== */
 export const uploadAndAnalyzeResume = async (req, res) => {
   try {
@@ -127,19 +166,19 @@ const {  jobTitle, templateId, resumeprofileId } = req.body;
     : "";
 
     const analysis = analyzeATSCompatibility(
-      resumeText, extractedData , 
+      resumeText, extractedData ,
        jobDescription ,
-        file.originalname.split(".").pop()); 
+        file.originalname.split(".").pop());
     const passes = passesATSThreshold(analysis.overallScore);
     const recommendations = generateRecommendations(analysis);
 
-    
+
     // Validate required fields from frontend
-    
+
     if (!jobTitle  || !templateId || !resumeprofileId) {
-      return res.status(400).json({ 
-        success: false, 
-        message: "Missing required fields" 
+      return res.status(400).json({
+        success: false,
+        message: "Missing required fields"
       });
     }
 
@@ -191,7 +230,7 @@ const {  jobTitle, templateId, resumeprofileId } = req.body;
         extractedData,
         metrics: analysis.metrics,
         jobDescription: atsScan.jobDescription,
-     
+
       },
     });
   } catch (error) {

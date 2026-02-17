@@ -1,28 +1,27 @@
 import Groq from "groq-sdk";
 
 
-function getGroq() {
+function getGroqClient() {
   let groq;
   if (!groq) {
     const apiKey = process.env.GROQ_API_KEY;
 
-    console.log(
-      "GROQ_API_KEY:",
-      apiKey ? "LOADED" : "MISSING"
-    );
-
-    if (!apiKey) {
-      throw new Error("GROQ_API_KEY is missing");
+    if (apiKey && apiKey !== "gsk_placeholder" && apiKey.trim() !== "") {
+      groq = new Groq({ apiKey });
+      return groq;
+    } else {
+      console.warn("⚠️ GROQ_API_KEY is missing or invalid. AI features will be disabled.");
+      return null;
     }
-
-    groq = new Groq({ apiKey });
   }
   return groq;
 }
 
 export async function generateResumeAI(data) {
   try {
-    let groq = getGroq();
+    let groq = getGroqClient();
+    if (!groq) return "AI Service Unavailable";
+
     console.log("AI FUNCTION CALLED");
     console.log("INPUT DATA:", data);
     const formatEducation = (education = []) =>
@@ -108,11 +107,13 @@ export async function generateResumeAI(data) {
     console.error("AI SERVICE ERROR:", error);
     throw error;
   }
-}
+};
 
 export async function refineExperienceDescription(data) {
   try {
-    let groq = getGroq();
+    let groq = getGroqClient();
+    if (!groq) throw new Error("AI Service Unavailable");
+
     console.log("AI FUNCTION CALLED");
     console.log("INPUT DATA:", data);
     const prompt = `
@@ -175,7 +176,9 @@ export async function refineExperienceDescription(data) {
 
 export async function refineProjectDescription(data) {
   try {
-    let groq = getGroq();
+    let groq = getGroqClient();
+    if (!groq) throw new Error("AI Service Unavailable");
+
     console.log("AI FUNCTION CALLED");
     console.log("INPUT DATA:", data);
     const prompt = `
@@ -235,3 +238,110 @@ export async function refineProjectDescription(data) {
     throw error;
   }
 }
+
+export const generateCoverLetterAI = async (jobDetails, sectionType) => {
+  try {
+    console.log("🧠 COVER LETTER AI CALLED");
+    console.log("🔍 Section:", sectionType);
+    console.log("📝 Job Details:", JSON.stringify(jobDetails, null, 2));
+
+    const client = getGroqClient();
+    if (!client) {
+      console.warn("⚠️ AI Service unavailable (Missing API Key)");
+      throw new Error("AI Service unavailable (Missing API Key)");
+    }
+
+    let prompt = "";
+    const baseContext = `
+      Job Title: ${jobDetails.jobTitle || 'Role'}
+      Company: ${jobDetails.companyName || 'Company'}
+      Candidate Name: ${jobDetails.fullName || 'Candidate'}
+      Skills/Context: ${jobDetails.skills || ''}
+      Experience: ${jobDetails.experience || ''}
+    `;
+
+    switch (sectionType) {
+      case 'openingParagraph':
+        prompt = `
+          Write a professional opening paragraph for a cover letter for the position of ${jobDetails.jobTitle} at ${jobDetails.companyName}.
+          Context:
+          ${baseContext}
+          
+          Rules:
+          - Write in first person ("I").
+          - Express enthusiasm for the role and company.
+          - Mention why you are a great fit briefly.
+          - Keep it under 4 lines.
+          - STRICTLY NO placeholders like [Role] or [Company]. Use the provided details.
+          - STRICTLY NO meta-commentary like "Here is the paragraph". Just the text.
+          - Tone: Professional, Confident, Engaging.
+        `;
+        break;
+
+      case 'bodyParagraph1':
+        prompt = `
+          Write the first body paragraph of a cover letter focusing on key qualifications.
+          Context:
+          ${baseContext}
+          
+          Rules:
+          - Focus on the candidate's skills and experience relevant to ${jobDetails.jobTitle}.
+          - Use specific examples if available in the context.
+          - STRICTLY NO placeholders. If specific numbers aren't known, use qualitative descriptors (e.g., "significant increase", "led a team").
+          - STRICTLY NO meta-commentary. Just the paragraph text.
+          - Keep it under 6 lines.
+        `;
+        break;
+
+      case 'bodyParagraph2':
+        prompt = `
+          Write the second body paragraph of a cover letter focusing on cultural fit and additional value.
+          Context:
+          ${baseContext}
+          
+          Rules:
+          - Explain why the candidate is passionate about ${jobDetails.companyName} or the industry.
+          - Mention soft skills like leadership, collaboration, or problem-solving.
+          - STRICTLY NO placeholders.
+          - STRICTLY NO meta-commentary. Just the paragraph text.
+          - Keep it under 6 lines.
+        `;
+        break;
+
+      case 'closingParagraph':
+        prompt = `
+          Write a strong closing paragraph for a cover letter.
+          Context:
+          ${baseContext}
+          
+          Rules:
+          - Reiterate interest in the ${jobDetails.jobTitle} role.
+          - Include a call to action (requesting an interview).
+          - Thank the reader.
+          - Do NOT include the signature ("Sincerely, Name"). JUST the paragraph.
+          - STRICTLY NO placeholders.
+          - STRICTLY NO meta-commentary.
+          - Keep it under 3 lines.
+        `;
+        break;
+
+      default:
+        throw new Error("Invalid section type");
+    }
+
+    const response = await client.chat.completions.create({
+      model: "llama-3.1-8b-instant",
+      messages: [{ role: "user", content: prompt }],
+      temperature: 0.7,
+      max_tokens: 250,
+    });
+
+    return response.choices[0].message.content.trim();
+
+  } catch (error) {
+    console.error("❌ AI COVER LETTER ERROR:", error);
+    throw error;
+  }
+};
+
+export default { generateResumeAI, generateCoverLetterAI, refineExperienceDescription, refineProjectDescription };

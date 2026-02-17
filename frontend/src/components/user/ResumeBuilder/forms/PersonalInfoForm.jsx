@@ -3,45 +3,11 @@ import { RefreshCw, Sparkles } from "lucide-react";
 import { getCompletionStatus } from "./../completion";
 import axiosInstance from "../../../../api/axios";
 
-const PersonalInfoForm = ({ formData, onInputChange, onUseSummary }) => {
+const PersonalInfoForm = ({ formData, onInputChange, onUseSummary, isAiMode }) => {
   const [isGenerating, setIsGenerating] = useState(false);
   const isInitialRender = useRef(true);
   const debounceTimer = useRef(null);
   // Auto-generate summary when skills, experience, or projects change
-  useEffect(() => {
-    // Skip initial render
-    if (isInitialRender.current) {
-      isInitialRender.current = false;
-      return;
-    }
-    // Clear previous timer
-    if (debounceTimer.current) {
-      clearTimeout(debounceTimer.current);
-    }
-    // Only generate if we have some content
-    const hasContent = getCompletionStatus(formData);
-    const hasContentValue = Object.values(
-      hasContent.sectionValidationStatus,
-    ).some((status) => status === true);
-
-    if (hasContentValue) {
-      // Debounce: wait 2 seconds after user stops typing
-      debounceTimer.current = setTimeout(() => {
-        autoGenerateSummary();
-      }, 2000);
-    }
-
-    return () => {
-      if (debounceTimer.current) {
-        clearTimeout(debounceTimer.current);
-      }
-    };
-  }, [
-    formData.experience,
-    formData.projects,
-    formData.skills.technical,
-    formData.skills.soft,
-  ]);
 
   const autoGenerateSummary = async () => {
     try {
@@ -153,13 +119,27 @@ const PersonalInfoForm = ({ formData, onInputChange, onUseSummary }) => {
         </div>
       </div>
       <div className="flex flex-col gap-[6px] mb-[10px] full-width">
-        <label className="flex gap-2 text-[12px] font-medium text-[#374151] mb-1">
-          Professional Summary (Optional)
-          <RefreshCw
-            size={15}
-            className={`ml-1 ${isGenerating ? "animate-spin" : "hidden"}`}
-          />
-        </label>
+        <div className="flex justify-between items-center mb-1">
+          <label className="text-[12px] font-medium text-[#374151]">
+            Professional Summary (Optional)
+          </label>
+          {isAiMode && (
+            <button
+              type="button"
+              onClick={autoGenerateSummary}
+              disabled={isGenerating}
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-purple-600 hover:bg-purple-700 text-white text-xs font-medium rounded-md transition-colors shadow-sm disabled:opacity-70"
+            >
+              {isGenerating ? (
+                <RefreshCw className="animate-spin w-3 h-3" />
+              ) : (
+                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-sparkles" aria-hidden="true"><path d="M11.017 2.814a1 1 0 0 1 1.966 0l1.051 5.558a2 2 0 0 0 1.594 1.594l5.558 1.051a1 1 0 0 1 0 1.966l-5.558 1.051a2 2 0 0 0-1.594 1.594l-1.051 5.558a1 1 0 0 1-1.966 0l-1.051-5.558a2 2 0 0 0-1.594-1.594l-5.558-1.051a1 1 0 0 1 0-1.966l5.558-1.051a2 2 0 0 0 1.594-1.594z"></path><path d="M20 2v4"></path><path d="M22 4h-4"></path><circle cx="4" cy="20" r="2"></circle></svg>
+              )}
+              {isGenerating ? "Generating..." : "AI Generate"}
+            </button>
+          )}
+        </div>
+
         <textarea
           className="w-full h-28 px-2.5 py-2 border text-sm rounded resize-none border-1.5 focus:border-[#007bff] focus:outline-none focus:bg-white focus:shadow-[0_2px_8px_rgba(0,123,255,0.07)] scrollbar-hide"
           value={formData?.summary || ""}
@@ -167,14 +147,11 @@ const PersonalInfoForm = ({ formData, onInputChange, onUseSummary }) => {
           placeholder="Brief professional summary highlighting your key skills and experience..."
           onChange={(e) => onInputChange("summary", e.target.value)}
         />
-        <span className="ml-2 text-xs text-slate-500">
-          {formData?.summary?.length || 0}/500 Characters
-        </span>
-        <span className="flex gap-2 ml-2 text-xs text-slate-500">
-          <Sparkles size={17} />
-          Any summary you type here will be analyzed by AI to generate a
-          stronger resume summary.
-        </span>
+        <div className="flex justify-between items-center mt-1">
+          <span className="text-xs text-slate-500">
+            {formData?.summary?.length || 0}/500 Characters
+          </span>
+        </div>
       </div>
     </div>
   );

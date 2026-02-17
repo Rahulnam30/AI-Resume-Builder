@@ -6,9 +6,15 @@ import {
   deleteScan,
   downloadResume,
   getScanStatistics,
-  getLatestScan
+  getLatestScan,
+  saveResume,
+  getUserResume,
+  getAllUserResumes,
+  getResumeById,
+  generateAIResume,
+  generateAICoverLetter,
 }
-from "../controllers/Resume.controller.js";
+  from "../controllers/Resume.controller.js";
 import isAuth from "../middlewares/isAuth.js";
 import {
   uploadSingleResume,
@@ -25,6 +31,24 @@ resumeRouter.post(
   handleUploadError,
   uploadAndAnalyzeResume
 );
+
+// Generate AI Summary
+resumeRouter.post("/generate-summary", isAuth, generateAIResume);
+
+// Generate AI Cover Letter
+resumeRouter.post("/cover-letter/generate", isAuth, generateAICoverLetter);
+
+// Save User Resume (Upsert)
+resumeRouter.post("/save", isAuth, saveResume);
+
+// Get User Resume
+resumeRouter.get("/user-resume", isAuth, getUserResume);
+
+// Get ALL User Resumes
+resumeRouter.get("/all", isAuth, getAllUserResumes);
+
+// Get Specific Resume
+resumeRouter.get("/detail/:id", isAuth, getResumeById);
 
 // Get all user scans
 resumeRouter.get("/scans", isAuth, getUserScans);

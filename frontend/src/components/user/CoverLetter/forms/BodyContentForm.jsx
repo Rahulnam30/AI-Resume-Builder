@@ -6,20 +6,43 @@ const BodyContentForm = ({ formData, onInputChange, onAIGenerate }) => {
   const [copied, setCopied] = useState({});
 
   const handleGenerate = async (field) => {
-    setGenerating(prev => ({ ...prev, [field]: true }));
+    setGenerating((prev) => ({ ...prev, [field]: true }));
 
-    // Simulate AI generation
-    setTimeout(() => {
-      const suggestions = {
-        openingParagraph: `I am writing to express my strong interest in the ${formData.jobTitle || '[Job Title]'} position at ${formData.companyName || '[Company Name]'}. With my background in [your field] and passion for [relevant area], I am confident that I would be a valuable addition to your team.`,
-        bodyParagraph1: `In my previous role, I successfully [key achievement]. This experience has equipped me with strong skills in [relevant skills], which align perfectly with the requirements outlined in your job description. I am particularly drawn to this opportunity because [reason].`,
-        bodyParagraph2: `Additionally, I bring expertise in [additional skills/experience]. My track record of [specific accomplishments] demonstrates my ability to deliver results and contribute meaningfully to team objectives. I am excited about the prospect of bringing this experience to ${formData.companyName || '[Company Name]'}.`,
-        closingParagraph: `I am enthusiastic about the opportunity to contribute to ${formData.companyName || '[Company Name]'}'s continued success. I would welcome the chance to discuss how my skills and experiences align with your needs. Thank you for considering my application.`
-      };
+    try {
+      const token = localStorage.getItem("token"); // Assuming auth token is needed
 
-      onInputChange(field, suggestions[field]);
-      setGenerating(prev => ({ ...prev, [field]: false }));
-    }, 1500);
+      const response = await fetch("http://localhost:5000/api/resume/cover-letter/generate", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          sectionType: field,
+          jobDetails: {
+            jobTitle: formData.jobTitle || 'Role',
+            companyName: formData.companyName || 'Company',
+            fullName: formData.fullName || 'Candidate',
+            skills: formData.skills || '', // Assuming skills might be in formData or parent
+            experience: formData.experience || '' // Assuming experience might be in formData or parent
+          }
+        })
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        onInputChange(field, data.result);
+      } else {
+        console.error("AI Generation failed:", data.error);
+        alert("Failed to generate content. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error generating content:", error);
+      alert("Error processing request.");
+    } finally {
+      setGenerating((prev) => ({ ...prev, [field]: false }));
+    }
   };
 
   const handleCopy = (field) => {

@@ -10,6 +10,7 @@ const getUserModel = async () => {
 const isAuth = async (req, res, next) => {
   try {
     let token = req.cookies.token || req.headers.authorization?.split(" ")[1];
+
     if (!token) {
       return res.status(401).json({ message: "Token Not Found" });
     }
@@ -18,7 +19,7 @@ const isAuth = async (req, res, next) => {
     if (!verifyToken) {
       return res.status(401).json({ message: "Valid Token Not Found" });
     }
-    
+
     // FIX: Use 'id' instead of 'userId'
     let tokenId = verifyToken.id;
 

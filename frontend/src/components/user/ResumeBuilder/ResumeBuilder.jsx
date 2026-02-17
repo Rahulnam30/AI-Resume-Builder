@@ -212,6 +212,7 @@ const ResumeBuilder = ({ setActivePage = () => {} }) => {
             formData={formData}
             onInputChange={handleInputChange}
             onUseSummary={handleUseSummary}
+            isAiMode={isAiMode}
           />
         );
       case "work":
