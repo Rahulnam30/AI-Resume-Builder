@@ -16,7 +16,7 @@ import {
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import UptoSkillsLogo from "../../../assets/UptoSkills.webp";
+import UptoSkillsLogo from "../../../assets/logo6.png";
 import { useUserNotifications } from "../../../context/UserNotificationContext";
 
 const API = "/api";
@@ -142,7 +142,7 @@ export default function UserNavbar() {
         <div className="flex items-center gap-4">
           <motion.div
             className="cursor-pointer hover:scale-105 transition-all duration-300"
-            onClick={() => navigate("/user/dashboard")}
+            onClick={() => navigate("/")}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.98 }}
           >

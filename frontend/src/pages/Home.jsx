@@ -142,9 +142,9 @@ function LandingPage() {
     return () => clearInterval(interval);
   }, [templates.length]);
 
-  const handleTemplateClick = (templateId) => {
+  const handleTemplateClick = () => {
     if (isLoggedIn) {
-      navigate(`/templates/${templateId}`);
+      navigate(`/user/resume-builder`);
     } else {
       navigate("/login");
     }
