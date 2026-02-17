@@ -2,11 +2,26 @@ import { useNavigate } from "react-router-dom";
 import NavBar from "../components/NavBar";
 import Footer from "./Footer";
 import { Check, Lock } from "lucide-react";
+import { useEffect, useState } from "react";
 
 const Pricing = () => {
   const navigate = useNavigate();
   const isLoggedIn =
     typeof window !== "undefined" && !!localStorage.getItem("token");
+
+  const [backendPlans, setBackendPlans] = useState([]);
+
+  useEffect(() => {
+    fetch("http://localhost:5000/api/plans") 
+      .then((res) => res.json())
+      .then((data) => setBackendPlans(data))
+      .catch((err) => console.error("Error fetching plans:", err));
+  }, []);
+
+  const getDynamicPrice = (planName, fallbackPrice) => {
+    const foundPlan = backendPlans.find((p) => p.name === planName);
+    return foundPlan ? `₹${foundPlan.price}` : fallbackPrice;
+  };
 
   const plans = [
     {
@@ -16,11 +31,12 @@ const Pricing = () => {
       priceColor: "text-green-500",
       buttonColor: "bg-green-500 hover:bg-green-600",
       checkColor: "text-green-500",
-      price: "₹0",
+      price: getDynamicPrice("Free", "₹0"),
       period: "",
       description: "For getting started",
       buttonText: "Get Started",
-      buttonAction: () => navigate(`${isLoggedIn ? "/user/dashboard" : "/login"}`),
+      buttonAction: () =>
+        navigate(`${isLoggedIn ? "/user/dashboard" : "/login"}`),
       gradient: false,
       features: [
         { name: "AI Resume Builder", included: true },
@@ -41,7 +57,7 @@ const Pricing = () => {
       priceColor: "text-orange-500",
       buttonColor: "bg-orange-500 hover:bg-orange-600",
       checkColor: "text-orange-500",
-      price: "₹299",
+      price: getDynamicPrice("Pro", "₹299"), 
       period: " / month",
       description: "Best for job seekers",
       buttonText: "Upgrade to Pro",
@@ -66,7 +82,7 @@ const Pricing = () => {
       priceColor: "text-blue-500",
       buttonColor: "bg-blue-500 hover:bg-blue-600",
       checkColor: "text-blue-500",
-      price: "₹999",
+      price: getDynamicPrice("Premium", "₹999"), 
       period: " / year",
       description: "For career acceleration",
       buttonText: "Unlock Premium",
@@ -103,26 +119,24 @@ const Pricing = () => {
             </p>
           </div>
 
-          {/* Enhanced Pricing Cards */}
-<div
-  className="
-    flex overflow-x-auto gap-6 pt-6 pb-6
-    md:grid md:grid-cols-3 md:gap-8 md:overflow-visible md:pt-0
-    snap-x snap-mandatory
-    scrollbar-hide
-  "
->
-
-
-
+          {/* Pricing Cards */}
+          <div
+            className="
+              flex overflow-x-auto gap-6 pt-6 pb-6
+              md:grid md:grid-cols-3 md:gap-8 md:overflow-visible md:pt-0
+              snap-x snap-mandatory
+              scrollbar-hide
+            "
+          >
             {plans.map((plan, index) => (
               <div
-  key={index}
-  className={`snap-center min-w-[85%] md:min-w-0 rounded-2xl shadow-md p-8 relative ${
-    plan.gradient ? "bg-gradient-to-b from-orange-50 to-white shadow-xl" : "bg-white"
-  }`}
->
-
+                key={index}
+                className={`snap-center min-w-[85%] md:min-w-0 rounded-2xl shadow-md p-8 relative ${
+                  plan.gradient
+                    ? "bg-gradient-to-b from-orange-50 to-white shadow-xl"
+                    : "bg-white"
+                }`}
+              >
                 {plan.badge && (
                   <span
                     className={`absolute -top-4 left-1/2 -translate-x-1/2 ${plan.badgeColor} text-white text-xs font-semibold px-4 py-1 rounded-full select-none shadow`}
@@ -131,22 +145,24 @@ const Pricing = () => {
                   </span>
                 )}
 
-                {/* Plan Header */}
                 <div className="text-center mb-6">
-                  <h3 className={`text-xl font-semibold ${plan.priceColor} mb-2`}>
+                  <h3
+                    className={`text-xl font-semibold ${plan.priceColor} mb-2`}
+                  >
                     {plan.name}
                   </h3>
                   <p className="text-gray-500 text-sm">{plan.description}</p>
 
                   <div className="mt-4">
-                    <span className={`text-4xl font-extrabold ${plan.priceColor}`}>
+                    <span
+                      className={`text-4xl font-extrabold ${plan.priceColor}`}
+                    >
                       {plan.price}
                     </span>
                     <span className="text-gray-500">{plan.period}</span>
                   </div>
                 </div>
 
-                {/* Features List */}
                 <div className="mb-6">
                   {plan.features.map((feature, i) => (
                     <div
@@ -156,13 +172,17 @@ const Pricing = () => {
                       }`}
                     >
                       {feature.included ? (
-                        <Check className={`${plan.checkColor} w-5 h-5 flex-shrink-0`} />
+                        <Check
+                          className={`${plan.checkColor} w-5 h-5 flex-shrink-0`}
+                        />
                       ) : (
                         <Lock className="w-4 h-4 flex-shrink-0" />
                       )}
                       <span
                         className={`text-sm ${
-                          feature.included ? "text-gray-700" : "line-through"
+                          feature.included
+                            ? "text-gray-700"
+                            : "line-through"
                         }`}
                       >
                         {feature.name}
@@ -171,7 +191,6 @@ const Pricing = () => {
                   ))}
                 </div>
 
-                {/* CTA Button */}
                 <button
                   onClick={plan.buttonAction}
                   className={`w-full ${plan.buttonColor} text-white font-semibold py-3 rounded-lg select-none transition`}

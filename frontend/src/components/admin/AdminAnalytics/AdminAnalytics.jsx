@@ -7,7 +7,7 @@ export default function AdminAnalytics() {
   const [userGrowth, setUserGrowth] = useState({ count: 0, note: "" });
   const [conversions, setConversions] = useState({ count: 0, note: "" });
   const [activeUsers, setActiveUsers] = useState({ count: 0, note: "" });
-  const [churnRate, setChurnRate] = useState({ count: 0, note: "" });
+  const [deletedUsers, setDeletedUsers] = useState({ count: 0, note: "" });
   const [mostUsedTemplates, setMostUsedTemplates] = useState([]);
   const [revenueTrend, setRevenueTrend] = useState([]);
   const [subscriptionTrend, setSubscriptionTrend] = useState([]);
@@ -23,7 +23,7 @@ export default function AdminAnalytics() {
       setUserGrowth(response.data.userGrowth);
       setConversions(response.data.conversions);
       setActiveUsers(response.data.activeUsers);
-      setChurnRate(response.data.churnRate);
+      setDeletedUsers(response.data.deletedUsers || { count: 0, note: "" });
       setMostUsedTemplates(response.data.mostUsedTemplates || []);
       setRevenueTrend(response.data.revenueTrend || []);
       setSubscriptionTrend(response.data.subscriptionTrend || []);
@@ -60,9 +60,9 @@ export default function AdminAnalytics() {
       valueColor: "text-slate-900",
     },
     {
-      title: "Churned Users",
-      value: loading ? "..." : `${churnRate.count} Users`,
-      note: churnRate.note,
+      title: "Deleted Users",
+      value: loading ? "..." : `${deletedUsers.count} Users`,
+      note: deletedUsers.note,
       icon: <UserMinus className="text-red-600" />,
       iconBg: "bg-red-50",
       valueColor: "text-slate-900",
