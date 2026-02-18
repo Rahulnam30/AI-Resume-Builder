@@ -10,6 +10,11 @@ import authRouter from "./routers/auth.router.js";
 import userRouter from "./routers/user.router.js";
 import templateRouter from "./routers/template.router.js";
 import resumeRouter from "./routers/resume.router.js";
+import templateVisibilityRouter from "./routers/templateVisibility.router.js";
+import planRouter from "./routers/plan.router.js";
+import notificationRouter from "./routers/notification.router.js";
+import chatbotRouter from "./routers/chatbot.router.js";
+// import exportRouter from "./routers/export.router.js"; // Requires puppeteer
 
 // Config
 import connectDB from "./config/db.js";
@@ -45,11 +50,16 @@ app.use("/api/auth", authRouter);
 app.use("/api/user", userRouter);
 app.use("/api/template", templateRouter);
 app.use("/api/resume", resumeRouter);
+app.use("/api/template-visibility", templateVisibilityRouter);
+app.use("/api/plans", planRouter);
+app.use("/api/notifications", notificationRouter);
+app.use("/api/chatbot", chatbotRouter);
+// app.use("/api/export", exportRouter); // Requires puppeteer
 
 // Serve uploads directory (for images/resumes)
 app.use(
   "/uploads",
-  
+
   express.static(path.join(__dirname, "../uploads"))
 );
 

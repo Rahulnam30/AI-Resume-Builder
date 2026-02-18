@@ -27,6 +27,9 @@ export default {
         'marquee': 'marquee 28s linear infinite',
         'scroll': 'scroll 30s linear infinite',
         'fade-in': 'fadeIn 0.5s ease',
+        bounce1: "bounceDot 1.2s infinite ease-in-out both",
+        bounce2: "bounceDot 1.2s infinite ease-in-out both 0.2s",
+        bounce3: "bounceDot 1.2s infinite ease-in-out both 0.4s",
       },
       keyframes: {
         marquee: {
@@ -40,7 +43,11 @@ export default {
         fadeIn: {
           '0%': { opacity: '0', transform: 'translateY(20px)' },
           '100%': { opacity: '1', transform: 'translateY(0)' },
-        }
+        },
+        bounceDot: {
+          "0%, 80%, 100%": { transform: "translateY(0)" },
+          "40%": { transform: "translateY(-4px)" },
+        },
       },
       backdropBlur: {
         xs: '2px',
