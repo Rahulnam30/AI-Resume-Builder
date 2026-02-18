@@ -39,6 +39,7 @@ const UserRoutes = () => {
         />
 
         <Route path="resume-builder" element={<ResumeBuilder />} />
+        <Route path="templates" element={<Templates />} />
         <Route path="cv" element={<CVBuilder />} />
         <Route path="cover-letter" element={<CoverLetterBuilder />} />
 
@@ -50,7 +51,7 @@ const UserRoutes = () => {
 
 
 
-        
+
 
       </Route>
     </Routes>

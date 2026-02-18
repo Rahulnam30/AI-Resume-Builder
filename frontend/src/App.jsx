@@ -74,14 +74,14 @@ function App() {
           <Route path="/about" element={<About />} />
           <Route path="/pricing" element={<Pricing />} />
           <Route path="/blog" element={<BlogPage />} />
-          <Route path="/ats-checker" element={<ATSCheckerPage />}/>
-          <Route path="/AI-builder" element={<AIBuilderPage />}/>
-          <Route path="/content-enhance" element={<AIContentEnhancementPage />}/>
-          <Route path="/score-checker" element={<ScoreChecker />}/>
-          <Route path="/resume-hub" element={<ResumeHubPage />}/>
-          <Route path="/growths" element={<GrowthInsightsPage />}/>
+          <Route path="/ats-checker" element={<ATSCheckerPage />} />
+          <Route path="/AI-builder" element={<AIBuilderPage />} />
+          <Route path="/content-enhance" element={<AIContentEnhancementPage />} />
+          <Route path="/score-checker" element={<ScoreChecker />} />
+          <Route path="/resume-hub" element={<ResumeHubPage />} />
+          <Route path="/growths" element={<GrowthInsightsPage />} />
           <Route path="/careers" element={<CareersPage />} />
-          <Route path="/resume-examples" element={<ResumeExamplesPage />}/>
+          <Route path="/resume-examples" element={<ResumeExamplesPage />} />
           <Route path="/how-to-write-a-resume" element={<ResumeGuide />} />
           <Route path="/cover-letter-templates" element={<CoverLetterTemplates />} />
           <Route path="/privacy-policy" element={<DataProtection />} />
@@ -91,15 +91,15 @@ function App() {
           <Route path="/help-center" element={<HelpCenter />} />
           <Route path="/ats-checker" element={<ATSCheckerPage />} />
           <Route path="/TemplatesFeature" element={<TemplatesFeature />} />
-          <Route path="/AI-builder" element={<AIBuilderPage />}/>
-          <Route path="/content-enhance" element={<AIContentEnhancementPage />}/>
-          <Route path="/score-checker" element={<ScoreChecker />}/>
-          <Route path="/resume-hub" element={<ResumeHubPage />}/>
-          <Route path="/growths" element={<GrowthInsightsPage />}/>
-          <Route path="/cover-letter" element={<AICoverLetterPage  />}/>
+          <Route path="/AI-builder" element={<AIBuilderPage />} />
+          <Route path="/content-enhance" element={<AIContentEnhancementPage />} />
+          <Route path="/score-checker" element={<ScoreChecker />} />
+          <Route path="/resume-hub" element={<ResumeHubPage />} />
+          <Route path="/growths" element={<GrowthInsightsPage />} />
+          <Route path="/cover-letter" element={<AICoverLetterPage />} />
           <Route path="/cover-letter-examples" element={<CoverLetterExamples />} />
-          <Route path="/cv" element={<CVFormattingPage  />}/>
-          <Route path="/WritingCoverLetter" element={<WritingCoverLetter />}/>
+          <Route path="/cv" element={<CVFormattingPage />} />
+          <Route path="/WritingCoverLetter" element={<WritingCoverLetter />} />
 
           {/* ================= USER DASHBOARD ROUTES ================= */}
           <Route path="/user/*" element={<RequireAuth><UserRoutes /></RequireAuth>} />
@@ -109,6 +109,7 @@ function App() {
             <Route index element={<AdminDashboard />} />
             <Route path="create-templates" element={<AdminTemplates />} />
             <Route path="resume-editor" element={<ResumeEditor />} />
+            <Route path="cv-editor" element={<ResumeEditor />} />
             <Route path="templates" element={<Resume />} />
             <Route path="users" element={<AdminUsers />} />
             <Route path="subscription" element={<AdminSubscription />} />

@@ -2,6 +2,8 @@ import React from "react";
 import { Filter, Plus, Eye, X, Power, PowerOff, Loader2 } from "lucide-react";
 import { TEMPLATES } from "../../user/Templates/TemplateRegistry";
 import { CvTemplates } from "../../user/Templates/CvTemplates";
+import CVTemplates from "../../user/CV/Cvtemplates";
+import mergeWithSampleData from "../../../utils/Datahelpers";
 import {
   toggleTemplateStatus,
   getAllTemplateStatuses,
@@ -11,15 +13,15 @@ import axiosInstance from "../../../api/axios";
 
 // User-side CV templates (from Templatesgallery.jsx - these are shown to users in CV Builder)
 const UserCvTemplates = [
-  { id: "professional", name: "Professional", category: "Traditional", description: "Classic professional CV template", thumbnail: "/templates/functional.png" },
-  { id: "modern", name: "Modern Blue", category: "Contemporary", description: "Modern design with blue accents", thumbnail: "/templates/modern.png" },
-  { id: "creative", name: "Creative", category: "Creative", description: "Creative and unique layout", thumbnail: "/templates/creative.png" },
-  { id: "minimal", name: "Minimal", category: "Contemporary", description: "Clean and minimal design", thumbnail: "/templates/minimalist.png" },
-  { id: "executive", name: "Executive", category: "Traditional", description: "Executive style template", thumbnail: "/templates/executive.png" },
-  { id: "academic", name: "Academic", category: "Academic", description: "Perfect for academic CVs", thumbnail: "/templates/chronological.png" },
-  { id: "twoColumn", name: "Two Column", category: "Academic", description: "Two column layout", thumbnail: "/templates/functional.png" },
-  { id: "simple", name: "Simple", category: "Traditional", description: "Simple and straightforward", thumbnail: "/templates/minimalist.png" },
-  { id: "academicSidebar", name: "Academic Sidebar", category: "Academic", description: "Academic CV with sidebar layout", thumbnail: "/templates/chronological.png" },
+  { id: "professional", name: "Professional", category: "Traditional", description: "Classic professional CV template" },
+  { id: "modern", name: "Modern Blue", category: "Contemporary", description: "Modern design with blue accents" },
+  { id: "creative", name: "Creative", category: "Creative", description: "Creative and unique layout" },
+  { id: "minimal", name: "Minimal", category: "Contemporary", description: "Clean and minimal design" },
+  { id: "executive", name: "Executive", category: "Traditional", description: "Executive style template" },
+  { id: "academic", name: "Academic", category: "Academic", description: "Perfect for academic CVs" },
+  { id: "twoColumn", name: "Two Column", category: "Academic", description: "Two column layout" },
+  { id: "simple", name: "Simple", category: "Traditional", description: "Simple and straightforward" },
+  { id: "academicSidebar", name: "Academic Sidebar", category: "Academic", description: "Academic CV with sidebar layout" },
 ];
 
 export default function AdminTemplates() {
@@ -27,12 +29,16 @@ export default function AdminTemplates() {
 
   const [isPreviewModalOpen, setIsPreviewModalOpen] = React.useState(false);
   const [previewImage, setPreviewImage] = React.useState("");
+  const [previewTemplateId, setPreviewTemplateId] = React.useState(null);
 
   const [pendingTemplates, setPendingTemplates] = React.useState([]);
   const [approvedTemplates, setApprovedTemplates] = React.useState({});
   const [statuses, setStatuses] = React.useState({});
   const [isLoading, setIsLoading] = React.useState(true);
   const [togglingId, setTogglingId] = React.useState(null);
+
+  // Sample data for CV template preview
+  const sampleCvData = React.useMemo(() => mergeWithSampleData({}), []);
 
   const refreshData = async (currentType = type) => {
     try {
@@ -122,8 +128,14 @@ export default function AdminTemplates() {
     }
   };
 
-  const handlePreview = (imageUrl) => {
-    setPreviewImage(imageUrl);
+  const handlePreview = (imageUrlOrTemplateId, isCvTemplate = false) => {
+    if (isCvTemplate) {
+      setPreviewTemplateId(imageUrlOrTemplateId);
+      setPreviewImage("");
+    } else {
+      setPreviewImage(imageUrlOrTemplateId);
+      setPreviewTemplateId(null);
+    }
     setIsPreviewModalOpen(true);
   };
 
@@ -249,15 +261,42 @@ export default function AdminTemplates() {
                         {/* Preview */}
                         <div
                           className="relative w-full aspect-[210/297] bg-slate-100 rounded-lg overflow-hidden cursor-pointer"
-                          onClick={() => tpl.image && handlePreview(tpl.image)}
+                          onClick={() => {
+                            if (type === "cv") {
+                              handlePreview(tpl._id, true);
+                            } else if (tpl.image) {
+                              handlePreview(tpl.image, false);
+                            }
+                          }}
                         >
-                          {tpl.image ? (
+                          {type === "cv" ? (
+                            // Live CV Template Rendering
+                            (() => {
+                              const TemplateComponent = CVTemplates[tpl._id];
+                              return (
+                                <div
+                                  className="absolute inset-0"
+                                  style={{
+                                    transform: "scale(0.38)",
+                                    transformOrigin: "top left",
+                                    width: 794,
+                                  }}
+                                >
+                                  {TemplateComponent && (
+                                    <TemplateComponent formData={sampleCvData} />
+                                  )}
+                                </div>
+                              );
+                            })()
+                          ) : tpl.image ? (
+                            // Static Image for Resume Templates
                             <img
                               src={tpl.image}
                               alt={tpl.name}
                               className="w-full h-full object-cover"
                             />
                           ) : (
+                            // Fallback
                             <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-slate-100 to-slate-200">
                               <div className="text-center">
                                 <div className="text-4xl font-bold text-slate-300 mb-2">{tpl.name.charAt(0)}</div>
@@ -334,22 +373,74 @@ export default function AdminTemplates() {
             className="fixed inset-0 z-[60] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4"
             onClick={() => setIsPreviewModalOpen(false)}
           >
-            <div
-              className="relative bg-white rounded-lg shadow-2xl max-w-4xl max-h-[90vh] overflow-auto animate-scaleIn"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <button
-                onClick={() => setIsPreviewModalOpen(false)}
-                className="absolute top-2 right-2 p-2 bg-black/50 text-white rounded-full hover:bg-black/70 transition"
+            {previewTemplateId ? (
+              // CV Template Live Preview Modal
+              <div
+                className="relative bg-white rounded-xl shadow-2xl overflow-hidden flex flex-col"
+                style={{ width: 860, maxHeight: "92vh" }}
+                onClick={(e) => e.stopPropagation()}
               >
-                <X size={20} />
-              </button>
-              <img
-                src={previewImage}
-                alt="Template Preview"
-                className="w-full h-auto block"
-              />
-            </div>
+                {/* Header */}
+                <div className="px-4 py-3 border-b flex items-center justify-between">
+                  <div>
+                    <h2 className="text-sm font-bold text-slate-900">
+                      CV Template Preview
+                    </h2>
+                    <p className="text-xs text-slate-500">
+                      A4 size — Live preview with sample data
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => setIsPreviewModalOpen(false)}
+                    className="text-xl leading-none text-slate-400 hover:text-slate-700"
+                  >
+                    ×
+                  </button>
+                </div>
+
+                {/* A4 Preview Area */}
+                <div className="flex-1 overflow-auto bg-slate-200/60 p-6 flex justify-center">
+                  <div className="shadow-xl bg-white rounded-sm">
+                    <div style={{ width: 794, minHeight: 1123 }}>
+                      {(() => {
+                        const TemplateComponent = CVTemplates[previewTemplateId];
+                        return TemplateComponent ? (
+                          <TemplateComponent formData={sampleCvData} />
+                        ) : null;
+                      })()}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Footer */}
+                <div className="px-4 py-3 border-t flex justify-end gap-3 bg-white">
+                  <button
+                    onClick={() => setIsPreviewModalOpen(false)}
+                    className="px-4 py-2 rounded-md border text-sm font-medium hover:bg-slate-50 transition"
+                  >
+                    Close
+                  </button>
+                </div>
+              </div>
+            ) : (
+              // Resume Template Static Image Preview
+              <div
+                className="relative bg-white rounded-lg shadow-2xl max-w-4xl max-h-[90vh] overflow-auto animate-scaleIn"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <button
+                  onClick={() => setIsPreviewModalOpen(false)}
+                  className="absolute top-2 right-2 p-2 bg-black/50 text-white rounded-full hover:bg-black/70 transition z-10"
+                >
+                  <X size={20} />
+                </button>
+                <img
+                  src={previewImage}
+                  alt="Template Preview"
+                  className="w-full h-auto block"
+                />
+              </div>
+            )}
           </div>
         )}
       </div>
