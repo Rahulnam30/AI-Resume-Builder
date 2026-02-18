@@ -83,42 +83,42 @@ const AdminSubscription = () => {
       </div>
 
       {/* Stats / Dashboard */}
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-6 mb-10">
-        <div className="bg-white p-6 rounded-xl shadow flex flex-col gap-2">
-          <p className="text-sm text-gray-500">Total Revenue</p>
-          <p className="text-2xl font-bold">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-6 mb-6 sm:mb-10">
+        <div className="bg-white p-4 sm:p-6 rounded-xl shadow flex flex-col gap-2">
+          <p className="text-xs sm:text-sm text-gray-500">Total Revenue</p>
+          <p className="text-xl sm:text-2xl font-bold">
             ₹{stats?.revenue?.total?.toLocaleString() || 0}
             {stats?.revenue?.change !== 0 && (
-              <span className={`text-sm ml-2 ${stats?.revenue?.change >= 0 ? 'text-green-500' : 'text-red-500'}`}>
+              <span className={`text-xs sm:text-sm ml-2 ${stats?.revenue?.change >= 0 ? 'text-green-500' : 'text-red-500'}`}>
                 {stats?.revenue?.change > 0 ? '+' : ''}{stats?.revenue?.change}%
               </span>
             )}
           </p>
         </div>
-        <div className="bg-white p-6 rounded-xl shadow flex flex-col gap-2">
-          <p className="text-sm text-gray-500">Active Subscribers</p>
-          <p className="text-2xl font-bold">
-            {paidUsers.length} <span className="text-gray-400 text-sm">(Pro Users)</span>
+        <div className="bg-white p-4 sm:p-6 rounded-xl shadow flex flex-col gap-2">
+          <p className="text-xs sm:text-sm text-gray-500">Active Subscribers</p>
+          <p className="text-xl sm:text-2xl font-bold">
+            {paidUsers.length} <span className="text-gray-400 text-xs sm:text-sm">(Pro)</span>
           </p>
         </div>
-        <div className="bg-white p-6 rounded-xl shadow flex flex-col gap-2">
-          <p className="text-sm text-gray-500">Free Users</p>
-          <p className="text-2xl font-bold">
+        <div className="bg-white p-4 sm:p-6 rounded-xl shadow flex flex-col gap-2">
+          <p className="text-xs sm:text-sm text-gray-500">Free Users</p>
+          <p className="text-xl sm:text-2xl font-bold">
             {freeUsersCount.toLocaleString()}
-            <span className="text-gray-400 text-sm ml-2">(Potential leads)</span>
+            <span className="text-gray-400 text-xs sm:text-sm ml-2">(Leads)</span>
           </p>
         </div>
       </div>
 
       {/* Plans */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
         {plans.map((plan) => (
           <div
             key={plan.id}
-            className="rounded-2xl border border-gray-200 bg-white p-6 shadow"
+            className="rounded-2xl border border-gray-200 bg-white p-4 sm:p-6 shadow"
           >
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xl font-semibold text-gray-900">
+            <div className="flex items-center justify-between mb-3 sm:mb-4">
+              <h2 className="text-lg sm:text-xl font-semibold text-gray-900">
                 {plan.name}
               </h2>
               <button onClick={() => togglePlan(plan.id)}>
@@ -241,7 +241,7 @@ const AdminSubscription = () => {
                     </td>
                     <td className="px-6 py-4 text-center text-gray-500">
                       {user.createdAt
-                        ? new Date(user.createdAt).toLocaleDateString()
+                        ? new Date(user.createdAt).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })
                         : "N/A"}
                     </td>
                   </tr>
@@ -287,7 +287,7 @@ const AdminSubscription = () => {
                     </span>
                     <span className="text-xs text-gray-400">
                       {user.createdAt
-                        ? new Date(user.createdAt).toLocaleDateString()
+                        ? new Date(user.createdAt).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })
                         : "N/A"}
                     </span>
                   </div>

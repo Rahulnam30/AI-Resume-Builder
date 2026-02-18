@@ -121,14 +121,14 @@ const AdminNotification = () => {
     const olderNotifications = filteredNotifications.filter(n => n.category === 'older');
 
     return (
-        <div className="min-h-screen bg-slate-50 p-4 sm:p-6 lg:p-8">
+        <div className="min-h-screen bg-slate-50 p-3 sm:p-6 lg:p-8">
             <div className="max-w-5xl mx-auto">
                 {/* Page Header */}
-                <div className="mb-8">
-                    <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
-                        <div className="flex items-center gap-4">
-                            <div className="w-12 h-12 bg-white rounded-xl border border-slate-200 flex items-center justify-center shadow-sm">
-                                <Bell className="w-6 h-6 text-slate-600" />
+                <div className="mb-4 sm:mb-8">
+                    <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 sm:gap-4">
+                        <div className="flex items-center gap-3 sm:gap-4">
+                            <div className="w-10 h-10 sm:w-12 sm:h-12 bg-white rounded-xl border border-slate-200 flex items-center justify-center shadow-sm">
+                                <Bell className="w-5 h-5 sm:w-6 sm:h-6 text-slate-600" />
                             </div>
                             <div>
                                 <h1 className="text-2xl font-semibold text-slate-800">Notifications ({unreadCount})</h1>

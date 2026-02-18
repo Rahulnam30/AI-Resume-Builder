@@ -128,16 +128,16 @@ export default function AdminDashboard() {
       </div>
 
       {/* Analytics Section */}
-      <div className="grid grid-cols-2 xl:grid-cols-2 gap-3 sm:gap-6 mt-10">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-6 mt-6 sm:mt-10">
         {/* LEFT COLUMN */}
         <div className="flex flex-col gap-3 sm:gap-6">
           {/* Resume Trend */}
-          <div className="bg-white border rounded-2xl p-3 sm:p-6 shadow-sm h-[250px] sm:h-[350px] xl:col-span-2 min-w-0 flex flex-col">
+          <div className="bg-white border rounded-2xl p-3 sm:p-6 shadow-sm h-[220px] sm:h-[350px] min-w-0 flex flex-col">
             <h3 className="text-xs sm:text-base font-semibold mb-4 text-center sm:text-left">
               Resume Generation
             </h3>
             <div className="flex-1 w-full min-h-0">
-              <ResponsiveContainer width="100%" height="100%">
+              <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={100}>
                 <BarChart data={resumeChart} margin={{ top: 5, right: 0, left: -20, bottom: 0 }}>
                   <XAxis dataKey="month" fontSize={10} tickLine={false} axisLine={false} interval="preserveStartEnd" />
                   <YAxis fontSize={10} tickLine={false} axisLine={false} />
@@ -153,10 +153,10 @@ export default function AdminDashboard() {
           </div>
 
           {/* User Growth */}
-          <div className="bg-white border rounded-2xl p-3 sm:p-6 shadow-sm h-[250px] sm:h-[350px] xl:col-span-2 min-w-0 flex flex-col">
+          <div className="bg-white border rounded-2xl p-3 sm:p-6 shadow-sm h-[220px] sm:h-[350px] min-w-0 flex flex-col">
             <h3 className="text-xs sm:text-base font-semibold mb-4 text-center sm:text-left">User Growth</h3>
             <div className="flex-1 w-full min-h-0">
-              <ResponsiveContainer width="100%" height="100%">
+              <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={100}>
                 <LineChart data={userGrowth} margin={{ top: 5, right: 0, left: -20, bottom: 0 }}>
                   <XAxis dataKey="month" fontSize={10} tickLine={false} axisLine={false} interval="preserveStartEnd" />
                   <YAxis fontSize={10} tickLine={false} axisLine={false} />
@@ -178,13 +178,13 @@ export default function AdminDashboard() {
         {/* RIGHT COLUMN */}
         <div className="flex flex-col gap-3 sm:gap-6">
           {/* Subscription Plans */}
-          <div className="bg-white border rounded-2xl p-3 sm:p-6 shadow-sm h-[250px] sm:h-[350px] min-w-0 flex flex-col">
+          <div className="bg-white border rounded-2xl p-3 sm:p-6 shadow-sm h-[220px] sm:h-[350px] min-w-0 flex flex-col">
             <h3 className="text-xs sm:text-base font-semibold mb-4 text-center">
               Subscriptions
             </h3>
 
             <div className="flex-1 w-full min-h-0">
-              <ResponsiveContainer width="100%" height="100%">
+              <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={100}>
                 <PieChart>
                   <Pie
                     data={subscriptionSplit}
@@ -222,10 +222,10 @@ export default function AdminDashboard() {
           </div>
 
           {/* Daily Active Users */}
-          <div className="bg-white border rounded-2xl p-3 sm:p-6 shadow-sm h-[250px] sm:h-[350px] min-w-0 flex flex-col">
+          <div className="bg-white border rounded-2xl p-3 sm:p-6 shadow-sm h-[220px] sm:h-[350px] min-w-0 flex flex-col">
             <h3 className="text-xs sm:text-base font-semibold mb-4 text-center sm:text-left">Active Users</h3>
             <div className="flex-1 w-full min-h-0">
-              <ResponsiveContainer width="100%" height="100%">
+              <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={100}>
                 <BarChart data={dailyActivity} margin={{ top: 5, right: 0, left: -20, bottom: 0 }}>
                   <XAxis dataKey="day" fontSize={10} tickLine={false} axisLine={false} />
                   <YAxis fontSize={10} tickLine={false} axisLine={false} />

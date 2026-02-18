@@ -268,6 +268,15 @@ export const getAnalyticsStats = async (req, res) => {
       updatedAt: { $gte: last7Days },
     });
 
+    // ---------- DELETED USERS (Count from notifications) ----------
+    const deletedUsersCount = await Notification.countDocuments({
+      type: "USER_DELETED",
+    });
+    const deletedUsersLast30Days = await Notification.countDocuments({
+      type: "USER_DELETED",
+      createdAt: { $gte: last30Days },
+    });
+
     // ---------- CHURN RATE (Last Quarter) ----------
     const lastQuarter = new Date();
     lastQuarter.setMonth(lastQuarter.getMonth() - 3);
@@ -390,6 +399,12 @@ export const getAnalyticsStats = async (req, res) => {
       activeUsers: {
         count: activeUsersLast7Days,
         note: "Active users in last 7 days",
+      },
+      deletedUsers: {
+        count: deletedUsersCount,
+        note: deletedUsersLast30Days > 0 
+          ? `${deletedUsersLast30Days} deleted in last 30 days` 
+          : "Total deleted accounts",
       },
       churnRate: {
         count: churnedUsers,

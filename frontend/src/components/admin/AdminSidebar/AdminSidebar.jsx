@@ -6,7 +6,6 @@ import {
   Plus,
   IndianRupee,
   User,
-  Drone,
   BarChart,
   LogOut,
   Bell,
@@ -50,7 +49,7 @@ export default function AdminSidebar({ isCollapsed, setIsCollapsed, isMobileOpen
         id: "create",
         icon: Plus,
         label: "Templates",
-        path: "/admin/create-templates",
+        path: "/admin/manage-templates",
       },
       {
         id: "subscription",
@@ -59,12 +58,6 @@ export default function AdminSidebar({ isCollapsed, setIsCollapsed, isMobileOpen
         path: "/admin/subscription",
       },
       { id: "users", icon: User, label: "Users", path: "/admin/users" },
-      {
-        id: "accept",
-        icon: Drone,
-        label: "Accept User Template",
-        path: "/admin/template-requests",
-      },
       {
         id: "notifications",
         icon: Bell,

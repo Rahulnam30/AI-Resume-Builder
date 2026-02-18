@@ -43,7 +43,6 @@ import Resume from "./components/admin/resume";
 import AdminUsers from "./components/admin/AdminUser/AdminUsers";
 import AdminNotification from "./components/admin/AdminNotification/Notification";
 import AdminSubscription from "./components/admin/AdminSubscription/AdminSubscription";
-import AdminAcceptUser from "./components/admin/AdminAcceptUserTemplate/AdminAcceptUser";
 import AdminAnalytics from "./components/admin/AdminAnalytics/AdminAnalytics";
 import AdminTemplates from "./components/admin/AdminCreateTemplates/Template";
 

@@ -80,34 +80,34 @@ export default function AdminAnalytics() {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-2 xl:grid-cols-4 gap-3 sm:gap-5 mb-10">
+      <div className="grid grid-cols-1 xs:grid-cols-2 xl:grid-cols-4 gap-3 sm:gap-5 mb-6 sm:mb-10">
         {stats.map((item) => (
           <div
             key={item.title}
-            className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm hover:shadow-md transition"
+            className="bg-white border border-slate-200 rounded-2xl p-4 sm:p-5 shadow-sm hover:shadow-md transition"
           >
             <div className="flex items-center justify-between">
-              <p className="text-slate-500 text-sm">{item.title}</p>
-              <div className={`${item.iconBg} p-3 rounded-full`}>
+              <p className="text-slate-500 text-xs sm:text-sm">{item.title}</p>
+              <div className={`${item.iconBg} p-2 sm:p-3 rounded-full`}>
                 {item.icon}
               </div>
             </div>
 
-            <p className={`text-3xl font-bold mt-3 ${item.valueColor}`}>
+            <p className={`text-xl sm:text-3xl font-bold mt-2 sm:mt-3 ${item.valueColor}`}>
               {item.value}
             </p>
 
-            <p className="text-slate-500 text-sm mt-2">{item.note}</p>
+            <p className="text-slate-500 text-xs sm:text-sm mt-1 sm:mt-2 line-clamp-2">{item.note}</p>
           </div>
         ))}
       </div>
 
       {/* System Performance & Rating Metrics */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-6">
         {/* Platform Health Score */}
-        <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold">Platform Health</h3>
+        <div className="bg-white border border-slate-200 rounded-2xl p-4 sm:p-6 shadow-sm">
+          <div className="flex items-center justify-between mb-3 sm:mb-4">
+            <h3 className="text-base sm:text-lg font-semibold">Platform Health</h3>
             <div className="bg-green-50 p-2 rounded-full">
               <Activity className="text-green-600" size={20} />
             </div>
@@ -146,9 +146,9 @@ export default function AdminAnalytics() {
         </div>
 
         {/* Response Time */}
-        <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold">Avg Response Time</h3>
+        <div className="bg-white border border-slate-200 rounded-2xl p-4 sm:p-6 shadow-sm">
+          <div className="flex items-center justify-between mb-3 sm:mb-4">
+            <h3 className="text-base sm:text-lg font-semibold">Avg Response Time</h3>
             <div className="bg-blue-50 p-2 rounded-full">
               <Zap className="text-blue-600" size={20} />
             </div>
@@ -164,59 +164,59 @@ export default function AdminAnalytics() {
       {/* Data Quality & Security Metrics */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 mb-6">
         {/* Uptime */}
-        <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
-          <div className="flex items-center justify-between mb-3">
-            <p className="text-sm text-slate-500">System Uptime</p>
-            <div className="bg-green-50 p-2 rounded-full">
-              <Shield className="text-green-600" size={16} />
+        <div className="bg-white border border-slate-200 rounded-2xl p-3 sm:p-5 shadow-sm">
+          <div className="flex items-center justify-between mb-2 sm:mb-3">
+            <p className="text-xs sm:text-sm text-slate-500">System Uptime</p>
+            <div className="bg-green-50 p-1.5 sm:p-2 rounded-full">
+              <Shield className="text-green-600 w-3 h-3 sm:w-4 sm:h-4" />
             </div>
           </div>
-          <p className="text-2xl font-bold text-slate-900">99.98%</p>
-          <p className="text-xs text-slate-500 mt-1">Last 30 days</p>
+          <p className="text-lg sm:text-2xl font-bold text-slate-900">99.98%</p>
+          <p className="text-[10px] sm:text-xs text-slate-500 mt-1">Last 30 days</p>
         </div>
 
         {/* Data Accuracy */}
-        <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
-          <div className="flex items-center justify-between mb-3">
-            <p className="text-sm text-slate-500">Data Accuracy</p>
-            <div className="bg-purple-50 p-2 rounded-full">
-              <Activity className="text-purple-600" size={16} />
+        <div className="bg-white border border-slate-200 rounded-2xl p-3 sm:p-5 shadow-sm">
+          <div className="flex items-center justify-between mb-2 sm:mb-3">
+            <p className="text-xs sm:text-sm text-slate-500">Data Accuracy</p>
+            <div className="bg-purple-50 p-1.5 sm:p-2 rounded-full">
+              <Activity className="text-purple-600 w-3 h-3 sm:w-4 sm:h-4" />
             </div>
           </div>
-          <p className="text-2xl font-bold text-slate-900">97.2%</p>
-          <p className="text-xs text-slate-500 mt-1">Validation rate</p>
+          <p className="text-lg sm:text-2xl font-bold text-slate-900">97.2%</p>
+          <p className="text-[10px] sm:text-xs text-slate-500 mt-1">Validation rate</p>
         </div>
 
         {/* API Success Rate */}
-        <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
-          <div className="flex items-center justify-between mb-3">
-            <p className="text-sm text-slate-500">API Success Rate</p>
-            <div className="bg-blue-50 p-2 rounded-full">
-              <Zap className="text-blue-600" size={16} />
+        <div className="bg-white border border-slate-200 rounded-2xl p-3 sm:p-5 shadow-sm">
+          <div className="flex items-center justify-between mb-2 sm:mb-3">
+            <p className="text-xs sm:text-sm text-slate-500">API Success</p>
+            <div className="bg-blue-50 p-1.5 sm:p-2 rounded-full">
+              <Zap className="text-blue-600 w-3 h-3 sm:w-4 sm:h-4" />
             </div>
           </div>
-          <p className="text-2xl font-bold text-slate-900">99.5%</p>
-          <p className="text-xs text-green-600 mt-1">↑ 0.3% improvement</p>
+          <p className="text-lg sm:text-2xl font-bold text-slate-900">99.5%</p>
+          <p className="text-[10px] sm:text-xs text-green-600 mt-1">↑ 0.3% improvement</p>
         </div>
 
         {/* Error Rate */}
-        <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
-          <div className="flex items-center justify-between mb-3">
-            <p className="text-sm text-slate-500">Error Rate</p>
-            <div className="bg-red-50 p-2 rounded-full">
-              <Activity className="text-red-600" size={16} />
+        <div className="bg-white border border-slate-200 rounded-2xl p-3 sm:p-5 shadow-sm">
+          <div className="flex items-center justify-between mb-2 sm:mb-3">
+            <p className="text-xs sm:text-sm text-slate-500">Error Rate</p>
+            <div className="bg-red-50 p-1.5 sm:p-2 rounded-full">
+              <Activity className="text-red-600 w-3 h-3 sm:w-4 sm:h-4" />
             </div>
           </div>
-          <p className="text-2xl font-bold text-slate-900">0.5%</p>
-          <p className="text-xs text-green-600 mt-1">↓ Within acceptable range</p>
+          <p className="text-lg sm:text-2xl font-bold text-slate-900">0.5%</p>
+          <p className="text-[10px] sm:text-xs text-green-600 mt-1">↓ Within range</p>
         </div>
       </div>
 
       {/* Middle Section */}
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
         {/* Revenue */}
-        <div className="xl:col-span-2 bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
-          <h2 className="text-lg font-semibold mb-4">
+        <div className="lg:col-span-2 bg-white border border-slate-200 rounded-2xl p-4 sm:p-6 shadow-sm">
+          <h2 className="text-base sm:text-lg font-semibold mb-4">
             Revenue & Subscription Trends
           </h2>
 
@@ -225,7 +225,7 @@ export default function AdminAnalytics() {
               Loading chart data...
             </div>
           ) : revenueTrend.length > 0 || subscriptionTrend.length > 0 ? (
-            <ResponsiveContainer width="100%" height={300}>
+            <ResponsiveContainer width="100%" height={300} minWidth={0}>
               <LineChart>
                 <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
                 <XAxis
