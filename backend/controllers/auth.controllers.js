@@ -54,7 +54,7 @@ export const register = async (req, res) => {
 /* ================= LOGIN ================= */
 export const login = async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { email, password, rememberMe } = req.body;
 
     if (!email || !password) {
       return res
@@ -81,17 +81,25 @@ export const login = async (req, res) => {
           await adminUser.save();
         }
 
-        const token = genrateToken({
-          id: adminUser._id,
-          isAdmin: true,
-        });
+        const token = genrateToken(
+  {
+    id: adminUser._id,
+    isAdmin: true,
+  },
+  rememberMe
+);
 
-        res.cookie("token", token, {
-          httpOnly: true,
-          secure: false,
-          sameSite: "Strict",
-          maxAge: 7 * 24 * 60 * 60 * 1000,
-        });
+
+        const cookieExpiry = rememberMe
+  ? 30 * 24 * 60 * 60 * 1000   // 30 days
+  : 2 * 60 * 60 * 1000;        // 2 hours
+
+res.cookie("token", token, {
+  httpOnly: true,
+  secure: false,
+  sameSite: "Strict",
+  maxAge: cookieExpiry,
+});
 
         return res.status(200).json({
           success: true,
@@ -142,17 +150,25 @@ export const login = async (req, res) => {
     user.lastLogin = new Date();
     await user.save();
 
-    const token = genrateToken({
-      id: user._id,
-      isAdmin: user.isAdmin,
-    });
+    const token = genrateToken(
+  {
+    id: user._id,
+    isAdmin: user.isAdmin,
+  },
+  rememberMe
+);
 
-    res.cookie("token", token, {
-      httpOnly: true,
-      secure: false,
-      sameSite: "Strict",
-      maxAge: 7 * 24 * 60 * 60 * 1000,
-    });
+
+    const cookieExpiry = rememberMe
+  ? 30 * 24 * 60 * 60 * 1000
+  : 2 * 60 * 60 * 1000;
+
+res.cookie("token", token, {
+  httpOnly: true,
+  secure: false,
+  sameSite: "Strict",
+  maxAge: cookieExpiry,
+});
 
     res.status(200).json({
       success: true,
