@@ -2,9 +2,8 @@ import StatCard from "./StatCard";
 import RecentResumes from "./RecentResumes";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-// Corrected Import based on your file structure
-import UserNavBar from "../UserNavBar/UserNavBar"; 
-import axios from "axios";
+import UserNavBar from "../UserNavBar/UserNavBar";
+import axiosInstance from "../../../api/axios"; // Use the configured axios instance
 
 import {
   FaFileAlt,
@@ -17,35 +16,75 @@ import "./Dashboard.css";
 const Dashboard = ({ setActivePage }) => {
   const navigate = useNavigate();
 
-  // Fetch real dashboard data
   const [dashboardData, setDashboardData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchDashboard = async () => {
       try {
-        const res = await axios.get(
-          "http://localhost:5000/api/user/dashboard",
-          { withCredentials: true }
-        );
+        setLoading(true);
+        const res = await axiosInstance.get("/api/user/dashboard");
         setDashboardData(res.data);
+        setError(null);
       } catch (err) {
         console.error("Dashboard fetch failed", err);
+        setError("Failed to load dashboard data. Please try again later.");
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchDashboard();
   }, []);
 
+  if (loading) {
+    return (
+      <div className="dashboard-page">
+        <UserNavBar />
+        <div className="dashboard-content-container flex items-center justify-center min-h-[60vh]">
+          <div className="flex flex-col items-center gap-4">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+            <p className="text-gray-500 font-medium">Loading your dashboard...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="dashboard-page">
+        <UserNavBar />
+        <div className="dashboard-content-container flex items-center justify-center min-h-[60vh]">
+          <div className="bg-red-50 p-6 rounded-xl border border-red-100 text-center max-w-md">
+            <div className="text-red-600 mb-4">
+              <FaFileAlt className="text-4xl mx-auto" />
+            </div>
+            <h2 className="text-xl font-bold text-red-800 mb-2">Oops!</h2>
+            <p className="text-red-600 mb-4">{error}</p>
+            <button
+              onClick={() => window.location.reload()}
+              className="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition"
+            >
+              Retry
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   // Extraction of data from backend response
-  const resumesCreated = dashboardData?.stats.resumesCreated || 0;
-  const resumesThisWeek = dashboardData?.stats.resumesThisWeek || 0;
-  const avgAtsScore = dashboardData?.stats.avgAtsScore || 0;
-  const atsDelta = dashboardData?.stats.atsDelta || 0;
-  const profileViews = dashboardData?.stats.profileViews || 0;
+  const stats = dashboardData?.stats || {};
+  const resumesCreated = stats.resumesCreated || 0;
+  const resumesThisWeek = stats.resumesThisWeek || 0;
+  const avgAtsScore = stats.avgAtsScore || 0;
+  const atsDelta = stats.atsDelta || 0;
+  const profileViews = stats.profileViews || 0;
 
   return (
     <div className="dashboard-page">
-      {/* 1. Integrated the correct UserNavBar at the top */}
       <UserNavBar />
 
       <div className="dashboard-content-container">
@@ -73,16 +112,26 @@ const Dashboard = ({ setActivePage }) => {
             </div>
 
             <p className="ai-subtext">
-              Your resume is looking good, but could be stronger.
+              {avgAtsScore >= 80
+                ? "Your resume looks fantastic! You're ready to apply."
+                : avgAtsScore >= 50
+                  ? "Your resume is looking good, but could be stronger."
+                  : "Your resume needs some work to pass ATS filters."}
             </p>
           </div>
 
           <div className="ai-right">
             <div className="ai-tip">
-              💡 Tip: Try adding more strong action verbs to your
-              “Experience” section to increase impact.
+              💡 Tip: {avgAtsScore < 70
+                ? "Try adding more strong action verbs to your 'Experience' section to increase impact."
+                : "Optimize your skills section with keywords from specific job descriptions."}
             </div>
-            <button className="ai-btn">Improve Now</button>
+            <button
+              className="ai-btn"
+              onClick={() => navigate("/user/ats-checker")}
+            >
+              Improve Now
+            </button>
           </div>
         </div>
 
@@ -98,7 +147,7 @@ const Dashboard = ({ setActivePage }) => {
           <StatCard
             label="Avg ATS Score"
             value={`${avgAtsScore}%`}
-            trend={`${atsDelta >= 0 ? "+" : ""}${atsDelta}% this week`}
+            trend={`${atsDelta >= 0 ? "+" : ""}${atsDelta}% since last scan`}
             icon={<FaChartLine />}
           />
 
@@ -110,11 +159,10 @@ const Dashboard = ({ setActivePage }) => {
           />
         </div>
 
-        {/* Recent Resumes Table/List */}
         <div className="dashboard-grid full-width-list">
           <RecentResumes
             resumes={dashboardData?.recentResumes || []}
-            onViewAll={() => setActivePage("my-resumes")}
+            onViewAll={() => navigate("/user/my-resumes")}
           />
         </div>
       </div>
