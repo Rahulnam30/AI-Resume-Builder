@@ -9,10 +9,12 @@ import {
   generateResume
 } from "../controllers/Resume.controller.js";
 
-router.post("/save", saveResume);
-router.post("/generate-summary", generateAIResume);
-router.post("/enhance-work-experience", enhanceWorkExperience);
-router.post("/enhance-project-description", enhanceProjectDescription);
-router.post("/generate-pdf", generateResume);
+import isAuth from "../middlewares/isAuth.js";
+
+router.post("/save", isAuth, saveResume);
+router.post("/generate-summary", isAuth, generateAIResume);
+router.post("/enhance-work-experience", isAuth, enhanceWorkExperience);
+router.post("/enhance-project-description", isAuth, enhanceProjectDescription);
+router.post("/generate-pdf", isAuth, generateResume);
 
 export default router;

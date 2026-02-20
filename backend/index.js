@@ -17,10 +17,14 @@ import planRouter from "./routers/plan.router.js";
 // Config
 import connectDB from "./config/db.js";
 
+import apiTracker from "./middlewares/apiTracker.js";
+
 dotenv.config();
 
 const app = express();
 const port = process.env.PORT || 5000;
+
+app.use(apiTracker);
 
 // Path setup for static files
 const __filename = fileURLToPath(import.meta.url);

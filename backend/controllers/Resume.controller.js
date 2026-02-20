@@ -32,7 +32,10 @@ import {
 // ===============================
 export const saveResume = async (req, res) => {
   try {
-    const resume = new Resume(req.body);
+    const resume = new Resume({
+      ...req.body,
+      user: req.userId,
+    });
     await resume.save();
 
     res.json({
@@ -91,7 +94,8 @@ export const generateAIResume = async (req, res) => {
     try {
       const resume = new Resume({
         ...req.body,
-        summary: aiText
+        summary: aiText,
+        user: req.userId,
       });
       await resume.save();
       console.log("Saved to database");
