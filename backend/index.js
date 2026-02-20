@@ -16,6 +16,8 @@ import planRouter from "./routers/plan.router.js";
 
 // Config
 import connectDB from "./config/db.js";
+import User from "./Models/User.js";
+import bcrypt from "bcryptjs";
 
 import apiTracker from "./middlewares/apiTracker.js";
 
@@ -64,10 +66,42 @@ app.use((err, req, res, next) => {
   res.status(500).json({ message: "Something went wrong!" });
 });
 
+// Admin Bootstrap
+const bootstrapAdmin = async () => {
+  try {
+    const adminEmail = process.env.ADMIN_EMAIL;
+    const adminPassword = process.env.ADMIN_PASSWORD;
+
+    if (!adminEmail || !adminPassword) {
+      console.warn("⚠️ ADMIN_EMAIL or ADMIN_PASSWORD not found in .env. Skipping admin bootstrap.");
+      return;
+    }
+
+    const adminExists = await User.findOne({ email: adminEmail });
+    if (!adminExists) {
+      const hashedPassword = await bcrypt.hash(adminPassword, 10);
+      const newAdmin = new User({
+        username: "Admin",
+        email: adminEmail,
+        password: hashedPassword,
+        isAdmin: true,
+        isActive: true,
+      });
+      await newAdmin.save();
+      console.log(`✅ Admin user created: ${adminEmail}`);
+    } else {
+      console.log(`ℹ️ Admin user already exists: ${adminEmail} (ID: ${adminExists._id})`);
+    }
+  } catch (error) {
+    console.error("❌ Error bootstrapping admin:", error);
+  }
+};
+
 // 🚨 FIX: Connect DB BEFORE starting server, not inside listen callback
 const startServer = async () => {
   try {
     await connectDB(); // Wait for DB connection
+    await bootstrapAdmin(); // Ensure admin exists
     app.listen(port, () => {
       console.log(`✅ Server Running at http://localhost:${port}`);
       console.log(`✅ Database Connected`);
