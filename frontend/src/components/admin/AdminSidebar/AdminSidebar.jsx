@@ -143,13 +143,18 @@ export default function AdminSidebar({ isCollapsed, setIsCollapsed, isMobileOpen
         transition={{ type: "spring", stiffness: 220, damping: 25 }}
       >
         {/* Menu */}
-        <nav className="p-3 space-y-2 mt-16 flex-1 overflow-y-auto">
+        <nav className={`p-3 space-y-2 mt-16 flex-1 ${isCollapsed && !isMobile ? 'overflow-visible' : 'overflow-y-auto'}`}>
           {menuItems.map((item) => {
             const Icon = item.icon;
             const active = isActive(item.path);
 
             return (
-              <div key={item.id} className="relative group">
+              <div
+                key={item.id}
+                className="relative"
+                onMouseEnter={() => setHoveredItem(item.id)}
+                onMouseLeave={() => setHoveredItem(null)}
+              >
                 <button
                   onClick={() => handleNavigate(item.path)}
                   className={`w-full flex items-center rounded-xl transition-all
@@ -158,7 +163,7 @@ export default function AdminSidebar({ isCollapsed, setIsCollapsed, isMobileOpen
                       ? "bg-blue-50 text-blue-600 font-semibold"
                       : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
                     }
-                    ${item.id === 'notifications' && unreadCount > 0 ? 'relative' : ''}`}  // ← Added for badge positioning
+                    ${item.id === 'notifications' && unreadCount > 0 ? 'relative' : ''}`}
                   aria-current={active ? "page" : undefined}
                 >
                   <Icon size={22} aria-hidden="true" />
@@ -180,16 +185,18 @@ export default function AdminSidebar({ isCollapsed, setIsCollapsed, isMobileOpen
 
                 {/* Tooltip when collapsed - Desktop only */}
                 <AnimatePresence>
-                  {isCollapsed && !isMobile && (
+                  {isCollapsed && !isMobile && hoveredItem === item.id && (
                     <motion.div
-                      initial={{ opacity: 0, x: -6 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      exit={{ opacity: 0, x: -6 }}
-                      className="absolute left-full ml-3 top-1/2 -translate-y-1/2 hidden group-hover:flex pointer-events-none"
-                      role="tooltip"
+                      initial={{ opacity: 0, x: 5, y: "-50%" }}
+                      animate={{ opacity: 1, x: 0, y: "-50%" }}
+                      exit={{ opacity: 0, x: 5, y: "-50%" }}
+                      className="absolute left-full ml-3 top-1/2 z-[100]"
+                      style={{ pointerEvents: 'none' }}
                     >
-                      <div className="bg-slate-900 text-white text-sm px-3 py-1.5 rounded-lg shadow-lg whitespace-nowrap">
+                      <div className="bg-slate-900 text-white text-[11px] px-2.5 py-1.5 rounded-md shadow-xl whitespace-nowrap relative flex items-center">
                         {item.label}
+                        {/* Triangle arrow */}
+                        <div className="absolute right-full top-1/2 -translate-y-1/2 border-[5px] border-transparent border-r-slate-900" />
                       </div>
                     </motion.div>
                   )}
@@ -202,7 +209,11 @@ export default function AdminSidebar({ isCollapsed, setIsCollapsed, isMobileOpen
 
         {/* Logout Button */}
         <div className="p-3 border-t border-slate-200">
-          <div className="relative group">
+          <div
+            className="relative"
+            onMouseEnter={() => setHoveredItem('logout')}
+            onMouseLeave={() => setHoveredItem(null)}
+          >
             <button
               onClick={() => navigate("/")}
               className={`w-full flex items-center rounded-xl transition-all text-red-500 hover:bg-red-50
@@ -214,16 +225,22 @@ export default function AdminSidebar({ isCollapsed, setIsCollapsed, isMobileOpen
             </button>
 
             {/* Tooltip when collapsed - Desktop only */}
-            {isCollapsed && !isMobile && (
-              <div
-                className="absolute left-full ml-3 top-1/2 -translate-y-1/2 hidden group-hover:flex pointer-events-none"
-                role="tooltip"
-              >
-                <div className="bg-slate-900 text-white text-sm px-3 py-1.5 rounded-lg shadow-lg">
-                  Logout
-                </div>
-              </div>
-            )}
+            <AnimatePresence>
+              {isCollapsed && !isMobile && hoveredItem === 'logout' && (
+                <motion.div
+                  initial={{ opacity: 0, x: 5, y: "-50%" }}
+                  animate={{ opacity: 1, x: 0, y: "-50%" }}
+                  exit={{ opacity: 0, x: 5, y: "-50%" }}
+                  className="absolute left-full ml-3 top-1/2 z-[100]"
+                  style={{ pointerEvents: 'none' }}
+                >
+                  <div className="bg-slate-900 text-white text-[11px] px-2.5 py-1.5 rounded-md shadow-xl whitespace-nowrap relative flex items-center">
+                    Logout
+                    <div className="absolute right-full top-1/2 -translate-y-1/2 border-[5px] border-transparent border-r-slate-900" />
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         </div>
       </motion.aside>
