@@ -47,7 +47,7 @@ const SimpleCoverLetterPage = () => {
             </button>
           </div>
 
-          <div className="flex flex-col items-center gap-16 lg:flex-row lg:text-left">
+          <div className="flex flex-col items-center gap-16 lg:flex-row lg:text-left pt-10">
             <div className="flex-1 text-center lg:text-left">
               <div className="inline-flex items-center gap-2 px-4 py-2 mb-8 rounded-full bg-blue-50">
                 <Sparkles size={16} className="text-[#0077cc]" />
@@ -79,7 +79,7 @@ const SimpleCoverLetterPage = () => {
               <img
                 src={cover}
                 alt="AI Cover Letter Preview"
-                className="w-full h-auto rounded-[2rem]"
+                className="hidden md:block w-full h-auto rounded-[2rem]"
               />
             </div>
           </div>
