@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { X, Eye, EyeOff, Loader2 } from "lucide-react";
-import toast from "react-hot-toast";
 import axios from "../../../api/axios";
 import logo from "../../../assets/UptoSkills.webp";
 
@@ -21,45 +20,54 @@ export default function Security() {
   });
 
   const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
   const updatePassword = async () => {
-    if (loading) return;
+  if (loading) return;
 
-    if (!form.currentPassword || !form.newPassword || !form.confirmPassword) {
-      toast.error("All fields are required");
-      return;
-    }
+  if (!form.currentPassword || !form.newPassword || !form.confirmPassword) {
+    alert("All fields are required");
+    return;
+  }
 
-    if (form.newPassword.length < 8) {
-      toast.error("Password must be at least 8 characters");
-      return;
-    }
+  if (form.newPassword.length < 8) {
+    alert("Password must be at least 8 characters");
+    return;
+  }
 
-    if (form.newPassword !== form.confirmPassword) {
-      toast.error("Passwords do not match");
-      return;
-    }
+  if (form.newPassword !== form.confirmPassword) {
+    alert("Passwords do not match");
+    return;
+  }
 
-    try {
-      setLoading(true);
-      const res = await axios.put("/api/user/password", {
-        currentPassword: form.currentPassword,
-        newPassword: form.newPassword,
-      });
-      toast.success(res.data?.message || "Password updated successfully");
-      setForm({ currentPassword: "", newPassword: "", confirmPassword: "" });
-    } catch (err) {
-      console.error(err);
-      toast.error(err?.response?.data?.message || "Something went wrong. Try again.");
-    } finally {
-      setLoading(false);
-    }
-  };
+  try {
+    setLoading(true);
 
+    await axios.put("/api/user/password", {
+      currentPassword: form.currentPassword,
+      newPassword: form.newPassword,
+    });
+
+    // ✅ POPUP ALERT
+    alert("Password changed successfully");
+
+    // ✅ CLEAR FIELDS
+    setForm({
+      currentPassword: "",
+      newPassword: "",
+      confirmPassword: "",
+    });
+
+  } catch (err) {
+    alert("Something went wrong. Try again.");
+  } finally {
+    setLoading(false);
+  }
+};
   return (
     <div className="w-full min-h-screen bg-[#f4f6f8]">
 
@@ -75,8 +83,7 @@ export default function Security() {
 
       {/* CENTERED CONTENT */}
       <div className="flex items-center justify-center min-h-[calc(100vh-64px)] px-4">
-
-        <div className="w-full max-w-xl">
+        <div className="w-full max-w-xl bg-white rounded-2xl shadow-xl p-8 border border-gray-200">
 
           {/* HEADER */}
           <div className="flex items-center justify-between mb-6">
@@ -91,6 +98,13 @@ export default function Security() {
               <X size={22} />
             </button>
           </div>
+
+          {/* ✅ SUCCESS MESSAGE */}
+          {success && (
+            <div className="mb-6 p-3 rounded-lg bg-green-100 text-green-700 border border-green-300">
+              Password changed successfully
+            </div>
+          )}
 
           {/* FORM */}
           <div className="space-y-6">
@@ -172,19 +186,7 @@ const PasswordField = ({
           value={value}
           onChange={onChange}
           autoFocus={autoFocus}
-          className="
-            w-full
-            h-[48px]
-            px-4
-            pr-12
-            border
-            border-gray-300
-            rounded-xl
-            outline-none
-            focus:border-slate-900
-            focus:ring-2
-            focus:ring-slate-900/20
-          "
+          className="w-full h-[48px] px-4 pr-12 border border-gray-300 rounded-xl outline-none focus:border-slate-900 focus:ring-2 focus:ring-slate-900/20"
         />
 
         <button
