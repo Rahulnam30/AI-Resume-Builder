@@ -1047,7 +1047,7 @@ function HelpCenter() {
         },
         {
             id: 5,
-            question: "What file formats can I download my resume in?",
+            question: "What file formats can I download in my resume ?",
             answer: "You can download your resume in PDF, Word (.docx), and plain text formats. PDF is recommended for job applications, while Word format allows for further editing."
         },
         {
@@ -1087,7 +1087,7 @@ function HelpCenter() {
             {/* Navigation */}
             <NavBar />
             {/* Hero Section */}
-            <div className="bg-gradient-to-br from-blue-600 via-indigo-700 to-blue-800 text-white relative overflow-hidden" onMouseMove={handleMouseMove}>
+            <div className="bg-gradient-to-br from-blue-600 via-indigo-700 to-blue-800 text-white relative overflow-hidden pt-24 md:pt-28" onMouseMove={handleMouseMove}>
                 {/* Minimal 3D Background */}
                 <div className="absolute inset-0">
                     <div className="geometric-bg">

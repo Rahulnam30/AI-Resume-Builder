@@ -211,9 +211,17 @@ const ResumeExamplesPage = () => {
                 <div className="inline-flex items-center gap-2 px-3 py-1 bg-orange-50 rounded-lg text-[#ff6b35] text-[10px] font-black uppercase mb-6">Expert Insights</div>
                 <h2 className="text-5xl font-[1000] tracking-tight font-jakarta mb-6 leading-tight">Built for the <br/><span className="text-[#ff6b35]">6-Second Scan.</span></h2>
                 <p className="mb-8 text-lg font-medium text-gray-500">Our field-tested templates are engineered to ensure your key value is seen first by recruiters.</p>
-                <button className="flex items-center gap-2 font-black text-[#1a2e52] group">
-                    Explore Resume Guide <ArrowRight size={20} className="transition-transform group-hover:translate-x-2" />
-                </button>
+                <button
+  onClick={() =>
+    localStorage.getItem("token")
+      ? navigate("/how-to-write-a-resume")
+      : navigate("/login")
+  }
+  className="flex items-center gap-2 font-black text-[#1a2e52] group"
+>
+  Explore Resume Guide
+  <ArrowRight size={20} className="transition-transform group-hover:translate-x-2" />
+</button>
             </div>
             <div className="grid flex-1 w-full gap-4">
                 {[

@@ -95,8 +95,12 @@ const ResumeGuide = () => {
         <p className="max-w-xl mx-auto mb-10 text-xl font-medium leading-relaxed text-gray-500 lg:mx-0">
           A winning resume is a professional blueprint. We show you how to structure your career narrative to land interviews in <span className="font-bold text-[#1a2e52]">record time</span>.
         </p>
-
-        <button onClick={() => navigate("/login")} className="group relative inline-flex items-center gap-3 px-10 py-5 bg-gradient-to-r from-[#e65100] to-[#f4511e] text-white rounded-xl font-bold text-lg transition-all duration-300 shadow-[0_10px_25px_rgba(230,81,0,0.3)] hover:shadow-[0_15px_35px_rgba(230,81,0,0.45)] hover:-translate-y-1 active:scale-95 mx-auto lg:mx-0">
+      <button
+        onClick={() =>
+  localStorage.getItem("token")
+    ? navigate("/user/cv")
+    : navigate("/login")
+}className="group relative inline-flex items-center gap-3 px-10 py-5 bg-gradient-to-r from-[#e65100] to-[#f4511e] text-white rounded-xl font-bold text-lg transition-all duration-300 shadow-[0_10px_25px_rgba(230,81,0,0.3)] hover:shadow-[0_15px_35px_rgba(230,81,0,0.45)] hover:-translate-y-1 active:scale-95 mx-auto lg:mx-0">
           <span>Start Building Now</span>
           <ArrowRight size={22} className="transition-transform duration-300 group-hover:translate-x-2" />
         </button>
@@ -368,8 +372,12 @@ const ResumeGuide = () => {
           <p className="mb-10 text-xl font-medium text-gray-500">
             Put these expert strategies into practice. Turn your history into a clean, recruiter-approved masterpiece.
           </p>
-          <button 
-            onClick={() => navigate("/login")} 
+          <button
+          onClick={() =>
+  localStorage.getItem("token")
+    ? navigate("/user/cv")
+    : navigate("/login")
+}
             className="group relative inline-flex items-center gap-3 px-10 py-5 bg-gradient-to-r from-[#e65100] to-[#f4511e] text-white rounded-xl font-bold text-lg transition-all duration-300 shadow-[0_10px_25px_rgba(230,81,0,0.3)] hover:shadow-[0_15px_35px_rgba(230,81,0,0.45)] hover:-translate-y-1 active:scale-95"
           >
             <span>Start My Resume</span>

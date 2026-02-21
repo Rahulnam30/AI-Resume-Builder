@@ -257,6 +257,18 @@ function Contact() {
         <h3 className="mb-6 text-xl font-bold text-[#1a2e52]">Send us a Message</h3>
         
         <form className="space-y-5">
+
+          <div className="space-y-1.5">
+  <label className="ml-1 text-xs font-bold tracking-widest text-gray-400 uppercase">
+    Message
+  </label>
+  <textarea
+    rows="4"
+    placeholder="Write your message here..."
+    className="w-full px-5 py-3.5 bg-gray-50 border border-gray-100 text-gray-700 rounded-xl focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition-all resize-none"
+    required
+  />
+</div>
           <div className="space-y-1.5">
             <label className="ml-1 text-xs font-bold tracking-widest text-gray-400 uppercase">Who are you?</label>
             <select className="w-full px-5 py-3.5 bg-gray-50 border border-gray-100 text-gray-700 rounded-xl focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition-all cursor-pointer">
