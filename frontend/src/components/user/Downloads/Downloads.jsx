@@ -1,11 +1,12 @@
+// 🔥 YOUR ORIGINAL IMPORTS — UNCHANGED
 import React, { useState, useEffect, useRef } from 'react';
+import axiosInstance from "../../../api/axios";
 import {
   FiDownload, FiFile, FiCalendar, FiTrash2, FiSearch, FiFilter,
   FiFileText, FiEye, FiShare2, FiClock, FiTrendingUp, FiFolder,
   FiStar, FiEdit, FiCopy, FiRefreshCw, FiMoreVertical, FiLayout, FiList, FiGrid, FiChevronDown, FiCheck
 } from 'react-icons/fi';
 import { motion, AnimatePresence } from 'framer-motion';
-import { initializeSampleData, generateSampleDownloads } from '../../../utils/sampleDownloadsData';
 import UserNavBar from '../UserNavBar/UserNavBar';
 
 const Downloads = () => {
@@ -19,15 +20,14 @@ const Downloads = () => {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [openMenuId, setOpenMenuId] = useState(null);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [downloadingId, setDownloadingId] = useState(null);
 
   // Close menus when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
-      // Close Item Menu
       if (openMenuId && !event.target.closest('.menu-trigger') && !event.target.closest('.menu-dropdown')) {
         setOpenMenuId(null);
       }
-      // Close Filter Dropdown
       if (isFilterOpen && !event.target.closest('.filter-trigger') && !event.target.closest('.filter-dropdown')) {
         setIsFilterOpen(false);
       }
@@ -36,72 +36,138 @@ const Downloads = () => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [openMenuId, isFilterOpen]);
 
+  // Fetch Downloads
   useEffect(() => {
     fetchDownloads();
   }, []);
 
-  const fetchDownloads = () => {
+  const fetchDownloads = async () => {
     try {
       setIsRefreshing(true);
       setLoading(true);
-
-      const savedDownloads = localStorage.getItem('resumeDownloads');
-      let allDownloads = [];
-
-      if (savedDownloads) {
-        allDownloads = JSON.parse(savedDownloads);
-        allDownloads = allDownloads.map(download => ({
-          ...download,
-          views: download.views !== undefined ? download.views : 0,
-          starred: download.starred !== undefined ? download.starred : false,
-          color: download.color || (download.type === 'resume' ? 'blue' : download.type === 'cover-letter' ? 'purple' : 'green'),
-          size: download.size || '250 KB',
-          format: download.format || 'PDF'
-        }));
-      } else {
-        allDownloads = initializeSampleData();
-      }
-
+      
+      const params = new URLSearchParams({
+        limit: '50',
+        page: '1'
+      });
+      
+      const response = await axiosInstance.get(`/api/downloads?${params}`);
+      const { downloads: backendDownloads } = response.data;
+      
+      const allDownloads = backendDownloads.map(download => ({
+        id: download._id?.toString?.() || download.id,
+        name: download.name,
+        type: download.type,
+        format: (download.format || (download.type === 'cover-letter' ? 'DOCX' : 'PDF')).toUpperCase(),
+        size: download.size || (download.type === 'cover-letter' ? '150 KB' : '250 KB'),
+        views: download.views || 0,
+        downloadDate: download.downloadDate,
+        template: download.template,
+        starred: false,
+        color: download.type === 'resume' ? 'blue' : download.type === 'cover-letter' ? 'purple' : 'green',
+      }));
+      
       setDownloads(allDownloads);
-      setLoading(false);
-      setIsRefreshing(false);
     } catch (error) {
-      console.error('Error loading downloads:', error);
+      console.error('Error fetching downloads:', error);
       setDownloads([]);
+    } finally {
       setLoading(false);
       setIsRefreshing(false);
-    }
-  };
-
-  const handleDelete = (id) => {
-    const updatedDownloads = downloads.filter(download => download.id !== id);
-    setDownloads(updatedDownloads);
-    localStorage.setItem('resumeDownloads', JSON.stringify(updatedDownloads));
-    setOpenMenuId(null);
-  };
-
-  const handleDownload = (download) => {
-    const updatedDownloads = downloads.map(d =>
-      d.id === download.id ? { ...d, views: (d.views || 0) + 1, lastDownloaded: new Date().toISOString() } : d
-    );
-    setDownloads(updatedDownloads);
-    localStorage.setItem('resumeDownloads', JSON.stringify(updatedDownloads));
-
-    if (download.url) {
-      const link = document.createElement('a');
-      link.href = download.url;
-      link.download = download.name || 'download';
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
     }
   };
 
   const handleResetSamples = () => {
-    const sampleData = generateSampleDownloads();
-    setDownloads(sampleData);
-    localStorage.setItem('resumeDownloads', JSON.stringify(sampleData));
+    fetchDownloads();
     setOpenMenuId(null);
+  };
+
+  const handleDelete = async (id) => {
+    try {
+      await axiosInstance.delete(`/api/downloads/${id}`);
+      setDownloads(downloads.filter(download => download.id !== id));
+    } catch (error) {
+      console.error('Error deleting download:', error);
+    }
+    setOpenMenuId(null);
+  };
+
+  // 🔥 UPDATED DOWNLOAD HANDLER (PDF + DOCX SAFE)
+  const handleDownload = async (download) => {
+    setDownloadingId(download.id);
+
+    try {
+      const format = (download.format || '').toUpperCase();
+      console.log("📥 Downloading:", download.id, format);
+
+      let endpoint = '';
+      let mimeType = '';
+      let fileExt = '';
+
+      if (format === 'DOCX' || format === 'DOC') {
+        endpoint = '/word';
+        mimeType = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
+        fileExt = 'docx';
+      } else {
+        endpoint = '/pdf';
+        mimeType = 'application/pdf';
+        fileExt = 'pdf';
+      }
+
+      const url = `/api/downloads/${download.id}${endpoint}`;
+      console.log("➡️ Request URL:", url);
+
+      const res = await axiosInstance.get(url, {
+        responseType: 'blob',
+        timeout: 60000,
+        headers: {
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache'
+        }
+      });
+
+      if (!res.data || res.data.size === 0) {
+        throw new Error('Empty file received');
+      }
+
+      const blob = new Blob([res.data], { type: mimeType });
+
+      // detect server JSON error inside blob
+      if (blob.size < 3000) {
+        const text = await blob.text();
+        if (text.includes('error') || text.includes('Error') || text.includes('HTML')) {
+          throw new Error(text.slice(0, 200));
+        }
+      }
+
+      const safeName = (download.name || 'document').replace(/[^a-zA-Z0-9.-]/g, '_');
+      const downloadUrl = URL.createObjectURL(blob);
+
+      const a = document.createElement('a');
+      a.href = downloadUrl;
+      a.download = `${safeName}.${fileExt}`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(downloadUrl);
+
+    } catch (err) {
+      console.error('❌ Download failed:', err);
+
+      let msg = 'Download failed';
+
+      // 🔥 FIX ADDED: handle missing html case specifically
+      if (err.response?.status === 400) {
+        msg = 'This document is missing HTML content. Please regenerate it.';
+      }
+      else if (err.response?.status === 404) msg = 'File not found';
+      else if (err.response?.status === 500) msg = 'File generation error';
+      else if (err.code === 'ECONNABORTED') msg = 'Server timeout';
+
+      alert(msg);
+    } finally {
+      setDownloadingId(null);
+    }
   };
 
   const formatDate = (dateString) => {
@@ -126,17 +192,14 @@ const Downloads = () => {
   const getFilteredDownloads = () => {
     let filtered = [...downloads];
 
-    // Filter by Type
     if (selectedTypes.length > 0) {
       filtered = filtered.filter(d => selectedTypes.includes(d.type));
     }
 
-    // Filter by Format
     if (selectedFormats.length > 0) {
       filtered = filtered.filter(d => selectedFormats.includes(d.format));
     }
 
-    // Search term filter
     if (searchTerm) {
       filtered = filtered.filter(d =>
         d.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -144,7 +207,6 @@ const Downloads = () => {
       );
     }
 
-    // Sort
     if (sortBy === 'recent') {
       filtered = filtered.sort((a, b) => new Date(b.downloadDate) - new Date(a.downloadDate));
     } else if (sortBy === 'name') {
@@ -177,12 +239,6 @@ const Downloads = () => {
     { value: 'DOCX', label: 'DOCX' },
   ];
 
-  const sortOptions = [
-    { value: 'recent', label: 'Most Recent' },
-    { value: 'views', label: 'Most Viewed' },
-    { value: 'name', label: 'By Name' },
-  ];
-
   const toggleType = (type) => {
     setSelectedTypes(prev =>
       prev.includes(type) ? prev.filter(t => t !== type) : [...prev, type]
@@ -202,179 +258,166 @@ const Downloads = () => {
       <div className="flex items-center justify-center h-screen bg-gray-50">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-500 font-medium">Loading...</p>
+          <p className="text-gray-500 font-medium">Loading downloads...</p>
         </div>
       </div>
     );
   }
+
+
 
   return (
     <>
       <UserNavBar />
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 font-outfit">
         <div className="container mx-auto px-3 sm:px-4 lg:px-6 py-4 sm:py-6 lg:py-8 max-w-7xl">
-
-          {/* Header Section */}
+          {/* Header */}
           <div className="mb-8">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8">
               <div>
-                <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
-                  Download Manager
-                </h1>
-                <p className="text-sm sm:text-base text-gray-500 flex items-center gap-2">
-                  Manage and track all your ResumeAI documents
-                </p>
+                <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">Download Manager</h1>
+                <p className="text-sm sm:text-base text-gray-500">Manage your ResumeAI documents</p>
               </div>
               <button
                 onClick={handleResetSamples}
-                className="w-fit flex items-center gap-2 px-4 py-2 bg-indigo-50 text-indigo-700 rounded-lg text-sm font-semibold hover:bg-indigo-100 transition-colors border border-indigo-100"
+                disabled={isRefreshing}
+                className={`w-fit flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold border transition-all ${
+                  isRefreshing
+                    ? 'bg-gray-100 text-gray-500 border-gray-200 cursor-not-allowed'
+                    : 'bg-indigo-50 text-indigo-700 border-indigo-100 hover:bg-indigo-100'
+                }`}
               >
                 <FiRefreshCw size={16} className={isRefreshing ? 'animate-spin' : ''} />
-                Refresh
+                {isRefreshing ? 'Refreshing...' : 'Refresh'}
               </button>
             </div>
 
-            {/* Stats Cards */}
+            {/* Stats */}
             <div className="grid grid-cols-2 gap-4 sm:gap-5 mb-12">
-              <StatsCard
-                label="Total Files"
-                value={stats.total}
-                icon={<FiFolder />}
-              />
-              <StatsCard
-                label="Resumes"
-                value={stats.resumes}
-                icon={<FiFileText />}
-              />
-              <StatsCard
-                label="Cover Letters"
-                value={stats.coverLetters}
-                icon={<FiEdit />}
-              />
-              <StatsCard
-                label="CVs"
-                value={stats.cvs}
-                icon={<FiFile />}
-              />
-              <StatsCard
-                label="Views"
-                value={stats.totalViews}
-                icon={<FiTrendingUp />}
-              />
+              <StatsCard label="Total Files" value={stats.total} icon={<FiFolder />} />
+              <StatsCard label="Resumes" value={stats.resumes} icon={<FiFileText />} />
+              <StatsCard label="Cover Letters" value={stats.coverLetters} icon={<FiEdit />} />
+              <StatsCard label="CVs" value={stats.cvs} icon={<FiFile />} />
+              <StatsCard label="Views" value={stats.totalViews} icon={<FiTrendingUp />} />
             </div>
           </div>
 
-          {/* Controls Section*/}
+          {/* Controls */}
           <div className="sticky top-4 z-30 mb-8">
             <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-2">
               <div className="flex flex-col sm:flex-row gap-2 items-center justify-between">
-
-                {/* Search Pill */}
-                <div className="relative flex-1 group">
-                  <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-blue-500 transition-colors">
+                <div className="relative flex-1">
+                  <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
                     <FiSearch size={20} />
                   </div>
                   <input
                     type="text"
-                    placeholder="Search your documents..."
+                    placeholder="Search documents..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full pl-12 pr-4 py-3 bg-transparent rounded-xl outline-none text-gray-700 placeholder-gray-400 focus:bg-gray-50/50 transition-all text-[15px]"
+                    className="w-full pl-12 pr-4 py-3 bg-transparent rounded-xl outline-none text-gray-700 placeholder-gray-400 focus:bg-gray-50/50 text-[15px]"
                   />
                 </div>
 
-                <div className="h-8 w-[1px] bg-gray-200 hidden lg:block"></div>
-
-                <div className="flex items-center gap-2 w-full lg:w-auto p-1">
-
-                  {/* Custom Filter Dropdown */}
-                  <div className="relative flex-1 lg:flex-none">
+                <div className="flex items-center gap-2">
+                  <div className="relative">
                     <button
                       onClick={() => setIsFilterOpen(!isFilterOpen)}
-                      className={`filter-trigger flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 border w-full lg:w-48 justify-between ${isFilterOpen
-                        ? 'bg-blue-50 text-blue-700 border-blue-200'
-                        : 'bg-gray-50 text-gray-700 border-transparent hover:bg-gray-100'
-                        }`}
+                      className={`filter-trigger flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium border w-full lg:w-48 justify-between ${
+                        isFilterOpen
+                          ? 'bg-blue-50 text-blue-700 border-blue-200'
+                          : 'bg-gray-50 text-gray-700 border-transparent hover:bg-gray-100'
+                      }`}
                     >
                       <div className="flex items-center gap-2 truncate">
-                        <FiFilter size={16} className={isFilterOpen || activeFilterCount > 0 ? 'text-blue-500' : 'text-gray-500'} />
+                        <FiFilter size={16} className={activeFilterCount > 0 ? 'text-blue-500' : 'text-gray-500'} />
                         <span>{activeFilterCount > 0 ? `${activeFilterCount} Filters` : 'All Documents'}</span>
                       </div>
-                      <FiChevronDown size={14} className={`transition-transform duration-200 ${isFilterOpen ? 'rotate-180' : ''}`} />
+                      <FiChevronDown size={14} className={`transition-transform ${isFilterOpen ? 'rotate-180' : ''}`} />
                     </button>
 
                     <AnimatePresence>
                       {isFilterOpen && (
                         <motion.div
-                          initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                          animate={{ opacity: 1, y: 0, scale: 1 }}
-                          exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                          transition={{ duration: 0.1 }}
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: 10 }}
                           className="filter-dropdown absolute right-0 mt-2 w-56 bg-white border border-gray-100 rounded-xl shadow-2xl py-1.5 z-50 origin-top-right"
                         >
                           <div className="px-4 py-3 border-b border-gray-50 flex items-center justify-between">
-                            <h6 className="text-[11px] font-bold text-gray-400 uppercase tracking-widest">
-                              Filter Documents
-                            </h6>
+                            <h6 className="text-[11px] font-bold text-gray-400 uppercase tracking-widest">Filter Documents</h6>
                             {(selectedTypes.length > 0 || selectedFormats.length > 0) && (
                               <button
-                                onClick={() => { setSelectedTypes([]); setSelectedFormats([]); }}
+                                onClick={() => { 
+                                  setSelectedTypes([]); 
+                                  setSelectedFormats([]); 
+                                }}
                                 className="text-[10px] text-blue-600 font-semibold hover:underline"
                               >
                                 Reset
                               </button>
                             )}
                           </div>
-
-                          <div className="p-2">
-                            <p className="px-2 py-1.5 text-[10px] font-bold text-gray-400 uppercase">Document Type</p>
+                          
+                          {/* Type Filters */}
+                          <div className="px-4 py-2">
+                            <p className="text-xs text-gray-500 mb-2 uppercase font-medium tracking-wide">Document Type</p>
                             {typeOptions.map((option) => (
-                              <button
-                                key={option.value}
-                                onClick={() => toggleType(option.value)}
-                                className={`w-full text-left px-3 py-2 text-sm flex items-center gap-3 hover:bg-gray-50 rounded-lg transition-colors ${selectedTypes.includes(option.value) ? 'text-blue-600 font-medium bg-blue-50/50' : 'text-gray-600'}`}
-                              >
-                                <div className={`w-4 h-4 rounded border flex items-center justify-center transition-all ${selectedTypes.includes(option.value) ? 'bg-blue-600 border-blue-600' : 'border-gray-300'}`}>
-                                  {selectedTypes.includes(option.value) && <FiCheck size={10} className="text-white" />}
-                                </div>
-                                {option.label}
-                              </button>
+                              <label key={option.value} className="flex items-center gap-2 p-1.5 rounded-lg cursor-pointer hover:bg-gray-50 w-full">
+                                <input
+                                  type="checkbox"
+                                  checked={selectedTypes.includes(option.value)}
+                                  onChange={() => toggleType(option.value)}
+                                  className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
+                                />
+                                <span className="text-sm">{option.label}</span>
+                              </label>
                             ))}
                           </div>
 
-                          <div className="p-2 border-t border-gray-50">
-                            <p className="px-2 py-1.5 text-[10px] font-bold text-gray-400 uppercase">File Format</p>
+                          {/* Format Filters */}
+                          <div className="px-4 py-2 border-t border-gray-50">
+                            <p className="text-xs text-gray-500 mb-2 uppercase font-medium tracking-wide">Format</p>
                             {formatOptions.map((option) => (
-                              <button
-                                key={option.value}
-                                onClick={() => toggleFormat(option.value)}
-                                className={`w-full text-left px-3 py-2 text-sm flex items-center gap-3 hover:bg-gray-50 rounded-lg transition-colors ${selectedFormats.includes(option.value) ? 'text-blue-600 font-medium bg-blue-50/50' : 'text-gray-600'}`}
-                              >
-                                <div className={`w-4 h-4 rounded border flex items-center justify-center transition-all ${selectedFormats.includes(option.value) ? 'bg-blue-600 border-blue-600' : 'border-gray-300'}`}>
-                                  {selectedFormats.includes(option.value) && <FiCheck size={10} className="text-white" />}
-                                </div>
-                                {option.label}
-                              </button>
-                            ))}
-                          </div>
-
-                          <div className="p-2 border-t border-gray-50">
-                            <p className="px-2 py-1.5 text-[10px] font-bold text-gray-400 uppercase">Sort By</p>
-                            {sortOptions.map((option) => (
-                              <button
-                                key={option.value}
-                                onClick={() => setSortBy(option.value)}
-                                className={`w-full text-left px-3 py-2 text-sm flex items-center justify-between hover:bg-gray-50 rounded-lg transition-colors ${sortBy === option.value ? 'text-blue-600 font-medium bg-blue-50/50' : 'text-gray-600'}`}
-                              >
-                                {option.label}
-                                {sortBy === option.value && <div className="w-1.5 h-1.5 rounded-full bg-blue-600" />}
-                              </button>
+                              <label key={option.value} className="flex items-center gap-2 p-1.5 rounded-lg                               cursor-pointer hover:bg-gray-50 w-full">
+                                <input
+                                  type="checkbox"
+                                  checked={selectedFormats.includes(option.value)}
+                                  onChange={() => toggleFormat(option.value)}
+                                  className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
+                                />
+                                <span className="text-sm">{option.label}</span>
+                              </label>
                             ))}
                           </div>
                         </motion.div>
                       )}
                     </AnimatePresence>
                   </div>
+                </div>
+
+                {/* View Toggle */}
+                <div className="flex items-center gap-1">
+                  <button
+                    onClick={() => setViewMode('grid')}
+                    className={`p-2 rounded-lg transition-all ${
+                      viewMode === 'grid'
+                        ? 'bg-blue-100 text-blue-700 shadow-sm'
+                        : 'text-gray-500 hover:bg-gray-100'
+                    }`}
+                  >
+                    <FiGrid size={16} />
+                  </button>
+                  <button
+                    onClick={() => setViewMode('list')}
+                    className={`p-2 rounded-lg transition-all ${
+                      viewMode === 'list'
+                        ? 'bg-blue-100 text-blue-700 shadow-sm'
+                        : 'text-gray-500 hover:bg-gray-100'
+                    }`}
+                  >
+                    <FiList size={16} />
+                  </button>
                 </div>
               </div>
             </div>
@@ -384,9 +427,7 @@ const Downloads = () => {
           {filteredDownloads.length === 0 ? (
             <EmptyState searchTerm={searchTerm} />
           ) : (
-            <div
-              className={viewMode === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6' : 'flex flex-col gap-4'}
-            >
+            <div className={viewMode === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6' : 'flex flex-col gap-4'}>
               {filteredDownloads.map((download) => (
                 <DocumentCard
                   key={download.id}
@@ -396,6 +437,7 @@ const Downloads = () => {
                   setOpenMenuId={setOpenMenuId}
                   handleDelete={handleDelete}
                   handleDownload={handleDownload}
+                  downloadingId={downloadingId}
                   formatDate={formatDate}
                 />
               ))}
@@ -412,7 +454,7 @@ const Downloads = () => {
   );
 };
 
-// Sub-components for cleaner code
+// StatsCard
 const StatsCard = ({ label, value, icon }) => (
   <motion.div
     whileHover={{ y: -4, boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.05)" }}
@@ -420,26 +462,35 @@ const StatsCard = ({ label, value, icon }) => (
   >
     <div className="flex items-center gap-1.5">
       <p className="text-xs text-gray-500 font-medium">{label}</p>
-      <div className="text-sm text-gray-400">
-        {icon}
-      </div>
+      <div className="text-sm text-gray-400">{icon}</div>
     </div>
     <h3 className="text-3xl font-bold text-gray-900 mt-1.5">{value}</h3>
   </motion.div>
 );
 
+// DocumentCard
 const DocumentCard = ({
-  download, viewMode, openMenuId, setOpenMenuId, handleDelete, handleDownload, formatDate
+  download, 
+  viewMode, 
+  openMenuId, 
+  setOpenMenuId, 
+  handleDelete, 
+  handleDownload, 
+  downloadingId,
+  formatDate
 }) => {
   const isMenuOpen = openMenuId === download.id;
   const isList = viewMode === 'list';
+  const isDownloading = downloadingId === download.id;
 
   return (
     <motion.div
-      className={`group bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-all duration-200 relative overflow-visible ${isList ? 'flex flex-col sm:flex-row sm:items-center p-3 gap-4 sm:gap-5' : 'p-5 flex flex-col h-full'
-        }`}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      className={`group bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-all duration-200 relative overflow-visible ${
+        isList ? 'flex flex-col sm:flex-row sm:items-center p-3 gap-4 sm:gap-5' : 'p-5 flex flex-col h-full'
+      }`}
     >
-      {/* Top Right Menu */}
       <div className={`absolute top-3 right-3 z-10 ${isList ? 'order-last relative top-auto right-auto' : ''}`}>
         <button
           onClick={(e) => {
@@ -450,76 +501,96 @@ const DocumentCard = ({
         >
           <FiMoreVertical size={18} />
         </button>
+        
+        <AnimatePresence>
+          {isMenuOpen && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="menu-dropdown absolute right-0 mt-2 w-48 bg-white border border-gray-100 rounded-xl shadow-2xl py-1.5 z-50 origin-top-right"
+            >
+              <button
+                onClick={() => handleDelete(download.id)}
+                className="w-full text-left px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2 rounded-lg transition-colors"
+              >
+                <FiTrash2 size={16} />
+                Delete
+              </button>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
 
-        {isMenuOpen && (
-          <div className="menu-dropdown absolute right-0 mt-2 w-48 bg-white border border-gray-100 rounded-xl shadow-2xl py-1.5 z-50 animate-in fade-in zoom-in-95 duration-200">
-            <button
-              className="w-full text-left px-4 py-2.5 text-sm text-gray-600 hover:bg-gray-50 flex items-center gap-2.5 transition-colors font-medium"
-              onClick={() => console.log('Edit clicked')}
-            >
-              <FiEdit size={15} /> Edit
-            </button>
-            <button
-              className="w-full text-left px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 flex items-center gap-2.5 transition-colors font-medium"
-              onClick={() => handleDelete(download.id)}
-            >
-              <FiTrash2 size={15} /> Delete
-            </button>
+      <div className={`${isList ? 'flex-1 min-w-0' : 'flex flex-col h-full'}`}>
+        <div className={`${isList ? 'mb-2' : 'mb-4'}`}>
+          <h3 className={`font-semibold text-gray-900 group-hover:text-gray-700 truncate ${isList ? 'text-sm' : 'text-lg leading-tight'}`}>
+            {download.name}
+          </h3>
+          <p className={`text-xs text-gray-500 mt-1 ${isList ? 'hidden sm:block' : ''}`}>
+            {download.template ? `${download.template} Template` : download.type.replace('-', ' ')}
+          </p>
+        </div>
+
+        {isList && (
+          <div className="grid grid-cols-3 gap-4 text-xs text-gray-500 mb-3">
+            <div className="flex items-center gap-1">
+              <FiFile size={12} />
+              <span>{download.format}</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <FiCalendar size={12} />
+              <span>{formatDate(download.downloadDate)}</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <FiEye size={12} />
+              <span>{download.views} views</span>
+            </div>
           </div>
         )}
       </div>
 
-      <div className={`flex items-center gap-4 ${isList ? 'flex-1' : 'mb-6'}`}>
-        <div className={`
-          flex items-center justify-center rounded-lg
-          ${isList ? 'w-10 h-10' : 'w-12 h-12'}
-          ${download.type === 'resume' ? 'bg-blue-50 text-blue-600' :
-            download.type === 'cover-letter' ? 'bg-purple-50 text-purple-600' :
-              'bg-emerald-50 text-emerald-600'}
-        `}>
-          {download.type === 'resume' ? <FiFileText size={isList ? 18 : 22} /> :
-            download.type === 'cover-letter' ? <FiEdit size={isList ? 18 : 22} /> :
-              <FiFile size={isList ? 18 : 22} />}
-        </div>
-
-        <div className="flex-1 min-w-0">
-          <h3 className="font-semibold text-gray-800 truncate pr-6 text-[15px]" title={download.name}>
-            {download.name}
-          </h3>
-          <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mt-2 text-xs font-medium text-gray-500">
-            <span className={`flex items-center gap-1.5 border px-2.5 py-1 rounded-md uppercase tracking-wide
-              ${download.type === 'resume' ? 'bg-blue-50/50 border-blue-100 text-blue-700' :
-                download.type === 'cover-letter' ? 'bg-purple-50/50 border-purple-100 text-purple-700' :
-                  'bg-emerald-50/50 border-emerald-100 text-emerald-700'}
-            `}>
-              {download.format}
-            </span>
-            <span className="flex items-center gap-1.5">
-              <FiClock size={13} /> {formatDate(download.downloadDate)}
-            </span>
-            <span>{download.size}</span>
-          </div>
-        </div>
-      </div>
-
-      {/* Bottom Actions */}
       <div className={`flex items-center gap-3 mt-auto justify-end ${isList ? 'sm:ml-auto sm:mr-4' : 'pt-4 border-t border-gray-50'}`}>
         <div className="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-end">
-          <button
-            className="p-2 text-gray-400 bg-white border border-gray-100 hover:bg-gray-50 rounded-lg transition-all shadow-sm flex-shrink-0"
-            title="Preview"
-          >
+          <button className="p-2 text-gray-400 bg-white border border-gray-100 hover:bg-gray-50 rounded-lg transition-all shadow-sm flex-shrink-0" title="Preview">
             <FiEye size={16} />
           </button>
           <button
             onClick={() => handleDownload(download)}
-            className="flex-1 sm:flex-none px-4 py-2 text-sm font-semibold text-white bg-[linear-gradient(135deg,#0f172a,#020617)] hover:opacity-90 rounded-lg shadow-sm transition-all flex items-center justify-center gap-2"
+            disabled={isDownloading}
+            className={`flex-1 sm:flex-none px-4 py-2 text-sm font-semibold transition-all flex items-center justify-center gap-2 rounded-lg shadow-sm ${
+              isDownloading
+                ? 'bg-gray-400 text-gray-200 cursor-not-allowed'
+                : 'bg-[linear-gradient(135deg,#0f172a,#020617)] hover:opacity-90 text-white'
+            }`}
           >
-            <FiDownload size={14} />
-            <span>Download</span>
+            {isDownloading ? (
+              <>
+                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                <span>Generating {download.format}...</span>
+              </>
+            ) : (
+              <>
+                <FiDownload size={14} />
+                <span>Download {download.format}</span>
+              </>
+            )}
           </button>
         </div>
       </div>
+
+      {!isList && (
+        <div className="mt-4 pt-3 border-t border-gray-50 grid grid-cols-2 gap-3 text-xs text-gray-500">
+          <div className="flex items-center gap-1">
+            <FiFile size={14} />
+            <span>{download.format} • {download.size}</span>
+          </div>
+          <div className="flex items-center gap-1 justify-end">
+            <FiCalendar size={14} />
+            <span>{formatDate(download.downloadDate)}</span>
+          </div>
+        </div>
+      )}
     </motion.div>
   );
 };

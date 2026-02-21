@@ -16,7 +16,19 @@ export const exportFile = async (req, res) => {
 
     // Match preview exactly: A4 viewport, full CSS loaded
     await page.setViewport({ width: 794, height: 1123 }); // A4 pixels @96dpi
-    await page.setContent(html, { waitUntil: 'networkidle0' });
+  const wrappedHtml = `
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+</head>
+<body>
+${html}
+</body>
+</html>
+`;
+
+await page.setContent(wrappedHtml, { waitUntil: 'networkidle0' });
 
     let buffer;
     const filename = `cover-letter-${(formData?.jobTitle || 'cover').replace(/[^a-zA-Z0-9]/g, '-')}`;

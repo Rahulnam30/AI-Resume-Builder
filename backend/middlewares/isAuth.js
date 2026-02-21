@@ -10,16 +10,40 @@ const getUserModel = async () => {
 const isAuth = async (req, res, next) => {
   try {
     let token = req.cookies.token;
-    if (!token) {
-      return res.status(401).json({ message: "Token Not Found" });
+
+    // If cookie is just stringified null/undefined, treat it as missing to allow fallback
+    if (token === "null" || token === "undefined") {
+      token = null;
     }
 
-    let verifyToken = await jwt.verify(token, process.env.JWT_SECRET);
-    if (!verifyToken) {
-      return res.status(401).json({ message: "Valid Token Not Found" });
+    // Fallback to Authorization header
+    if (!token && req.headers.authorization) {
+      if (req.headers.authorization.startsWith("Bearer ")) {
+        token = req.headers.authorization.split(" ")[1];
+      } else {
+        token = req.headers.authorization;
+      }
     }
-    
-    // FIX: Use 'id' instead of 'userId'
+
+    // Sanity check for stringified null/undefined
+    if (!token || token === "null" || token === "undefined") {
+      return res.status(401).json({ message: "No authentication token found" });
+    }
+
+    let verifyToken;
+    try {
+      verifyToken = jwt.verify(token, process.env.JWT_SECRET);
+    } catch (jwtError) {
+      console.error("JWT Verify Error:", jwtError.message);
+      return res.status(401).json({
+        message: jwtError.name === "TokenExpiredError" ? "Session expired" : "Invalid token"
+      });
+    }
+
+    if (!verifyToken || !verifyToken.id) {
+      return res.status(401).json({ message: "Invalid token payload" });
+    }
+
     let tokenId = verifyToken.id;
 
     // If tokenId is not a valid ObjectId (e.g., legacy 'admin-id'), try to map it to a real admin user id
@@ -27,19 +51,24 @@ const isAuth = async (req, res, next) => {
       try {
         const User = await getUserModel();
         const admin = await User.findOne({ isAdmin: true });
-        if (admin) tokenId = admin._id;
+        if (admin) {
+          tokenId = admin._id;
+        } else {
+          return res.status(401).json({ message: "Admin user not found" });
+        }
       } catch (e) {
-        // ignore and fall back to tokenId as-is
         console.warn('isAuth: failed to map token id to admin user', e.message);
+        return res.status(401).json({ message: "Authentication mapping failed" });
       }
     }
 
     req.userId = tokenId;
     next();
   } catch (error) {
-    console.log("isAuth error:", error);
-    return res.status(400).json({ message: `isAuth Error ${error.message}` });
+    console.error("isAuth unexpected error:", error);
+    return res.status(500).json({ message: "Internal server error during authentication" });
   }
 };
+
 
 export default isAuth;

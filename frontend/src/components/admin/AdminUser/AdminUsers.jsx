@@ -127,6 +127,25 @@ export default function AdminUsers({ head = "Manage Users" }) {
     }
   }
 
+  const handleToggleRole = async (user) => {
+    const newIsAdmin = !user.isAdmin;
+    try {
+      // Optimistic update
+      setUsers(prev => prev.map(u => u._id === user._id ? { ...u, isAdmin: newIsAdmin } : u));
+
+      await axiosInstance.put(`/api/user/${user._id}`, {
+        isAdmin: newIsAdmin
+      });
+
+      toast.success(`${user.username || user.email} is now an ${newIsAdmin ? 'Admin' : 'User'}`);
+    } catch (err) {
+      console.error(err);
+      // Revert optimistic update
+      setUsers(prev => prev.map(u => u._id === user._id ? { ...u, isAdmin: user.isAdmin } : u));
+      toast.error(`Failed to update ${user.username || user.email}'s role`);
+    }
+  }
+
   const handleDeleteClick = (id) => {
     setDeleteConfirmId(id);
   };
@@ -152,13 +171,6 @@ export default function AdminUsers({ head = "Manage Users" }) {
 
   return (
     <div className="min-h-screen bg-slate-50 p-4 sm:p-6">
-      <Toaster
-        position="top-right"
-        containerStyle={{
-          top: 80 // Offset below navbar
-        }}
-      />
-
       <div className="p-6">
         <h1 className="text-2xl font-bold mb-6 text-gray-800">{head}</h1>
 
@@ -280,7 +292,8 @@ export default function AdminUsers({ head = "Manage Users" }) {
           )}
         </div>
 
-        <div className="bg-white border rounded-xl overflow-hidden shadow-sm">
+        <div className="hidden md:block bg-white border rounded-xl overflow-hidden shadow-sm">
+
           <table className="w-full text-sm">
             <thead className="bg-gray-50 text-gray-500">
               <tr>
@@ -331,14 +344,22 @@ export default function AdminUsers({ head = "Manage Users" }) {
                     </td>
 
                     <td className="px-6 py-4 text-center">
-                      <span
-                        className={`px-3 py-1 rounded-full text-xs font-semibold ${u.isAdmin
-                          ? "bg-purple-100 text-purple-700 border border-purple-200"
-                          : "bg-blue-50 text-blue-700 border border-blue-200"
-                          }`}
-                      >
-                        {u.isAdmin ? "Admin" : "User"}
-                      </span>
+                      {u.username === "Super Admin" ? (
+                        <span className="px-3 py-1 rounded-full text-xs font-semibold bg-purple-100 text-purple-700 border border-purple-200">
+                          Super Admin
+                        </span>
+                      ) : (
+                        <span
+                          onClick={() => handleToggleRole(u)}
+                          title={`Click to switch to ${u.isAdmin ? 'User' : 'Admin'}`}
+                          className={`px-3 py-1 rounded-full text-xs font-semibold cursor-pointer transition-all hover:scale-105 active:scale-95 ${u.isAdmin
+                            ? "bg-purple-100 text-purple-700 border border-purple-200 hover:bg-purple-200"
+                            : "bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-100"
+                            }`}
+                        >
+                          {u.isAdmin ? "Admin" : "User"}
+                        </span>
+                      )}
                     </td>
 
                     <td className="px-6 py-4 text-center">
@@ -353,17 +374,27 @@ export default function AdminUsers({ head = "Manage Users" }) {
                     </td>
 
                     <td className="px-6 py-4 text-center">
-                      <button
-                        onClick={() => handleToggleActive(u)}
-                        className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 ${u.isActive ? 'bg-indigo-600' : 'bg-gray-200'
-                          }`}
-                      >
-                        <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${u.isActive ? 'translate-x-6' : 'translate-x-1'
-                          }`} />
-                      </button>
-                      <div className="text-[10px] text-gray-400 mt-1">
-                        {u.isActive ? 'Active' : 'Inactive'}
-                      </div>
+                      {u.username === "Super Admin" ? (
+                        <div className="flex flex-col items-center gap-1">
+                          <span className="px-3 py-1 rounded-full text-xs font-semibold bg-indigo-100 text-indigo-700 border border-indigo-200">
+                            Primary
+                          </span>
+                        </div>
+                      ) : (
+                        <>
+                          <button
+                            onClick={() => handleToggleActive(u)}
+                            className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 ${u.isActive ? 'bg-indigo-600' : 'bg-gray-200'
+                              }`}
+                          >
+                            <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${u.isActive ? 'translate-x-6' : 'translate-x-1'
+                              }`} />
+                          </button>
+                          <div className="text-[10px] text-gray-400 mt-1">
+                            {u.isActive ? 'Active' : 'Inactive'}
+                          </div>
+                        </>
+                      )}
                     </td>
 
                     <td className="px-6 py-4 text-center text-gray-500">
@@ -372,20 +403,18 @@ export default function AdminUsers({ head = "Manage Users" }) {
 
                     <td className="px-6 py-4">
                       <div className="flex justify-center gap-2">
-                        {/* <button
-                        onClick={() => handleEditClick(u)}
-                        title="Edit User"
-                        className="p-2 rounded-lg hover:bg-indigo-50 text-indigo-600 transition-colors"
-                      >
-                        <Pencil size={18} />
-                      </button> */}
-                        <button
-                          onClick={() => handleDeleteClick(u._id)}
-                          title="Delete User"
-                          className="p-2 rounded-lg hover:bg-red-50 text-red-500 transition-colors"
-                        >
-                          <Trash2 size={18} />
-                        </button>
+                        {u.username !== "Super Admin" && (
+                          <button
+                            onClick={() => handleDeleteClick(u._id)}
+                            title="Delete User"
+                            className="p-2 rounded-lg hover:bg-red-50 text-red-500 transition-colors"
+                          >
+                            <Trash2 size={18} />
+                          </button>
+                        )}
+                        {u.username === "Super Admin" && (
+                          <span className="text-xs text-slate-400 italic">—</span>
+                        )}
                       </div>
                     </td>
                   </tr>
@@ -423,27 +452,43 @@ export default function AdminUsers({ head = "Manage Users" }) {
 
                     {/* Active Toggle (Top Right) */}
                     <div className="flex flex-col items-end gap-1">
-                      <button
-                        onClick={() => handleToggleActive(u)}
-                        className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors focus:outline-none ${u.isActive ? 'bg-indigo-600' : 'bg-gray-200'}`}
-                      >
-                        <span className={`inline-block h-3 w-3 transform rounded-full bg-white transition-transform ${u.isActive ? 'translate-x-5' : 'translate-x-1'}`} />
-                      </button>
-                      <span className="text-[10px] text-slate-400 font-medium">{u.isActive ? 'Active' : 'Inactive'}</span>
+                      {u.username === "Super Admin" ? (
+                        <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-indigo-100 text-indigo-700 border border-indigo-200">
+                          Primary
+                        </span>
+                      ) : (
+                        <>
+                          <button
+                            onClick={() => handleToggleActive(u)}
+                            className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors focus:outline-none ${u.isActive ? 'bg-indigo-600' : 'bg-gray-200'}`}
+                          >
+                            <span className={`inline-block h-3 w-3 transform rounded-full bg-white transition-transform ${u.isActive ? 'translate-x-5' : 'translate-x-1'}`} />
+                          </button>
+                          <span className="text-[10px] text-slate-400 font-medium">{u.isActive ? 'Active' : 'Inactive'}</span>
+                        </>
+                      )}
                     </div>
                   </div>
 
                   {/* Row 2: Badges + Delete Button */}
                   <div className="flex items-center justify-between mt-1 pt-3 border-t border-slate-200">
                     <div className="flex gap-2">
-                      <span
-                        className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide border ${u.isAdmin
-                          ? "bg-purple-100 text-purple-700 border-purple-200"
-                          : "bg-blue-50 text-blue-700 border-blue-200"
-                          }`}
-                      >
-                        {u.isAdmin ? "Admin" : "User"}
-                      </span>
+                      {u.username === "Super Admin" ? (
+                        <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide border bg-purple-100 text-purple-700 border-purple-200">
+                          Super Admin
+                        </span>
+                      ) : (
+                        <span
+                          onClick={() => handleToggleRole(u)}
+                          title={`Click to switch to ${u.isAdmin ? 'User' : 'Admin'}`}
+                          className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide border cursor-pointer transition-all active:scale-95 ${u.isAdmin
+                            ? "bg-purple-100 text-purple-700 border-purple-200"
+                            : "bg-blue-50 text-blue-700 border-blue-200"
+                            }`}
+                        >
+                          {u.isAdmin ? "Admin" : "User"}
+                        </span>
+                      )}
                       <span
                         className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide border ${u.plan === "Pro"
                           ? "bg-amber-100 text-amber-800 border-amber-200"
@@ -455,13 +500,17 @@ export default function AdminUsers({ head = "Manage Users" }) {
                     </div>
 
                     {/* Delete Button (Bottom Right) */}
-                    <button
-                      onClick={() => handleDeleteClick(u._id)}
-                      className="p-1.5 rounded-lg bg-red-50 text-red-500 hover:bg-red-100 transition-colors"
-                      title="Delete User"
-                    >
-                      <Trash2 size={16} />
-                    </button>
+                    {u.username !== "Super Admin" ? (
+                      <button
+                        onClick={() => handleDeleteClick(u._id)}
+                        className="p-1.5 rounded-lg bg-red-50 text-red-500 hover:bg-red-100 transition-colors"
+                        title="Delete User"
+                      >
+                        <Trash2 size={16} />
+                      </button>
+                    ) : (
+                      <span className="text-xs text-slate-400 italic">—</span>
+                    )}
                   </div>
                 </div>
               ))}
