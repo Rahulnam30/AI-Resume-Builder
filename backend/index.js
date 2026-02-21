@@ -13,6 +13,7 @@ import templateRouter from "./routers/template.router.js";
 import resumeRouter from "./routers/resume.router.js";
 import templateVisibilityRouter from "./routers/templateVisibility.router.js";
 import planRouter from "./routers/plan.router.js";
+import chatbotRouter from "./routers/chatbot.router.js";
 
 // Config
 import connectDB from "./config/db.js";
@@ -56,6 +57,7 @@ app.use("/api/notifications", notificationRoutes);
 app.use("/api/resume", resumeRouter);
 app.use("/api/template-visibility", templateVisibilityRouter);
 app.use("/api/plans", planRouter);
+app.use("/api/chatbot", chatbotRouter);
 
 // Serve uploads directory (for images/resumes)
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
