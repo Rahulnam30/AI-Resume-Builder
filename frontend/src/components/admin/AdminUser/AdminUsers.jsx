@@ -280,7 +280,8 @@ export default function AdminUsers({ head = "Manage Users" }) {
           )}
         </div>
 
-        <div className="bg-white border rounded-xl overflow-hidden shadow-sm">
+        <div className="hidden md:block bg-white border rounded-xl overflow-hidden shadow-sm">
+
           <table className="w-full text-sm">
             <thead className="bg-gray-50 text-gray-500">
               <tr>
