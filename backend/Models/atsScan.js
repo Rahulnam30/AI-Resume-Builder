@@ -29,7 +29,7 @@ const atsScansSchema = new mongoose.Schema(
     },
     jobDescription: {
       type: String,
-      default: "",
+      required: true,
     },
     overallScore: {
       type: Number,

@@ -1,8 +1,9 @@
 import { useNavigate } from "react-router-dom";
 import NavBar from "../components/NavBar";
 import Footer from "./Footer";
-import { Check, Lock } from "lucide-react";
+import { Check } from "lucide-react";
 import { useEffect, useState } from "react";
+import axiosInstance from "../api/axios";
 
 const Pricing = () => {
   const navigate = useNavigate();
@@ -12,15 +13,26 @@ const Pricing = () => {
   const [backendPlans, setBackendPlans] = useState([]);
 
   useEffect(() => {
-    fetch("http://localhost:5000/api/plans") 
-      .then((res) => res.json())
-      .then((data) => setBackendPlans(data))
-      .catch((err) => console.error("Error fetching plans:", err));
+    const fetchPlans = async () => {
+      try {
+        const res = await axiosInstance.get("/api/plans");
+        console.log("Fetched Plans from API:", res.data); // Debug log
+        setBackendPlans(res.data);
+      } catch (err) {
+        console.error("Error fetching plans:", err);
+      }
+    };
+    fetchPlans();
   }, []);
 
-  const getDynamicPrice = (planName, fallbackPrice) => {
-    const foundPlan = backendPlans.find((p) => p.name === planName);
+  const getDynamicPriceById = (id, fallbackPrice) => {
+    const foundPlan = backendPlans.find((p) => p.planId === id);
     return foundPlan ? `₹${foundPlan.price}` : fallbackPrice;
+  };
+
+  const getDynamicFeaturesById = (id) => {
+    const foundPlan = backendPlans.find((p) => p.planId === id);
+    return foundPlan && foundPlan.features ? foundPlan.features : [];
   };
 
   const plans = [
@@ -31,24 +43,14 @@ const Pricing = () => {
       priceColor: "text-green-500",
       buttonColor: "bg-green-500 hover:bg-green-600",
       checkColor: "text-green-500",
-      price: getDynamicPrice("Free", "₹0"),
+      price: getDynamicPriceById(1, "₹0"),
       period: "",
       description: "For getting started",
       buttonText: "Get Started",
       buttonAction: () =>
         navigate(`${isLoggedIn ? "/user/dashboard" : "/login"}`),
       gradient: false,
-      features: [
-        { name: "AI Resume Builder", included: true },
-        { name: "Resume Section Suggestions", included: true },
-        { name: "Community Support", included: true },
-        { name: "All Premium Templates", included: false },
-        { name: "ATS Score Optimization", included: false },
-        { name: "AI Content Enhancement", included: false },
-        { name: "Unlimited Downloads", included: false },
-        { name: "Priority Support", included: false },
-        { name: "Future Updates", included: false },
-      ],
+      features: getDynamicFeaturesById(1),
     },
     {
       name: "Pro",
@@ -57,23 +59,13 @@ const Pricing = () => {
       priceColor: "text-orange-500",
       buttonColor: "bg-orange-500 hover:bg-orange-600",
       checkColor: "text-orange-500",
-      price: getDynamicPrice("Pro", "₹299"), 
+      price: getDynamicPriceById(2, "₹299"),
       period: " / month",
       description: "Best for job seekers",
       buttonText: "Upgrade to Pro",
-      buttonAction: () => {},
+      buttonAction: () => { },
       gradient: true,
-      features: [
-        { name: "AI Resume Builder", included: true },
-        { name: "Resume Section Suggestions", included: true },
-        { name: "Community Support", included: true },
-        { name: "All Premium Templates", included: true },
-        { name: "ATS Score Optimization", included: true },
-        { name: "AI Content Enhancement", included: true },
-        { name: "Unlimited Downloads", included: true },
-        { name: "Priority Support", included: false },
-        { name: "Future Updates", included: false },
-      ],
+      features: getDynamicFeaturesById(2),
     },
     {
       name: "Premium",
@@ -82,23 +74,13 @@ const Pricing = () => {
       priceColor: "text-blue-500",
       buttonColor: "bg-blue-500 hover:bg-blue-600",
       checkColor: "text-blue-500",
-      price: getDynamicPrice("Premium", "₹999"), 
+      price: getDynamicPriceById(3, "₹999"),
       period: " / year",
       description: "For career acceleration",
       buttonText: "Unlock Premium",
-      buttonAction: () => {},
+      buttonAction: () => { },
       gradient: false,
-      features: [
-        { name: "AI Resume Builder", included: true },
-        { name: "Resume Section Suggestions", included: true },
-        { name: "Community Support", included: true },
-        { name: "All Premium Templates", included: true },
-        { name: "ATS Score Optimization", included: true },
-        { name: "AI Content Enhancement", included: true },
-        { name: "Unlimited Downloads", included: true },
-        { name: "Priority Support", included: true },
-        { name: "Future Updates", included: true },
-      ],
+      features: getDynamicFeaturesById(3),
     },
   ];
 
@@ -131,11 +113,10 @@ const Pricing = () => {
             {plans.map((plan, index) => (
               <div
                 key={index}
-                className={`snap-center min-w-[85%] md:min-w-0 rounded-2xl shadow-md p-8 relative ${
-                  plan.gradient
-                    ? "bg-gradient-to-b from-orange-50 to-white shadow-xl"
-                    : "bg-white"
-                }`}
+                className={`snap-center min-w-[85%] md:min-w-0 rounded-2xl shadow-md p-8 relative ${plan.gradient
+                  ? "bg-gradient-to-b from-orange-50 to-white shadow-xl"
+                  : "bg-white"
+                  }`}
               >
                 {plan.badge && (
                   <span
@@ -164,31 +145,23 @@ const Pricing = () => {
                 </div>
 
                 <div className="mb-6">
-                  {plan.features.map((feature, i) => (
-                    <div
-                      key={i}
-                      className={`flex items-center gap-3 mb-4 ${
-                        !feature.included ? "text-gray-400" : ""
-                      }`}
-                    >
-                      {feature.included ? (
+                  {plan.features && plan.features.length > 0 ? (
+                    plan.features.map((feature, i) => (
+                      <div
+                        key={i}
+                        className="flex items-center gap-3 mb-4"
+                      >
                         <Check
                           className={`${plan.checkColor} w-5 h-5 flex-shrink-0`}
                         />
-                      ) : (
-                        <Lock className="w-4 h-4 flex-shrink-0" />
-                      )}
-                      <span
-                        className={`text-sm ${
-                          feature.included
-                            ? "text-gray-700"
-                            : "line-through"
-                        }`}
-                      >
-                        {feature.name}
-                      </span>
-                    </div>
-                  ))}
+                        <span className="text-sm text-gray-700">
+                          {feature}
+                        </span>
+                      </div>
+                    ))
+                  ) : (
+                    <p className="text-sm text-gray-400 text-center">No features listed</p>
+                  )}
                 </div>
 
                 <button

@@ -225,7 +225,7 @@ const ATSCheckerFeature = () => {
                 <img
                   src={Lady}
                   alt="Character pointing to ATS score"
-                  className="hidden lg:block absolute left-[-13rem] bottom-0 w-100 xl:w-48 2xl:w-56 object-contain"
+                  className="hidden md:block absolute left-[-13rem] bottom-0 w-100 xl:w-48 2xl:w-56 object-contain"
                 />
                 <ATSDonutCard score={82} />
               </div>

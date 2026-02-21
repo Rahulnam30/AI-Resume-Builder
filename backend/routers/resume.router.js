@@ -1,47 +1,22 @@
 import express from "express";
+const router = express.Router();
+
 import {
-  uploadAndAnalyzeResume,
-  getUserScans,
-  getScanById,
-  deleteScan,
-  downloadResume,
-  getScanStatistics,
-  getLatestScan
-}
-from "../controllers/Resume.controller.js";
+  saveResume,
+  generateAIResume,
+  enhanceWorkExperience,
+  enhanceProjectDescription,
+  generateResume,
+  generateAICoverLetter
+} from "../controllers/Resume.controller.js";
+
 import isAuth from "../middlewares/isAuth.js";
-import {
-  uploadSingleResume,
-  handleUploadError,
-} from "../middlewares/upload.middleware.js";
 
-const resumeRouter = express.Router();
+router.post("/save", isAuth, saveResume);
+router.post("/generate-summary", isAuth, generateAIResume);
+router.post("/enhance-work-experience", isAuth, enhanceWorkExperience);
+router.post("/enhance-project-description", isAuth, enhanceProjectDescription);
+router.post("/generate-pdf", isAuth, generateResume);
+router.post("/cover-letter/generate", isAuth, generateAICoverLetter);
 
-// Upload and analyze resume
-resumeRouter.post(
-  "/upload",
-  isAuth,
-  uploadSingleResume,
-  handleUploadError,
-  uploadAndAnalyzeResume
-);
-
-// Get all user scans
-resumeRouter.get("/scans", isAuth, getUserScans);
-
-// Get scan statistics
-resumeRouter.get("/statistics", isAuth, getScanStatistics);
-
-// Get specific scan by ID
-resumeRouter.get("/scans/:id", isAuth, getScanById);
-
-// Delete scan
-resumeRouter.delete("/scans/:id", isAuth, deleteScan);
-
-// Download resume file
-resumeRouter.get("/download/:filename", isAuth, downloadResume);
-
-// Get latest scan after refreshing the page
-resumeRouter.get("/latest", isAuth, getLatestScan);
-
-export default resumeRouter;
+export default router;
