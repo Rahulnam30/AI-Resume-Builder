@@ -7,16 +7,8 @@ export default function RequireAuth({ children, allowedRoles }) {
   const [isAuthorized, setIsAuthorized] = useState(false)
 
   useEffect(() => {
-    // Check BOTH storages
-    const token =
-      localStorage.getItem('token') ||
-      sessionStorage.getItem('token')
-
-    const storedRole =
-      localStorage.getItem('isAdmin') ||
-      sessionStorage.getItem('isAdmin')
-
-    const isAdmin = JSON.parse(storedRole || 'false')
+    const token = localStorage.getItem('token')
+    const isAdmin = JSON.parse(localStorage.getItem('isAdmin') || 'false')
 
     setHasToken(!!token)
 
@@ -49,12 +41,8 @@ export default function RequireAuth({ children, allowedRoles }) {
 
   // If role mismatch
   if (!isAuthorized) {
-    const storedRole =
-      localStorage.getItem('isAdmin') ||
-      sessionStorage.getItem('isAdmin')
-
-    const isAdmin = JSON.parse(storedRole || 'false')
-
+    const isAdmin = JSON.parse(localStorage.getItem('isAdmin') || 'false')
+    // Redirect to appropriate dashboard if authorized but wrong role
     if (isAdmin) {
       return <Navigate to="/admin" replace />
     } else {

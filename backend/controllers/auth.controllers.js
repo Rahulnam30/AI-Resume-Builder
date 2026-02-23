@@ -54,7 +54,7 @@ export const register = async (req, res) => {
 /* ================= LOGIN ================= */
 export const login = async (req, res) => {
   try {
-    const { email, password, rememberMe } = req.body;
+    const { email, password } = req.body;
 
     if (!email || !password) {
       return res
@@ -67,47 +67,39 @@ export const login = async (req, res) => {
       email === process.env.ADMIN_EMAIL &&
       password === process.env.ADMIN_PASSWORD
     ) {
-      // Ensure there is an admin user in DB and use its ObjectId in the token
-      let adminUser = await User.findOne({ email: process.env.ADMIN_EMAIL });
-      if (!adminUser) {
-        const hashedPass = await bcrypt.hash(password, 10);
-        adminUser = new User({
-          username: 'Admin',
-          email: process.env.ADMIN_EMAIL,
-          password: hashedPass,
-          isAdmin: true,
-          isActive: true,
-        });
-        await adminUser.save();
-      }
+        // Ensure there is an admin user in DB and use its ObjectId in the token
+        let adminUser = await User.findOne({ email: process.env.ADMIN_EMAIL });
+        if (!adminUser) {
+          const hashedPass = await bcrypt.hash(password, 10);
+          adminUser = new User({
+            username: 'Admin',
+            email: process.env.ADMIN_EMAIL,
+            password: hashedPass,
+            isAdmin: true,
+            isActive: true,
+          });
+          await adminUser.save();
+        }
 
-      const token = genrateToken(
-        {
+        const token = genrateToken({
           id: adminUser._id,
           isAdmin: true,
-        },
-        rememberMe
-      );
+        });
 
+        res.cookie("token", token, {
+          httpOnly: true,
+          secure: false,
+          sameSite: "Strict",
+          maxAge: 7 * 24 * 60 * 60 * 1000,
+        });
 
-      const cookieExpiry = rememberMe
-        ? 30 * 24 * 60 * 60 * 1000   // 30 days
-        : 2 * 60 * 60 * 1000;        // 2 hours
-
-      res.cookie("token", token, {
-        httpOnly: true,
-        secure: false,
-        sameSite: "Strict",
-        maxAge: cookieExpiry,
-      });
-
-      return res.status(200).json({
-        success: true,
-        token,
-        userID: adminUser._id,
-        isAdmin: true,
-        message: "Admin login successful",
-      });
+        return res.status(200).json({
+          success: true,
+          token,
+          userID: adminUser._id,
+          isAdmin: true,
+          message: "Admin login successful",
+        });
     }
 
     /* ---------- NORMAL USER LOGIN ---------- */
@@ -150,24 +142,16 @@ export const login = async (req, res) => {
     user.lastLogin = new Date();
     await user.save();
 
-    const token = genrateToken(
-      {
-        id: user._id,
-        isAdmin: user.isAdmin,
-      },
-      rememberMe
-    );
-
-
-    const cookieExpiry = rememberMe
-      ? 30 * 24 * 60 * 60 * 1000
-      : 2 * 60 * 60 * 1000;
+    const token = genrateToken({
+      id: user._id,
+      isAdmin: user.isAdmin,
+    });
 
     res.cookie("token", token, {
       httpOnly: true,
       secure: false,
       sameSite: "Strict",
-      maxAge: cookieExpiry,
+      maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
     res.status(200).json({
@@ -207,53 +191,6 @@ export const forgotPassword = async (req, res) => {
   } catch (error) {
     res.status(500).json({
       message: "Forgot password failed",
-      error: error.message,
-    });
-  }
-};
-
-/* ================= CHANGE PASSWORD ================= */
-export const changePassword = async (req, res) => {
-  try {
-    const userId = req.userId;
-    const { oldPassword, newPassword } = req.body;
-
-    if (!oldPassword || !newPassword) {
-      return res.status(400).json({ message: "All fields are required" });
-    }
-
-    if (newPassword.length < 6) {
-      return res.status(400).json({ message: "New password must be at least 6 characters long" });
-    }
-
-    if (oldPassword === newPassword) {
-      return res.status(400).json({ message: "New password must be different from old password" });
-    }
-
-    const user = await User.findById(userId);
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
-
-    const isMatch = await bcrypt.compare(oldPassword, user.password);
-    if (!isMatch) {
-      return res.status(401).json({ message: "Current password is incorrect" });
-    }
-
-    const hashedPass = await bcrypt.hash(newPassword, 10);
-    user.password = hashedPass;
-    await user.save();
-
-
-    res.clearCookie("token");
-
-    res.status(200).json({
-      success: true,
-      message: "Password changed successfully. Please login again.",
-    });
-  } catch (error) {
-    res.status(500).json({
-      message: "Change password failed",
       error: error.message,
     });
   }

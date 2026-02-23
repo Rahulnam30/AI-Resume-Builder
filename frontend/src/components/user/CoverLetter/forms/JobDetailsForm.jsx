@@ -1,85 +1,89 @@
-const JobDetailsForm = ({ formData, onInputChange }) => {
+const ClosingForm = ({ formData, onInputChange }) => {
+  const salutationOptions = [
+    { value: 'Sincerely', label: 'Sincerely' },
+    { value: 'Best regards', label: 'Best regards' },
+    { value: 'Kind regards', label: 'Kind regards' },
+    { value: 'Respectfully', label: 'Respectfully' },
+    { value: 'Thank you', label: 'Thank you' },
+    { value: 'Warm regards', label: 'Warm regards' },
+    { value: 'With appreciation', label: 'With appreciation' },
+    { value: 'custom', label: 'Custom...' }
+  ];
+
   return (
     <div className="form-section">
-      <h3 className="form-section-title">Job Details</h3>
+      <h3 className="form-section-title">Closing & Signature</h3>
       <p className="form-description">
-        Enter the details of the position you are applying for.
+        Choose how you'd like to sign off your cover letter.
       </p>
 
       <div className="form-grid">
         <div className="form-group">
-          <label>Job Title *</label>
-          <input
-            type="text"
-            placeholder="e.g. Senior Software Engineer"
-            value={formData.jobTitle || ''}
-            onChange={(e) => onInputChange('jobTitle', e.target.value)}
-          />
+          <label>Salutation</label>
+          <select
+            value={formData.salutation}
+            onChange={(e) => onInputChange('salutation', e.target.value)}
+          >
+            {salutationOptions.map(option => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
         </div>
 
-        <div className="form-group">
-          <label>Company Name *</label>
-          <input
-            type="text"
-            placeholder="e.g. Google"
-            value={formData.companyName || ''}
-            onChange={(e) => onInputChange('companyName', e.target.value)}
-          />
-        </div>
+        {formData.salutation === 'custom' && (
+          <div className="form-group">
+            <label>Custom Salutation</label>
+            <input
+              type="text"
+              placeholder="Your custom closing"
+              value={formData.customSalutation}
+              onChange={(e) => onInputChange('customSalutation', e.target.value)}
+            />
+          </div>
+        )}
+      </div>
 
-        <div className="form-group">
-          <label>Job Reference (Optional)</label>
-          <input
-            type="text"
-            placeholder="e.g. JOB-123456"
-            value={formData.jobReference || ''}
-            onChange={(e) => onInputChange('jobReference', e.target.value)}
-          />
-        </div>
-
-        <div className="form-group full-width">
-          <label>Company Address (Optional)</label>
-          <textarea
-            placeholder="123 Tech Lane, Silicon Valley, CA"
-            value={formData.companyAddress || ''}
-            onChange={(e) => onInputChange('companyAddress', e.target.value)}
-            rows={2}
-          />
+      <div className="signature-preview">
+        <h4>Signature Preview</h4>
+        <div className="signature-box">
+          <p className="salutation-text">
+            {formData.salutation === 'custom' ? formData.customSalutation : formData.salutation},
+          </p>
+          <p className="signature-name">{formData.fullName || 'Your Name'}</p>
+          {formData.email && <p className="signature-detail">{formData.email}</p>}
+          {formData.phone && <p className="signature-detail">{formData.phone}</p>}
+          {formData.linkedin && <p className="signature-detail">{formData.linkedin}</p>}
         </div>
       </div>
 
-      <div className="mt-6 border-t pt-4">
-        <h3 className="form-section-title text-base">Context for AI (Optional)</h3>
-        <p className="form-description text-xs mb-3">
-          Provide key skills and experience to help the AI generate better content.
+      <div className="closing-tips">
+        <h4>📌 Tips for a Strong Closing</h4>
+        <ul>
+          <li><strong>Be professional:</strong> Stick to traditional closings for formal applications</li>
+          <li><strong>Match the tone:</strong> Your closing should match the overall tone of your letter</li>
+          <li><strong>Include contact info:</strong> Make it easy for employers to reach you</li>
+          <li><strong>Proofread:</strong> Double-check spelling of your name and contact details</li>
+        </ul>
+      </div>
+
+      <div className="date-settings">
+        <h3 className="form-section-title">Letter Date</h3>
+        <p className="form-description">
+          Date to display on letter
         </p>
-
-        <div className="form-grid">
-          <div className="form-group full-width">
-            <label>Key Skills</label>
-            <textarea
-              placeholder="e.g. React, Node.js, Project Management, Team Leadership"
-              value={formData.skills || ''}
-              onChange={(e) => onInputChange('skills', e.target.value)}
-              rows={2}
-              className="w-full p-2 border rounded-md text-sm"
-            />
-          </div>
-
-          <div className="form-group full-width">
-            <label>Experience Summary</label>
-            <textarea
-              placeholder="e.g. 5 years of experience in full-stack development. Led a team of 4 developers."
-              value={formData.experience || ''}
-              onChange={(e) => onInputChange('experience', e.target.value)}
-              rows={3}
-              className="w-full p-2 border rounded-md text-sm"
-            />
-          </div>
+        <div className="form-group">
+          <label>Select Date</label>
+          <input
+            type="date"
+            value={formData.letterDate || new Date().toISOString().split('T')[0]}
+            onChange={(e) => onInputChange('letterDate', e.target.value)}
+          />
         </div>
       </div>
     </div>
   );
 };
 
-export default JobDetailsForm;
+export default ClosingForm;

@@ -5,7 +5,6 @@ import {
   Zap,
   FolderKanban,
   Award,
-  PenTool,
 } from "lucide-react";
 import { useRef } from "react";
 
@@ -17,7 +16,6 @@ const tabs = [
   { id: "projects", label: "Projects", icon: FolderKanban },
   { id: "certs", label: "Certifications", icon: Award },
   { id: "skills", label: "Skills", icon: Zap },
-  { id: "summary", label: "Summary", icon: PenTool },
 ];
 
 export default function FormTabs({ activeSection, setActiveSection }) {
@@ -49,12 +47,12 @@ export default function FormTabs({ activeSection, setActiveSection }) {
           {/* step progress */}
           <div className="flex flex-col items-center text-xs flex-wrap md:gap-2 gap-1 md:ml-4 ml-2 md:mr-0 mr-2 w-24">
             {/* Steps */}
-            <div className="text-[0.67rem] md:text-xs">step {currentIdx + 1} of step 7</div>
+            <div className="text-[0.67rem] md:text-xs">step {currentIdx + 1} of step 6</div>
             {/* Progress Bar */}
             <div className="w-full h-2 bg-slate-200 rounded-lg">
               <div
                 className="h-full bg-blue-400 rounded-lg transition-all duration-200"
-                style={{ width: `${(currentIdx + 1) * 14.28}%` }}
+                style={{ width: `${(currentIdx + 1) * 16.67}%` }}
               ></div>
             </div>
           </div>
