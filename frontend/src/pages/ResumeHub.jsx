@@ -75,7 +75,7 @@ const ResumeHubPage = () => {
   <img
     src={hub}
     alt="Hub"
-    className="w-full max-w-[720px] lg:max-w-[850px] xl:max-w-[950px] h-auto drop-shadow-2xl"
+    className="hidden md:block w-full max-w-[720px] lg:max-w-[850px] xl:max-w-[950px] h-auto drop-shadow-2xl"
   />
 
   {/* Floating Badge */}
@@ -135,7 +135,7 @@ const ResumeHubPage = () => {
       <section className="px-8 py-20 bg-gray-50/50">
         <div className="mx-auto max-w-7xl">
           <div className="bg-white rounded-[2.5rem] border border-gray-100 shadow-2xl overflow-hidden transition-all duration-500">
-            <div className="flex flex-col items-start justify-between gap-4 p-4 border-b border-gray-50 sm:flex-row sm:items-center sm:p-8 bg-gray-50/30">
+            <div className="flex items-center justify-between p-8 border-b border-gray-50 bg-gray-50/30">
               <div className="flex items-center gap-4">
                 <div className="flex gap-1.5">
                   <div className="w-3 h-3 bg-red-400 rounded-full" />
@@ -146,7 +146,7 @@ const ResumeHubPage = () => {
                   Resume Command Center
                 </span>
               </div>
-              <div className="flex flex-col items-center w-full gap-2 sm:flex-row sm:gap-3 sm:w-auto">
+              <div className="flex items-center gap-3">
                 <div className="w-24 h-2 overflow-hidden bg-gray-100 rounded-full">
                   <div className="h-full w-[75%] bg-[#0077cc]" />
                 </div>
@@ -154,15 +154,15 @@ const ResumeHubPage = () => {
               </div>
             </div>
 
-            <div className="p-2 overflow-x-auto sm:p-4 md:p-8">
-              <table className="w-full text-left border-separate border-spacing-y-2 sm:border-spacing-y-4">
+            <div className="p-4 overflow-x-auto md:p-8">
+              <table className="w-full text-left border-separate border-spacing-y-4">
                 <thead>
                   <tr className="text-[10px] font-black uppercase tracking-widest text-gray-400">
-                    <th className="px-2 pb-2 sm:px-4 md:px-6">Resume Title</th>
-                    <th className="px-2 pb-2 text-center sm:px-4 md:px-6">AI Score</th>
-                    <th className="hidden px-2 pb-2 text-center lg:table-cell sm:px-4 md:px-6">Downloads</th>
-                    <th className="hidden px-2 pb-2 md:table-cell sm:px-4 md:px-6">Last Modified</th>
-                    <th className="px-2 pb-2 text-right sm:px-4 md:px-6">Actions</th>
+                    <th className="px-6 pb-2">Resume Title</th>
+                    <th className="px-6 pb-2 text-center">AI Score</th>
+                    <th className="px-6 pb-2 text-center">Downloads</th>
+                    <th className="px-6 pb-2">Last Modified</th>
+                    <th className="px-6 pb-2 text-right">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -172,34 +172,32 @@ const ResumeHubPage = () => {
                     { title: "Marketing Specialist", score: 76, dl: 5, date: "Jan 12, 2026", color: "text-orange-500" },
                   ].map((row, i) => (
                     <tr key={i} className="transition-colors bg-white group/row hover:bg-blue-50/30">
-                      <td className="px-2 py-3 border-l border-gray-100 sm:px-4 md:px-6 sm:py-5 rounded-l-2xl border-y">
-                        <div className="flex items-center gap-2 sm:gap-3">
-                          <div className="items-center justify-center hidden w-10 h-12 text-[#0077cc] transition-transform bg-white border border-gray-100 rounded-lg shadow-sm sm:flex group-hover/row:scale-110">
+                      <td className="px-6 py-5 border-l border-gray-100 rounded-l-2xl border-y">
+                        <div className="flex items-center gap-3">
+                          <div className="flex items-center justify-center w-10 h-12 text-[#0077cc] transition-transform bg-white border border-gray-100 rounded-lg shadow-sm group-hover/row:scale-110">
                             <FileText size={20} />
                           </div>
-                          <span className="text-sm font-bold sm:text-base text-[#1a2e52] line-clamp-2 sm:line-clamp-1">{row.title}</span>
+                          <span className="font-bold text-[#1a2e52]">{row.title}</span>
                         </div>
                       </td>
-                      <td className="px-2 py-3 text-center border-gray-100 sm:px-4 md:px-6 sm:py-5 border-y">
-                        <div className={`inline-flex items-center gap-1 font-black text-xs sm:text-base ${row.color}`}>
-                          <Zap size={12} fill="currentColor" className="sm:w-[14px] sm:h-[14px]" /> 
-                          <span className="hidden sm:inline">{row.score}/100</span>
-                          <span className="sm:hidden">{row.score}</span>
+                      <td className="px-6 py-5 text-center border-gray-100 border-y">
+                        <div className={`inline-flex items-center gap-1 font-black ${row.color}`}>
+                          <Zap size={14} fill="currentColor" /> {row.score}/100
                         </div>
                       </td>
-                      <td className="hidden px-2 py-3 text-center border-gray-100 lg:table-cell sm:px-4 md:px-6 sm:py-5 border-y">
+                      <td className="px-6 py-5 text-center border-gray-100 border-y">
                         <span className="text-sm font-bold text-gray-500">{row.dl} DLs</span>
                       </td>
-                      <td className="hidden px-2 py-3 border-gray-100 md:table-cell sm:px-4 md:px-6 sm:py-5 border-y">
+                      <td className="px-6 py-5 border-gray-100 border-y">
                         <div className="flex items-center gap-2 text-sm text-gray-400">
                           <Clock size={14} /> {row.date}
                         </div>
                       </td>
-                      <td className="px-2 py-3 text-right border-r border-gray-100 sm:px-4 md:px-6 sm:py-5 rounded-r-2xl border-y">
-                        <div className="flex items-center justify-end gap-1 sm:gap-2">
-                           <button className="p-1.5 sm:p-2 text-gray-400 hover:text-[#0077cc]"><Eye size={16} className="sm:w-[18px] sm:h-[18px]" /></button>
-                           <button className="p-1.5 sm:p-2 text-gray-400 hover:text-[#0077cc]"><Download size={16} className="sm:w-[18px] sm:h-[18px]" /></button>
-                           <button className="hidden p-2 text-gray-400 sm:block hover:text-[#0077cc]"><MoreHorizontal size={18} /></button>
+                      <td className="px-6 py-5 text-right border-r border-gray-100 rounded-r-2xl border-y">
+                        <div className="flex items-center justify-end gap-2">
+                           <button className="p-2 text-gray-400 hover:text-[#0077cc]"><Eye size={18} /></button>
+                           <button className="p-2 text-gray-400 hover:text-[#0077cc]"><Download size={18} /></button>
+                           <button className="p-2 text-gray-400 hover:text-[#0077cc]"><MoreHorizontal size={18} /></button>
                         </div>
                       </td>
                     </tr>

@@ -11,6 +11,7 @@ import {
   refineProjectDescription,
   parseResume,
   extractResumeData,
+  generateCoverLetterAI
 } from "../ai/aiService.js";
 
 // ATS Analyzer Services
@@ -32,7 +33,10 @@ import {
 // ===============================
 export const saveResume = async (req, res) => {
   try {
-    const resume = new Resume(req.body);
+    const resume = new Resume({
+      ...req.body,
+      user: req.userId,
+    });
     await resume.save();
 
     res.json({
@@ -91,7 +95,8 @@ export const generateAIResume = async (req, res) => {
     try {
       const resume = new Resume({
         ...req.body,
-        summary: aiText
+        summary: aiText,
+        user: req.userId,
       });
       await resume.save();
       console.log("Saved to database");
@@ -112,6 +117,42 @@ export const generateAIResume = async (req, res) => {
     });
   }
 };
+
+/* =====================================================
+   GENERATE AI COVER LETTER SECTION
+===================================================== */
+export const generateAICoverLetter = async (req, res) => {
+  try {
+    const { sectionType, jobDetails } = req.body;
+
+    if (!sectionType || !jobDetails) {
+      return res.status(400).json({
+        success: false,
+        error: "Missing sectionType or jobDetails"
+      });
+    }
+
+    console.log(`📥 Generating Cover Letter AI for: ${sectionType}`);
+    console.log("📊 Request Body:", req.body);
+
+    const content = await generateCoverLetterAI(jobDetails, sectionType);
+
+    console.log("✅ AI Content Generated Length:", content?.length);
+
+    res.json({
+      success: true,
+      result: content
+    });
+
+  } catch (error) {
+    console.error("❌ COVER LETTER AI ERROR:", error);
+    res.status(500).json({
+      success: false,
+      error: "AI generation failed: " + error.message
+    });
+  }
+};
+
 
 // ==========================================
 // ENHANCE WORK EXPERIENCE + SAVE TO MONGODB

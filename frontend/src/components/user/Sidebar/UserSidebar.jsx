@@ -21,37 +21,32 @@ export default function UserSidebar() {
   const navigate = useNavigate();
   const location = useLocation();
   const { unreadCount } = useUserNotifications();
-
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [hoveredItem, setHoveredItem] = useState(null);
   const [isMobile, setIsMobile] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(true);
 
-  /* ---------------- SCREEN DETECT ---------------- */
+  useEffect(() => {
+    setIsCollapsed(!isMobile);
+  }, [isMobile]);
+
   useEffect(() => {
     const handleResize = () => {
-      const mobile = window.innerWidth < 768;
-      setIsMobile(mobile);
-
-      // auto expand sidebar on desktop
-      if (!mobile) setIsCollapsed(false);
-      else setIsCollapsed(true);
+      setIsMobile(window.innerWidth < 768);
     };
 
+    // Run once on mount
     handleResize();
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
-  useEffect(() => {
-    const toggle = () => {
-      if (isMobile) setIsMobileOpen((prev) => !prev);
-      else setIsCollapsed((prev) => !prev);
-    };
 
-    window.addEventListener("toggle-sidebar", toggle);
-    return () => window.removeEventListener("toggle-sidebar", toggle);
-  }, [isMobile]);
-  /* ---------------- MENU ITEMS ---------------- */
+    // Listen for resize
+    window.addEventListener("resize", handleResize);
+
+    // Cleanup
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
+
   const menuItems = [
     {
       id: "dashboard",
@@ -78,6 +73,7 @@ export default function UserSidebar() {
       label: "ATS Score Checker",
       path: "/user/ats-checker",
     },
+
     {
       id: "myresumes",
       icon: Files,
@@ -99,42 +95,53 @@ export default function UserSidebar() {
     },
   ];
 
-  /* ---------------- NAVIGATE ---------------- */
   const handleNavigate = (path) => {
     navigate(path);
-    if (isMobile) setIsMobileOpen(false);
+    setIsMobileOpen(false);
   };
 
-  /* ---------------- LOGOUT ---------------- */
   const handleLogout = () => {
-    localStorage.clear();
+    // Clear all authentication data
+    localStorage.removeItem("token");
+    localStorage.clear(); // Clear all localStorage to ensure clean logout
     setIsMobileOpen(false);
+    // Navigate after ensuring localStorage is cleared
     setTimeout(() => {
       navigate("/", { replace: true });
-      window.location.reload();
+      window.location.reload(); // Force reload to clear any cached state
     }, 100);
   };
 
   return (
     <>
-      {/* ---------------- OVERLAY ---------------- */}
-      {isMobile && (
-        <div
-          onClick={() => setIsMobileOpen(false)}
-          className={`fixed inset-0 bg-black/40 z-30 transition ${
-            isMobileOpen ? "opacity-100" : "opacity-0 pointer-events-none"
-          }`}
-        />
-      )}
-
-      {/* ---------------- SIDEBAR ---------------- */}
+      {/* Toggle Buttons */}
+      <div className="fixed md:top-4 top-5 md:left-4 left-2 z-[60] flex gap-2">
+        <button
+          onClick={() => setIsMobileOpen(!isMobileOpen)}
+          className="md:hidden"
+        >
+          {isMobileOpen ? <X /> : <Menu />}
+        </button>
+        <button
+          onClick={() => setIsCollapsed(!isCollapsed)}
+          className="fixed top-6 left-7 hidden md:flex"
+        >
+          <Menu />
+        </button>
+      </div>
+      {/* Overlay */}
+      <div
+        className={`fixed inset-0 z-30 bg-black bg-opacity-50 transition-opacity duration-300 ${
+          isMobileOpen ? "opacity-100" : "opacity-0 pointer-events-none"
+        }`}
+        onClick={() => setIsMobileOpen(false)}
+      ></div>
+      {/* Sidebar */}
       <motion.aside
         className="fixed top-0 left-0 z-40 bg-white border-r border-slate-200 flex flex-col"
         style={{ width: isCollapsed ? 80 : 256, height: "100vh" }}
-        animate={{
-          x: isMobile ? (isMobileOpen ? 0 : "-100%") : 0,
-        }}
-        transition={{ type: "spring", stiffness: 260, damping: 28 }}
+        animate={{ x: isMobileOpen || window.innerWidth >= 768 ? 0 : "-100%" }}
+        transition={{ type: "spring", stiffness: 220, damping: 25 }}
       >
         <nav className="p-3 space-y-2 mt-16 flex-1">
           {menuItems.map((item, index) => {
@@ -153,30 +160,25 @@ export default function UserSidebar() {
                   onClick={() => handleNavigate(item.path)}
                   onMouseEnter={() => isCollapsed && setHoveredItem(item.id)}
                   onMouseLeave={() => setHoveredItem(null)}
-                  className={`w-full flex items-center rounded-xl transition-all
+                  className={`w-full flex items-center relative rounded-xl transition-all
                     ${isCollapsed ? "justify-center px-0" : "gap-3 px-4"} py-3
-                    ${
-                      active
-                        ? "bg-blue-50 text-blue-600 font-semibold"
-                        : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
-                    }`}
+                    ${active ? "bg-blue-50 text-blue-600 font-semibold" : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"}`}
                 >
                   <Icon size={22} />
-                  {!isCollapsed && <span>{item.label}</span>}
-
+                  {!isCollapsed && (
+                    <span className="whitespace-nowrap">{item.label}</span>
+                  )}
                   {item.badge && (
                     <motion.span
                       initial={{ scale: 0 }}
                       animate={{ scale: 1 }}
-                      className={`${
-                        isCollapsed ? "absolute -top-1 -right-1" : "ml-auto"
-                      } w-5 h-5 text-xs font-bold text-white bg-yellow-400 rounded-full flex items-center justify-center`}
+                      className={`${isCollapsed ? 'absolute -top-1 -right-1' : 'ml-auto'} inline-flex items-center justify-center w-5 h-5 text-xs font-bold text-white rounded-full ${active ? 'bg-yellow-400' : 'bg-yellow-400'}`}
                     >
                       {item.badge}
                     </motion.span>
                   )}
                 </button>
-
+                {/* Tooltip for collapsed state */}
                 {isCollapsed && hoveredItem === item.id && (
                   <div className="tooltip">{item.label}</div>
                 )}
@@ -185,30 +187,28 @@ export default function UserSidebar() {
           })}
         </nav>
 
-        {/* ---------------- LOGOUT ---------------- */}
-        <div className="p-3 border-t border-slate-200 mt-auto">
+        {/* Logout */}
+        <div className="p-3 border-t border-slate-200 mt-auto relative">
           <button
             onClick={handleLogout}
             onMouseEnter={() => isCollapsed && setHoveredItem("logout")}
             onMouseLeave={() => setHoveredItem(null)}
-            className={`w-full flex items-center rounded-xl text-red-500 hover:bg-red-50 transition
+            className={`w-full flex items-center rounded-xl transition-all text-red-500 hover:bg-red-50
               ${isCollapsed ? "justify-center px-0" : "gap-3 px-4"} py-3`}
           >
             <LogOut size={22} />
             {!isCollapsed && <span>Logout</span>}
           </button>
-
+          {/* Tooltip for logout in collapsed state */}
           {isCollapsed && hoveredItem === "logout" && (
             <div className="tooltip">Logout</div>
           )}
         </div>
       </motion.aside>
 
-      {/* ---------------- CONTENT SHIFT ---------------- */}
+      {/* Right Panel (Navbar + Content) */}
       <div
-        className={`transition-all duration-300 ${
-          isCollapsed ? "md:ml-[80px]" : "md:ml-[256px]"
-        }`}
+        className={`transition-all duration-300 mt-0 ${isCollapsed ? "md:ml-[80px]" : "md:ml-[256px]"}`}
       >
         <Outlet />
       </div>
