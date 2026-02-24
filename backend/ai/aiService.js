@@ -250,77 +250,100 @@ export const generateCoverLetterAI = async (jobDetails, sectionType) => {
       throw new Error("AI Service unavailable (Missing API Key)");
     }
 
-    let prompt = "";
+    // Helper to format missing data for the prompt context
+    const getField = (val, fieldName) => val ? val : `[${fieldName} NOT PROVIDED]`;
+
     const baseContext = `
-      Job Title: ${jobDetails.jobTitle || 'Role'}
-      Company: ${jobDetails.companyName || 'Company'}
-      Candidate Name: ${jobDetails.fullName || 'Candidate'}
-      Skills/Context: ${jobDetails.skills || ''}
-      Experience: ${jobDetails.experience || ''}
+      Target Role: ${getField(jobDetails.jobTitle, "Job Title")}
+      Target Company: ${getField(jobDetails.companyName, "Company Name")}
+      Candidate Name: ${getField(jobDetails.fullName, "Candidate Name")}
+      Recipient Name: ${getField(jobDetails.recipientName, "Recipient Name")}
+      
+      Candidate Context:
+      - Skills: ${jobDetails.skills ? jobDetails.skills : "(No specific skills provided)"}
+      - Experience: ${jobDetails.experience ? jobDetails.experience : "(No specific experience details provided)"}
+      - Email: ${jobDetails.email || "Not provided"}
+      - Phone: ${jobDetails.phone || "Not provided"}
+      - LinkedIn: ${jobDetails.linkedin || "Not provided"}
     `;
+
+    // Shared rules for ALL sections to prevent hallucinations
+    const antiHallucinationRules = `
+      CRITICAL RULES:
+      1. DO NOT invent experience, years of experience, or specific skills not listed in the "Candidate Context".
+      2. If experience/skills are missing, write in a general, professional manner expressing interest and willingness to learn/contribute, without claiming specific past achievements.
+      3. Use the provided "Target Role" and "Target Company" names exactly. If they are "[Job Title NOT PROVIDED]" or similar, use generic terms like "this role" or "your company".
+      4. DO NOT use placeholders like "[City]" or "[Date]".
+      5. DO NOT output any conversational text like "Here is the paragraph". Output ONLY the content.
+    `;
+
+    let prompt = "";
 
     switch (sectionType) {
       case 'openingParagraph':
         prompt = `
-          Write a professional opening paragraph for a cover letter for the position of ${jobDetails.jobTitle} at ${jobDetails.companyName}.
+          Write a professional opening paragraph for a cover letter.
+          
           Context:
           ${baseContext}
           
-          Rules:
-          - Write in first person ("I").
-          - Express enthusiasm for the role and company.
-          - Mention why you are a great fit briefly.
+          Instructions:
+          - Express enthusiasm for the position and company.
+          - Mention why the candidate is interested.
           - Keep it under 4 lines.
-          - STRICTLY NO placeholders like [Role] or [Company]. Use the provided details.
-          - STRICTLY NO meta-commentary like "Here is the paragraph". Just the text.
           - Tone: Professional, Confident, Engaging.
+          
+          ${antiHallucinationRules}
         `;
         break;
 
       case 'bodyParagraph1':
         prompt = `
-          Write the first body paragraph of a cover letter focusing on key qualifications.
+          Write the first body paragraph of a cover letter focusing on qualifications.
+          
           Context:
           ${baseContext}
           
-          Rules:
-          - Focus on the candidate's skills and experience relevant to ${jobDetails.jobTitle}.
-          - Use specific examples if available in the context.
-          - STRICTLY NO placeholders. If specific numbers aren't known, use qualitative descriptors (e.g., "significant increase", "led a team").
-          - STRICTLY NO meta-commentary. Just the paragraph text.
+          Instructions:
+          - Focus on why the candidate is a good fit based ONLY on the provided Skills and Experience.
+          - IF NO SKILLS/EXPERIENCE ARE PROVIDED: Focus on soft skills like work ethic, adaptability, and eagerness to contribute. Do NOT invent technical skills.
           - Keep it under 6 lines.
+          
+          ${antiHallucinationRules}
         `;
         break;
 
       case 'bodyParagraph2':
         prompt = `
-          Write the second body paragraph of a cover letter focusing on cultural fit and additional value.
+          Write the second body paragraph of a cover letter focusing on cultural fit and values.
+          
           Context:
           ${baseContext}
           
-          Rules:
-          - Explain why the candidate is passionate about ${jobDetails.companyName} or the industry.
-          - Mention soft skills like leadership, collaboration, or problem-solving.
-          - STRICTLY NO placeholders.
-          - STRICTLY NO meta-commentary. Just the paragraph text.
+          Instructions:
+          - Explain why the candidate is passionate about the company or industry.
+          - Highlight soft skills like leadership, collaboration, or problem-solving if applicable.
           - Keep it under 6 lines.
+          
+          ${antiHallucinationRules}
         `;
         break;
 
       case 'closingParagraph':
         prompt = `
           Write a strong closing paragraph for a cover letter.
+          
           Context:
           ${baseContext}
           
-          Rules:
-          - Reiterate interest in the ${jobDetails.jobTitle} role.
-          - Include a call to action (requesting an interview).
+          Instructions:
+          - Reiterate interest in the role.
+          - Request an interview or next steps.
           - Thank the reader.
-          - Do NOT include the signature ("Sincerely, Name"). JUST the paragraph.
-          - STRICTLY NO placeholders.
-          - STRICTLY NO meta-commentary.
+          - DO NOT sign off with "Sincerely, Name". Just write the paragraph text.
           - Keep it under 3 lines.
+          
+          ${antiHallucinationRules}
         `;
         break;
 
@@ -331,8 +354,8 @@ export const generateCoverLetterAI = async (jobDetails, sectionType) => {
     const response = await client.chat.completions.create({
       model: "llama-3.1-8b-instant",
       messages: [{ role: "user", content: prompt }],
-      temperature: 0.7,
-      max_tokens: 250,
+      temperature: 0.5, // Lower temperature for more deterministic/factual output
+      max_tokens: 300,
     });
 
     return response.choices[0].message.content.trim();

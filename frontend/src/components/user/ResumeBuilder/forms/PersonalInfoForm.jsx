@@ -74,6 +74,7 @@ const PersonalInfoForm = ({ formData, onInputChange, onUseSummary }) => {
     }
   };
 
+
   return (
     <div className="p-1">
       <h3 className="mb-3 text-sm font-semibold">Personal Information</h3>

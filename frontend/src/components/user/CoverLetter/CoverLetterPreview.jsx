@@ -5,7 +5,9 @@ import React, {
   useLayoutEffect, 
   useCallback, 
   useMemo,
-  useEffect 
+  useEffect,
+  forwardRef,  // ✅ ADDED for ref support
+  useImperativeHandle  // ✅ ADDED for ref methods
 } from "react";
 import { 
   Eye,
@@ -98,8 +100,13 @@ const Badge = ({ green, children }) => (
   </span>
 );
 
-const CoverLetterPreview = ({ formData = {}, exportDate = new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" }) }) => {
+/* ✅ UPDATED WITH RESUMEBUILDER PDF EXTRACT LOGIC */
+const CoverLetterPreview = forwardRef(({ 
+  formData = {}, 
+  exportDate = new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" }) 
+}, ref) => {
   const rootRef = useRef(null);
+  const previewContainerRef = useRef(null);  // ✅ ADDED for HTML extraction
   const rootWidth = useElementWidth(rootRef);
 
   const [manualZoom, setManualZoom] = useState(0.85);
@@ -138,6 +145,26 @@ const CoverLetterPreview = ({ formData = {}, exportDate = new Date().toLocaleDat
     customSalutation = "",
     salutation = "Sincerely",
   } = formData;
+
+  /* ✅ EXPOSE getCoverLetterHTML METHOD - SAME AS RESUMEBUILDER */
+  useImperativeHandle(ref, () => ({
+    getCoverLetterHTML: async () => {
+      if (!previewContainerRef.current) {
+        return null;
+      }
+      
+      // Clone the preview container to avoid affecting live preview
+      const clone = previewContainerRef.current.cloneNode(true);
+      
+      // Remove zoom transform and get clean HTML
+      const cleanClone = clone.querySelector('.cover-letter-content');
+      if (cleanClone) {
+        return cleanClone.outerHTML;
+      }
+      
+      return previewContainerRef.current.outerHTML;
+    }
+  }));
 
   const zoomIn = useCallback(() =>
     setManualZoom((z) => clamp(+(z + ZOOM_STEP).toFixed(2), ZOOM_MIN, ZOOM_MAX)),
@@ -256,10 +283,12 @@ const CoverLetterPreview = ({ formData = {}, exportDate = new Date().toLocaleDat
     </div>
   );
 
-  // ✅ MOBILE-RESPONSIVE COVER CONTENT
+  // ✅ MOBILE-RESPONSIVE COVER CONTENT WITH EXTRACTION CLASS
   const CoverContent = () => {
     return (
       <div 
+        ref={previewContainerRef}  // ✅ ADDED for HTML extraction
+        className="cover-letter-content"  // ✅ ADDED for clean extraction
         style={{ 
           position: "relative", 
           width: "100%", 
@@ -280,6 +309,7 @@ const CoverLetterPreview = ({ formData = {}, exportDate = new Date().toLocaleDat
           scrollbarColor: "#cbd5e1 #f8fafc",
         }}
       >
+        {/* ALL YOUR ORIGINAL CONTENT - 100% UNCHANGED */}
         {/* CONTACT INFO */}
         <div style={{ 
           textAlign: "right", 
@@ -538,6 +568,8 @@ const CoverLetterPreview = ({ formData = {}, exportDate = new Date().toLocaleDat
       {inner}
     </div>
   );
-};
+});
+
+CoverLetterPreview.displayName = 'CoverLetterPreview';  // ✅ ADDED for debugging
 
 export default CoverLetterPreview;

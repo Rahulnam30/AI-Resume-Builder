@@ -1,5 +1,5 @@
 import React from "react";
-import { Upload, Download, PenTool } from "lucide-react";
+import { Upload, Download, PenTool, Zap } from "lucide-react";
 
 const CVBuilderTopBar = ({
   activeTab,
@@ -78,6 +78,31 @@ const CVBuilderTopBar = ({
             )}
           </button>
         </div>
+
+        {/* AI Mode Toggle */}
+        {activeTab === "builder" && (
+          <div className="flex items-center gap-2">
+            <button
+              onClick={onToggleAiMode}
+              className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium transition-all border ${isAiMode
+                ? "bg-purple-50 border-purple-200 text-purple-700 shadow-sm"
+                : "bg-white border-slate-200 text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+                }`}
+            >
+              <Zap size={16} className={`transition-colors ${isAiMode ? "fill-purple-700 text-purple-700" : "text-slate-400"}`} />
+              <span>AI Mode</span>
+              <div
+                className={`relative w-8 h-4 rounded-full transition-colors ml-1 ${isAiMode ? "bg-purple-600" : "bg-slate-300"
+                  }`}
+              >
+                <div
+                  className={`absolute top-0.5 w-3 h-3 bg-white rounded-full transition-transform shadow-sm ${isAiMode ? "left-[18px]" : "left-0.5"
+                    }`}
+                />
+              </div>
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

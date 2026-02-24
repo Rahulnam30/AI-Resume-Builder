@@ -19,6 +19,13 @@ const BodyContentForm = ({ formData, onInputChange, onAIGenerate }) => {
             jobTitle: formData.jobTitle || "Role",
             companyName: formData.companyName || "Company",
             fullName: formData.fullName || "Candidate",
+            recipientName: formData.recipientName || "",
+            recipientTitle: formData.recipientTitle || "",
+            jobReference: formData.jobReference || "",
+            email: formData.email || "",
+            phone: formData.phone || "",
+            address: formData.address || "",
+            linkedin: formData.linkedin || "",
             skills: formData.skills || "",
             experience: formData.experience || "",
           },
@@ -33,7 +40,7 @@ const BodyContentForm = ({ formData, onInputChange, onAIGenerate }) => {
 
       // const data = await response.json();
       console.log(response);
-      
+
       onInputChange(field, response.data.result);
       // if (data.success) {
       // } else {

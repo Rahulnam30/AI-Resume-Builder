@@ -179,16 +179,11 @@ export const changePassword = async (req, res) => {
 
 export const updateUser = async (req, res) => {
   try {
-    const { username, email, isAdmin, isActive, plan, role } = req.body;
+    const { username, email, isAdmin, isActive, plan } = req.body;
     const userId = req.params.id;
 
     const user = await User.findById(userId);
     if (!user) return res.status(404).json({ message: "User not found" });
-
-    // Prevent modification of super admin
-    if (user.role === "superadmin" && user.email === "admin@gmail.com") {
-      return res.status(403).json({ message: "Super Admin cannot be modified" });
-    }
 
     if (email && email !== user.email) {
       const exists = await User.findOne({ email });
@@ -198,30 +193,15 @@ export const updateUser = async (req, res) => {
 
     if (username) user.username = username;
     if (email) user.email = email;
-    if (plan) user.plan = plan;
-    if (req.body.createdAt) user.createdAt = req.body.createdAt;
-
-    // Handle role and isAdmin updates
-    if (role && ["user", "admin", "superadmin"].includes(role)) {
-      // Only super admin can create other super admins
-      const requestingUser = await User.findById(req.userId);
-      if (role === "superadmin" && requestingUser?.role !== "superadmin") {
-        return res.status(403).json({ message: "Only Super Admin can create Super Admins" });
-      }
-      
-      user.role = role;
-      user.isAdmin = role === "admin" || role === "superadmin";
-    } else if (typeof isAdmin === "boolean") {
-      user.isAdmin = isAdmin;
-      user.role = isAdmin ? "admin" : "user";
-    }
-
+    if (typeof isAdmin === "boolean") user.isAdmin = isAdmin;
     if (typeof isActive === "boolean") {
       console.log(
         `Updating user ${user.email} isActive from ${user.isActive} to ${isActive}`,
       );
       user.isActive = isActive;
     }
+    if (plan) user.plan = plan;
+    if (req.body.createdAt) user.createdAt = req.body.createdAt;
 
     await user.save();
 
@@ -248,7 +228,7 @@ export const updateUser = async (req, res) => {
     }
 
     console.log(
-      `User ${user.email} updated - isActive: ${user.isActive}, role: ${user.role}`,
+      `User ${user.email} updated - isActive is now: ${user.isActive}`,
     );
     res.status(200).json({ message: "User updated successfully", user });
   } catch (error) {

@@ -28,6 +28,7 @@ import EducationForm from "./forms/EducationForm";
 import SkillsForm from "./forms/SkillsForm";
 import ProjectsForm from "./forms/ProjectsForm";
 import CertificationsForm from "./forms/CertificationsForm";
+import ProfessionalSummaryForm from "./forms/ProfessionalSummaryForm";
 
 import LivePreview from "../Preview/LivePreview";
 import TemplatesPage from "../Templates/TemplatesDashboardPage";
@@ -38,7 +39,7 @@ import { dummyData } from "./dummyData";
 
 import UserNavbar from "../UserNavBar/UserNavBar";
 
-const ResumeBuilder = ({ setActivePage = () => {} }) => {
+const ResumeBuilder = ({ setActivePage = () => { } }) => {
   /* -------------------- CORE STATE -------------------- */
   // const [formData, setFormData] = useState(dummyData);
   const [formData, setFormData] = useState(() => {
@@ -88,6 +89,9 @@ const ResumeBuilder = ({ setActivePage = () => {} }) => {
   /* -------------------- PREVIEW STATE -------------------- */
   const [isPreviewExpanded, setIsPreviewExpanded] = useState(false);
   const [isPreviewHidden, setIsPreviewHidden] = useState(false);
+
+  /* -------------------- AI MODE -------------------- */
+  const [isAiMode, setIsAiMode] = useState(true);
 
   /* -------------------- HELPERS -------------------- */
   const handleInputChange = (field, value) => {
@@ -178,6 +182,7 @@ const ResumeBuilder = ({ setActivePage = () => {} }) => {
     { id: "projects", label: "Projects", icon: FolderKanban },
     { id: "certs", label: "Certifications", icon: Award },
     { id: "skills", label: "Skills", icon: Zap },
+    { id: "summary", label: "Summary", icon: PenTool },
   ];
   const currentIdx = tabs.findIndex((tab) => tab.id === activeSection);
 
@@ -225,6 +230,14 @@ const ResumeBuilder = ({ setActivePage = () => {} }) => {
       case "certs":
         return (
           <CertificationsForm formData={formData} setFormData={setFormData} />
+        );
+      case "summary":
+        return (
+          <ProfessionalSummaryForm
+            formData={formData}
+            onInputChange={handleInputChange}
+            isAiMode={isAiMode}
+          />
         );
       default:
         return null;
@@ -419,6 +432,27 @@ const ResumeBuilder = ({ setActivePage = () => {} }) => {
                   Templates
                 </button>
               </div>
+
+              {/* AI Mode Toggle */}
+              {activeTab === "builder" && (
+                <div className="hidden md:flex items-center gap-2 bg-white border border-slate-200 rounded-xl p-1 px-3 ml-4 shadow-sm">
+                  <span className="text-sm font-medium text-slate-700 flex items-center gap-1">
+                    <Zap size={14} className={isAiMode ? "text-purple-600 fill-purple-600" : "text-slate-400"} />
+                    AI Mode
+                  </span>
+                  <div
+                    onClick={() => setIsAiMode(!isAiMode)}
+                    className={`relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${isAiMode ? "bg-purple-600" : "bg-slate-200"
+                      }`}
+                  >
+                    <span
+                      aria-hidden="true"
+                      className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${isAiMode ? "translate-x-4" : "translate-x-0"
+                        }`}
+                    />
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* RIGHT SIDE: Actions or Search */}

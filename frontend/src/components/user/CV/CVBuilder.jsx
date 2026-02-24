@@ -41,6 +41,7 @@ const generateId = () =>
 
 /* ================= DEFAULT RESUME ================= */
 const createEmptyResume = () => ({
+  title: "Untitled CV",
   fullName: "",
   email: "",
   phone: "",
@@ -63,6 +64,7 @@ const createEmptyResume = () => ({
   education: [
     {
       id: generateId(),
+      title: "",
       school: "",
       degree: "",
       location: "",
@@ -95,6 +97,7 @@ const CVBuilder = () => {
   const [resumeId, setResumeId] = useState(null);
   const [isSaving, setIsSaving] = useState(false);
   const [isPreviewMaximized, setIsPreviewMaximized] = useState(false);
+  const [isAiMode, setIsAiMode] = useState(false);
   const [showMobilePreview, setShowMobilePreview] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
 
@@ -214,7 +217,7 @@ const CVBuilder = () => {
       pdf.save(`${name}_${template}.pdf`);
 
       document.body.removeChild(container);
-    setIsDownloading(false);
+      setIsDownloading(false);
 
 
       toast.success("PDF downloaded!");
@@ -223,7 +226,9 @@ const CVBuilder = () => {
       toast.error("Failed to download PDF. Please try again.");
     } finally {
       // --- 6. Clean up the temporary container ---
-      document.body.removeChild(container);
+      if (document.body.contains(container)) {
+        document.body.removeChild(container);
+      }
       setIsDownloading(false);
     }
   };
@@ -244,6 +249,7 @@ const CVBuilder = () => {
             setFormData((prev) => ({
               ...prev,
               ...latestResume.data,
+              title: latestResume.title || prev.title, // Load title if exists
               skills: {
                 technical: latestResume.data?.skills?.technical ?? [],
                 soft: latestResume.data?.skills?.soft ?? [],
@@ -274,9 +280,7 @@ const CVBuilder = () => {
     setIsSaving(true);
     try {
       const payload = {
-        title: formData.fullName
-          ? `${formData.fullName}'s Resume`
-          : "My Resume",
+        title: formData.title || "Untitled CV",
         templateId: selectedTemplate,
         data: formData,
       };
@@ -366,6 +370,10 @@ const CVBuilder = () => {
         onSave={handleSave}
         onDownload={downloadPDF} // ← pass the real handler
         isSaving={isSaving}
+        title={formData.title}
+        onTitleChange={handleInputChange}
+        isAiMode={isAiMode}
+        onToggleAiMode={() => setIsAiMode(!isAiMode)}
         isDownloading={isDownloading}
       />
 
@@ -474,7 +482,7 @@ const CVBuilder = () => {
               <CVPreview
                 {...previewProps}
                 isMaximized={false}
-                onToggleMaximize={() => {}}
+                onToggleMaximize={() => { }}
               />
             </div>
           </div>
