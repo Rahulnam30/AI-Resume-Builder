@@ -7,13 +7,20 @@ export default function RequireAuth({ children, allowedRoles }) {
   const [isAuthorized, setIsAuthorized] = useState(false)
 
   useEffect(() => {
-    const token = localStorage.getItem('token')
-    const isAdmin = JSON.parse(localStorage.getItem('isAdmin') || 'false')
+    // Check BOTH localStorage and sessionStorage
+    const token =
+      localStorage.getItem('token') ||
+      sessionStorage.getItem('token')
+
+    const storedRole =
+      localStorage.getItem('isAdmin') ||
+      sessionStorage.getItem('isAdmin')
+
+    const isAdmin = JSON.parse(storedRole || 'false')
 
     setHasToken(!!token)
 
     if (token) {
-      // Check if roles are specified and if user matches
       if (allowedRoles && allowedRoles.length > 0) {
         if (allowedRoles.includes('admin') && isAdmin) {
           setIsAuthorized(true)
@@ -23,7 +30,7 @@ export default function RequireAuth({ children, allowedRoles }) {
           setIsAuthorized(false)
         }
       } else {
-        // No specific role required, just token
+        // No role restriction, only token required
         setIsAuthorized(true)
       }
     }
@@ -32,23 +39,30 @@ export default function RequireAuth({ children, allowedRoles }) {
   }, [allowedRoles])
 
   if (isChecking) {
-    return null // Or a loading spinner
+    return null // or a loading spinner
   }
 
+  // ❌ No token → go to login
   if (!hasToken) {
     return <Navigate to="/login" replace />
   }
 
-  // If role mismatch
+  // ❌ Role mismatch → redirect based on role
   if (!isAuthorized) {
-    const isAdmin = JSON.parse(localStorage.getItem('isAdmin') || 'false')
-    // Redirect to appropriate dashboard if authorized but wrong role
-    if (isAdmin) {
-      return <Navigate to="/admin" replace />
-    } else {
-      return <Navigate to="/user/dashboard" replace />
-    }
+    const storedRole =
+      localStorage.getItem('isAdmin') ||
+      sessionStorage.getItem('isAdmin')
+
+    const isAdmin = JSON.parse(storedRole || 'false')
+
+    return (
+      <Navigate
+        to={isAdmin ? "/admin" : "/user/dashboard"}
+        replace
+      />
+    )
   }
 
+  // ✅ Authorized
   return children
 }

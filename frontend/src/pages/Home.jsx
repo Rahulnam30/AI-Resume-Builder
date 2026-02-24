@@ -329,8 +329,12 @@ function LandingPage() {
             </p>
 
             <div className="flex flex-wrap gap-3 md:gap-4 mt-1 md:mt-2 select-none">
-              <button
-                onClick={() => navigate("/login")}
+             <button
+  onClick={() =>
+    localStorage.getItem("token")
+      ? navigate("/user/resume-builder")
+      : navigate("/login")
+  }
                 className="flex items-center gap-2 md:gap-3 px-6 md:px-10 py-3 md:py-5 text-base md:text-lg font-bold text-white bg-gradient-to-r from-[#e65100] to-[#f4511e] rounded-xl transition-all duration-300 hover:-translate-y-1 shadow-[0_10px_25px_rgba(230,81,0,0.3)] hover:shadow-[0_15px_35px_rgba(230,81,0,0.45)]"
               >
                 <i className="fas fa-graduation-cap"></i>

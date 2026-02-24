@@ -27,14 +27,20 @@ const SimpleCoverLetterPage = () => {
     <div className="min-h-screen bg-white font-['Outfit'] text-[#1a2e52] selection:bg-blue-100 overflow-x-hidden">
       <NavBar />
       {/* --- 1. HERO SECTION --- */}
-      <section className="relative px-6 pt-24 overflow-hidden bg-white">
-
-        {/* Brand Decorative Blurs */}
+      <section className="relative px-8 pt-4 pb-12 overflow-hidden bg-white">
         <div className="absolute top-0 right-0 w-1/3 h-1/2 bg-orange-50 rounded-full blur-[120px] -z-10 opacity-50" />
         <div className="absolute bottom-0 left-0 w-1/3 h-1/2 bg-blue-50 rounded-full blur-[120px] -z-10 opacity-50" />
 
         <div className="relative z-10 mx-auto max-w-7xl">
-          
+          <div className="pt-2 pb-6">
+            <button
+              onClick={handleBackHome}
+              className="group inline-flex items-center gap-2 text-sm font-bold text-[#0077cc]"
+            >
+              <ArrowLeft size={16} className="group-hover:-translate-x-1 transition" />
+              <span>Back to home</span>
+            </button>
+          </div>
 
           <div className="flex flex-col items-center gap-16 lg:flex-row lg:text-left">
             <div className="flex-1 text-center lg:text-left">
@@ -52,8 +58,13 @@ const SimpleCoverLetterPage = () => {
                 Stop staring at a blank page. Our AI reads your resume and job description to write a perfect letter that gets you hired.
               </p>
 
+              {/* ✅ MERGE CONFLICT FIXED BUTTON */}
               <button 
-                onClick={() => navigate("/register")} 
+                onClick={() =>
+                  localStorage.getItem("token") || sessionStorage.getItem("token")
+                    ? navigate("/user/cover-letter")
+                    : navigate("/login")
+                }
                 className="group relative inline-flex items-center gap-3 px-10 py-5 bg-gradient-to-r from-[#e65100] to-[#f4511e] text-white rounded-xl font-bold text-lg transition-all duration-300 shadow-[0_10px_25px_rgba(230,81,0,0.3)] hover:shadow-[0_15px_35px_rgba(230,81,0,0.45)] hover:-translate-y-1 active:scale-95 mx-auto lg:mx-0"
               >
                 <span>Generate Now — It's Free</span>
@@ -68,6 +79,8 @@ const SimpleCoverLetterPage = () => {
           </div>
         </div>
       </section>
+
+      {/* ---- REST OF YOUR FILE CONTINUES EXACTLY SAME ---- */}
 
       {/* --- WHAT IS A COVER LETTER --- */}
 <section className="px-8 py-15 bg-white font-['Outfit']">

@@ -1,13 +1,19 @@
 import React from "react";
 import { Upload, Download, PenTool } from "lucide-react";
 
-const CVBuilderTopBar = ({ activeTab, setActiveTab, onSave }) => {
+const CVBuilderTopBar = ({
+  activeTab,
+  setActiveTab,
+  onDownload,
+  isSaving,
+  isDownloading,
+}) => {
   return (
-    <div className="w-full px-4 sm:px-6 py-5 bg-slate-50 border-b">
-      {/* MAIN CONTAINER */}
-      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
-        {/* LEFT SIDE */}
-        <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6">
+    <div className="w-full ">
+      {/* Main row */}
+      <div className="px-3 sm:px-4 py-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+        {/* ── Left section ── */}
+        <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-6">
           {/* Title */}
           <h1 className="text-2xl font-semibold whitespace-nowrap">
             Create CV
@@ -39,9 +45,14 @@ const CVBuilderTopBar = ({ activeTab, setActiveTab, onSave }) => {
           </div>
         </div>
 
-        {/* RIGHT SIDE */}
-        <div className="flex flex-wrap items-center gap-3">
-      
+        {/* ── Right section ── */}
+        <div className="flex items-center justify-between sm:justify-end gap-2 flex-wrap">
+          {/* Designer */}
+          <button className="hidden lg:flex items-center gap-2 px-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-800 font-medium shadow-sm hover:bg-black hover:text-white transition-all duration-200 whitespace-nowrap">
+            <PenTool size={18} />
+            CV Designer
+          </button>
+
           {/* Upload */}
           <button className="flex items-center gap-2 bg-black text-white px-4 py-2 rounded-lg font-medium hover:bg-black/80 transition">
             <Upload size={18} />
@@ -50,8 +61,9 @@ const CVBuilderTopBar = ({ activeTab, setActiveTab, onSave }) => {
 
           {/* Download */}
           <button
-            onClick={onSave}
-            className="flex items-center gap-2 bg-indigo-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-indigo-700 transition"
+            onClick={onDownload}
+            disabled={isDownloading}
+            className="flex items-center gap-2 text-white bg-indigo-600 rounded-lg text-sm transition-all duration-200 hover:bg-indigo-700 py-2 px-3 sm:px-5 disabled:bg-indigo-400 disabled:cursor-not-allowed whitespace-nowrap"
           >
             <Download size={18} />
             <span className="hidden sm:inline">Download</span>
