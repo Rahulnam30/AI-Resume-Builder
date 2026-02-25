@@ -13,8 +13,7 @@ import {
   FileSearch,
   RefreshCw,
   CheckCircle,
-  MousePointer2,
-  ArrowLeft
+  MousePointer2
 } from 'lucide-react';
 import Footer from "./Footer"
 import { useNavigate } from "react-router-dom";

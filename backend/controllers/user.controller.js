@@ -563,36 +563,36 @@ export const getAdminDashboardStats = async (req, res) => {
         month: new Date(item._id.year, item._id.month - 1).toLocaleString("default", { month: "short" }),
         resumes: item.total,
       }))
-      : [
-        { month: "Aug", resumes: 5 },
-        { month: "Sep", resumes: 12 },
-        { month: "Oct", resumes: 20 },
-        { month: "Jan", resumes: 50 },
-        { month: "Feb", resumes: 120 },
-        { month: "Mar", resumes: 2 },
-      ];
+      : [];
 
-    // SUBSCRIPTION DISTRIBUTION
-    const subscriptionDistribution = await Subscription.aggregate([
-      { $match: { status: "active" } },
+    // SUBSCRIPTION DISTRIBUTION (Based on actual Users)
+    const subscriptionDistribution = await User.aggregate([
       {
         $group: {
-          _id: "$plan",
+          _id: { $ifNull: ["$plan", "Free"] },
           count: { $sum: 1 },
         },
       },
     ]);
 
     const subscriptionSplit = subscriptionDistribution.length > 0
-      ? subscriptionDistribution.map((item) => ({
-        name: (item._id || "Free").charAt(0).toUpperCase() + (item._id || "Free").slice(1),
-        value: item.count,
-      }))
-      : [
-        { name: "Free", value: 80 },
-        { name: "Basic", value: 20 },
-        { name: "Pro", value: 20 },
-      ];
+      ? subscriptionDistribution.map((item) => {
+        let planLabel = String(item._id || "Free");
+        let name = planLabel.charAt(0).toUpperCase() + planLabel.slice(1).toLowerCase();
+
+        // Standardize names
+        if (name.toLowerCase().includes("free")) name = "Free";
+        if (name.toLowerCase().includes("pro") && !name.toLowerCase().includes("ultra")) name = "Pro";
+        if (name.toLowerCase().includes("premium") || name.toLowerCase().includes("ultra")) {
+          name = "Premium";
+        }
+
+        return {
+          name,
+          value: item.count,
+        };
+      })
+      : [];
 
     // USER GROWTH (LAST 6 MONTHS)
     const userGrowthAgg = await User.aggregate([
