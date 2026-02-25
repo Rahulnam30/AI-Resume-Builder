@@ -26,6 +26,7 @@ import CoverLetterExamples from "./pages/CoverLetterExamples";
 import CVFormattingPage from "./pages/CV";
 import WritingCoverLetter from "./pages/WritingCoverLetter"
 
+import { Toaster } from "react-hot-toast";
 import ScrollToTop from "./components/ScrollToTop";
 import RequireAuth from "./components/RequireAuth";
 import PrivacyPolicy from "./pages/Privacypolicy";
@@ -60,6 +61,19 @@ import Faq from "./pages/Faq";
 function App() {
   return (
     <BrowserRouter>
+      <Toaster
+        position="top-right"
+        reverseOrder={false}
+        containerStyle={{
+          zIndex: 99999,
+        }}
+        toastOptions={{
+          duration: 4000,
+          style: {
+            zIndex: 99999,
+          },
+        }}
+      />
       <ScrollToTop />
       <div className="flex flex-col min-h-screen">
         <Routes>

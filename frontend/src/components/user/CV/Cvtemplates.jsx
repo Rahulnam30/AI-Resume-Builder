@@ -13,9 +13,6 @@ import EliteSidebarResume from "./templates/EliteSidebarTemplate";
 import EclipseTemplate from "./templates/EclipseTemplate";
 import Eclipse from "./templates/Eclipse";
 import Harbor from "./templates/HarborTemplate.jsx";
-import HeritageClassicTemplate from "./Templates/HeritageClassicTemplate";
-import NovaGridTemplate from "./Templates/NovaGridTemplate";
-import PrismStoryTemplate from "./Templates/PrismStoryTemplate";
 
 
 const CVTemplates = {
@@ -34,9 +31,6 @@ const CVTemplates = {
   eclipse: EclipseTemplate,
   eclipse1: Eclipse,
   harbor: Harbor,
-  heritage: HeritageClassicTemplate,
-  nova: NovaGridTemplate,
-  prism: PrismStoryTemplate,
 };
 
 export default CVTemplates;

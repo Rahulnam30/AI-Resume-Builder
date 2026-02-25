@@ -11,7 +11,7 @@ import {
   Lock,
 } from "lucide-react";
 import "./EditProfile.css";
-import UserNavBar from "../UserNavBar/UserNavBar";
+import logo from "../../../assets/UptoSkills.webp";
 import axios from "../../../api/axios";
 import toast from "react-hot-toast";
 
@@ -77,7 +77,17 @@ const EditProfile = () => {
   return (
     <div className="edit-profile-page">
 
-      <UserNavBar />
+      {/* 🔷 LOGO BAR */}
+      <div className="profile-logo-bar">
+        <div className="profile-logo-inner">
+          <img
+            src={logo}
+            alt="UpToSkills Logo"
+            className="profile-logo"
+            onClick={() => navigate("/user/dashboard")}
+          />
+        </div>
+      </div>
 
       {/* 🔷 PAGE CONTENT */}
       <div className="profile-page-content">
@@ -89,23 +99,15 @@ const EditProfile = () => {
               <div className="avatar-frame">
                 {formData.fullName && formData.fullName.trim()
                   ? formData.fullName
-                    .split(" ")
-                    .slice(0, 2)
-                    .map((n) => n[0].toUpperCase())
-                    .join("")
-                  : (formData.username && formData.username.trim()
-                    ? formData.username[0].toUpperCase()
-                    : "U")}
+                      .split(" ")
+                      .slice(0, 2)
+                      .map((n) => n[0].toUpperCase())
+                      .join("")
+                  : "?"}
               </div>
             </div>
 
-            <h2 className="profile-name">
-              {formData.username && formData.username.trim()
-                ? formData.username.trim().split(" ")[0]
-                : (formData.fullName && formData.fullName.trim()
-                  ? formData.fullName.trim().split(" ")[0]
-                  : "User")}
-            </h2>
+            <h2 className="profile-name">{formData.fullName || "User"}</h2>
             <p className="profile-bio">{formData.bio || "No bio added"}</p>
 
             <div className="member-info">
@@ -229,15 +231,15 @@ const EditProfile = () => {
                   </div>
 
                   <div className="form-actions">
-                    <button
+                    <button 
                       className="btn-cancel"
                       onClick={() => navigate("/user/dashboard")}
                     >
                       <X size={18} /> Cancel
                     </button>
 
-                    <button
-                      className="btn-save"
+                    <button 
+                      className="btn-save" 
                       onClick={handleSave}
                       disabled={loading || fetchingProfile}
                     >

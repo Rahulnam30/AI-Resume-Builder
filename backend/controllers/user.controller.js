@@ -155,10 +155,14 @@ export const changePassword = async (req, res) => {
     const userId = req.userId;
     const { currentPassword, newPassword } = req.body;
     if (!currentPassword || !newPassword) return res.status(400).json({ message: "Both passwords are required" });
-    if (newPassword.length < 8) return res.status(400).json({ message: "Password must be at least 8 characters" });
-
     const user = await User.findById(userId);
     if (!user) return res.status(404).json({ message: "User not found" });
+
+    // Enforce 8 chars for regular users, allow shorter for admins
+    if (!user.isAdmin && newPassword.length < 8) {
+      return res.status(400).json({ message: "Password must be at least 8 characters" });
+    }
+
 
     const isMatch = await bcrypt.compare(currentPassword, user.password);
     if (!isMatch) return res.status(401).json({ message: "Current password is incorrect" });
