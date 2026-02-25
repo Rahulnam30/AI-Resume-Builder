@@ -28,6 +28,7 @@ export const parsePDF = async (filePath) => {
   }
 };
 
+
 /**
  * Parse DOCX file and extract text
  */

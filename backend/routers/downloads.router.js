@@ -248,6 +248,7 @@ router.get("/:id/word", async (req, res) => {
       html = generateWordHTML(download.formData, download.name);
     }
 
+    
     if (!html) {
       return res.status(400).json({ message: "No HTML stored" });
     }

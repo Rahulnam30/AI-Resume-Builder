@@ -144,6 +144,7 @@ const ATSPdfPreview = ({ pdfUrl, onLoadSuccess }) => {
     );
   }
 
+  
   return (
     <div className="flex flex-col h-full bg-white rounded-xl overflow-hidden">
       {content}
