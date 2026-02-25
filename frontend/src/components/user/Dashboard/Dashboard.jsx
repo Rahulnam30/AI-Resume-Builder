@@ -1,10 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-
-// Corrected Import based on your file structure
-import UserNavBar from "../UserNavBar/UserNavBar"; 
-import axios from "axios";
-
+import UserNavBar from "../UserNavBar/UserNavBar";
+import axiosInstance from "../../../api/axios";
 import {
   LineChart,
   Line,

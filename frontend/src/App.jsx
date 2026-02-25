@@ -46,6 +46,8 @@ import AdminSubscription from "./components/admin/AdminSubscription/AdminSubscri
 import AdminAcceptUser from "./components/admin/AdminAcceptUserTemplate/AdminAcceptUser";
 import AdminAnalytics from "./components/admin/AdminAnalytics/AdminAnalytics";
 import AdminTemplates from "./components/admin/AdminCreateTemplates/Template";
+import AdminSecurity from "./components/admin/AdminSecurity/AdminSecurity";
+import AdminProfile from "./components/admin/AdminProfile/AdminProfile";
 
 // User routes
 import UserRoutes from "./pages/UserRoutes";
@@ -117,6 +119,8 @@ function App() {
             <Route path="subscription" element={<AdminSubscription />} />
 
             <Route path="analytics" element={<AdminAnalytics />} />
+            <Route path="change-password" element={<AdminSecurity />} />
+            <Route path="profile" element={<AdminProfile />} />
           </Route>
 
           {/* ================= 404 ================= */}

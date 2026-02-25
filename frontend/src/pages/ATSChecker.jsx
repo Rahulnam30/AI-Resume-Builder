@@ -203,11 +203,7 @@ const ATSCheckerFeature = () => {
               </p>
 
               <button
-  onClick={() =>
-    localStorage.getItem("token")
-      ? navigate("/user/ats-checker")
-      : navigate("/login")
-  }
+                onClick={handleCTA}
                 className="group relative inline-flex items-center gap-3 px-8 py-4 bg-[#1a2e52] text-white rounded-xl font-bold text-lg transition-all duration-300 shadow-xl hover:bg-[#0077cc] hover:-translate-y-1"
               >
                 <span>Run Free Scan</span>
@@ -229,7 +225,7 @@ const ATSCheckerFeature = () => {
                 <img
                   src={Lady}
                   alt="Character pointing to ATS score"
-                  className="hidden lg:block absolute left-[-13rem] bottom-0 w-100 xl:w-48 2xl:w-56 object-contain"
+                  className="hidden md:block absolute left-[-13rem] bottom-0 w-100 xl:w-48 2xl:w-56 object-contain"
                 />
                 <ATSDonutCard score={82} />
               </div>

@@ -127,6 +127,25 @@ export default function AdminUsers({ head = "Manage Users" }) {
     }
   }
 
+  const handleToggleRole = async (user) => {
+    const newIsAdmin = !user.isAdmin;
+    try {
+      // Optimistic update
+      setUsers(prev => prev.map(u => u._id === user._id ? { ...u, isAdmin: newIsAdmin } : u));
+
+      await axiosInstance.put(`/api/user/${user._id}`, {
+        isAdmin: newIsAdmin
+      });
+
+      toast.success(`${user.username || user.email} is now an ${newIsAdmin ? 'Admin' : 'User'}`);
+    } catch (err) {
+      console.error(err);
+      // Revert optimistic update
+      setUsers(prev => prev.map(u => u._id === user._id ? { ...u, isAdmin: user.isAdmin } : u));
+      toast.error(`Failed to update ${user.username || user.email}'s role`);
+    }
+  }
+
   const handleDeleteClick = (id) => {
     setDeleteConfirmId(id);
   };
@@ -280,7 +299,8 @@ export default function AdminUsers({ head = "Manage Users" }) {
           )}
         </div>
 
-        <div className="bg-white border rounded-xl overflow-hidden shadow-sm">
+        <div className="hidden md:block bg-white border rounded-xl overflow-hidden shadow-sm">
+
           <table className="w-full text-sm">
             <thead className="bg-gray-50 text-gray-500">
               <tr>
@@ -332,9 +352,11 @@ export default function AdminUsers({ head = "Manage Users" }) {
 
                     <td className="px-6 py-4 text-center">
                       <span
-                        className={`px-3 py-1 rounded-full text-xs font-semibold ${u.isAdmin
-                          ? "bg-purple-100 text-purple-700 border border-purple-200"
-                          : "bg-blue-50 text-blue-700 border border-blue-200"
+                        onClick={() => handleToggleRole(u)}
+                        title={`Click to switch to ${u.isAdmin ? 'User' : 'Admin'}`}
+                        className={`px-3 py-1 rounded-full text-xs font-semibold cursor-pointer transition-all hover:scale-105 active:scale-95 ${u.isAdmin
+                          ? "bg-purple-100 text-purple-700 border border-purple-200 hover:bg-purple-200"
+                          : "bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-100"
                           }`}
                       >
                         {u.isAdmin ? "Admin" : "User"}
@@ -407,7 +429,30 @@ export default function AdminUsers({ head = "Manage Users" }) {
             <div className="text-center text-gray-500 py-4">No users found.</div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {users.map((u) => (
+              {users
+                .filter(u => {
+                  // Search filter
+                  const matchesSearch = u.username?.toLowerCase().includes(search.toLowerCase()) ||
+                    u.email?.toLowerCase().includes(search.toLowerCase());
+
+                  // Role filter
+                  const matchesRole = roleFilter === "all" ||
+                    (roleFilter === "admin" && u.isAdmin) ||
+                    (roleFilter === "user" && !u.isAdmin);
+
+                  // Plan filter
+                  const matchesPlan = planFilter === "all" ||
+                    (planFilter === "free" && (!u.plan || u.plan.toLowerCase() === "free")) ||
+                    (planFilter === "pro" && u.plan?.toLowerCase() === "pro");
+
+                  // Status filter
+                  const matchesStatus = statusFilter === "all" ||
+                    (statusFilter === "active" && u.isActive) ||
+                    (statusFilter === "inactive" && !u.isActive);
+
+                  return matchesSearch && matchesRole && matchesPlan && matchesStatus;
+                })
+                .map((u) => (
                 <div key={u._id} className="bg-slate-50 border border-slate-200 rounded-xl p-4 shadow-sm flex flex-col gap-3">
                   {/* Row 1: User Info + Active Toggle */}
                   <div className="flex justify-between items-start">
@@ -437,7 +482,9 @@ export default function AdminUsers({ head = "Manage Users" }) {
                   <div className="flex items-center justify-between mt-1 pt-3 border-t border-slate-200">
                     <div className="flex gap-2">
                       <span
-                        className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide border ${u.isAdmin
+                        onClick={() => handleToggleRole(u)}
+                        title={`Click to switch to ${u.isAdmin ? 'User' : 'Admin'}`}
+                        className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide border cursor-pointer transition-all active:scale-95 ${u.isAdmin
                           ? "bg-purple-100 text-purple-700 border-purple-200"
                           : "bg-blue-50 text-blue-700 border-blue-200"
                           }`}
