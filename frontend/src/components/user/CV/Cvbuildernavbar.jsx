@@ -7,6 +7,8 @@ const CVBuilderTopBar = ({
   onDownload,
   isSaving,
   isDownloading,
+  isAiMode,
+  onToggleAiMode,
 }) => {
   return (
     <div className="w-full ">

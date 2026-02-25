@@ -35,6 +35,7 @@ import {
   ChevronRight,
   Activity,
 } from "lucide-react";
+import AiChatBot from "./Aichat";
 
 function LandingPage() {
   const navigate = useNavigate();
@@ -571,7 +572,7 @@ function LandingPage() {
           </div>
         </div>
       </section>
-
+      <AiChatBot />
       <Footer />
     </div>
   );

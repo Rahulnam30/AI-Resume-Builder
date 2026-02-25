@@ -41,12 +41,18 @@ export default function AdminSecurity() {
 
         try {
             setLoading(true);
-            const res = await axios.put("/api/user/password", {
-                currentPassword: form.currentPassword,
+            const res = await axios.put("/api/auth/change-password", {
+                oldPassword: form.currentPassword,
                 newPassword: form.newPassword,
             });
+            console.log("Password change response:", res.data);
             toast.success(res.data?.message || "Password updated successfully");
             setForm({ currentPassword: "", newPassword: "", confirmPassword: "" });
+
+            // Redirect to login after successful password change due to cookie clearing
+            setTimeout(() => {
+                navigate("/login");
+            }, 2000);
         } catch (err) {
             console.error(err);
             toast.error(err?.response?.data?.message || "Something went wrong. Try again.");
