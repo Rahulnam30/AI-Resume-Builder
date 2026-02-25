@@ -171,6 +171,13 @@ export default function AdminUsers({ head = "Manage Users" }) {
 
   return (
     <div className="min-h-screen bg-slate-50 p-4 sm:p-6">
+      <Toaster
+        position="top-right"
+        containerStyle={{
+          top: 80 // Offset below navbar
+        }}
+      />
+
       <div className="p-6">
         <h1 className="text-2xl font-bold mb-6 text-gray-800">{head}</h1>
 
@@ -422,7 +429,30 @@ export default function AdminUsers({ head = "Manage Users" }) {
             <div className="text-center text-gray-500 py-4">No users found.</div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {users.map((u) => (
+              {users
+                .filter(u => {
+                  // Search filter
+                  const matchesSearch = u.username?.toLowerCase().includes(search.toLowerCase()) ||
+                    u.email?.toLowerCase().includes(search.toLowerCase());
+
+                  // Role filter
+                  const matchesRole = roleFilter === "all" ||
+                    (roleFilter === "admin" && u.isAdmin) ||
+                    (roleFilter === "user" && !u.isAdmin);
+
+                  // Plan filter
+                  const matchesPlan = planFilter === "all" ||
+                    (planFilter === "free" && (!u.plan || u.plan.toLowerCase() === "free")) ||
+                    (planFilter === "pro" && u.plan?.toLowerCase() === "pro");
+
+                  // Status filter
+                  const matchesStatus = statusFilter === "all" ||
+                    (statusFilter === "active" && u.isActive) ||
+                    (statusFilter === "inactive" && !u.isActive);
+
+                  return matchesSearch && matchesRole && matchesPlan && matchesStatus;
+                })
+                .map((u) => (
                 <div key={u._id} className="bg-slate-50 border border-slate-200 rounded-xl p-4 shadow-sm flex flex-col gap-3">
                   {/* Row 1: User Info + Active Toggle */}
                   <div className="flex justify-between items-start">

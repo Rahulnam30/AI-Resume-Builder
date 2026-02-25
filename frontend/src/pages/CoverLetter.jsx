@@ -96,7 +96,7 @@ const SimpleCoverLetterPage = () => {
           <div className="mb-12 space-y-6 text-lg text-gray-600">
             <p>
               A cover letter is a professional document that accompanies your resume to provide a
-              detailed introduction of your skills, experiences, and interests in a specific job role.
+              detailed introduction of your skills, experiences, and interest in a specific job role.
               It acts as a bridge between your technical qualifications and the unique value you bring
               to a potential employer.
             </p>
@@ -143,7 +143,7 @@ const SimpleCoverLetterPage = () => {
               </span>
               <h3 className="mb-6 text-2xl font-bold">Manual Writing</h3>
               <ul className="space-y-4">
-                {["Generic Greetings", "Hours of Editing", "Zero Keyword Optimization"].map(
+                {["Generic Greetings", "Hours of editing", "Zero Keyword Optimization"].map(
                   (text, i) => (
                     <li
                       key={i}
@@ -167,7 +167,7 @@ const SimpleCoverLetterPage = () => {
               <h3 className="mb-6 text-2xl font-bold">AI Builder</h3>
               <ul className="space-y-4">
                 {[
-                  "Tailored to specific job role",
+                  "Tailored to specific Job Role",
                   "Finished in under 10 seconds",
                   "Guaranteed ATS compatibility"
                 ].map((text, i) => (

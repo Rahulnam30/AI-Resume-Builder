@@ -23,7 +23,7 @@ const NOTIFICATION_TYPES = {
   resume_downloaded: { icon: Download, color: "text-cyan-600", bg: "bg-cyan-50", label: "Download" }
 };
 
-export default function AdminNavbar({ isCollapsed, setIsCollapsed, isMobileOpen, setIsMobileOpen, adminUser }) {
+export default function AdminNavbar({ isCollapsed, setIsCollapsed, isMobileOpen, setIsMobileOpen }) {
   const navigate = useNavigate();
   const [showNotifications, setShowNotifications] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
@@ -31,12 +31,9 @@ export default function AdminNavbar({ isCollapsed, setIsCollapsed, isMobileOpen,
   const profileRef = useRef(null);
 
   const adminData = {
-    name: adminUser?.fullName || adminUser?.username || "Admin User",
-    role: adminUser?.isAdmin ? "Super Admin" : "Admin",
-    email: adminUser?.email || "admin@uptoskills.com",
-    initials: adminUser?.fullName
-      ? adminUser.fullName.split(" ").map(n => n[0]).join("").toUpperCase().slice(0, 2)
-      : (adminUser?.username ? adminUser.username[0].toUpperCase() : "AU")
+    name: "Admin User",
+    role: "Super Admin",
+    email: "admin@uptoskills.com"
   };
 
   // Use shared notification context
@@ -237,7 +234,7 @@ export default function AdminNavbar({ isCollapsed, setIsCollapsed, isMobileOpen,
               whileTap={{ scale: 0.98 }}
             >
               <div className="w-9 h-9 md:w-10 md:h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center text-white shadow-md group-hover:shadow-lg transition-all font-bold">
-                {adminData.initials}
+                AU
               </div>
               <div className="hidden md:flex flex-col items-start min-w-[100px]">
                 <span className="text-sm font-bold text-slate-800 leading-none">{adminData.name}</span>
@@ -261,12 +258,12 @@ export default function AdminNavbar({ isCollapsed, setIsCollapsed, isMobileOpen,
                   {/* Header */}
                   <div className="px-4 py-3 flex gap-3 items-center border-b">
                     <div className="w-10 h-10 rounded-full bg-indigo-500 flex items-center justify-center text-white font-bold text-lg">
-                      {adminData.initials}
+                      AU
                     </div>
                     <div className="flex-1">
                       <div className="flex items-center gap-2">
                         <p className="font-semibold text-slate-900">{adminData.name}</p>
-                        <span className="text-xs bg-emerald-100 text-emerald-700 px-10 py-0.5 rounded-full">
+                        <span className="text-xs bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full">
                           {adminData.role}
                         </span>
                       </div>

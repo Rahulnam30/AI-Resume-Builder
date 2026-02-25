@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Check, ToggleLeft, ToggleRight, Pencil, Plus, Trash2, GripVertical } from "lucide-react";
 import axiosInstance from "../../../api/axios";
 import { usePricing } from "../../../context/Pricingcontext";
-import { toast } from 'react-hot-toast';
+import toast, { Toaster } from 'react-hot-toast';
 import {
   DndContext,
   closestCenter,
@@ -100,14 +100,22 @@ const AdminSubscription = () => {
   const fetchData = async () => {
     try {
       setLoading(true);
+
+      // Fetch all users
       const usersResponse = await axiosInstance.get("/api/user");
       const allUsers = usersResponse.data;
+
+      // Filter users
       const pro = allUsers.filter(user => user.plan === "Pro" || user.plan === "Premium" || user.plan === "Ultra Pro");
       const free = allUsers.filter(user => !user.plan || user.plan === "Free");
+
       setPaidUsers(pro);
       setFreeUsersCount(free.length);
+
+      // Fetch stats for revenue
       const statsResponse = await axiosInstance.get("/api/user/dashboard-stat");
       setStats(statsResponse.data);
+
       setLoading(false);
     } catch (err) {
       console.error("Failed to fetch data", err);
@@ -171,6 +179,7 @@ const AdminSubscription = () => {
 
   const handleDragEnd = (event, planId) => {
     const { active, over } = event;
+
     if (active.id !== over.id) {
       setLocalPlans((prev) =>
         prev.map(plan => {
@@ -190,36 +199,27 @@ const AdminSubscription = () => {
 
   const handleSaveChanges = async () => {
     setSaving(true);
+    // Convert back to string array for backend
     const plansToSave = localPlans.map(plan => ({
       ...plan,
       features: plan.features.map(f => f.text)
     }));
 
-    const resultPromise = savePlans(plansToSave);
+    const result = await savePlans(plansToSave);
+    setSaving(false);
 
-    toast.promise(resultPromise, {
-      loading: 'Saving pricing changes...',
-      success: (res) => {
-        if (res.success) {
-          fetchPlans();
-          return 'Pricing changes saved successfully!';
-        }
-        throw new Error(res.error || "Failed to save");
-      },
-      error: (err) => 'Failed to save changes: ' + (err.message || err.error || err)
-    });
-
-    try {
-      await resultPromise;
-    } catch (e) {
-      console.error(e);
-    } finally {
-      setSaving(false);
+    if (result.success) {
+      toast.success('Pricing changes saved successfully! The changes will now be visible on the pricing page.');
+      await fetchPlans();
+    } else {
+      toast.error('Failed to save changes: ' + result.error);
     }
   };
 
   return (
     <div className="min-h-screen bg-slate-50 p-4 sm:p-6">
+      <Toaster position="top-right" />
+      {/* Header */}
       <div className="mb-6 sm:mb-10">
         <h1 className="text-2xl sm:text-3xl font-bold text-slate-900">
           Subscription Management

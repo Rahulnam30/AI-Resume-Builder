@@ -313,9 +313,7 @@ const ResumeBuilder = ({ setActivePage = () => {} }) => {
         </div>
 
         {/* BUILDER + PREVIEW */}
-        <div
-          className={`grid gap-14 p-1.5 ml-2 mr-2 grid-cols-1 md:grid-cols-[32%_68%] ${isPreviewExpanded ? "md:grid-cols-[0_100%]" : ""}`}
-        >
+        <div className="grid gap-14 p-1.5 ml-2 mr-2 grid-cols-1 md:grid-cols-[32%_68%]">
           {/* builder-section */}
           <div className="bg-white rounded-xl h-full pl-0.5 overflow-hidden flex-1">
             <FormTabs
@@ -361,19 +359,21 @@ const ResumeBuilder = ({ setActivePage = () => {} }) => {
               </button>
             </div>
           </div>
-          <div className="md:block hidden">
-            {!isPreviewHidden && (
-              <LivePreview
-                ref={previewRef}
-                formData={formData}
-                currentTemplate={currentTemplate}
-                isExpanded={isPreviewExpanded}
-                onExpand={() => setIsPreviewExpanded(true)}
-                onCollapse={() => setIsPreviewExpanded(false)}
-                onMinimize={() => setIsPreviewHidden(true)}
-              />
-            )}
-          </div>
+
+        {!isPreviewHidden && !isPreviewExpanded && (
+  <div className="hidden md:block">
+    <LivePreview
+      ref={previewRef}
+      formData={formData}
+      currentTemplate={currentTemplate}
+      isExpanded={false}
+      onExpand={() => setIsPreviewExpanded(true)}
+      onCollapse={() => setIsPreviewExpanded(false)}
+      onMinimize={() => setIsPreviewHidden(true)}
+    />
+  </div>
+)}
+
         </div>
         <div className="w-full h-4"></div>
       </>
@@ -382,7 +382,20 @@ const ResumeBuilder = ({ setActivePage = () => {} }) => {
 
   return (
     <>
-      <UserNavbar />
+ {!isPreviewExpanded && <UserNavbar />}
+ {isPreviewExpanded && (
+  <div className="fixed inset-0 z-[99999] bg-white overflow-auto">
+    <LivePreview
+      ref={previewRef}
+      formData={formData}
+      currentTemplate={currentTemplate}
+      isExpanded={true}
+      onExpand={() => {}}
+      onCollapse={() => setIsPreviewExpanded(false)}
+      onMinimize={() => setIsPreviewHidden(true)}
+    />
+  </div>
+)}
       {/* resume-builder-page */}
       <div className="p-2.5 overflow-hidden font-sans tracking-[0.01em]">
         {/* main-header */}
