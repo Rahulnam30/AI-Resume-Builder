@@ -8,6 +8,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 import notificationRoutes from "./routers/notification.router.js";
  
+
 // Routers
 import authRouter from "./routers/auth.router.js";
 import userRouter from "./routers/user.router.js";

@@ -19,3 +19,4 @@ export const getMisspelledWords = async (text) => {
   const misspelled = words.filter((word) => !spell.correct(word));
   return [...new Set(misspelled)]; // remove duplicates
 };
+  

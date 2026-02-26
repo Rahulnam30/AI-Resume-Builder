@@ -21,7 +21,7 @@ const generatePDFHTML = (formData = {}, filename = "Document") => {
 body { font-family:Arial, sans-serif; font-size:11pt; line-height:1.5; }
 .section { margin-bottom:18px; }
 </style>
-</head>
+</head>   
 <body>
 
 <h2>${formData.fullName || filename}</h2>

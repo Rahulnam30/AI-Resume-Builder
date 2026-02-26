@@ -14,7 +14,7 @@ const detectProfileType = (text) => {
   const nonTechSignals = [
     "manager","operations","sales","marketing","hr","recruiter",
     "account","business","client","communication","strategy"
-  ];
+  ];  
 
   let techScore = 0;
   let nonTechScore = 0;

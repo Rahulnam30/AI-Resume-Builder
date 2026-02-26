@@ -24,7 +24,7 @@ export const parsePDF = async (filePath) => {
     return {
       success: false,
       error: error.message,
-    };
+    }; 
   }
 };
 

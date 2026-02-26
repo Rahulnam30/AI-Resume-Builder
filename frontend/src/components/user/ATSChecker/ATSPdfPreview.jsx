@@ -13,7 +13,7 @@ import {
 import workerSrc from "pdfjs-dist/build/pdf.worker.min?url";
 
 pdfjs.GlobalWorkerOptions.workerSrc = workerSrc;
-
+  
 
 const ZOOM_STEP = 0.1;
 const ZOOM_MIN = 0.6;
