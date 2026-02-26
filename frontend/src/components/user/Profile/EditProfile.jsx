@@ -87,15 +87,15 @@ const EditProfile = () => {
           <div className="profile-sidebar-card">
             <div className="profile-header-section">
               <div className="avatar-frame">
-                {formData.fullName && formData.fullName.trim()
-                  ? formData.fullName
-                    .split(" ")
-                    .slice(0, 2)
-                    .map((n) => n[0].toUpperCase())
-                    .join("")
-                  : (formData.username && formData.username.trim()
-                    ? formData.username[0].toUpperCase()
-                    : "U")}
+                {formData.fullName?.trim()
+  ? formData.fullName
+      .trim()
+      .split(" ")
+      .filter(Boolean)                // remove empty strings
+      .slice(0, 2)
+      .map((n) => n.charAt(0).toUpperCase())
+      .join("")
+  : "?"}
               </div>
             </div>
 
