@@ -13,7 +13,7 @@ router.post("/generate-pdf", async (req, res) => {
     browser = await puppeteer.launch({ 
       headless: 'new',
       args: ['--no-sandbox', '--disable-setuid-sandbox']
-    });
+    });  
     
     const page = await browser.newPage();
     const wrappedHtml = `
@@ -49,5 +49,6 @@ await page.setContent(wrappedHtml, { waitUntil: 'networkidle0' });
     if (browser) await browser.close();
   }
 });
+
 
 export default router;

@@ -24,9 +24,10 @@ export const parsePDF = async (filePath) => {
     return {
       success: false,
       error: error.message,
-    };
+    }; 
   }
 };
+
 
 /**
  * Parse DOCX file and extract text

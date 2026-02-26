@@ -4,6 +4,7 @@ import mongoose from "mongoose";
 import Resume from "../Models/resume.js";
 import AtsScans from "../Models/atsScan.js";
 
+
 // AI Service
 import { generateResumeAI } from "../ai/aiService.js";
 

@@ -14,7 +14,7 @@ const detectProfileType = (text) => {
   const nonTechSignals = [
     "manager","operations","sales","marketing","hr","recruiter",
     "account","business","client","communication","strategy"
-  ];
+  ];  
 
   let techScore = 0;
   let nonTechScore = 0;
@@ -91,30 +91,62 @@ export const analyzeATSCompatibility = (
   // 2️⃣ CONTACT INFO
   // =====================================================
 
-  let contactScore = 0;
-  let contactSuggestions = [];
+ // =====================================================
+// 2️⃣ CONTACT INFO (DYNAMIC)
+// =====================================================
+// =====================================================
+// 2️⃣ CONTACT INFO (TEXT-BASED DYNAMIC DETECTION)
+// =====================================================
 
-  if (extractedData.email) contactScore += 4;
-  if (extractedData.phone) contactScore += 3;
-  if (extractedData.linkedin) contactScore += 2;
-  if (extractedData.github && profileType === "tech") contactScore += 1;
+let contactScore = 0;
+let contactSuggestions = [];
+let missingContacts = [];
 
-  if (contactScore < 8) {
-    const msg = "Include email, phone number, and LinkedIn.";
-    contactSuggestions.push(msg);
-    analysis.suggestions.push(msg);
-  }
+// Detect Email
+const emailRegex = /\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b/i;
+const hasEmail = emailRegex.test(text);
 
-  analysis.sectionScores.push({
-    sectionName: "Contact Information",
-    score: contactScore,
-    maxScore: 10,
-    status: contactScore >= 8 ? "ok" : "warn",
-    suggestions: contactSuggestions
-  });
+// Detect Phone
+const phoneRegex = /\b\d{10}\b|\+\d{1,3}\s?\d{6,14}/;
+const hasPhone = phoneRegex.test(text);
 
-  analysis.overallScore += contactScore;
+// Detect LinkedIn
+const linkedinRegex = /linkedin\.com\/in\/[A-Za-z0-9_-]+/i;
+const hasLinkedIn = linkedinRegex.test(text);
 
+// Detect GitHub (for tech profile)
+const githubRegex = /github\.com\/[A-Za-z0-9_-]+/i;
+const hasGitHub = githubRegex.test(text);
+
+if (hasEmail) contactScore += 4;
+else missingContacts.push("Email");
+
+if (hasPhone) contactScore += 3;
+else missingContacts.push("Phone number");
+
+if (hasLinkedIn) contactScore += 2;
+else missingContacts.push("LinkedIn");
+
+if (profileType === "tech") {
+  if (hasGitHub) contactScore += 1;
+  else missingContacts.push("GitHub");
+}
+
+if (missingContacts.length > 0) {
+  const msg = `Missing contact details: ${missingContacts.join(", ")}.`;
+  contactSuggestions.push(msg);
+  analysis.suggestions.push(msg);
+}
+
+analysis.sectionScores.push({
+  sectionName: "Contact Information",
+  score: contactScore,
+  maxScore: 10,
+  status: contactScore >= 8 ? "ok" : "warn",
+  suggestions: contactSuggestions
+});
+
+analysis.overallScore += contactScore;
   // =====================================================
   // 3️⃣ KEYWORDS
   // =====================================================
@@ -238,6 +270,7 @@ pronouns.forEach((word) => {
   const matches = textLower.match(new RegExp(`\\b${word}\\b`, "gi")) || [];
   matches.forEach(() => pronounMatches.push(word));
 });
+
 
 const pronounCount = pronounMatches.length;
 

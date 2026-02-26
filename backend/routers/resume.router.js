@@ -19,7 +19,7 @@ const resumeRouter = express.Router();
 
 // Upload and analyze resume
 resumeRouter.post(
-  "/upload",
+  "/upload", 
   isAuth,
   uploadSingleResume,
   handleUploadError,

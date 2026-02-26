@@ -6,6 +6,7 @@ const getUserModel = async () => {
   return mod.default || mod.User;
 };
 
+
 const isAuth = async (req, res, next) => {
   try {
     let token;
