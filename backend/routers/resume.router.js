@@ -6,9 +6,12 @@ import {
   deleteScan,
   downloadResume,
   getScanStatistics,
-  getLatestScan
-}
-from "../controllers/Resume.controller.js";
+  getLatestScan,
+  generateAIResume,
+  enhanceWorkExperience,
+  enhanceProjectDescription,
+  generateAICoverLetter
+} from "../controllers/Resume.controller.js";
 import isAuth from "../middlewares/isAuth.js";
 import {
   uploadSingleResume,
@@ -19,7 +22,7 @@ const resumeRouter = express.Router();
 
 // Upload and analyze resume
 resumeRouter.post(
-  "/upload", 
+  "/upload",
   isAuth,
   uploadSingleResume,
   handleUploadError,
@@ -43,5 +46,18 @@ resumeRouter.get("/download/:filename", isAuth, downloadResume);
 
 // Get latest scan after refreshing the page
 resumeRouter.get("/latest", isAuth, getLatestScan);
+
+//To generate professional summary
+resumeRouter.post("/generate-summary", isAuth, generateAIResume);
+
+//To enhance the work experience with the help of ai
+resumeRouter.post("/enhance-work-experience", isAuth, enhanceWorkExperience);
+
+//To enhance the project description with the help of ai
+resumeRouter.post("/enhance-project-description", isAuth, enhanceProjectDescription);
+
+//TO generate cover letter professional summary
+resumeRouter.post("/cover-letter/generate", isAuth, generateAICoverLetter);
+
 
 export default resumeRouter;

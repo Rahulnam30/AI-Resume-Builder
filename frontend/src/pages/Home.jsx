@@ -1,7 +1,6 @@
 import React from "react";
 import { useState, useEffect, useRef } from "react";
 import { useNavigate, useLocation, Link } from "react-router-dom";
-import UpToSkillsImg from "../assets/UptoSkills.webp";
 import featureImage1 from "../assets/rejection.png";
 import featureImage2 from "../assets/advice2.png";
 import featureImage3 from "../assets/solve.png";
@@ -27,15 +26,10 @@ import {
   Layout,
   Zap,
   Layers,
-  Menu,
-  LogOut,
-  UserPlus,
-  LogIn,
   ChevronLeft,
   ChevronRight,
   Activity,
 } from "lucide-react";
-import AiChatBot from "./Aichat";
 
 function LandingPage() {
   const navigate = useNavigate();
@@ -572,7 +566,6 @@ function LandingPage() {
           </div>
         </div>
       </section>
-      <AiChatBot />
       <Footer />
     </div>
   );

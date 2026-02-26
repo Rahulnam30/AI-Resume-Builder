@@ -6,7 +6,12 @@ import AtsScans from "../Models/atsScan.js";
 
 
 // AI Service
-import { generateResumeAI } from "../ai/aiService.js";
+import {
+  generateResumeAI,
+  refineExperienceDescription,
+  refineProjectDescription,
+  generateCoverLetterAI
+} from "../ai/aiService.js";
 
 // Resume Parsing Services
 import {
@@ -27,28 +32,28 @@ import nlp from "compromise";
 // ADD THIS WHITELIST AT MODULE LEVEL (outside function)
 const SPELL_WHITELIST = new Set([
   // Technical terms & acronyms
-  'api', 'apis', 'http', 'https', 'html', 'css', 'javascript', 'js', 'jsx', 'ts', 'tsx', 
-  'react', 'vue', 'angular', 'node', 'nodejs', 'express', 'mongodb', 'mongo', 'mysql', 
+  'api', 'apis', 'http', 'https', 'html', 'css', 'javascript', 'js', 'jsx', 'ts', 'tsx',
+  'react', 'vue', 'angular', 'node', 'nodejs', 'express', 'mongodb', 'mongo', 'mysql',
   'sql', 'nosql', 'git', 'github', 'docker', 'kubernetes', 'aws', 'azure', 'gcp', 'firebase',
   'cloudinary', 'razorpay', 'stripe', 'tailwindcss', 'bootstrap', 'sass', 'webpack', 'babel',
-  'npm', 'yarn', 'jest', 'typescript', 'graphql', 'apollo', 'prisma', 'mongoose', 'odm', 
+  'npm', 'yarn', 'jest', 'typescript', 'graphql', 'apollo', 'prisma', 'mongoose', 'odm',
   'orm', 'jwt', 'oauth', 'ssl', 'tls', 'cdn', 'seo', 'rest', 'json', 'xml', 'yaml', 'regex',
   'async', 'middleware', 'mern', 'mean', 'mevn', 'readme', 'cgpa', 'gpa', 'btech', 'mtech',
   'frontend', 'backend', 'fullstack', 'devops', 'agile', 'scrum', 'ci', 'cd', 'ui', 'ux',
   // Common locations & institutions (expand based on your user base)
   'noida', 'gurgaon', 'gurugram', 'bangalore', 'bengaluru', 'hyderabad', 'pune', 'mumbai',
-  'delhi', 'chennai', 'kolkata', 'ggsipu', 'ipu', 'dtu', 'nsit', 'iit', 'nit', 'iiit', 
-  'bits', 'vit', 'manipal', 'thapar', 'lpu', 'linkedin', 'gmail','reactjs','php','oop','handson','ubuntu',
-'expressjs',
-'serverside',
-'eventdriven',
-'techstack',
-'signup',
-'userspecific',
-'realworld',
-'utilityfirst',
-'nonproduction',
-'asyncawait','annes','admin','impactful'  // Add more as needed from your false positive logs
+  'delhi', 'chennai', 'kolkata', 'ggsipu', 'ipu', 'dtu', 'nsit', 'iit', 'nit', 'iiit',
+  'bits', 'vit', 'manipal', 'thapar', 'lpu', 'linkedin', 'gmail', 'reactjs', 'php', 'oop', 'handson', 'ubuntu',
+  'expressjs',
+  'serverside',
+  'eventdriven',
+  'techstack',
+  'signup',
+  'userspecific',
+  'realworld',
+  'utilityfirst',
+  'nonproduction',
+  'asyncawait', 'annes', 'admin', 'impactful'  // Add more as needed from your false positive logs
 ]);
 
 function segmentWord(word, dictionary) {
@@ -106,8 +111,8 @@ const getMisspelledWords = (text) =>
         if (/^[A-Z]{2,}$/.test(original)) continue;
 
         // Skip capitalized resume header names
-if (/^[A-Z][a-z]+$/.test(original))
-    continue;
+        if (/^[A-Z][a-z]+$/.test(original))
+          continue;
 
         // Too short
         if (word.length <= 2) continue;
@@ -122,17 +127,17 @@ if (/^[A-Z][a-z]+$/.test(original))
         if (word.endsWith("elling")) continue;
 
         // ========= SPELL CHECK =========
-       // ========= SPELL CHECK =========
-if (!dictionary.spellCheck(word)) {
+        // ========= SPELL CHECK =========
+        if (!dictionary.spellCheck(word)) {
 
-  const segmented = segmentWord(word, dictionary);
+          const segmented = segmentWord(word, dictionary);
 
-  // Accept if valid compound
-  if (!segmented) {
-    mistakes.add(word);
-  }
+          // Accept if valid compound
+          if (!segmented) {
+            mistakes.add(word);
+          }
 
-}
+        }
 
 
       }
@@ -167,45 +172,6 @@ export const saveResume = async (req, res) => {
     res.status(500).json({
       success: false,
       error: error.message,
-    });
-  }
-};
-
-/* =====================================================
-   GENERATE AI RESUME + OPTIONAL SAVE TO DB
-   Uses AI to generate a resume summary and optionally saves it
-===================================================== */
-export const generateAIResume = async (req, res) => {
-  try {
-    console.log("📥 AI Resume request received");
-
-    // Generate AI summary
-    const aiText = await generateResumeAI(req.body);
-    console.log("✅ AI Summary generated");
-
-    // Save AI-generated resume to DB (optional)
-    try {
-      const resume = new Resume({
-        ...req.body,
-        summary: aiText,
-      });
-      await resume.save();
-      console.log("💾 AI Resume saved to DB");
-    } catch (dbError) {
-      console.log("⚠️ DB save skipped (MongoDB not connected)");
-    }
-
-    // Send response
-    res.json({
-      success: true,
-      message: "AI Resume generated successfully",
-      aiResume: aiText,
-    });
-  } catch (error) {
-    console.error("❌ AI ERROR:", error);
-    res.status(500).json({
-      success: false,
-      error: "AI generation failed: " + error.message,
     });
   }
 };
@@ -246,17 +212,17 @@ export const uploadAndAnalyzeResume = async (req, res) => {
     // ATS analysis
     const analysis = analyzeATSCompatibility(resumeText, extractedData);
     const misspelledWords = await getMisspelledWords(resumeText);
-analysis.misspelledWords = misspelledWords;
-   
+    analysis.misspelledWords = misspelledWords;
+
     const passes = passesATSThreshold(analysis.overallScore);
     const recommendations = generateRecommendations(analysis);
 
     // Validate required fields from frontend
     const { jobTitle, templateId, resumeprofileId } = req.body;
     if (!jobTitle || !templateId || !resumeprofileId) {
-      return res.status(400).json({ 
-        success: false, 
-        message: "Missing required fields" 
+      return res.status(400).json({
+        success: false,
+        message: "Missing required fields"
       });
     }
 
@@ -265,7 +231,7 @@ analysis.misspelledWords = misspelledWords;
       userId,
       filename: file.filename,
       originalName: file.originalname,
-     filePath: `/uploads/resumes/${file.filename}`,
+      filePath: `/uploads/resumes/${file.filename}`,
       fileSize: file.size,
       fileType: file.mimetype,
       overallScore: analysis.overallScore,
@@ -289,7 +255,7 @@ analysis.misspelledWords = misspelledWords;
       data: {
         scanId: atsScan._id,
 
-         filename: file.filename,
+        filename: file.filename,
         originalName: file.originalname,
         filePath: atsScan.filePath,
         overallScore: analysis.overallScore,
@@ -301,9 +267,9 @@ analysis.misspelledWords = misspelledWords;
         passThreshold: passes,
         extractedData,
         metrics: analysis.metrics,
-        text: resumeText, 
+        text: resumeText,
         misspelledWords: analysis.misspelledWords,
-      
+
       },
     });
   } catch (error) {
@@ -538,6 +504,178 @@ export const getLatestScan = async (req, res) => {
       success: false,
       message: "Failed to fetch latest scan",
       error: error.message,
+    });
+  }
+};
+
+
+//AI Part
+
+/* =====================================================
+   GENERATE AI RESUME + OPTIONAL SAVE TO DB
+   Uses AI to generate a resume summary and optionally saves it
+===================================================== */
+export const generateAIResume = async (req, res) => {
+  try {
+    console.log("📥 AI Resume request received");
+
+    // Generate AI summary
+    const aiText = await generateResumeAI(req.body);
+    console.log("✅ AI Summary generated");
+
+    // Save AI-generated resume to DB (optional)
+    try {
+      const resume = new Resume({
+        ...req.body,
+        summary: aiText,
+      });
+      await resume.save();
+      console.log("💾 AI Resume saved to DB");
+    } catch (dbError) {
+      console.log("⚠️ DB save skipped (MongoDB not connected)");
+    }
+
+    // Send response
+    res.json({
+      success: true,
+      message: "AI Resume generated successfully",
+      aiResume: aiText,
+    });
+  } catch (error) {
+    console.error("❌ AI ERROR:", error);
+    res.status(500).json({
+      success: false,
+      error: "AI generation failed: " + error.message,
+    });
+  }
+};
+
+
+// ==========================================
+// ENHANCE WORK EXPERIENCE + SAVE TO MONGODB
+// ==========================================
+export const enhanceWorkExperience = async (req, res) => {
+  try {
+    console.log("Received AI generation request:", req.body);
+    // 1. Generate AI professional summary
+    const aiResponse = await refineExperienceDescription(req.body);
+    console.log(aiResponse);
+
+    console.log("AI Summary generated successfully");
+    const aiText = JSON.parse(aiResponse);
+    // 2. Try to save to MongoDB (optional - won't fail if DB is down)
+    if (aiText.status === "success") {
+      try {
+        await Resume.findOneAndUpdate(
+          {
+            "experience.id": req.body.id,
+          },
+          {
+            $set: {
+              "experience.$.description": aiText,
+            },
+          },
+          { new: true }
+        );
+        console.log("Experience description updated in database");
+
+      } catch (dbError) {
+        console.log("Database save skipped (MongoDB not connected)", dbError);
+      }
+
+      // 3. Send AI summary back to frontend
+      return res.json({
+        message: "Experience description enhanced successfully",
+        aiResume: aiText.text
+      });
+    }
+    throw new Error(aiText.text || "AI generation failed without specific error message");
+  } catch (error) {
+    console.error("AI ERROR:", error);
+    res.status(500).json({
+      error: "AI generation failed: " + error.message
+    });
+  }
+};
+
+// ==============================================
+// ENHANCE PROJECT DESCRIPTION + SAVE TO MONGODB
+// ==============================================
+export const enhanceProjectDescription = async (req, res) => {
+  try {
+    console.log("Received AI generation request:", req.body);
+    // 1. Generate AI professional summary
+    const aiResponse = await refineProjectDescription(req.body);
+    console.log(aiResponse);
+
+    console.log("AI Summary generated successfully");
+    const projectDescription = JSON.parse(aiResponse);
+    // 2. Try to save to MongoDB (optional - won't fail if DB is down)
+    if (projectDescription.status === "success") {
+      try {
+        await Resume.findOneAndUpdate(
+          {
+            "project.id": req.body.id,
+          },
+          {
+            $set: {
+              "project.$.description": projectDescription,
+            },
+          },
+          { new: true }
+        );
+        console.log("Project description updated in database");
+
+      } catch (dbError) {
+        console.log("Database save skipped (MongoDB not connected)", dbError);
+      }
+
+      // 3. Send AI summary back to frontend
+      return res.json({
+        message: "Project Description enhanced successfully",
+        projectDescription: projectDescription.text
+      });
+    }
+    throw new Error(projectDescription.text || "AI generation failed without specific error message");
+  } catch (error) {
+    console.error("AI ERROR:", error);
+    res.status(500).json({
+      error: "AI generation failed: " + error.message
+    });
+  }
+};
+
+/* =====================================================
+   GENERATE AI COVER LETTER SECTION
+===================================================== */
+export const generateAICoverLetter = async (req, res) => {
+  try {
+    const { sectionType, jobDetails } = req.body;
+
+    if (!sectionType || !jobDetails) {
+      return res.status(400).json({
+        success: false,
+        error: "Missing sectionType or jobDetails"
+      });
+    }
+
+    console.log(`📥 Generating Cover Letter AI for: ${sectionType}`);
+    console.log("📊 Request Body:", req.body);
+
+    const content = await generateCoverLetterAI(jobDetails, sectionType);
+
+    console.log("✅ AI Content Generated Length:", content?.length);
+
+    res.json({
+      success: true,
+      result: content
+    });
+
+  } catch (error) {
+    console.error("❌ COVER LETTER AI ERROR:", error);
+    res.status(500).json({
+      success: false,
+      error: "AI generation failed: " + error.message
     });
   }
 };
