@@ -28,6 +28,8 @@ const EditProfile = () => {
     github: "",
     linkedin: "",
   });
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [adminRequestStatus, setAdminRequestStatus] = useState("none");
   const [loading, setLoading] = useState(false);
   const [fetchingProfile, setFetchingProfile] = useState(true);
 
@@ -46,6 +48,8 @@ const EditProfile = () => {
             github: res.data.user.github || "",
             linkedin: res.data.user.linkedin || "",
           });
+          setIsAdmin(res.data.user.isAdmin || false);
+          setAdminRequestStatus(res.data.user.adminRequestStatus || "none");
         }
       } catch (err) {
         console.error(err);
@@ -88,14 +92,14 @@ const EditProfile = () => {
             <div className="profile-header-section">
               <div className="avatar-frame">
                 {formData.fullName?.trim()
-  ? formData.fullName
-      .trim()
-      .split(" ")
-      .filter(Boolean)                // remove empty strings
-      .slice(0, 2)
-      .map((n) => n.charAt(0).toUpperCase())
-      .join("")
-  : "?"}
+                  ? formData.fullName
+                    .trim()
+                    .split(" ")
+                    .filter(Boolean)                // remove empty strings
+                    .slice(0, 2)
+                    .map((n) => n.charAt(0).toUpperCase())
+                    .join("")
+                  : "?"}
               </div>
             </div>
 
@@ -251,7 +255,7 @@ const EditProfile = () => {
 
         </div>
       </div>
-    </div>
+    </div >
   );
 };
 

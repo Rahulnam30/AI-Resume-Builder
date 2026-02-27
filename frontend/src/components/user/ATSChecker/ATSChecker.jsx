@@ -260,18 +260,35 @@ formData.append("templateId", "63f1c4e2a3b4d5f678901234");
 formData.append("resumeprofileId", "63f1c4e2a3b4d5f678901235");
 
 try {
-  const token = localStorage.getItem("token");
+// Properly define token
+const token =
+  localStorage.getItem("token") ||
+  sessionStorage.getItem("token");
 
-  const res = await fetch(
-    "http://localhost:5000/api/resume/upload",
-    {
-      method: "POST",
-      body: formData,
-      headers: { Authorization: `Bearer ${token}` },
-    }
-  );
+console.log("TOKEN USED:", token);
 
-  const data = await res.json();
+const headers = token
+  ? { Authorization: `Bearer ${token}` }
+  : {};
+
+const res = await fetch(
+  "http://localhost:5000/api/resume/upload",
+  {
+    method: "POST",
+    body: formData,
+    headers,
+  }
+);
+
+ console.log("Response status:", res.status);
+
+const data = await res.json();
+console.log("FULL RESPONSE:", data);
+
+if (!res.ok) {
+  console.error("Server error:", data);
+  return;
+}
 
   if (data.success) {
     setAnalysisResult(data.data);
@@ -727,7 +744,7 @@ function Constraint({ title, ok, warn, suggestions }) {
     ))}
   </ul>
 )}
-
+ 
   return (
     <div className={`p-3 rounded-lg border ${bg} mb-2`}>
       <p className="text-sm font-medium text-slate-800">{title}</p>

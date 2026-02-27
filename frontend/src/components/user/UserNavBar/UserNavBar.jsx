@@ -18,6 +18,7 @@ import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import UptoSkillsLogo from "../../../assets/UptoSkills.webp";
 import { useUserNotifications } from "../../../context/UserNotificationContext";
+import axiosInstance from "../../../api/axios";
 
 const API = "/api";
 
@@ -126,10 +127,7 @@ export default function UserNavbar() {
   // =================== LOGOUT ===================
   const logout = async () => {
     try {
-      await fetch(`${API}/auth/logout`, {
-        method: "POST",
-        credentials: "include",
-      });
+      await axiosInstance.post("/api/auth/logout");
     } finally {
       navigate("/login");
     }

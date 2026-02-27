@@ -2,6 +2,13 @@ import mongoose from "mongoose";
 
 const DownloadSchema = new mongoose.Schema(
   {
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+      index: true,
+    },
+
     name: { type: String, required: true },
     type: { type: String, enum: ["resume", "cover-letter", "cv"], required: true },
     format: { type: String, enum: ["PDF", "DOCX", "DOC"], default: "PDF" },
@@ -15,4 +22,3 @@ const DownloadSchema = new mongoose.Schema(
 );
 
 export default mongoose.model("Download", DownloadSchema);
-

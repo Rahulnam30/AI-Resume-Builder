@@ -24,7 +24,8 @@ const isAuth = async (req, res, next) => {
     if (!token) {
       return res.status(401).json({ message: "Token Not Found" });
     }
-
+   console.log("TOKEN RECEIVED:", token);
+   console.log("JWT_SECRET:", process.env.JWT_SECRET);
     const verifyToken = jwt.verify(token, process.env.JWT_SECRET);
     if (!verifyToken) {
       return res.status(401).json({ message: "Invalid Token" });
