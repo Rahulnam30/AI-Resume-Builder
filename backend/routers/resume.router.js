@@ -6,9 +6,11 @@ import {
   deleteScan,
   downloadResume,
   getScanStatistics,
-  getLatestScan
+  getLatestScan,
+  generateAIResume,
+  generateCoverLetter
 }
-from "../controllers/Resume.controller.js";
+  from "../controllers/Resume.controller.js";
 import isAuth from "../middlewares/isAuth.js";
 import {
   uploadSingleResume,
@@ -43,5 +45,11 @@ resumeRouter.get("/download/:filename", isAuth, downloadResume);
 
 // Get latest scan after refreshing the page
 resumeRouter.get("/latest", isAuth, getLatestScan);
+
+// Generate AI Resume Summary
+resumeRouter.post("/generate-summary", generateAIResume);
+
+// Generate AI Cover Letter
+resumeRouter.post("/cover-letter/generate", generateCoverLetter);
 
 export default resumeRouter;

@@ -5,7 +5,10 @@ import Resume from "../Models/resume.js";
 import AtsScans from "../Models/atsScan.js";
 
 // AI Service
-import { generateResumeAI } from "../ai/aiService.js";
+import {
+  generateResumeAI,
+  generateCoverLetterAI,
+} from "../ai/aiService.js";
 
 // Resume Parsing Services
 import {
@@ -227,6 +230,42 @@ export const generateAIResume = async (req, res) => {
       success: true,
       message: "AI Resume generated successfully",
       aiResume: aiText,
+    });
+  } catch (error) {
+    console.error("❌ AI ERROR:", error);
+    res.status(500).json({
+      success: false,
+      error: "AI generation failed: " + error.message,
+    });
+  }
+};
+
+/* =====================================================
+   GENERATE AI COVER LETTER
+   Uses AI to generate a section of a cover letter
+===================================================== */
+export const generateCoverLetter = async (req, res) => {
+  try {
+    const { jobDetails, sectionType } = req.body;
+
+    if (!jobDetails || !sectionType) {
+      return res.status(400).json({
+        success: false,
+        error: "jobDetails and sectionType are required fields",
+      });
+    }
+
+    console.log(`📥 AI Cover Letter request received for section: ${sectionType}`);
+
+    // Generate AI cover letter section
+    const aiText = await generateCoverLetterAI(jobDetails, sectionType);
+    console.log("✅ AI Cover Letter section generated");
+
+    // Send response
+    res.json({
+      success: true,
+      message: "AI Cover Letter section generated successfully",
+      result: aiText,
     });
   } catch (error) {
     console.error("❌ AI ERROR:", error);

@@ -28,6 +28,8 @@ const EditProfile = () => {
     github: "",
     linkedin: "",
   });
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [adminRequestStatus, setAdminRequestStatus] = useState("none");
   const [loading, setLoading] = useState(false);
   const [fetchingProfile, setFetchingProfile] = useState(true);
 
@@ -46,6 +48,8 @@ const EditProfile = () => {
             github: res.data.user.github || "",
             linkedin: res.data.user.linkedin || "",
           });
+          setIsAdmin(res.data.user.isAdmin || false);
+          setAdminRequestStatus(res.data.user.adminRequestStatus || "none");
         }
       } catch (err) {
         console.error(err);
@@ -99,10 +103,10 @@ const EditProfile = () => {
               <div className="avatar-frame">
                 {formData.fullName && formData.fullName.trim()
                   ? formData.fullName
-                      .split(" ")
-                      .slice(0, 2)
-                      .map((n) => n[0].toUpperCase())
-                      .join("")
+                    .split(" ")
+                    .slice(0, 2)
+                    .map((n) => n[0].toUpperCase())
+                    .join("")
                   : "?"}
               </div>
             </div>
@@ -231,15 +235,15 @@ const EditProfile = () => {
                   </div>
 
                   <div className="form-actions">
-                    <button 
+                    <button
                       className="btn-cancel"
                       onClick={() => navigate("/user/dashboard")}
                     >
                       <X size={18} /> Cancel
                     </button>
 
-                    <button 
-                      className="btn-save" 
+                    <button
+                      className="btn-save"
                       onClick={handleSave}
                       disabled={loading || fetchingProfile}
                     >
