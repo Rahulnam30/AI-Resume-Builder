@@ -365,7 +365,7 @@ export default function ATSChecker({ onSidebarToggle }) {
               >
                 {previewUrl ? (
                   /* ── PDF loaded ── */
-                  <div className="bg-white border border-zinc-200 rounded-2xl overflow-hidden h-[88vh]">
+                  <div className="bg-white border border-zinc-200 rounded-2xl overflow-hidden h-[85%]">
                     <ATSPdfPreview
                       pdfUrl={previewUrl}
                       onLoadSuccess={(pdf) => setPdfInstance(pdf)}
