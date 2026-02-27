@@ -6,6 +6,7 @@ import {
   History, 
   ArrowRight, 
   CheckCircle2,
+  MousePointerClick,
   UploadCloud, 
   Link2, 
   FileDown, 

@@ -12,6 +12,7 @@ import ClosingForm from "./forms/ClosingForm";
 import CoverLetterPreview from "./CoverLetterPreview";
 import CoverLetterTemplates from "./CoverLetterTemplates";
 import UserNavBar from "../UserNavBar/UserNavBar";
+import axiosInstance from "../../../api/axios";
 import "./CoverLetterBuilder.css";
 
 
@@ -62,6 +63,62 @@ const CoverLetterBuilder = () => {
     month: "long",
     day: "numeric",
   });
+
+  /* ======================================================
+     SAVE DOWNLOAD RECORD (same as CV)
+  ====================================================== */
+  const saveDownloadRecord = async (html, format = "PDF") => {
+    try {
+      await axiosInstance.post("/api/downloads", {
+        name: `Cover Letter - ${formData.fullName || "Document"}`,
+        type: "cover-letter",
+        format,
+        html,
+        template: selectedTemplate,
+        size: format === "PDF" ? "150 KB" : "200 KB",
+      });
+    } catch (err) {
+      console.error("Failed to save cover letter download:", err);
+    }
+  };
+
+  /* ======================================================
+     SAVE COVER LETTER TO DOWNLOADS COLLECTION (for preview)
+  ====================================================== */
+  const saveCoverLetterToDownloads = async () => {
+    try {
+      // Generate HTML for the cover letter using the current template
+      const TemplateComponent = CoverLetterTemplates[selectedTemplate];
+      if (!TemplateComponent) return;
+
+      const container = document.createElement("div");
+      Object.assign(container.style, {
+        position: "fixed",
+        top: "0",
+        left: "-9999px",
+        width: "794px", // A4 width
+        background: "#ffffff",
+      });
+      document.body.appendChild(container);
+
+      const { createRoot } = await import("react-dom/client");
+      
+      await new Promise((resolve) => {
+        const root = createRoot(container);
+        root.render(<TemplateComponent formData={formData} exportDate={date} />);
+        setTimeout(resolve, 400);
+      });
+
+      // Get the HTML and save to downloads
+      const html = container.innerHTML;
+      await saveDownloadRecord(html, "PDF");
+     
+      document.body.removeChild(container);
+      console.log('Cover letter saved to downloads collection');
+    } catch (err) {
+      console.error("Failed to save cover letter to downloads:", err);
+    }
+  };
 
 
   /* ===== PDF EXPORT - ALL FIXES APPLIED ===== */
@@ -252,6 +309,10 @@ ${(formData.jobSummary || formData.jobDescription) ? `
 </div>
 </body>
 </html>`);
+   
+    // 🔥 SAVE TO DOWNLOADS COLLECTION
+    const htmlContent = printWindow.document.documentElement.outerHTML;
+    saveDownloadRecord(htmlContent, "PDF");
    
     printWindow.document.close();
     setTimeout(() => setIsExporting(false), 1500);
@@ -516,6 +577,8 @@ ${(formData.jobSummary || formData.jobDescription) ? `
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
 
+  // 🔥 SAVE TO DOWNLOADS COLLECTION
+  saveDownloadRecord(html, "DOCX");
 
   setTimeout(() => setIsExporting(false), 800);
 };
