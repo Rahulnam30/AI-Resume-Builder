@@ -375,17 +375,18 @@ export default function AdminUsers({ head = "Manage Users" }) {
 
                   <td className="px-6 py-4 text-center">
                     {u.username === "Super Admin" ? (
-                      <span className="px-3 py-1 rounded-full text-xs font-semibold bg-purple-100 text-purple-700 border border-purple-200">
+                      <span className="px-3 py-1 rounded-full text-xs font-semibold bg-purple-100 text-purple-700 border border-purple-200 whitespace-nowrap" style={{ display: 'inline-block', width: 'max-content' }}>
                         Super Admin
                       </span>
                     ) : (
                       <span
                         onClick={() => handleToggleRole(u)}
                         title={`Click to switch to ${u.isAdmin ? 'User' : 'Admin'}`}
-                        className={`px-3 py-1 rounded-full text-xs font-semibold cursor-pointer transition-all hover:scale-105 active:scale-95 ${u.isAdmin
+                        className={`px-3 py-1 rounded-full text-xs font-semibold cursor-pointer transition-all hover:scale-105 active:scale-95 whitespace-nowrap ${u.isAdmin
                           ? "bg-purple-100 text-purple-700 border border-purple-200 hover:bg-purple-200"
                           : "bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-100"
                           }`}
+                        style={{ display: 'inline-block', width: 'max-content' }}
                       >
                         {u.isAdmin ? "Admin" : "User"}
                       </span>
@@ -425,7 +426,7 @@ export default function AdminUsers({ head = "Manage Users" }) {
                           <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${u.isActive ? 'translate-x-6' : 'translate-x-1'
                             }`} />
                         </button>
-                        <div className="text-[10px] text-gray-400 mt-1">
+                        <div className="text-[10px] text-gray-400 mt-1 whitespace-nowrap">
                           {u.isActive ? 'Active' : 'Inactive'}
                         </div>
                       </>
@@ -527,17 +528,18 @@ export default function AdminUsers({ head = "Manage Users" }) {
                   <div className="flex items-center justify-between mt-1 pt-3 border-t border-slate-200">
                     <div className="flex gap-2">
                       {u.username === "Super Admin" ? (
-                        <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide border bg-purple-100 text-purple-700 border-purple-200">
+                        <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide border bg-purple-100 text-purple-700 border-purple-200 whitespace-nowrap" style={{ display: 'inline-block', width: 'max-content' }}>
                           Super Admin
                         </span>
                       ) : (
                         <span
                           onClick={() => handleToggleRole(u)}
                           title={`Click to switch to ${u.isAdmin ? 'User' : 'Admin'}`}
-                          className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide border cursor-pointer transition-all active:scale-95 ${u.isAdmin
+                          className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide border cursor-pointer transition-all active:scale-95 whitespace-nowrap ${u.isAdmin
                             ? "bg-purple-100 text-purple-700 border-purple-200"
                             : "bg-blue-50 text-blue-700 border-blue-200"
                             }`}
+                          style={{ display: 'inline-block', width: 'max-content' }}
                         >
                           {u.isAdmin ? "Admin" : "User"}
                         </span>

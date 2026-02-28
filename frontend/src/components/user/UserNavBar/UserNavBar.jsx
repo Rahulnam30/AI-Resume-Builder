@@ -4,6 +4,7 @@ import {
   UserCog,
   Shield,
   LogOut,
+  Repeat,
   HelpCircle,
   CreditCard,
   Info,
@@ -39,24 +40,26 @@ export default function UserNavbar() {
   const [user, setUser] = useState({
     name: "User",
     email: "",
+    isAdmin: false,
   });
 
   // =================== FETCH LOGGED-IN USER ===================
   useEffect(() => {
-    fetch(`${API}/user/me`, { credentials: "include" })
-      .then((res) => {
-        if (!res.ok) throw new Error("Unauthorized");
-        return res.json();
-      })
-      .then((data) => {
-        setUser({
-          name: data.username || "User",
-          email: data.email || "",
-        });
-      })
-      .catch(() => {
-        console.log("User not logged in");
-      });
+    const fetchProfile = async () => {
+      try {
+        const res = await axiosInstance.get("/api/user/profile");
+        if (res.data?.user) {
+          setUser({
+            name: res.data.user.username || "User",
+            email: res.data.user.email || "",
+            isAdmin: res.data.user.isAdmin || false,
+          });
+        }
+      } catch (err) {
+        console.error("User not logged in or error:", err);
+      }
+    };
+    fetchProfile();
   }, []);
 
   // =================== ICON HELPERS ===================
@@ -227,6 +230,13 @@ export default function UserNavbar() {
                     label="Help Center"
                     onClick={() => { setShowUserMenu(false); navigate("/help-center"); }}
                   />
+                  {user.isAdmin && (
+                    <DropdownItem
+                      icon={<Repeat size={16} />}
+                      label="Switch to Admin Dashboard"
+                      onClick={() => { setShowUserMenu(false); navigate("/admin"); }}
+                    />
+                  )}
                   <div className="border-t my-1" />
                   <DropdownItem
                     icon={<LogOut size={16} />}

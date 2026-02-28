@@ -47,7 +47,7 @@ resumeRouter.get("/download/:filename", isAuth, downloadResume);
 // Get latest scan after refreshing the page
 resumeRouter.get("/latest", isAuth, getLatestScan);
 // Generate AI Resume Summary
-resumeRouter.post("/generate-summary", generateAIResume);
+// resumeRouter.post("/generate-summary", generateAIResume);
 
 // Generate AI Cover Letter
 resumeRouter.post("/cover-letter/generate", generateCoverLetter);
