@@ -1,6 +1,5 @@
 import mongoose from "mongoose";
 
-
 import User from "./User.js";
 import Template from "./template.js";
 import ResumeProfile from "./resumeProfile.js";
