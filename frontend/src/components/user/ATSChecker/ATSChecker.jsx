@@ -177,9 +177,9 @@ export default function ATSChecker({ onSidebarToggle }) {
       <UserNavBar onMenuClick={onSidebarToggle || (() => {})} />
 
       {/* ── Page header ── */}
-      <div className="max-w-7xl mx-auto px-5 pt-8 pb-4 flex items-center justify-between">
+      <div className="w-full px-8 pt-8 pb-4 flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight text-zinc-900">
+          <h1 className="text-3xl font-semibold tracking-tight text-zinc-900">
             ATS Checker
           </h1>
           <p className="text-sm text-zinc-400 mt-0.5">
@@ -203,7 +203,7 @@ export default function ATSChecker({ onSidebarToggle }) {
       </div>
 
       {/* ── Main layout ── */}
-      <div className="max-w-7xl mx-auto px-5 pb-12 flex flex-col md:flex-row gap-5">
+      <div className="w-full px-8 pb-12 flex flex-col md:flex-row gap-5">
         {/* ══ LEFT PANEL ══ */}
         <div className="w-full md:w-80 lg:w-96 shrink-0 flex flex-col gap-4">
           <div className="flex items-center justify-between h-5">
@@ -618,6 +618,9 @@ export default function ATSChecker({ onSidebarToggle }) {
           </AnimatePresence>
         </div>
       </div>
+      <footer className="footer pb-6">
+        © {new Date().getFullYear()} ResumeAI Inc. All rights reserved.
+      </footer>
     </div>
   );
 }
