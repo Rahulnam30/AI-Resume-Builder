@@ -1,6 +1,7 @@
 import puppeteer from 'puppeteer';
 import { Document, Packer, Paragraph, ImageRun, AlignmentType, WidthType } from 'docx';
 
+
 export const exportFile = async (req, res) => {
   try {
     const { html, format, formData } = req.body;
@@ -8,18 +9,22 @@ export const exportFile = async (req, res) => {
       return res.status(400).json({ message: 'HTML required' });
     }
 
+
     const browser = await puppeteer.launch({
       headless: 'new',
       args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage']
     });
     const page = await browser.newPage();
 
+
     // Match preview exactly: A4 viewport, full CSS loaded
     await page.setViewport({ width: 794, height: 1123 }); // A4 pixels @96dpi
     await page.setContent(html, { waitUntil: 'networkidle0' });
 
+
     let buffer;
     const filename = `cover-letter-${(formData?.jobTitle || 'cover').replace(/[^a-zA-Z0-9]/g, '-')}`;
+
 
     if (format === 'pdf') {
       buffer = await page.pdf({
@@ -30,11 +35,12 @@ export const exportFile = async (req, res) => {
       });
     } else if (format === 'docx') {
       // Screenshot matches preview pixel-perfect
-      const imageBuffer = await page.screenshot({ 
-        type: 'png', 
+      const imageBuffer = await page.screenshot({
+        type: 'png',
         fullPage: true,
-        omitBackground: false 
+        omitBackground: false
       });
+
 
       const doc = new Document({
         sections: [{
@@ -66,11 +72,13 @@ export const exportFile = async (req, res) => {
       return res.status(400).json({ message: 'Format must be pdf or docx' });
     }
 
+
     await browser.close();
 
+
     res.set({
-      'Content-Type': format === 'pdf' ? 
-        'application/pdf' : 
+      'Content-Type': format === 'pdf' ?
+        'application/pdf' :
         'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
       'Content-Disposition': `attachment; filename="${filename}.${format}"`,
       'Content-Length': buffer.length

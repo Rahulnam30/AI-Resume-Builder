@@ -13,6 +13,7 @@ import {
   Menu,
   X,
   Bell,
+  Shield,
 } from "lucide-react";
 import { useUserNotifications } from "../../../context/UserNotificationContext";
 import "./UserSidebar.css";
@@ -25,6 +26,12 @@ export default function UserSidebar() {
   const [hoveredItem, setHoveredItem] = useState(null);
   const [isMobile, setIsMobile] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(true);
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    const storedRole = localStorage.getItem("isAdmin") || sessionStorage.getItem("isAdmin");
+    setIsAdmin(storedRole === "true");
+  }, []);
 
   useEffect(() => {
     setIsCollapsed(!isMobile);
@@ -95,6 +102,16 @@ export default function UserSidebar() {
     },
   ];
 
+  // Add Admin Switch if user is admin
+  if (isAdmin) {
+    menuItems.push({
+      id: "admin-switch",
+      icon: Shield, // I need to import Shield or use a similar icon
+      label: "Admin Dashboard",
+      path: "/admin",
+    });
+  }
+
   const handleNavigate = (path) => {
     navigate(path);
     setIsMobileOpen(false);
@@ -115,7 +132,7 @@ export default function UserSidebar() {
   return (
     <>
       {/* Toggle Buttons */}
-      <div className="fixed md:top-4 top-5 md:left-4 left-2 z-[60] flex gap-2">
+      <div className="fixed md:top-4 top-5 md:left-4 left-2 z-[1000] flex gap-2">
         <button
           onClick={() => setIsMobileOpen(!isMobileOpen)}
           className="md:hidden"
@@ -171,7 +188,7 @@ export default function UserSidebar() {
                     <motion.span
                       initial={{ scale: 0 }}
                       animate={{ scale: 1 }}
-                      className={`${isCollapsed ? 'absolute -top-1 -right-1' : 'ml-auto'} inline-flex items-center justify-center w-5 h-5 text-xs font-bold text-white rounded-full ${active ? 'bg-yellow-400' : 'bg-yellow-400'}`}
+                      className={`${isCollapsed ? "absolute -top-1 -right-1" : "ml-auto"} inline-flex items-center justify-center w-5 h-5 text-xs font-bold text-white rounded-full ${active ? "bg-yellow-400" : "bg-yellow-400"}`}
                     >
                       {item.badge}
                     </motion.span>

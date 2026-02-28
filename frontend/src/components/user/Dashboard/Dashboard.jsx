@@ -9,9 +9,7 @@ import {
   FaFileAlt,
   FaEye,
   FaChartLine,
-  FaShieldAlt,
 } from "react-icons/fa";
-import toast from "react-hot-toast";
 
 import "./Dashboard.css";
 
@@ -21,25 +19,6 @@ const Dashboard = ({ setActivePage }) => {
   const [dashboardData, setDashboardData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [requestLoading, setRequestLoading] = useState(false);
-
-  const handleRequestAdmin = async () => {
-    try {
-      setRequestLoading(true);
-      const res = await axiosInstance.post("/api/user/request-admin");
-      toast.success(res.data?.message || "Admin request submitted");
-      // update local state so UI reflects pending status
-      setDashboardData(prev => ({
-        ...prev,
-        user: { ...prev.user, adminRequestStatus: 'pending' }
-      }));
-    } catch (err) {
-      console.error(err);
-      toast.error(err?.response?.data?.message || "Failed to submit request");
-    } finally {
-      setRequestLoading(false);
-    }
-  };
 
   useEffect(() => {
     const fetchDashboard = async () => {
@@ -103,9 +82,6 @@ const Dashboard = ({ setActivePage }) => {
   const avgAtsScore = stats.avgAtsScore || 0;
   const atsDelta = stats.atsDelta || 0;
   const profileViews = stats.profileViews || 0;
-
-  const isAdmin = dashboardData?.user?.isAdmin || false;
-  const adminRequestStatus = dashboardData?.user?.adminRequestStatus || "none";
 
   return (
     <div className="dashboard-page">
@@ -182,38 +158,6 @@ const Dashboard = ({ setActivePage }) => {
             icon={<FaEye />}
           />
         </div>
-
-        {/* Upgrade to Admin Card */}
-        {!isAdmin && (
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 flex flex-col md:flex-row items-center justify-between gap-6 mb-8 mt-4">
-            <div className="flex items-start gap-4">
-              <div className="w-12 h-12 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
-                <FaShieldAlt size={22} />
-              </div>
-              <div>
-                <h3 className="font-semibold text-gray-900 text-lg mb-1">Upgrade to Admin</h3>
-                <p className="text-gray-500 text-sm">
-                  Request administrator privileges to moderate templates, manage users, and view platform analytics.
-                </p>
-              </div>
-            </div>
-
-            <button
-              onClick={handleRequestAdmin}
-              disabled={adminRequestStatus === 'pending' || requestLoading}
-              className={`px-6 py-2.5 rounded-lg font-medium transition-all shrink-0 whitespace-nowrap ${adminRequestStatus === 'pending'
-                ? 'bg-amber-100 text-amber-700 cursor-not-allowed'
-                : adminRequestStatus === 'rejected'
-                  ? 'bg-red-50 text-red-600 border border-red-200 hover:bg-red-100'
-                  : 'bg-indigo-600 text-white hover:bg-indigo-700 shadow-sm'
-                }`}
-            >
-              {adminRequestStatus === 'pending' ? 'Request Pending' :
-                adminRequestStatus === 'rejected' ? 'Request Rejected (Apply Again)' :
-                  'Request Admin Access'}
-            </button>
-          </div>
-        )}
 
         <div className="dashboard-grid full-width-list">
           <RecentResumes
