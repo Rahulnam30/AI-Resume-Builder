@@ -80,10 +80,7 @@ export default function Aichat() {
         isLoggedIn,
       });
 
-      setMessages((prev) => [
-        ...prev,
-        { from: "bot", text: res.data.reply },
-      ]);
+      setMessages((prev) => [...prev, { from: "bot", text: res.data.reply }]);
     } catch {
       setMessages((prev) => [
         ...prev,
@@ -177,7 +174,7 @@ export default function Aichat() {
                   <div className="absolute top-0 left-[-10px] w-0 h-0 border-t-[10px] border-l-[10px] border-b-0 border-r-0 border-solid border-t-slate-200 border-l-transparent"></div>
                   {/* Inner fill triangle (white) – creates the 1px border effect */}
                   <div className="absolute top-[1px] left-[-8px] w-0 h-0 border-t-[8px] border-l-[8px] border-b-0 border-r-0 border-solid border-t-white border-l-transparent"></div>
-                  
+
                   <ReactMarkdown
                     components={{
                       a: ({ href, children }) => (
