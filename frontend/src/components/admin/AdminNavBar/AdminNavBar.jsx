@@ -24,7 +24,7 @@ const NOTIFICATION_TYPES = {
   resume_downloaded: { icon: Download, color: "text-cyan-600", bg: "bg-cyan-50", label: "Download" }
 };
 
-export default function AdminNavbar({ isCollapsed, setIsCollapsed, isMobileOpen, setIsMobileOpen, adminUser }) {
+export default function AdminNavbar({ isCollapsed, setIsCollapsed, isMobileOpen, setIsMobileOpen }) {
   const navigate = useNavigate();
   const [showNotifications, setShowNotifications] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
