@@ -262,6 +262,9 @@ ${(formData.jobSummary || formData.jobDescription) ? `
 <<<<<<< HEAD
 =======
    
+<<<<<<< HEAD
+>>>>>>> parent of e8bdcc6 (Merge branch 'main' of https://github.com/Rahulnam30/AI-Resume-Builder)
+=======
 >>>>>>> parent of e8bdcc6 (Merge branch 'main' of https://github.com/Rahulnam30/AI-Resume-Builder)
     printWindow.document.close();
     setTimeout(() => setIsExporting(false), 1500);

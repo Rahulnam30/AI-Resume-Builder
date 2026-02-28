@@ -88,6 +88,7 @@ function App() {
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/forgot-password" element={<ForgotPasswordPage />} />
 <<<<<<< HEAD
+<<<<<<< HEAD
           <Route element={<LandingPageLayout />}>
             <Route path="/" element={<Home />} />
             <Route path="/contact" element={<Contact />} />
@@ -123,6 +124,8 @@ function App() {
             <Route path="/WritingCoverLetter" element={<WritingCoverLetter />} />
           </Route>
 =======
+=======
+>>>>>>> parent of e8bdcc6 (Merge branch 'main' of https://github.com/Rahulnam30/AI-Resume-Builder)
 
           <Route path="/contact" element={<Contact />} />
           <Route path="/HelpCenter" element={<HelpCenter />} />
@@ -155,6 +158,9 @@ function App() {
           <Route path="/cover-letter-examples" element={<CoverLetterExamples />} />
           <Route path="/cv" element={<CVFormattingPage />} />
           <Route path="/WritingCoverLetter" element={<WritingCoverLetter />} />
+<<<<<<< HEAD
+>>>>>>> parent of e8bdcc6 (Merge branch 'main' of https://github.com/Rahulnam30/AI-Resume-Builder)
+=======
 >>>>>>> parent of e8bdcc6 (Merge branch 'main' of https://github.com/Rahulnam30/AI-Resume-Builder)
 
           {/* ================= USER DASHBOARD ROUTES ================= */}
