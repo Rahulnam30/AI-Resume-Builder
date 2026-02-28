@@ -1,6 +1,16 @@
 // ✅ COMPLETE CoverLetterBuilder.jsx - ALL FIXES APPLIED (Feb 19, 2026)
-import { useState } from 'react';
+import { useState } from "react";
 import {
+  ArrowLeft,
+  ArrowRight,
+  Building2,
+  Briefcase,
+  FileText,
+  User,
+  Download,
+  AlertTriangle,
+  FileText as FileTextIcon,
+} from "lucide-react";
   ArrowLeft, ArrowRight, Building2, Briefcase, FileText, User,
   Download, AlertTriangle, FileText as FileTextIcon, X
 } from 'lucide-react';
@@ -15,14 +25,12 @@ import CoverLetterTemplates from "./CoverLetterTemplates";
 import UserNavBar from "../UserNavBar/UserNavBar";
 import "./CoverLetterBuilder.css";
 
-
 const tabs = [
   { id: "recipient", label: "Recipient", icon: Building2 },
   { id: "job", label: "Job Details", icon: Briefcase },
   { id: "body", label: "Content", icon: FileText },
   { id: "closing", label: "Closing", icon: User },
 ];
-
 
 const CoverLetterBuilder = () => {
   const [formData, setFormData] = useState({
@@ -47,7 +55,6 @@ const CoverLetterBuilder = () => {
     customSalutation: "",
   });
 
-
   const [selectedTemplate, setSelectedTemplate] = useState("professional");
   const [activeSection, setActiveSection] = useState("recipient");
   const [isExporting, setIsExporting] = useState(false);
@@ -60,11 +67,9 @@ const CoverLetterBuilder = () => {
     };
   }, [showMobilePreview]);
 
-
   const handleInputChange = (field, value) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
-
 
   const date = new Date().toLocaleDateString("en-US", {
     year: "numeric",
@@ -72,16 +77,74 @@ const CoverLetterBuilder = () => {
     day: "numeric",
   });
 
+  /* ======================================================
+     SAVE DOWNLOAD RECORD (same as CV)
+  ====================================================== */
+  const saveDownloadRecord = async (html, format = "PDF") => {
+    try {
+      await axiosInstance.post("/api/downloads", {
+        name: `Cover Letter - ${formData.fullName || "Document"}`,
+        type: "cover-letter",
+        format,
+        html,
+        template: selectedTemplate,
+        size: format === "PDF" ? "150 KB" : "200 KB",
+      });
+    } catch (err) {
+      console.error("Failed to save cover letter download:", err);
+    }
+  };
+
+  /* ======================================================
+     SAVE COVER LETTER TO DOWNLOADS COLLECTION (for preview)
+  ====================================================== */
+  const saveCoverLetterToDownloads = async () => {
+    try {
+      // Generate HTML for the cover letter using the current template
+      const TemplateComponent = CoverLetterTemplates[selectedTemplate];
+      if (!TemplateComponent) return;
+
+      const container = document.createElement("div");
+      Object.assign(container.style, {
+        position: "fixed",
+        top: "0",
+        left: "-9999px",
+        width: "794px", // A4 width
+        background: "#ffffff",
+      });
+      document.body.appendChild(container);
+
+      const { createRoot } = await import("react-dom/client");
+
+      await new Promise((resolve) => {
+        const root = createRoot(container);
+        root.render(
+          <TemplateComponent formData={formData} exportDate={date} />,
+        );
+        setTimeout(resolve, 400);
+      });
+
+      // Get the HTML and save to downloads
+      const html = container.innerHTML;
+      await saveDownloadRecord(html, "PDF");
+
+      document.body.removeChild(container);
+      console.log("Cover letter saved to downloads collection");
+    } catch (err) {
+      console.error("Failed to save cover letter to downloads:", err);
+    }
+  };
 
   /* ===== PDF EXPORT - ALL FIXES APPLIED ===== */
   const exportToPDF = () => {
     if (!formData.fullName || !formData.jobTitle) {
-      alert('Please fill your name and job title first');
+      alert("Please fill your name and job title first");
       return;
     }
 
-
     setIsExporting(true);
+    const printWindow = window.open("", "_blank", "width=850,height=1100");
+
     const printWindow = window.open('', '_blank', 'width=850,height=1100');
     printWindow.document.write(`
 <!DOCTYPE html>
@@ -210,34 +273,48 @@ body {
 </head>
 <body onload="window.print(); setTimeout(() => window.close(), 1000);">
 <div class="contact-info">
+  <div class="contact-name">${formData.fullName || "Your Name"}</div>
+  ${formData.address ? formData.address.replace(/\n/g, "<br>") : ""}
   <div class="contact-name">${formData.fullName || 'Your Name'}</div>
   ${formData.address ? formData.address.replace(/\n/g, '<br>') : ''}
   <div class="contact-details">
-    ${formData.email ? formData.email : ''}
-    ${formData.phone ? `<br>${formData.phone}` : ''}
-    ${formData.linkedin ? `<br>${formData.linkedin}` : ''}
+    ${formData.email ? formData.email : ""}
+    ${formData.phone ? `<br>${formData.phone}` : ""}
+    ${formData.linkedin ? `<br>${formData.linkedin}` : ""}
   </div>
   <div class="letter-date">${date}</div>
 </div>
 
 
-${(formData.jobTitle || formData.jobReference) ? `
+${
+  formData.jobTitle || formData.jobReference
+    ? `
 <div class="job-reference">
-  ${formData.jobTitle ? `<div class="job-title">RE: ${formData.jobTitle.toUpperCase()}</div>` : ''}
-  ${formData.jobReference ? `<div class="job-ref">Ref: ${formData.jobReference}</div>` : ''}
+  ${formData.jobTitle ? `<div class="job-title">RE: ${formData.jobTitle.toUpperCase()}</div>` : ""}
+  ${formData.jobReference ? `<div class="job-ref">Ref: ${formData.jobReference}</div>` : ""}
 </div>
-` : ''}
+`
+    : ""
+}
 
 
-${(formData.jobSummary || formData.jobDescription) ? `
+${
+  formData.jobSummary || formData.jobDescription
+    ? `
 <div class="job-details-section">
-  ${formData.jobSummary ? `<div><strong>Job Summary:</strong> ${formData.jobSummary}</div>` : ''}
-  ${formData.jobDescription ? `<div><strong>Key Responsibilities:</strong> ${formData.jobDescription}</div>` : ''}
+  ${formData.jobSummary ? `<div><strong>Job Summary:</strong> ${formData.jobSummary}</div>` : ""}
+  ${formData.jobDescription ? `<div><strong>Key Responsibilities:</strong> ${formData.jobDescription}</div>` : ""}
 </div>
-` : ''}
+`
+    : ""
+}
 
 
 <div class="recipient-info">
+  <div class="recipient-name">${formData.recipientName || "Hiring Manager"}</div>
+  ${formData.recipientTitle ? `<div>${formData.recipientTitle}</div>` : ""}
+  ${formData.companyName ? `<div class="company-name">${formData.companyName}</div>` : ""}
+  ${formData.companyAddress ? formData.companyAddress.replace(/\n/g, "<br>") : ""}
   <div class="recipient-name">${formData.recipientName || 'Hiring Manager'}</div>
   ${formData.recipientTitle ? `<div>${formData.recipientTitle}</div>` : ''}
   ${formData.companyName ? `<div class="company-name">${formData.companyName}</div>` : ''}
@@ -245,8 +322,13 @@ ${(formData.jobSummary || formData.jobDescription) ? `
 </div>
 
 
-<div class="salutation">Dear ${formData.recipientName || 'Hiring Manager'},</div>
+<div class="salutation">Dear ${formData.recipientName || "Hiring Manager"},</div>
 
+
+<div class="body-paragraph">${(formData.openingParagraph || "I'm excited to apply for this position...").replace(/\n/g, "<br>")}</div>
+<div class="body-paragraph">${(formData.bodyParagraph1 || "In my previous role...").replace(/\n/g, "<br>")}</div>
+<div class="body-paragraph">${(formData.bodyParagraph2 || "My technical skills include...").replace(/\n/g, "<br>")}</div>
+<div class="body-paragraph">${(formData.closingParagraph || "I'm particularly drawn to your company...").replace(/\n/g, "<br>")}</div>
 <div class="body-paragraph">${(formData.openingParagraph || "I'm excited to apply for this position...").replace(/\n/g, '<br>')}</div>
 <div class="body-paragraph">${(formData.bodyParagraph1 || "In my previous role...").replace(/\n/g, '<br>')}</div>
 <div class="body-paragraph">${(formData.bodyParagraph2 || "My technical skills include...").replace(/\n/g, '<br>')}</div>
@@ -254,11 +336,16 @@ ${(formData.jobSummary || formData.jobDescription) ? `
 
 
 <div class="signature">
-  <div class="signature-closing">${formData.customSalutation || formData.salutation || 'Sincerely'}</div>
-  <div class="signature-name">${formData.fullName || 'Your Name'}</div>
+  <div class="signature-closing">${formData.customSalutation || formData.salutation || "Sincerely"}</div>
+  <div class="signature-name">${formData.fullName || "Your Name"}</div>
 </div>
 </body>
 </html>`);
+
+    // 🔥 SAVE TO DOWNLOADS COLLECTION
+    const htmlContent = printWindow.document.documentElement.outerHTML;
+    saveDownloadRecord(htmlContent, "PDF");
+
 // <<<<<<< HEAD
 // =======
    
@@ -274,6 +361,7 @@ ${(formData.jobSummary || formData.jobDescription) ? `
 
   const exportToWord = () => {
     if (!formData.fullName || !formData.jobTitle) {
+      alert("Please fill your name and job title first");
       alert('Please fill your name and job title first');
       return;
     }
@@ -459,53 +547,77 @@ p, div, span {
 </head>
 <body>
 <div class="contact-info">
-  <div class="contact-name">${formData.fullName || 'Your Name'}</div>
-  ${formData.address ? formData.address.split('\n').filter(Boolean).map((line, i) => `<div>${line}</div>`).join('') : ''}
+  <div class="contact-name">${formData.fullName || "Your Name"}</div>
+  ${
+    formData.address
+      ? formData.address
+          .split("\n")
+          .filter(Boolean)
+          .map((line, i) => `<div>${line}</div>`)
+          .join("")
+      : ""
+  }
   <div class="contact-details">
-    ${formData.email ? `<div>${formData.email}</div>` : ''}
-    ${formData.phone ? `<div>${formData.phone}</div>` : ''}
-    ${formData.linkedin ? `<div>${formData.linkedin}</div>` : ''}
+    ${formData.email ? `<div>${formData.email}</div>` : ""}
+    ${formData.phone ? `<div>${formData.phone}</div>` : ""}
+    ${formData.linkedin ? `<div>${formData.linkedin}</div>` : ""}
   </div>
   <div class="letter-date">${date}</div>
 </div>
 
 
-${(formData.jobTitle || formData.jobReference) ? `
+${
+  formData.jobTitle || formData.jobReference
+    ? `
 <div class="job-reference">
-  ${formData.jobTitle ? `<div class="job-title">RE: ${formData.jobTitle.toUpperCase()}</div>` : ''}
-  ${formData.jobReference ? `<div class="job-ref">Ref: ${formData.jobReference}</div>` : ''}
+  ${formData.jobTitle ? `<div class="job-title">RE: ${formData.jobTitle.toUpperCase()}</div>` : ""}
+  ${formData.jobReference ? `<div class="job-ref">Ref: ${formData.jobReference}</div>` : ""}
 </div>
-` : ''}
+`
+    : ""
+}
 
 
-${(formData.jobSummary || formData.jobDescription) ? `
+${
+  formData.jobSummary || formData.jobDescription
+    ? `
 <div class="job-details-section">
-  ${formData.jobSummary ? `<div><strong>Job Summary:</strong> ${formData.jobSummary}</div>` : ''}
-  ${formData.jobDescription ? `<div><strong>Key Responsibilities:</strong> ${formData.jobDescription}</div>` : ''}
+  ${formData.jobSummary ? `<div><strong>Job Summary:</strong> ${formData.jobSummary}</div>` : ""}
+  ${formData.jobDescription ? `<div><strong>Key Responsibilities:</strong> ${formData.jobDescription}</div>` : ""}
 </div>
-` : ''}
+`
+    : ""
+}
 
 
 <div class="recipient-info">
-  <div class="recipient-name">${formData.recipientName || 'Hiring Manager'}</div>
-  ${formData.recipientTitle ? `<div class="recipient-title">${formData.recipientTitle}</div>` : ''}
-  ${formData.companyName ? `<div class="company-name">${formData.companyName}</div>` : ''}
-  ${formData.companyAddress ? formData.companyAddress.split('\n').filter(Boolean).map((line, i) => `<div>${line}</div>`).join('') : ''}
+  <div class="recipient-name">${formData.recipientName || "Hiring Manager"}</div>
+  ${formData.recipientTitle ? `<div class="recipient-title">${formData.recipientTitle}</div>` : ""}
+  ${formData.companyName ? `<div class="company-name">${formData.companyName}</div>` : ""}
+  ${
+    formData.companyAddress
+      ? formData.companyAddress
+          .split("\n")
+          .filter(Boolean)
+          .map((line, i) => `<div>${line}</div>`)
+          .join("")
+      : ""
+  }
 </div>
 
 
-<div class="salutation">Dear ${formData.recipientName || 'Hiring Manager'},</div>
+<div class="salutation">Dear ${formData.recipientName || "Hiring Manager"},</div>
 
 
-<div class="body-paragraph">${(formData.openingParagraph || "I'm excited to apply for this position...").replace(/\n/g, '<br>')}</div>
-<div class="body-paragraph">${(formData.bodyParagraph1 || "In my previous role...").replace(/\n/g, '<br>')}</div>
-<div class="body-paragraph">${(formData.bodyParagraph2 || "My technical skills include...").replace(/\n/g, '<br>')}</div>
-<div class="body-paragraph">${(formData.closingParagraph || "I'm particularly drawn to your company...").replace(/\n/g, '<br>')}</div>
+<div class="body-paragraph">${(formData.openingParagraph || "I'm excited to apply for this position...").replace(/\n/g, "<br>")}</div>
+<div class="body-paragraph">${(formData.bodyParagraph1 || "In my previous role...").replace(/\n/g, "<br>")}</div>
+<div class="body-paragraph">${(formData.bodyParagraph2 || "My technical skills include...").replace(/\n/g, "<br>")}</div>
+<div class="body-paragraph">${(formData.closingParagraph || "I'm particularly drawn to your company...").replace(/\n/g, "<br>")}</div>
 
 
 <div class="signature">
-  <div class="signature-closing">${formData.customSalutation || formData.salutation || 'Sincerely'}</div>
-  <div class="signature-name">${formData.fullName || 'Your Name'}</div>
+  <div class="signature-closing">${formData.customSalutation || formData.salutation || "Sincerely"}</div>
+  <div class="signature-name">${formData.fullName || "Your Name"}</div>
 </div>
 </body>
 </html>`; // ✅ END HTML
@@ -513,6 +625,18 @@ ${(formData.jobSummary || formData.jobDescription) ? `
     const blob = new Blob(["\ufeff", html], {
       type: "application/msword;charset=utf-8",
     });
+
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `Cover-Letter-${formData.jobTitle.replace(/[^a-zA-Z0-9]/g, "-")}.doc`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+
+    // 🔥 SAVE TO DOWNLOADS COLLECTION
+    saveDownloadRecord(html, "DOCX");
 
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
@@ -542,13 +666,44 @@ ${(formData.jobSummary || formData.jobDescription) ? `
 // };
 // >>>>>>> parent of e8bdcc6 (Merge branch 'main' of https://github.com/Rahulnam30/AI-Resume-Builder)
 
-  const currentIdx = tabs.findIndex(t => t.id === activeSection);
-  const goLeft = () => currentIdx > 0 && setActiveSection(tabs[currentIdx - 1].id);
-  const goRight = () => currentIdx < tabs.length - 1 && setActiveSection(tabs[currentIdx + 1].id);
+    setTimeout(() => setIsExporting(false), 800);
+  };
 
+  const currentIdx = tabs.findIndex((t) => t.id === activeSection);
+  const goLeft = () =>
+    currentIdx > 0 && setActiveSection(tabs[currentIdx - 1].id);
+  const goRight = () =>
+    currentIdx < tabs.length - 1 && setActiveSection(tabs[currentIdx + 1].id);
 
   const renderFormContent = () => {
     switch (activeSection) {
+      case "recipient":
+        return (
+          <RecipientInfoForm
+            formData={formData}
+            onInputChange={handleInputChange}
+          />
+        );
+      case "job":
+        return (
+          <JobDetailsForm
+            formData={formData}
+            onInputChange={handleInputChange}
+          />
+        );
+      case "body":
+        return (
+          <BodyContentForm
+            formData={formData}
+            onInputChange={handleInputChange}
+          />
+        );
+      case "closing":
+        return (
+          <ClosingForm formData={formData} onInputChange={handleInputChange} />
+        );
+      default:
+        return null;
       case "recipient": return <RecipientInfoForm formData={formData} onInputChange={handleInputChange} />;
       case "job": return <JobDetailsForm formData={formData} onInputChange={handleInputChange} />;
       case "body": return <BodyContentForm formData={formData} onInputChange={handleInputChange} />;
@@ -556,7 +711,6 @@ ${(formData.jobSummary || formData.jobDescription) ? `
       default: return null;
     }
   };
-
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-gray-50 relative z-0">
@@ -584,11 +738,47 @@ ${(formData.jobSummary || formData.jobDescription) ? `
           </div>
         </div>
         <div className="flex gap-3 p-3 bg-amber-50 border border-amber-200 rounded-xl mb-4 shadow-sm px-2">
+          <AlertTriangle
+            className="text-amber-500 flex-shrink-0 mt-0.5"
+            size={18}
+          />
+          <span className="text-sm font-medium text-amber-800">
+            Fill Job Summary & Description in Job Details tab for complete
+            professional letter.
+          </span>
           <AlertTriangle className="text-amber-500 flex-shrink-0 mt-0.5" size={18} />
           <span className="text-sm font-medium text-amber-800">Fill Job Summary & Description in Job Details tab for complete professional letter.</span>
         </div>
         <div className="flex h-[calc(100vh-[180px])] gap-[10px] w-full mt-2 lg:mt-5 p-0 sm:p-2 lg:flex-row flex-col max-w-[1920px] mx-auto overflow-hidden relative z-10">
           {/* FORM PANEL */}
+          <div className="lg:col-span-5 xl:col-span-5 order-2 lg:order-1 pr-0 lg:pr-1 relative z-20">
+            <div className="bg-white rounded-2xl shadow-xl border border-gray-100 p-3 lg:p-4 h-full flex flex-col max-h-[calc(100vh-6rem)] overflow-hidden">
+              <CoverLetterFormTabs
+                activeSection={activeSection}
+                setActiveSection={setActiveSection}
+              />
+              <div className="mt-3 flex-1 overflow-y-auto py-2 pr-2">
+                {renderFormContent()}
+              </div>
+              <div className="flex justify-between items-center mt-4 pt-3 border-t border-gray-100 px-1">
+                {currentIdx > 0 && (
+                  <button
+                    onClick={goLeft}
+                    className="flex items-center gap-1 px-3 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg text-xs"
+                  >
+                    <ArrowLeft size={14} /> Previous
+                  </button>
+                )}
+                <div className="flex-1 text-center text-xs text-gray-500 font-medium">
+                  Step {currentIdx + 1} of {tabs.length}
+                </div>
+                <button
+                  onClick={goRight}
+                  className="flex items-center gap-1 bg-gradient-to-r from-gray-900 to-black text-white px-4 py-2 rounded-lg shadow-lg text-xs"
+                >
+                  {currentIdx === tabs.length - 1 ? "Finish" : "Next"}
+                  <ArrowRight size={14} />
+                </button>
           <div className="bg-white rounded-xl h-full overflow-hidden flex flex-col w-full lg:w-[520px] shrink-0 border border-slate-200 order-2 lg:order-1 relative z-20">
             <CoverLetterFormTabs
               activeSection={activeSection}
@@ -620,6 +810,27 @@ ${(formData.jobSummary || formData.jobDescription) ? `
           </div>
 
           {/* PREVIEW PANEL */}
+          <div className="col-span-1 lg:col-span-7 xl:col-span-7 order-1 lg:order-2 pl-0 lg:pl-1 relative z-10 h-[82vh] lg:h-[85vh] flex flex-col">
+            <div className="bg-white rounded-2xl shadow-xl border border-gray-100 flex flex-col flex-1 overflow-hidden h-full">
+              <div className="p-4 border-b border-gray-100 bg-gradient-to-r from-gray-50 to-slate-50 flex-shrink-0">
+                <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
+                  <FileTextIcon size={20} className="text-blue-600" />
+                  Live Preview
+                </h2>
+                <p className="text-xs text-gray-500 mt-1">
+                  Scroll to see full letter
+                </p>
+              </div>
+              <div className="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100 p-6 lg:p-8 preview-scroll-container">
+                <CoverLetterPreview formData={formData} exportDate={date} />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <footer className="footer pb-6">
+        © {new Date().getFullYear()} ResumeAI Inc. All rights reserved.
+      </footer>
           <div className="hidden lg:flex flex-col flex-1 min-w-0 bg-[#eef2f7] rounded-xl overflow-hidden border border-slate-200 relative order-1 lg:order-2 z-10">
             <CoverLetterPreview
               formData={formData}
@@ -677,8 +888,4 @@ ${(formData.jobSummary || formData.jobDescription) ? `
   );
 };
 
-
 export default CoverLetterBuilder;
-
-
-

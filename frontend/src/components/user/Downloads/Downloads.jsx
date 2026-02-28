@@ -546,11 +546,11 @@ const Downloads = () => {
     <>
       <UserNavBar />
       <div className="min-h-screen" style={{ backgroundColor: "#f8f9fb" }}>
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
+        <div className="w-full px-4 sm:px-6 lg:px-10 py-8">
           {/* Header */}
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
             <div>
-              <h1 className="text-xl font-bold text-gray-900">My Documents</h1>
+              <h1 className="text-3xl font-bold text-gray-900">My Documents</h1>
               <p className="text-xs text-gray-400 mt-0.5">
                 Manage, preview and download your professional files
               </p>
@@ -773,9 +773,9 @@ const Downloads = () => {
             </div>
           )}
 
-          <div className="mt-14 text-center text-[10px] text-gray-300 pb-6">
+          <footer className="footer pb-6">
             © {new Date().getFullYear()} ResumeAI Inc. All rights reserved.
-          </div>
+          </footer>
         </div>
       </div>
 

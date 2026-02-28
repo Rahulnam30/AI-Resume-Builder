@@ -533,6 +533,22 @@ const ATSChecker = ({ onSidebarToggle }) => {
     <div className="ats-checker-page user-page min-h-screen bg-[#f8f9fc]">
       <UserNavBar onMenuClick={onSidebarToggle || (() => {})} />
 
+      {/* ── Page header ── */}
+      <div className="w-full px-8 pt-8 pb-4 flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-semibold tracking-tight text-zinc-900">
+            ATS Checker
+          </h1>
+          <p className="text-sm text-zinc-400 mt-0.5">
+            Optimize your resume for applicant tracking systems
+          </p>
+        </div>
+        <button
+          onClick={() => fileInputRef.current.click()}
+          className="flex items-center gap-2 bg-zinc-900 hover:bg-zinc-700 text-white text-sm font-medium px-4 py-2.5 rounded-xl transition-colors duration-150"
+        >
+          <Upload size={15} />
+          Upload Resume
       {/* ── Page Header ── */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-6 pb-2">
         <div className="flex items-center justify-between">
@@ -564,6 +580,22 @@ const ATSChecker = ({ onSidebarToggle }) => {
         </div>
       </div>
 
+      {/* ── Main layout ── */}
+      <div className="w-full px-8 pb-12 flex flex-col md:flex-row gap-5">
+        {/* ══ LEFT PANEL ══ */}
+        <div className="w-full md:w-80 lg:w-96 shrink-0 flex flex-col gap-4">
+          <div className="flex items-center justify-between h-5">
+            <p className="text-[10px] font-bold tracking-widest text-zinc-400 uppercase">
+              Analysis Results
+            </p>
+            {analysisResult && (
+              <span
+                className={`text-[10px] font-bold tracking-wider uppercase px-2.5 py-1 rounded-full border ${sb(animatedScore)}`}
+              >
+                {sl(animatedScore)}
+              </span>
+            )}
+          </div>
       {/* ── Two-column layout with matching heights ── */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex flex-col md:flex-row gap-5 items-stretch">
         {/* ── LEFT PANEL: Analysis ── */}
@@ -723,6 +755,9 @@ const ATSChecker = ({ onSidebarToggle }) => {
           </AnimatePresence>
         </div>
       </div>
+      <footer className="footer pb-6">
+        © {new Date().getFullYear()} ResumeAI Inc. All rights reserved.
+      </footer>
     </div>
   );
 };
