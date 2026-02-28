@@ -6,10 +6,7 @@ const CVBuilderTopBar = ({
   setActiveTab,
   onSave,
   isSaving,
-  title,
-  onTitleChange,
-  isAiMode,
-  onToggleAiMode
+  isDownloading,
 }) => {
   return (
     <div className="w-full px-4 py-3 flex flex-col md:flex-row gap-4 justify-between items-start md:items-center">

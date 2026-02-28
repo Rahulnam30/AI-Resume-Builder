@@ -19,10 +19,8 @@ export const templates = [
   { id: "elite", name: "Elite ", category: "Creative" },
   { id: "eclipse", name: "Eclipse", category: "Contemporary" },
   { id: "eclipse1", name: "Eclipse", category: "Traditional" },
-  { id: "harbor", name: "Harbor", category: "Creative" },
-  { id: "heritage", name: "Heritage Classic", category: "Traditional" },
-  { id: "nova", name: "Nova Grid", category: "Contemporary" },
-  { id: "prism", name: "Prism Story", category: "Creative" },
+  { id: "harbor", name: "Harbor", category: "Creative",
+  },
 ];
 
 /* ----------------------------- Card ----------------------------- */

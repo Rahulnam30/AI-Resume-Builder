@@ -3,6 +3,7 @@ import puppeteer from "puppeteer";
 import mongoose from "mongoose";
 import axios from "axios";
 import Download from "../Models/Download.js";
+import isAuth from "../middlewares/isAuth.js"; // ✅ YOUR AUTH
 
 const router = express.Router();
 
@@ -27,15 +28,10 @@ body { font-family:Arial, sans-serif; font-size:11pt; line-height:1.5; }
 <h2>${formData.fullName || filename}</h2>
 
 ${formData.address ? `<div class="section">${formData.address}</div>` : ""}
-
 ${formData.recipientName ? `<div class="section"><strong>To:</strong> ${formData.recipientName}</div>` : ""}
-
 ${formData.openingParagraph ? `<div class="section">${formData.openingParagraph}</div>` : ""}
-
 ${formData.bodyParagraph1 ? `<div class="section">${formData.bodyParagraph1}</div>` : ""}
-
 ${formData.bodyParagraph2 ? `<div class="section">${formData.bodyParagraph2}</div>` : ""}
-
 ${formData.closingParagraph ? `<div class="section">${formData.closingParagraph}</div>` : ""}
 
 </body>
@@ -103,9 +99,9 @@ body { font-family:"Times New Roman",Times,serif; font-size:11pt; }
 };
 
 /* =====================================================
-   CREATE DOWNLOAD RECORD
+   CREATE DOWNLOAD RECORD (USER)
 ===================================================== */
-router.post("/", async (req, res) => {
+router.post("/", isAuth, async (req, res) => {
   try {
     if (!req.body.html && req.body.formData) {
       req.body.html = generatePDFHTML(req.body.formData, req.body.name);
@@ -117,6 +113,7 @@ router.post("/", async (req, res) => {
 
     const download = new Download({
       ...req.body,
+      user: req.userId, // ✅ OWNER
       views: 1,
       downloadDate: new Date()
     });
@@ -131,12 +128,16 @@ router.post("/", async (req, res) => {
 });
 
 /* =====================================================
-   LIST DOWNLOADS
+   LIST USER DOWNLOADS
 ===================================================== */
-router.get("/", async (req, res) => {
+router.get("/", isAuth, async (req, res) => {
   try {
     const { type, limit = 50, page = 1 } = req.query;
-    const query = type ? { type } : {};
+
+    const query = {
+      user: req.userId,
+      ...(type && { type })
+    };
 
     const downloads = await Download.find(query)
       .sort({ downloadDate: -1 })
@@ -157,15 +158,23 @@ router.get("/", async (req, res) => {
 });
 
 /* =====================================================
-   DELETE DOWNLOAD
+   DELETE DOWNLOAD (OWNER)
 ===================================================== */
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", isAuth, async (req, res) => {
   try {
     if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
       return res.status(400).json({ message: "Invalid id" });
     }
 
-    await Download.findByIdAndDelete(req.params.id);
+    const deleted = await Download.findOneAndDelete({
+      _id: req.params.id,
+      user: req.userId
+    });
+
+    if (!deleted) {
+      return res.status(404).json({ message: "Not found" });
+    }
+
     res.json({ success: true });
 
   } catch (err) {
@@ -175,9 +184,9 @@ router.delete("/:id", async (req, res) => {
 });
 
 /* =====================================================
-   PDF DOWNLOAD  ✅ FIXED FINAL
+   PDF DOWNLOAD (OWNER)
 ===================================================== */
-router.get("/:id/pdf", async (req, res) => {
+router.get("/:id/pdf", isAuth, async (req, res) => {
   try {
     const { id } = req.params;
 
@@ -185,25 +194,18 @@ router.get("/:id/pdf", async (req, res) => {
       return res.status(400).json({ message: "Invalid id" });
     }
 
-    const download = await Download.findById(id);
+    const download = await Download.findOne({
+      _id: id,
+      user: req.userId
+    });
+
     if (!download) return res.status(404).json({ message: "Not found" });
 
-    let html = download.html;
-
-    if (!html && download.formData) {
-      html = generatePDFHTML(download.formData, download.name);
-    }
-
-    if (!html) {
-      return res.status(400).json({ message: "No HTML stored" });
-    }
-
-    /* ✅ CALL SAME PDF ENGINE AS COVERLETTER */
     const baseURL = `${req.protocol}://${req.get("host")}`;
 
     const pdfResponse = await axios.post(
       `${baseURL}/api/resume/generate-pdf`,
-      { html },
+      { html: download.html },
       { responseType: "arraybuffer" }
     );
 
@@ -229,9 +231,9 @@ router.get("/:id/pdf", async (req, res) => {
 });
 
 /* =====================================================
-   WORD DOWNLOAD
+   WORD DOWNLOAD (OWNER)
 ===================================================== */
-router.get("/:id/word", async (req, res) => {
+router.get("/:id/word", isAuth, async (req, res) => {
   try {
     const { id } = req.params;
 
@@ -239,21 +241,14 @@ router.get("/:id/word", async (req, res) => {
       return res.status(400).json({ message: "Invalid id" });
     }
 
-    const download = await Download.findById(id);
+    const download = await Download.findOne({
+      _id: id,
+      user: req.userId
+    });
+
     if (!download) return res.status(404).json({ message: "Not found" });
 
-    let html = download.html;
-
-    if (!html && download.formData) {
-      html = generateWordHTML(download.formData, download.name);
-    }
-
-    
-    if (!html) {
-      return res.status(400).json({ message: "No HTML stored" });
-    }
-
-    const buffer = Buffer.from("\ufeff" + html, "utf8");
+    const buffer = Buffer.from("\ufeff" + download.html, "utf8");
 
     download.views += 1;
     await download.save();
@@ -261,7 +256,8 @@ router.get("/:id/word", async (req, res) => {
     const safeName = (download.name || "document").replace(/[^a-zA-Z0-9.-]/g, "_");
 
     res.set({
-      "Content-Type": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "Content-Type":
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
       "Content-Disposition": `attachment; filename="${safeName}.docx"`,
       "Content-Length": buffer.length
     });

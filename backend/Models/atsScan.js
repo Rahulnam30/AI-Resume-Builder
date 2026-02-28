@@ -28,7 +28,10 @@ const atsScansSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-  
+    jobDescription: {
+      type: String,
+      required: true,
+    },
     overallScore: {
       type: Number,
       required: true,

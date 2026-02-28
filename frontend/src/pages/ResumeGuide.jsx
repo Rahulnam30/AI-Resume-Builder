@@ -210,7 +210,7 @@ const ResumeGuide = () => {
 </section>
 
       {/* --- CONTENT TRANSFORMATION (BEFORE & AFTER) --- */}
-      <section className="px-8 py-24 bg-gray-50/50">
+      <section className="px-8 py-19 bg-gray-50/50">
         <div className="max-w-5xl mx-auto text-center">
           <h2 className="text-4xl font-black text-[#1a2e52] mb-4">From Tasks to Achievements</h2>
           <p className="mb-16 text-gray-500">Don't just list what you did—show how well you did it.</p>
@@ -240,7 +240,7 @@ const ResumeGuide = () => {
       </section>
     
       {/* --- RESUME FORMATS: THE BLUEPRINT SELECTION --- */}
-<section className="px-8 py-24 bg-slate-50/50">
+<section className="px-8 py-20 bg-slate-50/50">
   <div className="mx-auto max-w-7xl">
     <div className="mb-16 text-center">
       <h2 className="text-4xl font-black text-[#1a2e52] tracking-tighter">Choose Your Architecture.</h2>
@@ -280,7 +280,7 @@ const ResumeGuide = () => {
 </section>
 
        {/* --- HEADER COMPLIANCE: THE MODERN STANDARD --- */}
-<section className="px-8 py-24 bg-white">
+<section className="px-8 py-19 bg-white">
   <div className="mx-auto max-w-5xl bg-[#1a2e52] rounded-[4rem] overflow-hidden relative">
     <div className="absolute top-0 right-0 w-64 h-64 -mt-32 -mr-32 rounded-full bg-blue-500/10 blur-3xl" />
     
@@ -314,7 +314,7 @@ const ResumeGuide = () => {
 </section>
    
        {/* --- SKILL ZONING: BENTO GRID --- */}
-<section className="px-8 py-24 bg-white">
+<section className="px-8 py-20 bg-white">
   <div className="mx-auto max-w-7xl">
     <div className="flex flex-col items-end justify-between gap-6 mb-16 lg:flex-row">
       <div className="max-w-xl">
