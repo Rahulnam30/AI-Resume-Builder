@@ -16,6 +16,8 @@ import {
   Search,
   FileText,
   RefreshCw,
+  Eye,
+  X,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import axiosInstance from "../../../api/axios";
@@ -38,7 +40,7 @@ import { dummyData } from "./dummyData";
 
 import UserNavbar from "../UserNavBar/UserNavBar";
 
-const ResumeBuilder = ({ setActivePage = () => {} }) => {
+const ResumeBuilder = ({ setActivePage = () => { } }) => {
   /* -------------------- CORE STATE -------------------- */
   // const [formData, setFormData] = useState(dummyData);
   const [formData, setFormData] = useState(() => {
@@ -88,6 +90,14 @@ const ResumeBuilder = ({ setActivePage = () => {} }) => {
   /* -------------------- PREVIEW STATE -------------------- */
   const [isPreviewExpanded, setIsPreviewExpanded] = useState(false);
   const [isPreviewHidden, setIsPreviewHidden] = useState(false);
+  const [showMobilePreview, setShowMobilePreview] = useState(false);
+
+  useEffect(() => {
+    document.body.style.overflow = showMobilePreview ? "hidden" : "";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [showMobilePreview]);
 
   /* -------------------- HELPERS -------------------- */
   const handleInputChange = (field, value) => {
@@ -301,29 +311,19 @@ const ResumeBuilder = ({ setActivePage = () => {} }) => {
           )}
         </div>
 
-        <div className="w-full overflow-y-hidden flex justify-center md:hidden block">
-          <LivePreview
-            formData={formData}
-            currentTemplate={currentTemplate}
-            isExpanded={isPreviewExpanded}
-            onExpand={() => setIsPreviewExpanded(true)}
-            onCollapse={() => setIsPreviewExpanded(false)}
-            onMinimize={() => setIsPreviewHidden(true)}
-          />
-        </div>
+
 
         {/* BUILDER + PREVIEW */}
-        <div
-          className={`grid gap-14 p-1.5 ml-2 mr-2 grid-cols-1 md:grid-cols-[32%_68%] ${isPreviewExpanded ? "md:grid-cols-[0_100%]" : ""}`}
-        >
+        <div className="flex h-[calc(100vh-[180px])] gap-[10px] w-full mt-2 lg:mt-5 p-0 sm:p-2 lg:flex-row flex-col max-w-[1920px] mx-auto overflow-hidden">
           {/* builder-section */}
-          <div className="bg-white rounded-xl h-full pl-0.5 overflow-hidden flex-1">
+          <div className="bg-white rounded-xl h-full overflow-hidden flex flex-col w-full lg:w-[520px] shrink-0 border border-slate-200">
             <FormTabs
               activeSection={activeSection}
               setActiveSection={setActiveSection}
+              onTogglePreview={() => setShowMobilePreview(v => !v)}
             />
             {/* form-content */}
-            <div className="w-full mt-5 overflow-auto">
+            <div className="w-full mt-5 overflow-auto flex-1 px-4">
               {warning && (
                 <div className="text-sm text-red-700 bg-yellow-100 border border-yellow-300 px-4 py-2 my-2.5 rounded-lg">
                   Please fill in all required fields to continue.
@@ -332,13 +332,13 @@ const ResumeBuilder = ({ setActivePage = () => {} }) => {
               {renderFormContent()}
             </div>
             {/* Previous & Next */}
-            <div className="w-full flex items-center justify-between mt-10">
+            <div className="w-full flex items-center justify-between mt-auto p-4 border-t border-slate-100 bg-white">
               <button
                 onClick={() => {
                   goLeft();
                 }}
                 disabled={currentIdx === 0}
-                className="flex gap-1 items-center text-sm bg-slate-100 px-4 py-2 rounded-lg select-none disabled:opacity-40 disabled:cursor-not-allowed transition select-none"
+                className="flex gap-1 items-center text-sm bg-slate-100 px-4 py-2 rounded-lg select-none disabled:opacity-40 disabled:cursor-not-allowed transition"
               >
                 <ArrowLeft size={18} />
                 <span>Previous</span>
@@ -354,28 +354,89 @@ const ResumeBuilder = ({ setActivePage = () => {} }) => {
                   goRight();
                 }}
                 disabled={currentIdx === tabs.length - 1}
-                className="flex gap-1 items-center text-sm bg-black text-white px-4 py-2 rounded-lg select-none disabled:opacity-40 disabled:cursor-not-allowed transition select-none"
+                className="flex gap-1 items-center text-sm bg-black text-white px-4 py-2 rounded-lg select-none disabled:opacity-40 disabled:cursor-not-allowed transition"
               >
                 <span>Next</span>
                 <ArrowRight size={18} />
               </button>
             </div>
           </div>
-          <div className="md:block hidden">
-            {!isPreviewHidden && (
-              <LivePreview
-                ref={previewRef}
-                formData={formData}
-                currentTemplate={currentTemplate}
-                isExpanded={isPreviewExpanded}
-                onExpand={() => setIsPreviewExpanded(true)}
-                onCollapse={() => setIsPreviewExpanded(false)}
-                onMinimize={() => setIsPreviewHidden(true)}
-              />
-            )}
+
+          {/* Preview Section */}
+          <div
+            className={`
+              hidden lg:flex flex-col flex-1 min-w-0
+              bg-white
+              border border-gray-200
+              shadow-sm
+              rounded-xl
+              overflow-hidden
+              relative
+            `}
+          >
+            <LivePreview
+              ref={previewRef}
+              formData={formData}
+              currentTemplate={currentTemplate}
+              isExpanded={isPreviewExpanded}
+              onExpand={() => setIsPreviewExpanded(true)}
+              onCollapse={() => setIsPreviewExpanded(false)}
+              onMinimize={() => setIsPreviewHidden(true)}
+            />
           </div>
         </div>
         <div className="w-full h-4"></div>
+
+        {/* Mobile preview overlay */}
+        {showMobilePreview && (
+          <div className="lg:hidden fixed inset-0 z-50 flex flex-col">
+            <div
+              className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+              onClick={() => setShowMobilePreview(false)}
+            />
+            <div
+              className="relative mt-auto bg-white rounded-t-2xl shadow-2xl flex flex-col"
+              style={{
+                height: "92dvh",
+                animation: "resumePreviewSlideUp 0.3s cubic-bezier(0.32,0.72,0,1)",
+              }}
+            >
+              <div className="flex justify-center pt-3 pb-1 flex-shrink-0">
+                <div className="w-10 h-1 rounded-full bg-slate-300" />
+              </div>
+              <div className="flex items-center justify-between px-4 pb-2 flex-shrink-0">
+                <span className="text-sm font-semibold text-slate-700">
+                  Resume Preview
+                </span>
+                <button
+                  onClick={() => setShowMobilePreview(false)}
+                  className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-500 transition-colors"
+                >
+                  <X size={15} />
+                </button>
+              </div>
+              <div className="flex-1 min-h-0 overflow-y-auto w-full max-w-[100vw]">
+                {/* On mobile overlay, we restrict max width to viewport width to prevent overflow */}
+                <div className="w-full h-full p-2 bg-slate-50 text-black">
+                  <LivePreview
+                    formData={formData}
+                    currentTemplate={currentTemplate}
+                    isExpanded={false}
+                    onExpand={() => { }}
+                    onCollapse={() => { }}
+                    onMinimize={() => { }}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+        <style>{`
+          @keyframes resumePreviewSlideUp {
+            from { transform: translateY(100%); opacity: 0.5; }
+            to   { transform: translateY(0);    opacity: 1;   }
+          }
+        `}</style>
       </>
     );
   };
@@ -447,7 +508,7 @@ const ResumeBuilder = ({ setActivePage = () => {} }) => {
                     onChange={handleFileChange}
                   />
                   <button
-                    className="flex gap-2 text-white cursor-pointer bg-indigo-600 border-0 rounded-lg select-none text-sm transition-all duration-200 select-none hover:bg-indigo-700 hover:to-indigo-800 disabled:opacity-30 disabled:cursor-not-allowed disabled:bg-slate-800 disabled:text-gray-100 py-2 px-5 md:py-2.5 md:px-5"
+                    className="flex gap-2 text-white cursor-pointer bg-indigo-600 border-0 rounded-lg select-none text-sm transition-all duration-200 hover:bg-indigo-700 hover:to-indigo-800 disabled:opacity-30 disabled:cursor-not-allowed disabled:bg-slate-800 disabled:text-gray-100 py-2 px-5 md:py-2.5 md:px-5"
                     onClick={(e) => handleDownload(e)}
                     disabled={!completion.isComplete}
                   >
@@ -463,7 +524,7 @@ const ResumeBuilder = ({ setActivePage = () => {} }) => {
             </div>
           </div>
           {/* main-tabs */}
-          <div className="w-full bg-gray-200 md:hidden flex gap-1 rounded-2xl p-1 w-fit my-3 mb-5 mx-auto md:mx-0">
+          <div className="bg-gray-200 md:hidden flex gap-1 rounded-2xl p-1 w-fit my-3 mb-5 mx-auto md:mx-0">
             <button
               className={`flex-1 mr-1 rounded-xl py-1.5 md:px-2.5 px-4 text-sm ${activeTab === "builder" ? "bg-white text-slate-900 shadow-sm" : ""} select-none`}
               onClick={() => setActiveTab("builder")}
@@ -495,7 +556,7 @@ const ResumeBuilder = ({ setActivePage = () => {} }) => {
           )}
         </div>
         {/* main-tabs */}
-        <div className="w-full bg-gray-200 md:hidden flex gap-1 rounded-2xl p-1 w-fit my-5 mx-auto md:mx-0">
+        <div className="bg-gray-200 md:hidden flex gap-1 rounded-2xl p-1 w-fit my-5 mx-auto md:mx-0">
           <button
             className={`flex-1 mr-1 rounded-xl py-1.5 md:px-2.5 px-4 text-sm ${activeTab === "builder" ? "bg-white text-slate-900 shadow-sm" : ""} select-none`}
             onClick={() => setActiveTab("builder")}

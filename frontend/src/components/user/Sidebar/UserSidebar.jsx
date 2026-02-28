@@ -13,6 +13,7 @@ import {
   Menu,
   X,
   Bell,
+  Shield,
 } from "lucide-react";
 import { useUserNotifications } from "../../../context/UserNotificationContext";
 import "./UserSidebar.css";
@@ -25,6 +26,12 @@ export default function UserSidebar() {
   const [hoveredItem, setHoveredItem] = useState(null);
   const [isMobile, setIsMobile] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(true);
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    const storedRole = localStorage.getItem("isAdmin") || sessionStorage.getItem("isAdmin");
+    setIsAdmin(storedRole === "true");
+  }, []);
 
   useEffect(() => {
     setIsCollapsed(!isMobile);
@@ -95,6 +102,16 @@ export default function UserSidebar() {
     },
   ];
 
+  // Add Admin Switch if user is admin
+  if (isAdmin) {
+    menuItems.push({
+      id: "admin-switch",
+      icon: Shield, // I need to import Shield or use a similar icon
+      label: "Admin Dashboard",
+      path: "/admin",
+    });
+  }
+
   const handleNavigate = (path) => {
     navigate(path);
     setIsMobileOpen(false);
@@ -131,9 +148,8 @@ export default function UserSidebar() {
       </div>
       {/* Overlay */}
       <div
-        className={`fixed inset-0 z-30 bg-black bg-opacity-50 transition-opacity duration-300 ${
-          isMobileOpen ? "opacity-100" : "opacity-0 pointer-events-none"
-        }`}
+        className={`fixed inset-0 z-30 bg-black bg-opacity-50 transition-opacity duration-300 ${isMobileOpen ? "opacity-100" : "opacity-0 pointer-events-none"
+          }`}
         onClick={() => setIsMobileOpen(false)}
       ></div>
       {/* Sidebar */}

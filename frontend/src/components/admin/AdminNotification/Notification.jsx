@@ -18,7 +18,8 @@ import {
     X,
     User,
     Calendar,
-    Tag
+    Tag,
+    ChevronDown
 } from 'lucide-react';
 import toast, { Toaster } from 'react-hot-toast';
 import { useNotifications } from '../../../context/NotificationContext';
@@ -39,6 +40,7 @@ const NOTIFICATION_TYPES = {
 
 const AdminNotification = () => {
     const [filter, setFilter] = useState('all');
+    const [timeFilter, setTimeFilter] = useState('all-time');
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedNotification, setSelectedNotification] = useState(null);
 
@@ -107,6 +109,29 @@ const AdminNotification = () => {
         .filter(n => {
             if (filter === 'unread') return n.isUnread;
             if (filter === 'important') return n.priority === 'urgent' || n.priority === 'high';
+            return true;
+        })
+        .filter(n => {
+            if (timeFilter === 'all-time') return true;
+
+            const nDate = new Date(n.createdAt);
+            const now = new Date();
+            const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+            const yesterday = new Date(today);
+            yesterday.setDate(yesterday.getDate() - 1);
+
+            const lastWeek = new Date(today);
+            lastWeek.setDate(lastWeek.getDate() - 7);
+
+            // Previous Calendar Month logic
+            const firstDayLastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+            const lastDayLastMonth = new Date(now.getFullYear(), now.getMonth(), 0, 23, 59, 59, 999);
+
+            if (timeFilter === 'today') return nDate >= today;
+            if (timeFilter === 'yesterday') return nDate >= yesterday && nDate < today;
+            if (timeFilter === 'last-week') return nDate >= lastWeek;
+            if (timeFilter === 'last-month') return nDate >= firstDayLastMonth && nDate <= lastDayLastMonth;
+
             return true;
         })
         .filter(n => {
@@ -181,24 +206,43 @@ const AdminNotification = () => {
                         </div>
 
                         {/* Filter tabs */}
-                        <div className="flex gap-1 bg-slate-100 p-1 rounded-xl">
-                            {[
-                                { key: 'all', label: 'All', count: notifications.length },
-                                { key: 'unread', label: 'Unread', count: unreadCount },
-                                { key: 'important', label: 'Important', count: notifications.filter(n => n.priority === 'urgent' || n.priority === 'high').length }
-                            ].map(tab => (
-                                <button
-                                    key={tab.key}
-                                    onClick={() => setFilter(tab.key)}
-                                    className={`px-4 py-2 text-sm font-medium rounded-lg transition-all ${filter === tab.key
+                        <div className="flex flex-wrap items-center gap-4">
+                            <div className="flex gap-1 bg-slate-100 p-1 rounded-xl">
+                                {[
+                                    { key: 'all', label: 'All', count: notifications.length },
+                                    { key: 'unread', label: 'Unread', count: unreadCount },
+                                    { key: 'important', label: 'Important', count: notifications.filter(n => n.priority === 'urgent' || n.priority === 'high').length }
+                                ].map(tab => (
+                                    <button
+                                        key={tab.key}
+                                        onClick={() => setFilter(tab.key)}
+                                        className={`px-4 py-2 text-sm font-medium rounded-lg transition-all ${filter === tab.key
                                             ? 'bg-white text-slate-800 shadow-sm'
                                             : 'text-slate-500 hover:text-slate-700'
-                                        }`}
+                                            }`}
+                                    >
+                                        {tab.label}
+                                        <span className={`ml-1.5 text-xs ${filter === tab.key ? 'text-slate-500' : 'text-slate-400'}`}>({tab.count})</span>
+                                    </button>
+                                ))}
+                            </div>
+
+                            {/* Time Filter Dropdown */}
+                            <div className="relative">
+                                <select
+                                    value={timeFilter}
+                                    onChange={(e) => setTimeFilter(e.target.value)}
+                                    className="appearance-none pl-10 pr-10 py-2.5 text-sm bg-slate-100 border-none rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-100 transition-all font-medium text-slate-600 cursor-pointer hover:bg-slate-200"
                                 >
-                                    {tab.label}
-                                    <span className={`ml-1.5 text-xs ${filter === tab.key ? 'text-slate-500' : 'text-slate-400'}`}>({tab.count})</span>
-                                </button>
-                            ))}
+                                    <option value="all-time">All Time</option>
+                                    <option value="today">Today</option>
+                                    <option value="yesterday">Yesterday</option>
+                                    <option value="last-week">Last Week</option>
+                                    <option value="last-month">Last Month</option>
+                                </select>
+                                <Calendar className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" size={16} />
+                                <ChevronDown className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" size={16} />
+                            </div>
                         </div>
                     </div>
                 </div>

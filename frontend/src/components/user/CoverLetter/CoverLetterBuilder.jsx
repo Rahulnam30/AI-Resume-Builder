@@ -11,6 +11,10 @@ import {
   AlertTriangle,
   FileText as FileTextIcon,
 } from "lucide-react";
+  ArrowLeft, ArrowRight, Building2, Briefcase, FileText, User,
+  Download, AlertTriangle, FileText as FileTextIcon, X
+} from 'lucide-react';
+import { useEffect } from 'react';
 import CoverLetterFormTabs from "./CoverLetterFormTabs";
 import RecipientInfoForm from "./forms/RecipientInfoForm";
 import JobDetailsForm from "./forms/JobDetailsForm";
@@ -19,7 +23,6 @@ import ClosingForm from "./forms/ClosingForm";
 import CoverLetterPreview from "./CoverLetterPreview";
 import CoverLetterTemplates from "./CoverLetterTemplates";
 import UserNavBar from "../UserNavBar/UserNavBar";
-import axiosInstance from "../../../api/axios";
 import "./CoverLetterBuilder.css";
 
 const tabs = [
@@ -55,6 +58,14 @@ const CoverLetterBuilder = () => {
   const [selectedTemplate, setSelectedTemplate] = useState("professional");
   const [activeSection, setActiveSection] = useState("recipient");
   const [isExporting, setIsExporting] = useState(false);
+  const [showMobilePreview, setShowMobilePreview] = useState(false);
+
+  useEffect(() => {
+    document.body.style.overflow = showMobilePreview ? "hidden" : "";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [showMobilePreview]);
 
   const handleInputChange = (field, value) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
@@ -134,6 +145,7 @@ const CoverLetterBuilder = () => {
     setIsExporting(true);
     const printWindow = window.open("", "_blank", "width=850,height=1100");
 
+    const printWindow = window.open('', '_blank', 'width=850,height=1100');
     printWindow.document.write(`
 <!DOCTYPE html>
 <html>
@@ -263,6 +275,8 @@ body {
 <div class="contact-info">
   <div class="contact-name">${formData.fullName || "Your Name"}</div>
   ${formData.address ? formData.address.replace(/\n/g, "<br>") : ""}
+  <div class="contact-name">${formData.fullName || 'Your Name'}</div>
+  ${formData.address ? formData.address.replace(/\n/g, '<br>') : ''}
   <div class="contact-details">
     ${formData.email ? formData.email : ""}
     ${formData.phone ? `<br>${formData.phone}` : ""}
@@ -301,6 +315,10 @@ ${
   ${formData.recipientTitle ? `<div>${formData.recipientTitle}</div>` : ""}
   ${formData.companyName ? `<div class="company-name">${formData.companyName}</div>` : ""}
   ${formData.companyAddress ? formData.companyAddress.replace(/\n/g, "<br>") : ""}
+  <div class="recipient-name">${formData.recipientName || 'Hiring Manager'}</div>
+  ${formData.recipientTitle ? `<div>${formData.recipientTitle}</div>` : ''}
+  ${formData.companyName ? `<div class="company-name">${formData.companyName}</div>` : ''}
+  ${formData.companyAddress ? formData.companyAddress.replace(/\n/g, '<br>') : ''}
 </div>
 
 
@@ -311,6 +329,10 @@ ${
 <div class="body-paragraph">${(formData.bodyParagraph1 || "In my previous role...").replace(/\n/g, "<br>")}</div>
 <div class="body-paragraph">${(formData.bodyParagraph2 || "My technical skills include...").replace(/\n/g, "<br>")}</div>
 <div class="body-paragraph">${(formData.closingParagraph || "I'm particularly drawn to your company...").replace(/\n/g, "<br>")}</div>
+<div class="body-paragraph">${(formData.openingParagraph || "I'm excited to apply for this position...").replace(/\n/g, '<br>')}</div>
+<div class="body-paragraph">${(formData.bodyParagraph1 || "In my previous role...").replace(/\n/g, '<br>')}</div>
+<div class="body-paragraph">${(formData.bodyParagraph2 || "My technical skills include...").replace(/\n/g, '<br>')}</div>
+<div class="body-paragraph">${(formData.closingParagraph || "I'm particularly drawn to your company...").replace(/\n/g, '<br>')}</div>
 
 
 <div class="signature">
@@ -324,6 +346,13 @@ ${
     const htmlContent = printWindow.document.documentElement.outerHTML;
     saveDownloadRecord(htmlContent, "PDF");
 
+// <<<<<<< HEAD
+// =======
+   
+// <<<<<<< HEAD
+// >>>>>>> parent of e8bdcc6 (Merge branch 'main' of https://github.com/Rahulnam30/AI-Resume-Builder)
+// =======
+// >>>>>>> parent of e8bdcc6 (Merge branch 'main' of https://github.com/Rahulnam30/AI-Resume-Builder)
     printWindow.document.close();
     setTimeout(() => setIsExporting(false), 1500);
   };
@@ -333,6 +362,7 @@ ${
   const exportToWord = () => {
     if (!formData.fullName || !formData.jobTitle) {
       alert("Please fill your name and job title first");
+      alert('Please fill your name and job title first');
       return;
     }
 
@@ -608,6 +638,34 @@ ${
     // 🔥 SAVE TO DOWNLOADS COLLECTION
     saveDownloadRecord(html, "DOCX");
 
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `Cover-Letter-${formData.jobTitle.replace(/[^a-zA-Z0-9]/g, '-')}.doc`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+
+// <<<<<<< HEAD
+    setTimeout(() => setIsExporting(false), 800);
+  };
+// =======
+
+//   const url = URL.createObjectURL(blob);
+//   const a = document.createElement("a");
+//   a.href = url;
+//   a.download = `Cover-Letter-${formData.jobTitle.replace(/[^a-zA-Z0-9]/g, '-')}.doc`;
+//   document.body.appendChild(a);
+//   a.click();
+//   document.body.removeChild(a);
+// URL.revokeObjectURL(url);
+
+
+//   setTimeout(() => setIsExporting(false), 800);
+// };
+// >>>>>>> parent of e8bdcc6 (Merge branch 'main' of https://github.com/Rahulnam30/AI-Resume-Builder)
+
     setTimeout(() => setIsExporting(false), 800);
   };
 
@@ -646,6 +704,11 @@ ${
         );
       default:
         return null;
+      case "recipient": return <RecipientInfoForm formData={formData} onInputChange={handleInputChange} />;
+      case "job": return <JobDetailsForm formData={formData} onInputChange={handleInputChange} />;
+      case "body": return <BodyContentForm formData={formData} onInputChange={handleInputChange} />;
+      case "closing": return <ClosingForm formData={formData} onInputChange={handleInputChange} />;
+      default: return null;
     }
   };
 
@@ -683,8 +746,10 @@ ${
             Fill Job Summary & Description in Job Details tab for complete
             professional letter.
           </span>
+          <AlertTriangle className="text-amber-500 flex-shrink-0 mt-0.5" size={18} />
+          <span className="text-sm font-medium text-amber-800">Fill Job Summary & Description in Job Details tab for complete professional letter.</span>
         </div>
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-0 lg:gap-2 w-full h-[82vh] lg:h-[85vh] px-2 relative z-10">
+        <div className="flex h-[calc(100vh-[180px])] gap-[10px] w-full mt-2 lg:mt-5 p-0 sm:p-2 lg:flex-row flex-col max-w-[1920px] mx-auto overflow-hidden relative z-10">
           {/* FORM PANEL */}
           <div className="lg:col-span-5 xl:col-span-5 order-2 lg:order-1 pr-0 lg:pr-1 relative z-20">
             <div className="bg-white rounded-2xl shadow-xl border border-gray-100 p-3 lg:p-4 h-full flex flex-col max-h-[calc(100vh-6rem)] overflow-hidden">
@@ -714,7 +779,33 @@ ${
                   {currentIdx === tabs.length - 1 ? "Finish" : "Next"}
                   <ArrowRight size={14} />
                 </button>
+          <div className="bg-white rounded-xl h-full overflow-hidden flex flex-col w-full lg:w-[520px] shrink-0 border border-slate-200 order-2 lg:order-1 relative z-20">
+            <CoverLetterFormTabs
+              activeSection={activeSection}
+              setActiveSection={setActiveSection}
+              onTogglePreview={() => setShowMobilePreview(v => !v)}
+            />
+            <div className="mt-3 flex-1 overflow-y-auto py-2 pr-2">{renderFormContent()}</div>
+
+            <div className="flex justify-between items-center mt-auto p-4 border-t border-slate-100 bg-white">
+              <button
+                onClick={goLeft}
+                disabled={currentIdx === 0}
+                className="flex gap-1 items-center text-sm bg-slate-100 px-4 py-2 rounded-lg select-none disabled:opacity-40 disabled:cursor-not-allowed transition"
+              >
+                <ArrowLeft size={18} /> Previous
+              </button>
+              <div className="flex-1 text-center text-xs text-gray-500 font-medium">
+                Step {currentIdx + 1} of {tabs.length}
               </div>
+              <button
+                onClick={goRight}
+                disabled={currentIdx === tabs.length - 1}
+                className="flex gap-1 items-center text-sm bg-black text-white px-4 py-2 rounded-lg select-none disabled:opacity-40 disabled:cursor-not-allowed transition"
+              >
+                {currentIdx === tabs.length - 1 ? "Finish" : "Next"}
+                <ArrowRight size={18} />
+              </button>
             </div>
           </div>
 
@@ -740,6 +831,59 @@ ${
       <footer className="footer pb-6">
         © {new Date().getFullYear()} ResumeAI Inc. All rights reserved.
       </footer>
+          <div className="hidden lg:flex flex-col flex-1 min-w-0 bg-[#eef2f7] rounded-xl overflow-hidden border border-slate-200 relative order-1 lg:order-2 z-10">
+            <CoverLetterPreview
+              formData={formData}
+              exportDate={date}
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Mobile preview overlay */}
+      {showMobilePreview && (
+        <div className="lg:hidden fixed inset-0 z-50 flex flex-col">
+          <div
+            className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+            onClick={() => setShowMobilePreview(false)}
+          />
+          <div
+            className="relative mt-auto bg-white rounded-t-2xl shadow-2xl flex flex-col"
+            style={{
+              height: "92dvh",
+              animation: "clPreviewSlideUp 0.3s cubic-bezier(0.32,0.72,0,1)",
+            }}
+          >
+            <div className="flex justify-center pt-3 pb-1 flex-shrink-0">
+              <div className="w-10 h-1 rounded-full bg-slate-300" />
+            </div>
+            <div className="flex items-center justify-between px-4 pb-2 flex-shrink-0">
+              <span className="text-sm font-semibold text-slate-700">
+                Cover Letter Preview
+              </span>
+              <button
+                onClick={() => setShowMobilePreview(false)}
+                className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-500 transition-colors"
+              >
+                <X size={15} />
+              </button>
+            </div>
+            <div className="flex-1 min-h-0 overflow-y-auto">
+              <CoverLetterPreview
+                formData={formData}
+                exportDate={date}
+              />
+            </div>
+          </div>
+        </div>
+      )}
+
+      <style>{`
+        @keyframes clPreviewSlideUp {
+          from { transform: translateY(100%); opacity: 0.5; }
+          to   { transform: translateY(0);    opacity: 1;   }
+        }
+      `}</style>
     </div>
   );
 };
