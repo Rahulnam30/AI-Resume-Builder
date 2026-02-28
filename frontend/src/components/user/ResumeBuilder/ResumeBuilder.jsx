@@ -572,9 +572,6 @@ const ResumeBuilder = ({ setActivePage = () => { } }) => {
         </div>
 
         {renderMainContent()}
-        <footer className="footer pb-6">
-          © {new Date().getFullYear()} ResumeAI Inc. All rights reserved.
-        </footer>
       </div>
     </>
   );

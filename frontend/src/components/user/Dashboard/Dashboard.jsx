@@ -5,7 +5,11 @@ import { useEffect, useState } from "react";
 import UserNavBar from "../UserNavBar/UserNavBar";
 import axiosInstance from "../../../api/axios"; // Use the configured axios instance
 
-import { FaFileAlt, FaEye, FaChartLine } from "react-icons/fa";
+import {
+  FaFileAlt,
+  FaEye,
+  FaChartLine,
+} from "react-icons/fa";
 
 import "./Dashboard.css";
 
@@ -41,9 +45,7 @@ const Dashboard = ({ setActivePage }) => {
         <div className="dashboard-content-container flex items-center justify-center min-h-[60vh]">
           <div className="flex flex-col items-center gap-4">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-            <p className="text-gray-500 font-medium">
-              Loading your dashboard...
-            </p>
+            <p className="text-gray-500 font-medium">Loading your dashboard...</p>
           </div>
         </div>
       </div>
@@ -120,8 +122,7 @@ const Dashboard = ({ setActivePage }) => {
 
           <div className="ai-right">
             <div className="ai-tip">
-              💡 Tip:{" "}
-              {avgAtsScore < 70
+              💡 Tip: {avgAtsScore < 70
                 ? "Try adding more strong action verbs to your 'Experience' section to increase impact."
                 : "Optimize your skills section with keywords from specific job descriptions."}
             </div>
@@ -164,9 +165,6 @@ const Dashboard = ({ setActivePage }) => {
             onViewAll={() => navigate("/user/my-resumes")}
           />
         </div>
-        <footer className="footer pb-6">
-          © {new Date().getFullYear()} ResumeAI Inc. All rights reserved.
-        </footer>
       </div>
     </div>
   );

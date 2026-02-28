@@ -1,11 +1,6 @@
-// import pdfParse from "pdf-parse";
+import pdfParse from "pdf-parse";
 import mammoth from "mammoth";
 import fs from "fs";
-
-//added pdf-parse using require since it doesn't support ES modules
-import { createRequire } from "module";
-const require = createRequire(import.meta.url);
-const pdfParse = require("pdf-parse");
 
 /**
  * Parse PDF file and extract text
