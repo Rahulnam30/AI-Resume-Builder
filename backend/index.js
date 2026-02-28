@@ -7,7 +7,6 @@ import cookieParser from "cookie-parser";
 import path from "path";
 import { fileURLToPath } from "url";
 import notificationRoutes from "./routers/notification.router.js";
- 
 
 // Routers
 import authRouter from "./routers/auth.router.js";
