@@ -1,4 +1,5 @@
 import ATSPdfPreview from "./ATSPdfPreview";
+import { useParams } from "react-router-dom";
 import UserNavBar from "../UserNavBar/UserNavBar";
 import {
   Upload,
@@ -39,6 +40,7 @@ export default function ATSChecker({ onSidebarToggle }) {
   const [animatedScore, setAnimatedScore] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const { id } = useParams();
 
   useEffect(() => {
     if (analysisResult?.overallScore >= 0) {
@@ -78,6 +80,59 @@ export default function ATSChecker({ onSidebarToggle }) {
     window.addEventListener("resize", fn);
     return () => window.removeEventListener("resize", fn);
   }, []);
+  useEffect(() => {
+  if (!id) return;
+
+  const fetchResumeAndAnalyze = async () => {
+    try {
+      setIsLoading(true);
+
+      const token =
+        localStorage.getItem("token") || sessionStorage.getItem("token");
+
+      // 1️⃣ Fetch file from backend
+      const res = await fetch(
+        `http://localhost:5000/api/downloads/${id}`,
+        {
+          headers: token ? { Authorization: `Bearer ${token}` } : {},
+        }
+      );
+
+      const data = await res.json();
+
+      if (!data.success) return;
+
+      // 2️⃣ Set preview URL directly (assuming backend gives fileUrl)
+      setPreviewUrl(data.fileUrl);
+
+      // 3️⃣ Re-run ATS analysis API
+      const formData = new FormData();
+      formData.append("resumeUrl", data.fileUrl);
+
+      const analyzeRes = await fetch(
+        "http://localhost:5000/api/resume/analyze-url",
+        {
+          method: "POST",
+          body: formData,
+          headers: token ? { Authorization: `Bearer ${token}` } : {},
+        }
+      );
+
+      const analyzeData = await analyzeRes.json();
+
+      if (analyzeData.success) {
+        setAnalysisResult(analyzeData.data);
+      }
+
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  fetchResumeAndAnalyze();
+}, [id]);
 
   useEffect(() => {
     const spans = document.querySelectorAll(
