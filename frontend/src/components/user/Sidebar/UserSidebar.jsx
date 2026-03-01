@@ -107,7 +107,7 @@ export default function UserSidebar() {
   return (
     <>
       {/* Toggle Buttons */}
-      <div className="fixed md:top-4 top-5 md:left-4 left-2 z-[60] flex gap-2">
+      <div className="fixed md:top-4 top-5 md:left-4 left-2 z-[1000] flex gap-2">
         <button
           onClick={() => setIsMobileOpen(!isMobileOpen)}
           className="md:hidden"
@@ -123,8 +123,9 @@ export default function UserSidebar() {
       </div>
       {/* Overlay */}
       <div
-        className={`fixed inset-0 z-30 bg-black bg-opacity-50 transition-opacity duration-300 ${isMobileOpen ? "opacity-100" : "opacity-0 pointer-events-none"
-          }`}
+        className={`fixed inset-0 z-30 bg-black bg-opacity-50 transition-opacity duration-300 ${
+          isMobileOpen ? "opacity-100" : "opacity-0 pointer-events-none"
+        }`}
         onClick={() => setIsMobileOpen(false)}
       ></div>
       {/* Sidebar */}
@@ -163,7 +164,7 @@ export default function UserSidebar() {
                     <motion.span
                       initial={{ scale: 0 }}
                       animate={{ scale: 1 }}
-                      className={`${isCollapsed ? 'absolute -top-1 -right-1' : 'ml-auto'} inline-flex items-center justify-center w-5 h-5 text-xs font-bold text-white rounded-full ${active ? 'bg-yellow-400' : 'bg-yellow-400'}`}
+                      className={`${isCollapsed ? "absolute -top-1 -right-1" : "ml-auto"} inline-flex items-center justify-center w-5 h-5 text-xs font-bold text-white rounded-full ${active ? "bg-yellow-400" : "bg-yellow-400"}`}
                     >
                       {item.badge}
                     </motion.span>
@@ -195,15 +196,14 @@ export default function UserSidebar() {
             <div className="tooltip">Logout</div>
           )}
         </div>
-      </motion.aside >
+      </motion.aside>
 
       {/* Right Panel (Navbar + Content) */}
-      < div
-        className={`transition-all duration-300 mt-0 ${isCollapsed ? "md:ml-[80px]" : "md:ml-[256px]"}`
-        }
+      <div
+        className={`transition-all duration-300 mt-0 ${isCollapsed ? "md:ml-[80px]" : "md:ml-[256px]"}`}
       >
         <Outlet />
-      </div >
+      </div>
     </>
   );
 }

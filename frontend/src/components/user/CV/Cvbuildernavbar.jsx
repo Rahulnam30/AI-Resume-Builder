@@ -31,12 +31,15 @@ const CVBuilderTopBar = ({
 
   useEffect(() => {
     const handleClickOutside = (e) => {
-      if (downloadDropdownRef.current && !downloadDropdownRef.current.contains(e.target)) {
+      if (
+        downloadDropdownRef.current &&
+        !downloadDropdownRef.current.contains(e.target)
+      ) {
         setShowDownloadMenu(false);
       }
     };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   useEffect(() => {
@@ -51,7 +54,7 @@ const CVBuilderTopBar = ({
     const file = e.target.files[0];
     if (!file) return;
     onUpload?.(file);
-    e.target.value = '';
+    e.target.value = "";
   };
 
   const currentTitle = title !== undefined ? title : localTitle;
@@ -62,7 +65,6 @@ const CVBuilderTopBar = ({
     <div className="w-full px-3 sm:px-4 py-3 flex flex-col md:flex-row gap-3 justify-between items-start md:items-center">
       {/* ── Left section ── */}
       <div className="flex flex-col sm:flex-row sm:items-center gap-2 md:gap-3 w-full md:w-auto">
-
         {/* Title Section - Editable */}
         <div className="relative flex items-center">
           {activeTab === "builder" ? (
@@ -80,57 +82,74 @@ const CVBuilderTopBar = ({
                   style={{ width: titleInputWidth }}
                   placeholder={titlePlaceholder}
                 />
-                <PenTool size={16} className="text-slate-400 group-hover:text-blue-500 transition-colors shrink-0" />
+                <PenTool
+                  size={16}
+                  className="text-slate-400 group-hover:text-blue-500 transition-colors shrink-0"
+                />
               </div>
-              <span className="absolute top-full left-0 mt-0.5 text-[11px] text-slate-400 select-none whitespace-nowrap">Click to rename your document</span>
+              <span className="absolute top-full left-0 mt-0.5 text-[11px] text-slate-400 select-none whitespace-nowrap sm:pb-20">
+                Click to rename your document
+              </span>
             </>
           ) : (
-            <h1 className="text-xl sm:text-2xl font-['Outfit'] select-none whitespace-nowrap">{templatesLabel}</h1>
+            <h1 className="text-xl sm:text-2xl font-['Outfit'] select-none whitespace-nowrap">
+              {templatesLabel}
+            </h1>
           )}
         </div>
 
         {/* Tabs */}
-        {showTabs && <div className="bg-gray-100 rounded-xl p-1 flex w-fit">
-          <button
-            onClick={() => setActiveTab("builder")}
-            className={`rounded-xl px-3 py-1.5 text-sm transition whitespace-nowrap ${activeTab === "builder"
-                ? "bg-white text-slate-900 shadow-sm"
-                : "text-slate-600 hover:text-slate-800"
+        {showTabs && (
+          <div className="bg-gray-100 rounded-xl p-1 flex w-fit">
+            <button
+              onClick={() => setActiveTab("builder")}
+              className={`rounded-xl px-3 py-1.5 text-sm transition whitespace-nowrap ${
+                activeTab === "builder"
+                  ? "bg-white text-slate-900 shadow-sm"
+                  : "text-slate-600 hover:text-slate-800"
               }`}
-          >
-            Builder
-          </button>
+            >
+              Builder
+            </button>
 
-          <button
-            onClick={() => setActiveTab("templates")}
-            className={`rounded-xl px-3 py-1.5 text-sm transition whitespace-nowrap ${activeTab === "templates"
-                ? "bg-white text-slate-900 shadow-sm"
-                : "text-slate-600 hover:text-slate-800"
+            <button
+              onClick={() => setActiveTab("templates")}
+              className={`rounded-xl px-3 py-1.5 text-sm transition whitespace-nowrap ${
+                activeTab === "templates"
+                  ? "bg-white text-slate-900 shadow-sm"
+                  : "text-slate-600 hover:text-slate-800"
               }`}
-          >
-            Templates
-          </button>
-        </div>}
+            >
+              Templates
+            </button>
+          </div>
+        )}
 
         {/* AI Mode Toggle */}
         {showAiToggle && activeTab === "builder" && (
           <div className="flex items-center gap-2">
             <button
               onClick={onToggleAiMode}
-              className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium transition-all border ${isAiMode
-                ? "bg-purple-50 border-purple-200 text-purple-700 shadow-sm"
-                : "bg-white border-slate-200 text-slate-600 hover:bg-slate-50 hover:text-slate-900"
-                }`}
+              className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium transition-all border ${
+                isAiMode
+                  ? "bg-purple-50 border-purple-200 text-purple-700 shadow-sm"
+                  : "bg-white border-slate-200 text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+              }`}
             >
-              <Zap size={16} className={`transition-colors ${isAiMode ? "fill-purple-700 text-purple-700" : "text-slate-400"}`} />
+              <Zap
+                size={16}
+                className={`transition-colors ${isAiMode ? "fill-purple-700 text-purple-700" : "text-slate-400"}`}
+              />
               <span>AI Mode</span>
               <div
-                className={`relative w-8 h-4 rounded-full transition-colors ml-1 ${isAiMode ? "bg-purple-600" : "bg-slate-300"
-                  }`}
+                className={`relative w-8 h-4 rounded-full transition-colors ml-1 ${
+                  isAiMode ? "bg-purple-600" : "bg-slate-300"
+                }`}
               >
                 <div
-                  className={`absolute top-0.5 w-3 h-3 bg-white rounded-full transition-transform shadow-sm ${isAiMode ? "left-[18px]" : "left-0.5"
-                    }`}
+                  className={`absolute top-0.5 w-3 h-3 bg-white rounded-full transition-transform shadow-sm ${
+                    isAiMode ? "left-[18px]" : "left-0.5"
+                  }`}
                 />
               </div>
             </button>
@@ -144,19 +163,23 @@ const CVBuilderTopBar = ({
         {extraButtons}
 
         {/* Designer */}
-        {showDesigner && <button className="hidden lg:flex items-center gap-2 px-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-800 font-medium shadow-sm hover:bg-black hover:text-white transition-all duration-200 whitespace-nowrap">
-          <PenTool size={18} />
-          CV Designer
-        </button>}
+        {showDesigner && (
+          <button className="hidden lg:flex items-center gap-2 px-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-800 font-medium shadow-sm hover:bg-black hover:text-white transition-all duration-200 whitespace-nowrap">
+            <PenTool size={18} />
+            CV Designer
+          </button>
+        )}
 
         {/* Upload */}
-        {showUpload && <button
-          onClick={handleUploadClick}
-          className="flex items-center gap-2 text-white bg-black rounded-lg text-sm transition-all duration-200 hover:bg-black/80 py-2 px-3 sm:px-5 whitespace-nowrap"
-        >
-          <Upload size={18} />
-          <span className="hidden sm:inline">Upload</span>
-        </button>}
+        {showUpload && (
+          <button
+            onClick={handleUploadClick}
+            className="flex items-center gap-2 text-white bg-black rounded-lg text-sm transition-all duration-200 hover:bg-black/80 py-2 px-3 sm:px-5 whitespace-nowrap"
+          >
+            <Upload size={18} />
+            <span className="hidden sm:inline">Upload</span>
+          </button>
+        )}
         <input
           ref={uploadInputRef}
           type="file"
@@ -177,14 +200,22 @@ const CVBuilderTopBar = ({
             ) : (
               <Download size={18} />
             )}
-            <span className="hidden sm:inline">{isDownloading ? 'Downloading…' : 'Download'}</span>
-            <ChevronDown size={14} className={`transition-transform duration-200 ${showDownloadMenu ? 'rotate-180' : ''}`} />
+            <span className="hidden sm:inline">
+              {isDownloading ? "Downloading…" : "Download"}
+            </span>
+            <ChevronDown
+              size={14}
+              className={`transition-transform duration-200 ${showDownloadMenu ? "rotate-180" : ""}`}
+            />
           </button>
 
           {showDownloadMenu && (
             <div className="absolute right-0 mt-1 w-44 bg-white border border-gray-200 rounded-xl shadow-xl z-50 overflow-hidden">
               <button
-                onClick={() => { setShowDownloadMenu(false); onDownload?.(); }}
+                onClick={() => {
+                  setShowDownloadMenu(false);
+                  onDownload?.();
+                }}
                 className="w-full flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
               >
                 <Download size={15} className="text-red-500" />
@@ -192,7 +223,10 @@ const CVBuilderTopBar = ({
               </button>
               <div className="border-t border-gray-100" />
               <button
-                onClick={() => { setShowDownloadMenu(false); onDownloadWord?.(); }}
+                onClick={() => {
+                  setShowDownloadMenu(false);
+                  onDownloadWord?.();
+                }}
                 className="w-full flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
               >
                 <Download size={15} className="text-blue-500" />
