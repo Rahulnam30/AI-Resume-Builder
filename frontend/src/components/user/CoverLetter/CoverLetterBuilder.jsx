@@ -144,7 +144,10 @@ const CoverLetterBuilder = () => {
     setIsExporting(true);
 
     const sanitize = (s) =>
-      (s || "").replace(/[^a-z0-9_ \-]/gi, "").trim().replace(/\s+/g, "_");
+      (s || "")
+        .replace(/[^a-z0-9_ \-]/gi, "")
+        .trim()
+        .replace(/\s+/g, "_");
     const fileName =
       sanitize(documentTitle) || sanitize(formData.fullName) || "Cover-Letter";
 
@@ -265,7 +268,7 @@ ${
       const response = await axiosInstance.post(
         "/api/resume/generate-pdf",
         { html: letterHtml },
-        { responseType: "blob" }
+        { responseType: "blob" },
       );
 
       const blob = new Blob([response.data], { type: "application/pdf" });
@@ -443,7 +446,14 @@ ${
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `${(() => { const s = (v) => (v || "").replace(/[^a-zA-Z0-9_ \-]/g, "").trim().replace(/\s+/g, "_"); return s(documentTitle) || s(formData.fullName) || "Cover-Letter"; })()}.doc`;
+    a.download = `${(() => {
+      const s = (v) =>
+        (v || "")
+          .replace(/[^a-zA-Z0-9_ \-]/g, "")
+          .trim()
+          .replace(/\s+/g, "_");
+      return s(documentTitle) || s(formData.fullName) || "Cover-Letter";
+    })()}.doc`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -599,8 +609,7 @@ ${
           </div>
         </div>
       )}
-
-      <footer className="footer pb-6">
+      <footer className="mt-auto text-center py-4 bg-white border-t text-sm text-gray-600">
         © {new Date().getFullYear()} ResumeAI Inc. All rights reserved.
       </footer>
 

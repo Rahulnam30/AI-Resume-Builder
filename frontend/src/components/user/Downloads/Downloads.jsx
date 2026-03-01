@@ -712,7 +712,7 @@ const Downloads = () => {
             </div>
           )}
 
-          <footer className="footer pb-6">
+          <footer className="mt-auto text-center py-4 bg-white border-t text-sm text-gray-600">
             © {new Date().getFullYear()} ResumeAI Inc. All rights reserved.
           </footer>
         </div>

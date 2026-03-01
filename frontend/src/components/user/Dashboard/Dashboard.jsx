@@ -12,14 +12,22 @@ import {
   FaExclamationTriangle,
   FaLightbulb,
   FaArrowRight,
-  FaHistory
+  FaHistory,
 } from "react-icons/fa";
 import { HiLightningBolt, HiSparkles, HiClock } from "react-icons/hi";
 import toast from "react-hot-toast";
 
 import {
-  XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
-  BarChart, Bar, Cell, PieChart, Pie
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  BarChart,
+  Bar,
+  Cell,
+  PieChart,
+  Pie,
 } from "recharts";
 
 import "./Dashboard.css";
@@ -37,9 +45,9 @@ const Dashboard = ({ setActivePage }) => {
       setRequestLoading(true);
       const res = await axiosInstance.post("/api/user/request-admin");
       toast.success(res.data?.message || "Admin request submitted");
-      setDashboardData(prev => ({
+      setDashboardData((prev) => ({
         ...prev,
-        user: { ...prev.user, adminRequestStatus: 'pending' }
+        user: { ...prev.user, adminRequestStatus: "pending" },
       }));
     } catch (err) {
       console.error(err);
@@ -74,7 +82,9 @@ const Dashboard = ({ setActivePage }) => {
         <div className="dashboard-content-container flex items-center justify-center min-h-[60vh]">
           <div className="flex flex-col items-center gap-4">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-            <p className="text-gray-500 font-medium">Loading your AI Intelligence Center...</p>
+            <p className="text-gray-500 font-medium">
+              Loading your AI Intelligence Center...
+            </p>
           </div>
         </div>
       </div>
@@ -113,7 +123,8 @@ const Dashboard = ({ setActivePage }) => {
   const resumesCreatedCount = stats.resumesCreated || 0;
   const cvsCreatedCount = stats.cvsCreated || 0;
   const coverLettersCreatedCount = stats.coverLettersCreated || 0;
-  const totalAssets = resumesCreatedCount + cvsCreatedCount + coverLettersCreatedCount;
+  const totalAssets =
+    resumesCreatedCount + cvsCreatedCount + coverLettersCreatedCount;
 
   // Calculate Resume Health Status
   let healthStatusLabel = "Needs Work";
@@ -130,7 +141,8 @@ const Dashboard = ({ setActivePage }) => {
     healthStatusLabel = "Good";
     healthStatusColor = "text-blue-400";
     healthStrokeColor = "#3b82f6"; // blue-500
-    feedbackMessage = "Solid foundation. A few tweaks will elevate your profile.";
+    feedbackMessage =
+      "Solid foundation. A few tweaks will elevate your profile.";
   } else if (avgAtsScore >= 50) {
     healthStatusLabel = "Needs Work";
     healthStatusColor = "text-amber-400";
@@ -143,16 +155,44 @@ const Dashboard = ({ setActivePage }) => {
 
   // Mocked AI Suggestions for the Action Center
   const aiSuggestions = [
-    { id: 1, title: "Add Quantifiable Metrics", desc: "Your experience section lacks numbers. Add metrics to boost impact.", priority: "High", impact: "+8 Score", color: "bg-red-50 border-red-200 text-red-700", icon: <FaExclamationTriangle className="text-red-500" /> },
-    { id: 2, title: "Optimize Skills Section", desc: "Missing keyword 'React.js' found in your target job descriptions.", priority: "Medium", impact: "+5 Score", color: "bg-amber-50 border-amber-200 text-amber-700", icon: <HiLightningBolt className="text-amber-500" /> },
-    { id: 3, title: "Action Verbs Check", desc: "Replace 'Responsible for' with strong verbs like 'Spearheaded'.", priority: "Low", impact: "+2 Score", color: "bg-blue-50 border-blue-200 text-blue-700", icon: <FaLightbulb className="text-blue-500" /> }
+    {
+      id: 1,
+      title: "Add Quantifiable Metrics",
+      desc: "Your experience section lacks numbers. Add metrics to boost impact.",
+      priority: "High",
+      impact: "+8 Score",
+      color: "bg-red-50 border-red-200 text-red-700",
+      icon: <FaExclamationTriangle className="text-red-500" />,
+    },
+    {
+      id: 2,
+      title: "Optimize Skills Section",
+      desc: "Missing keyword 'React.js' found in your target job descriptions.",
+      priority: "Medium",
+      impact: "+5 Score",
+      color: "bg-amber-50 border-amber-200 text-amber-700",
+      icon: <HiLightningBolt className="text-amber-500" />,
+    },
+    {
+      id: 3,
+      title: "Action Verbs Check",
+      desc: "Replace 'Responsible for' with strong verbs like 'Spearheaded'.",
+      priority: "Low",
+      impact: "+2 Score",
+      color: "bg-blue-50 border-blue-200 text-blue-700",
+      icon: <FaLightbulb className="text-blue-500" />,
+    },
   ];
 
   // Mock Data Visualizations
   const documentData = [
     { name: "Resumes", value: resumesCreatedCount, color: "#0284c7" },
     { name: "CVs", value: cvsCreatedCount, color: "#1e3a8a" },
-    { name: "Cover Letters", value: coverLettersCreatedCount, color: "#f97316" },
+    {
+      name: "Cover Letters",
+      value: coverLettersCreatedCount,
+      color: "#f97316",
+    },
   ];
 
   const sectionStrength = [
@@ -165,7 +205,8 @@ const Dashboard = ({ setActivePage }) => {
   // Calculations for Circular Progress
   const circleRadius = 55;
   const circleCircumference = 2 * Math.PI * circleRadius;
-  const strokeDashoffset = circleCircumference - (avgAtsScore / 100) * circleCircumference;
+  const strokeDashoffset =
+    circleCircumference - (avgAtsScore / 100) * circleCircumference;
 
   const CustomPieTooltip = ({ active, payload }) => {
     if (active && payload && payload.length) {
@@ -184,14 +225,16 @@ const Dashboard = ({ setActivePage }) => {
       <UserNavBar />
 
       <div className="dashboard-content-container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
-
         {/* --- Page Header --- */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
           <div>
             <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight flex items-center gap-2">
-              Welcome back, {user.name || "User"} <HiSparkles className="text-blue-500" />
+              Welcome back, {user.name || "User"}{" "}
+              <HiSparkles className="text-blue-500" />
             </h1>
-            <p className="text-slate-500 mt-1 text-sm sm:text-base">Here is your Resume Intelligence & Command Center.</p>
+            <p className="text-slate-500 mt-1 text-sm sm:text-base">
+              Here is your Resume Intelligence & Command Center.
+            </p>
           </div>
           <button
             className="flex items-center justify-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl shadow-md transition-all sm:w-auto w-full"
@@ -203,7 +246,6 @@ const Dashboard = ({ setActivePage }) => {
 
         {/* --- HERO SECTION: Resume Health Focus --- */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-
           {/* Main Health Card (Takes 2/3 width on large screens) */}
           <div className="lg:col-span-2 bg-gradient-to-br from-[#0f172a] to-[#1e293b] rounded-2xl p-6 sm:p-8 shadow-xl relative overflow-hidden flex flex-col sm:flex-row items-center justify-between gap-8 border border-slate-700">
             {/* Background decoration */}
@@ -214,7 +256,9 @@ const Dashboard = ({ setActivePage }) => {
               <span className="inline-block px-3 py-1 bg-slate-800/80 border border-slate-700 text-blue-300 text-xs font-bold tracking-wider rounded-full mb-4 uppercase">
                 Overall Resume Health
               </span>
-              <h2 className={`text-3xl sm:text-4xl font-extrabold mb-2 ${healthStatusColor}`}>
+              <h2
+                className={`text-3xl sm:text-4xl font-extrabold mb-2 ${healthStatusColor}`}
+              >
                 {healthStatusLabel}
               </h2>
               <p className="text-slate-300 text-sm sm:text-base leading-relaxed max-w-md">
@@ -256,8 +300,12 @@ const Dashboard = ({ setActivePage }) => {
                 />
               </svg>
               <div className="absolute inset-0 flex flex-col items-center justify-center">
-                <span className="text-4xl font-black text-white">{avgAtsScore}</span>
-                <span className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1">Score</span>
+                <span className="text-4xl font-black text-white">
+                  {avgAtsScore}
+                </span>
+                <span className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1">
+                  Score
+                </span>
               </div>
             </div>
           </div>
@@ -271,25 +319,40 @@ const Dashboard = ({ setActivePage }) => {
             <div className="flex-1 flex flex-col justify-center gap-6">
               <div className="bg-slate-50 rounded-xl p-4 border border-slate-100">
                 <div className="flex justify-between items-end mb-2">
-                  <span className="text-sm font-semibold text-slate-600">Reach 80+ Score</span>
-                  <span className="text-xs font-bold text-blue-600">{avgAtsScore}/80</span>
+                  <span className="text-sm font-semibold text-slate-600">
+                    Reach 80+ Score
+                  </span>
+                  <span className="text-xs font-bold text-blue-600">
+                    {avgAtsScore}/80
+                  </span>
                 </div>
                 <div className="h-2 w-full bg-slate-200 rounded-full overflow-hidden">
                   <div
                     className="h-full bg-blue-600 rounded-full transition-all duration-1000"
-                    style={{ width: `${Math.min((avgAtsScore / 80) * 100, 100)}%` }}
+                    style={{
+                      width: `${Math.min((avgAtsScore / 80) * 100, 100)}%`,
+                    }}
                   ></div>
                 </div>
               </div>
 
               <div className="space-y-3">
                 <div className="flex items-center justify-between text-sm">
-                  <span className="text-slate-500 flex items-center gap-1.5 whitespace-nowrap"><FaCheckCircle className="text-emerald-500 shrink-0" /> ATS Readiness</span>
-                  <span className="font-bold text-slate-800">{stats.atsReadiness || avgAtsScore}%</span>
+                  <span className="text-slate-500 flex items-center gap-1.5 whitespace-nowrap">
+                    <FaCheckCircle className="text-emerald-500 shrink-0" /> ATS
+                    Readiness
+                  </span>
+                  <span className="font-bold text-slate-800">
+                    {stats.atsReadiness || avgAtsScore}%
+                  </span>
                 </div>
                 <div className="flex items-center justify-between text-sm">
-                  <span className="text-slate-500 flex items-center gap-1.5 whitespace-nowrap"><HiClock className="text-blue-500 shrink-0" /> Last Edited</span>
-                  <span className="font-bold text-slate-800">{recentResumes.length > 0 ? "Today" : "N/A"}</span>
+                  <span className="text-slate-500 flex items-center gap-1.5 whitespace-nowrap">
+                    <HiClock className="text-blue-500 shrink-0" /> Last Edited
+                  </span>
+                  <span className="font-bold text-slate-800">
+                    {recentResumes.length > 0 ? "Today" : "N/A"}
+                  </span>
                 </div>
               </div>
             </div>
@@ -331,7 +394,6 @@ const Dashboard = ({ setActivePage }) => {
 
         {/* --- MAIN DASHBOARD GRID: Data Vis & Actions --- */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-
           {/* AI ACTION CENTER */}
           <div className="lg:col-span-1 flex flex-col h-full">
             <ActionCenter />
@@ -339,10 +401,11 @@ const Dashboard = ({ setActivePage }) => {
 
           {/* DATA VISUALIZATION: Progress & Strength Breakdown */}
           <div className="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
-
             {/* Document Breakdown */}
             <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 flex flex-col items-center">
-              <h3 className="text-lg font-bold text-slate-800 self-start mb-6">Document Breakdown</h3>
+              <h3 className="text-lg font-bold text-slate-800 self-start mb-6">
+                Document Breakdown
+              </h3>
               <div className="relative flex-1 w-full flex items-center justify-center min-h-[160px]">
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
@@ -367,7 +430,9 @@ const Dashboard = ({ setActivePage }) => {
                 {/* Center Text */}
                 <div className="absolute inset-0 flex flex-col items-center justify-center font-bold pointer-events-none">
                   <span className="text-3xl text-slate-900">{totalAssets}</span>
-                  <span className="text-[9px] text-slate-400 font-bold tracking-wider">TOTAL ASSETS</span>
+                  <span className="text-[9px] text-slate-400 font-bold tracking-wider">
+                    TOTAL ASSETS
+                  </span>
                 </div>
               </div>
               {/* Legend below */}
@@ -375,10 +440,17 @@ const Dashboard = ({ setActivePage }) => {
                 {documentData.map((item, i) => (
                   <div key={i} className="flex flex-col">
                     <div className="flex items-center gap-1.5 mb-0.5">
-                      <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: item.color }}></div>
-                      <span className="text-xs font-semibold text-slate-700">{item.name}</span>
+                      <div
+                        className="w-2.5 h-2.5 rounded-full"
+                        style={{ backgroundColor: item.color }}
+                      ></div>
+                      <span className="text-xs font-semibold text-slate-700">
+                        {item.name}
+                      </span>
                     </div>
-                    <span className="text-[10px] text-slate-500 pl-4">{item.value} Units</span>
+                    <span className="text-[10px] text-slate-500 pl-4">
+                      {item.value} Units
+                    </span>
                   </div>
                 ))}
               </div>
@@ -386,34 +458,63 @@ const Dashboard = ({ setActivePage }) => {
 
             {/* Section Strength */}
             <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 flex flex-col">
-              <h3 className="text-lg font-bold text-slate-800 mb-6">Section Strength Breakdown</h3>
+              <h3 className="text-lg font-bold text-slate-800 mb-6">
+                Section Strength Breakdown
+              </h3>
               <div className="h-48 w-full flex-1">
                 <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={sectionStrength} layout="vertical" margin={{ top: 0, right: 10, left: 10, bottom: 0 }}>
-                    <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#e2e8f0" />
+                  <BarChart
+                    data={sectionStrength}
+                    layout="vertical"
+                    margin={{ top: 0, right: 10, left: 10, bottom: 0 }}
+                  >
+                    <CartesianGrid
+                      strokeDasharray="3 3"
+                      horizontal={false}
+                      stroke="#e2e8f0"
+                    />
                     <XAxis type="number" hide />
-                    <YAxis dataKey="name" type="category" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#475569', fontWeight: 600 }} width={80} />
-                    <Tooltip cursor={{ fill: '#f1f5f9' }} contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }} />
+                    <YAxis
+                      dataKey="name"
+                      type="category"
+                      axisLine={false}
+                      tickLine={false}
+                      tick={{ fontSize: 12, fill: "#475569", fontWeight: 600 }}
+                      width={80}
+                    />
+                    <Tooltip
+                      cursor={{ fill: "#f1f5f9" }}
+                      contentStyle={{
+                        borderRadius: "8px",
+                        border: "none",
+                        boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+                      }}
+                    />
                     <Bar dataKey="value" radius={[0, 6, 6, 0]} barSize={20}>
                       {sectionStrength.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={entry.value >= 80 ? '#10b981' : entry.value >= 65 ? '#3b82f6' : '#f59e0b'} />
+                        <Cell
+                          key={`cell-${index}`}
+                          fill={
+                            entry.value >= 80
+                              ? "#10b981"
+                              : entry.value >= 65
+                                ? "#3b82f6"
+                                : "#f59e0b"
+                          }
+                        />
                       ))}
                     </Bar>
                   </BarChart>
                 </ResponsiveContainer>
               </div>
             </div>
-
           </div>
         </div>
 
         {/* --- BOTTOM ROW: Recent Resumes & Admin Section --- */}
         <div className="grid grid-cols-1 gap-6 pb-12">
-
           <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden w-full p-4 sm:p-6 pb-2">
-            <RecentResumes
-              resumes={recentResumes}
-            />
+            <RecentResumes resumes={recentResumes} />
           </div>
 
           {/* Upgrade to Admin Card (Moved to bottom, visually secondary) */}
@@ -424,32 +525,40 @@ const Dashboard = ({ setActivePage }) => {
                   <FaShieldAlt size={18} />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-slate-700 text-sm mb-0.5">Admin Access Request</h3>
+                  <h3 className="font-semibold text-slate-700 text-sm mb-0.5">
+                    Admin Access Request
+                  </h3>
                   <p className="text-slate-500 text-xs max-w-lg leading-relaxed">
-                    View platform analytics and manage templates by upgrading to an administrator account.
+                    View platform analytics and manage templates by upgrading to
+                    an administrator account.
                   </p>
                 </div>
               </div>
 
               <button
                 onClick={handleRequestAdmin}
-                disabled={adminRequestStatus === 'pending' || requestLoading}
-                className={`px-4 py-2 text-sm rounded-lg font-medium transition-all shrink-0 whitespace-nowrap w-full sm:w-auto ${adminRequestStatus === 'pending'
-                  ? 'bg-amber-100 text-amber-700 cursor-not-allowed'
-                  : adminRequestStatus === 'rejected'
-                    ? 'bg-red-50 text-red-600 border border-red-200 hover:bg-red-100'
-                    : 'bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 hover:text-slate-900 shadow-sm'
-                  }`}
+                disabled={adminRequestStatus === "pending" || requestLoading}
+                className={`px-4 py-2 text-sm rounded-lg font-medium transition-all shrink-0 whitespace-nowrap w-full sm:w-auto ${
+                  adminRequestStatus === "pending"
+                    ? "bg-amber-100 text-amber-700 cursor-not-allowed"
+                    : adminRequestStatus === "rejected"
+                      ? "bg-red-50 text-red-600 border border-red-200 hover:bg-red-100"
+                      : "bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 hover:text-slate-900 shadow-sm"
+                }`}
               >
-                {adminRequestStatus === 'pending' ? 'Request Pending' :
-                  adminRequestStatus === 'rejected' ? 'Request Rejected' :
-                    'Request Access'}
+                {adminRequestStatus === "pending"
+                  ? "Request Pending"
+                  : adminRequestStatus === "rejected"
+                    ? "Request Rejected"
+                    : "Request Access"}
               </button>
             </div>
           )}
-
         </div>
       </div>
+      <footer className="mt-auto text-center py-4 bg-white border-t text-sm text-gray-600">
+        © {new Date().getFullYear()} ResumeAI Inc. All rights reserved.
+      </footer>
     </div>
   );
 };

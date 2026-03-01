@@ -144,8 +144,13 @@ const ResumeBuilder = ({ setActivePage = () => {} }) => {
 
       const link = document.createElement("a");
       link.href = url;
-      const sanitize = (s) => (s || "").replace(/[^a-z0-9_\- ]/gi, "").trim().replace(/\s+/g, "_");
-      const fileName = sanitize(documentTitle) || sanitize(formData.fullName) || "Resume";
+      const sanitize = (s) =>
+        (s || "")
+          .replace(/[^a-z0-9_\- ]/gi, "")
+          .trim()
+          .replace(/\s+/g, "_");
+      const fileName =
+        sanitize(documentTitle) || sanitize(formData.fullName) || "Resume";
       link.download = `${fileName}.pdf`;
       link.click();
 
@@ -174,11 +179,16 @@ const ResumeBuilder = ({ setActivePage = () => {} }) => {
     const html = await previewRef.current?.getResumeHTML();
     if (!html) return;
     const wordHtml = `<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40"><head><meta charset="utf-8"><title>Resume</title></head><body>${html}</body></html>`;
-    const blob = new Blob(['\uFEFF', wordHtml], { type: 'application/msword' });
+    const blob = new Blob(["\uFEFF", wordHtml], { type: "application/msword" });
     const url = URL.createObjectURL(blob);
-    const sanitize = (s) => (s || "").replace(/[^a-z0-9_\- ]/gi, "").trim().replace(/\s+/g, "_");
-    const fileName = sanitize(documentTitle) || sanitize(formData.fullName) || "Resume";
-    const a = document.createElement('a');
+    const sanitize = (s) =>
+      (s || "")
+        .replace(/[^a-z0-9_\- ]/gi, "")
+        .trim()
+        .replace(/\s+/g, "_");
+    const fileName =
+      sanitize(documentTitle) || sanitize(formData.fullName) || "Resume";
+    const a = document.createElement("a");
     a.href = url;
     a.download = `${fileName}.doc`;
     a.click();
@@ -375,20 +385,19 @@ const ResumeBuilder = ({ setActivePage = () => {} }) => {
             </div>
           </div>
 
-        {!isPreviewHidden && !isPreviewExpanded && (
-  <div className="hidden md:block">
-    <LivePreview
-      ref={previewRef}
-      formData={formData}
-      currentTemplate={currentTemplate}
-      isExpanded={false}
-      onExpand={() => setIsPreviewExpanded(true)}
-      onCollapse={() => setIsPreviewExpanded(false)}
-      onMinimize={() => setIsPreviewHidden(true)}
-    />
-  </div>
-)}
-
+          {!isPreviewHidden && !isPreviewExpanded && (
+            <div className="hidden md:block">
+              <LivePreview
+                ref={previewRef}
+                formData={formData}
+                currentTemplate={currentTemplate}
+                isExpanded={false}
+                onExpand={() => setIsPreviewExpanded(true)}
+                onCollapse={() => setIsPreviewExpanded(false)}
+                onMinimize={() => setIsPreviewHidden(true)}
+              />
+            </div>
+          )}
         </div>
         <div className="w-full h-4"></div>
       </>
@@ -397,20 +406,20 @@ const ResumeBuilder = ({ setActivePage = () => {} }) => {
 
   return (
     <>
- {!isPreviewExpanded && <UserNavbar />}
- {isPreviewExpanded && (
-  <div className="fixed inset-0 z-[99999] bg-white overflow-auto">
-    <LivePreview
-      ref={previewRef}
-      formData={formData}
-      currentTemplate={currentTemplate}
-      isExpanded={true}
-      onExpand={() => {}}
-      onCollapse={() => setIsPreviewExpanded(false)}
-      onMinimize={() => setIsPreviewHidden(true)}
-    />
-  </div>
-)}
+      {!isPreviewExpanded && <UserNavbar />}
+      {isPreviewExpanded && (
+        <div className="fixed inset-0 z-[99999] bg-white overflow-auto">
+          <LivePreview
+            ref={previewRef}
+            formData={formData}
+            currentTemplate={currentTemplate}
+            isExpanded={true}
+            onExpand={() => {}}
+            onCollapse={() => setIsPreviewExpanded(false)}
+            onMinimize={() => setIsPreviewHidden(true)}
+          />
+        </div>
+      )}
       {/* resume-builder-page */}
       <CVBuilderTopBar
         activeTab={activeTab}
@@ -457,6 +466,9 @@ const ResumeBuilder = ({ setActivePage = () => {} }) => {
         )}
 
         {renderMainContent()}
+        <footer className="mt-auto text-center py-4 bg-white border-t text-sm text-gray-600">
+          © {new Date().getFullYear()} ResumeAI Inc. All rights reserved.
+        </footer>
       </div>
     </>
   );

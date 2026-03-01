@@ -706,7 +706,9 @@ const CVBuilder = () => {
           </div>
         </div>
       )}
-
+      <footer className="mt-auto text-center py-4 bg-white border-t text-sm text-gray-600">
+        © 2023 ResumeAI Inc. All rights reserved.
+      </footer>
       <style>{`
         @keyframes cvPreviewSlideUp {
           from { transform: translateY(100%); opacity: 0.5; }
