@@ -1,5 +1,6 @@
 import StatCard from "./StatCard";
 import RecentResumes from "./RecentResumes";
+import ActionCenter from "./ActionCenter";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import UserNavBar from "../UserNavBar/UserNavBar";
@@ -332,38 +333,8 @@ const Dashboard = ({ setActivePage }) => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
 
           {/* AI ACTION CENTER */}
-          <div className="lg:col-span-1 bg-white rounded-2xl shadow-sm border border-slate-200 p-6 flex flex-col">
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-lg font-bold text-slate-800">AI Action Center</h3>
-              <span className="bg-orange-100 text-orange-700 text-xs font-bold px-2.5 py-1 rounded-full">{aiSuggestions.length} Actions</span>
-            </div>
-
-            <div className="flex-1 flex flex-col gap-4 overflow-y-auto pr-1">
-              {aiSuggestions.length === 0 ? (
-                <div className="flex flex-col items-center justify-center h-full text-slate-400 gap-3 py-8">
-                  <FaCheckCircle className="text-4xl text-emerald-100" />
-                  <p className="text-sm">All caught up! Your resume is fully optimized.</p>
-                </div>
-              ) : (
-                aiSuggestions.map(suggestion => (
-                  <div key={suggestion.id} className={`p-4 rounded-xl border-l-4 ${suggestion.priority === 'High' ? 'border-l-red-500 bg-red-50/50' : suggestion.priority === 'Medium' ? 'border-l-amber-500 bg-amber-50/50' : 'border-l-blue-500 bg-blue-50/50'} border-t border-r border-b border-transparent shadow-sm transition hover:shadow-md cursor-pointer group`}>
-                    <div className="flex items-start gap-3">
-                      <div className="mt-0.5">{suggestion.icon}</div>
-                      <div className="flex-1">
-                        <div className="flex items-center justify-between mb-1">
-                          <h4 className="text-sm font-bold text-slate-800">{suggestion.title}</h4>
-                          <span className="text-xs font-bold text-emerald-600 bg-emerald-100 px-2 py-0.5 rounded-full">{suggestion.impact}</span>
-                        </div>
-                        <p className="text-xs text-slate-600 leading-relaxed mb-3">{suggestion.desc}</p>
-                        <button className="text-xs font-bold text-blue-600 group-hover:text-blue-800 flex items-center gap-1 transition-colors">
-                          Fix Now <FaArrowRight className="text-[10px]" />
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                ))
-              )}
-            </div>
+          <div className="lg:col-span-1 flex flex-col h-full">
+            <ActionCenter />
           </div>
 
           {/* DATA VISUALIZATION: Progress & Strength Breakdown */}
