@@ -1,4 +1,3 @@
-// REDESIGNED DOWNLOADS PAGE v3 - Compact Stats, Type Filter Pills, ATS Button
 import React, { useState, useEffect } from "react";
 import axiosInstance from "../../../api/axios";
 import {
@@ -16,8 +15,6 @@ import {
   FiChevronRight,
   FiX,
   FiMoreVertical,
-  FiZap,
-  FiArrowRight,
 } from "react-icons/fi";
 import { motion, AnimatePresence } from "framer-motion";
 import UserNavBar from "../UserNavBar/UserNavBar";
@@ -74,7 +71,6 @@ const Downloads = () => {
         views: d.views || 0,
         downloadDate: d.downloadDate,
         template: d.template,
-        atsScore: d.atsScore || Math.floor(Math.random() * 30) + 65,
       }));
       setDownloads(mapped);
     } catch (err) {
@@ -139,10 +135,6 @@ const Downloads = () => {
     }
   };
 
-  const handleAtsClick = (download) => {
-    window.location.href = `/user/ats-score/${download.id}`;
-  };
-
   const formatDate = (ds) => {
     const date = new Date(ds);
     const diff = Date.now() - date;
@@ -173,8 +165,6 @@ const Downloads = () => {
     if (sortBy === "recent")
       f.sort((a, b) => new Date(b.downloadDate) - new Date(a.downloadDate));
     else if (sortBy === "name") f.sort((a, b) => a.name.localeCompare(b.name));
-    else if (sortBy === "ats")
-      f.sort((a, b) => (b.atsScore || 0) - (a.atsScore || 0));
     return f;
   };
 
@@ -195,29 +185,6 @@ const Downloads = () => {
 
   const filteredDownloads = getCurrentPageItems();
   const filteredTotal = getFilteredDownloads().length;
-
-  const getAtsStyle = (score) => {
-    if (score >= 80)
-      return {
-        bg: "#f0fdf4",
-        text: "#16a34a",
-        bar: "linear-gradient(90deg,#4ade80,#16a34a)",
-        label: "Excellent",
-      };
-    if (score >= 65)
-      return {
-        bg: "#fffbeb",
-        text: "#d97706",
-        bar: "linear-gradient(90deg,#fbbf24,#d97706)",
-        label: "Good",
-      };
-    return {
-      bg: "#fef2f2",
-      text: "#dc2626",
-      bar: "linear-gradient(90deg,#f87171,#dc2626)",
-      label: "Low",
-    };
-  };
 
   const TYPE_META = {
     resume: { icon: "#2563eb", bg: "#eff6ff", label: "Resume" },
@@ -247,7 +214,7 @@ const Downloads = () => {
     );
   }
 
-  /* ─── STAT CARDS (also act as filter) ─── */
+  /* ─── STAT CARDS ─── */
   const StatCards = () => {
     const items = [
       {
@@ -341,193 +308,167 @@ const Downloads = () => {
   const DocumentCard = ({ download }) => {
     const isDeleting = deletingId === download.id;
     const isMenuOpen = openMenuId === download.id;
-    const ats = getAtsStyle(download.atsScore || 0);
     const tc = getTypeMeta(download.type);
-    const showAts = download.type !== "cover-letter";
+
+    const templateLabel = download.template
+      ? download.template.length > 24
+        ? download.template.slice(0, 24) + "…"
+        : download.template
+      : null;
 
     return (
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
-        whileHover={{ y: -2 }}
-        transition={{ duration: 0.16 }}
-        className="bg-white rounded-2xl border border-gray-100 overflow-hidden group hover:shadow-md transition-all duration-200 relative flex flex-col"
+        whileHover={{ y: -3, boxShadow: "0 12px 32px rgba(0,0,0,0.09)" }}
+        transition={{ duration: 0.18 }}
+        className="bg-white rounded-2xl border border-gray-100 overflow-hidden group transition-all duration-200 relative flex flex-col"
         style={{ boxShadow: "0 1px 4px rgba(0,0,0,0.05)" }}
       >
-        {/* Top accent strip */}
+        {/* Coloured header band */}
         <div
-          className="h-0.5 w-full"
+          className="px-4 pt-4 pb-3 flex items-start gap-3"
           style={{
-            background: `linear-gradient(90deg,${tc.icon},${tc.icon}44)`,
+            background: `linear-gradient(135deg, ${tc.bg} 0%, #fff 100%)`,
+            borderBottom: `1px solid ${tc.icon}18`,
           }}
-        />
-
-        <div className="p-4 flex flex-col flex-1">
-          {/* Header */}
-          <div className="flex items-start gap-2.5 mb-3">
-            <div
-              className="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 mt-0.5"
-              style={{ backgroundColor: tc.bg, color: tc.icon }}
-            >
-              <TypeIcon type={download.type} />
-            </div>
-
-            <div className="flex-1 min-w-0">
-              <h3
-                className="font-semibold text-gray-900 text-sm leading-tight truncate"
-                title={download.name}
-              >
-                {download.name}
-              </h3>
-              <div className="flex items-center gap-1.5 mt-1.5 flex-wrap">
-                <span
-                  className="text-[10px] font-bold px-1.5 py-0.5 rounded"
-                  style={{
-                    backgroundColor:
-                      download.format === "PDF" ? "#fef2f2" : "#eff6ff",
-                    color: download.format === "PDF" ? "#ef4444" : "#3b82f6",
-                  }}
-                >
-                  {download.format}
-                </span>
-                <span className="text-[10px] text-gray-400 flex items-center gap-0.5">
-                  <FiClock size={9} />
-                  {formatDate(download.downloadDate)}
-                </span>
-                <span className="text-[10px] text-gray-300">·</span>
-                <span className="text-[10px] text-gray-400">
-                  {download.size}
-                </span>
-              </div>
-            </div>
-
-            {/* Three-dot menu */}
-            <div className="relative">
-              <button
-                onClick={() => setOpenMenuId(isMenuOpen ? null : download.id)}
-                className="menu-trigger w-6 h-6 rounded-lg flex items-center justify-center text-gray-300 hover:text-gray-600 hover:bg-gray-50 transition-colors"
-              >
-                <FiMoreVertical size={13} />
-              </button>
-              <AnimatePresence>
-                {isMenuOpen && (
-                  <motion.div
-                    initial={{ opacity: 0, scale: 0.93, y: -4 }}
-                    animate={{ opacity: 1, scale: 1, y: 0 }}
-                    exit={{ opacity: 0, scale: 0.93, y: -4 }}
-                    transition={{ duration: 0.1 }}
-                    className="menu-dropdown absolute right-0 top-7 bg-white rounded-xl border border-gray-100 z-20 py-1 w-32"
-                    style={{ boxShadow: "0 8px 24px rgba(0,0,0,0.12)" }}
-                  >
-                    <button
-                      onClick={() => {
-                        handleView(download);
-                        setOpenMenuId(null);
-                      }}
-                      className="w-full text-left px-3 py-1.5 text-xs text-gray-700 hover:bg-gray-50 flex items-center gap-2"
-                    >
-                      <FiEye size={11} /> Preview
-                    </button>
-                    <button
-                      onClick={() => {
-                        handleDownload(download);
-                        setOpenMenuId(null);
-                      }}
-                      className="w-full text-left px-3 py-1.5 text-xs text-gray-700 hover:bg-gray-50 flex items-center gap-2"
-                    >
-                      <FiDownload size={11} /> Download
-                    </button>
-                    <div className="h-px bg-gray-100 my-0.5" />
-                    <button
-                      onClick={() => handleDelete(download.id)}
-                      className="w-full text-left px-3 py-1.5 text-xs text-red-500 hover:bg-red-50 flex items-center gap-2"
-                    >
-                      <FiTrash2 size={11} /> Delete
-                    </button>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
+        >
+          {/* Large type icon */}
+          <div
+            className="w-10 h-10 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-sm"
+            style={{
+              backgroundColor: "#fff",
+              color: tc.icon,
+              border: `1.5px solid ${tc.icon}22`,
+            }}
+          >
+            <TypeIcon type={download.type} size={17} />
           </div>
 
-          {/* ATS Score — clickable button */}
-          {showAts && (
-            <motion.button
-              whileHover={{ scale: 1.01 }}
-              whileTap={{ scale: 0.98 }}
-              onClick={() => handleAtsClick(download)}
-              className="w-full mb-3 rounded-xl px-3 py-2.5 text-left transition-all group/ats cursor-pointer"
-              style={{
-                backgroundColor: ats.bg,
-                border: `1px solid ${ats.text}22`,
-              }}
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-1.5 mb-0.5 flex-wrap">
+              <span
+                className="text-[10px] font-bold uppercase tracking-wide px-1.5 py-0.5 rounded-md"
+                style={{ backgroundColor: tc.icon + "18", color: tc.icon }}
+              >
+                {tc.label}
+              </span>
+              <span
+                className="text-[10px] font-bold px-1.5 py-0.5 rounded-md"
+                style={{
+                  backgroundColor:
+                    download.format === "PDF" ? "#fef2f2" : "#eff6ff",
+                  color: download.format === "PDF" ? "#ef4444" : "#3b82f6",
+                }}
+              >
+                {download.format}
+              </span>
+            </div>
+            <h3 className="font-semibold text-gray-900 text-sm leading-snug break-words">
+              {download.name}
+            </h3>
+          </div>
+
+          {/* Three-dot menu */}
+          <div className="relative flex-shrink-0">
+            <button
+              onClick={() => setOpenMenuId(isMenuOpen ? null : download.id)}
+              className="menu-trigger w-6 h-6 rounded-lg flex items-center justify-center text-gray-300 hover:text-gray-600 hover:bg-white/80 transition-colors"
             >
-              <div className="flex items-center justify-between mb-1.5">
-                <span
-                  className="text-[11px] font-semibold flex items-center gap-1"
-                  style={{ color: ats.text }}
-                >
-                  <FiZap size={10} /> ATS Score
-                </span>
-                <span
-                  className="flex items-center gap-1 text-[11px] font-bold"
-                  style={{ color: ats.text }}
-                >
-                  {download.atsScore}%
-                  <span className="text-[10px] font-medium opacity-60">
-                    · {ats.label}
-                  </span>
-                  <FiArrowRight
-                    size={10}
-                    className="transition-all duration-150 opacity-0 group-hover/ats:opacity-100 -translate-x-1 group-hover/ats:translate-x-0"
-                  />
-                </span>
-              </div>
-              <div className="h-1.5 bg-white/60 rounded-full overflow-hidden">
+              <FiMoreVertical size={13} />
+            </button>
+            <AnimatePresence>
+              {isMenuOpen && (
                 <motion.div
-                  initial={{ width: 0 }}
-                  animate={{ width: `${download.atsScore}%` }}
-                  transition={{ duration: 0.7, delay: 0.1, ease: "easeOut" }}
-                  className="h-full rounded-full"
-                  style={{ background: ats.bar }}
-                />
-              </div>
-            </motion.button>
-          )}
-
-          {/* Spacer */}
-          <div className="flex-1" />
-
-          {/* Action Row: Preview + Delete */}
-          <div className="flex gap-2 mt-1">
-            <button
-              onClick={() => handleView(download)}
-              className="flex-1 py-2 text-[11px] font-semibold text-gray-600 bg-gray-50 hover:bg-gray-100 rounded-xl transition-colors flex items-center justify-center gap-1.5 border border-gray-100"
-            >
-              <FiEye size={11} /> Preview
-            </button>
-            <button
-              onClick={() => handleDelete(download.id)}
-              disabled={isDeleting}
-              className="flex-1 py-2 text-[11px] font-semibold rounded-xl transition-all flex items-center justify-center gap-1.5 border disabled:opacity-50"
-              style={{
-                backgroundColor: "#fff1f2",
-                color: "#ef4444",
-                borderColor: "#fee2e2",
-              }}
-            >
-              {isDeleting ? (
-                <>
-                  <div className="w-3 h-3 border border-red-300 border-t-transparent rounded-full animate-spin" />{" "}
-                  Deleting...
-                </>
-              ) : (
-                <>
-                  <FiTrash2 size={11} /> Delete
-                </>
+                  initial={{ opacity: 0, scale: 0.93, y: -4 }}
+                  animate={{ opacity: 1, scale: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.93, y: -4 }}
+                  transition={{ duration: 0.1 }}
+                  className="menu-dropdown absolute right-0 top-7 bg-white rounded-xl border border-gray-100 z-20 py-1 w-32"
+                  style={{ boxShadow: "0 8px 24px rgba(0,0,0,0.12)" }}
+                >
+                  <button
+                    onClick={() => {
+                      handleView(download);
+                      setOpenMenuId(null);
+                    }}
+                    className="w-full text-left px-3 py-1.5 text-xs text-gray-700 hover:bg-gray-50 flex items-center gap-2"
+                  >
+                    <FiEye size={11} /> Preview
+                  </button>
+                  <div className="h-px bg-gray-100 my-0.5" />
+                  <button
+                    onClick={() => handleDelete(download.id)}
+                    className="w-full text-left px-3 py-1.5 text-xs text-red-500 hover:bg-red-50 flex items-center gap-2"
+                  >
+                    <FiTrash2 size={11} /> Delete
+                  </button>
+                </motion.div>
               )}
-            </button>
+            </AnimatePresence>
           </div>
+        </div>
+
+        {/* Meta strip */}
+        <div className="px-4 py-2.5 flex items-center gap-3 border-b border-gray-50 flex-wrap">
+          <span className="flex items-center gap-1 text-[11px] text-gray-400">
+            <FiClock size={10} className="text-gray-300" />
+            {formatDate(download.downloadDate)}
+          </span>
+          <span className="w-px h-3 bg-gray-100" />
+          <span className="text-[11px] text-gray-400">{download.size}</span>
+          {download.views > 0 && (
+            <>
+              <span className="w-px h-3 bg-gray-100" />
+              <span className="flex items-center gap-1 text-[11px] text-gray-400">
+                <FiEye size={10} className="text-gray-300" />
+                {download.views} view{download.views !== 1 ? "s" : ""}
+              </span>
+            </>
+          )}
+        </div>
+
+        {/* Template label */}
+        <div className="px-4 py-3 flex-1">
+          {templateLabel ? (
+            <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-gray-50 border border-gray-100">
+              <FiFolder size={11} className="text-gray-300 flex-shrink-0" />
+              <span className="text-[11px] text-gray-500 font-medium truncate">
+                {templateLabel}
+              </span>
+            </div>
+          ) : (
+            <div className="flex items-center gap-2 px-3 py-2 rounded-xl border border-dashed border-gray-200 bg-gray-50/50">
+              <FiFile size={11} className="text-gray-200 flex-shrink-0" />
+              <span className="text-[11px] text-gray-300 italic">
+                No template info
+              </span>
+            </div>
+          )}
+        </div>
+
+        {/* Action Row */}
+        <div className="px-4 pb-4 flex gap-2">
+          {/* Preview — full width */}
+          <button
+            onClick={() => handleView(download)}
+            className="flex-1 py-2 text-[11px] font-semibold text-gray-600 bg-gray-50 hover:bg-gray-100 rounded-xl transition-colors flex items-center justify-center gap-1.5 border border-gray-100"
+          >
+            <FiEye size={11} /> Preview
+          </button>
+
+          {/* Delete icon only */}
+          <button
+            onClick={() => handleDelete(download.id)}
+            disabled={isDeleting}
+            className="w-9 h-9 flex-shrink-0 flex items-center justify-center rounded-xl border border-gray-100 text-gray-300 hover:text-red-400 hover:bg-red-50 hover:border-red-100 transition-all disabled:opacity-40"
+          >
+            {isDeleting ? (
+              <div className="w-3 h-3 border border-red-300 border-t-transparent rounded-full animate-spin" />
+            ) : (
+              <FiTrash2 size={12} />
+            )}
+          </button>
         </div>
 
         {isDeleting && (
@@ -568,7 +509,6 @@ const Downloads = () => {
             </button>
           </div>
 
-          {/* Stat Cards */}
           <StatCards />
 
           {/* Search + Format + Sort */}
@@ -597,8 +537,6 @@ const Downloads = () => {
                 </button>
               )}
             </div>
-
-            {/* Format pills */}
             <div className="flex items-center gap-1 bg-gray-50 rounded-xl p-1 border border-gray-100 self-start sm:self-auto">
               {["All", "PDF", "DOCX"].map((fmt) => (
                 <button
@@ -614,8 +552,6 @@ const Downloads = () => {
                 </button>
               ))}
             </div>
-
-            {/* Sort */}
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
@@ -623,7 +559,6 @@ const Downloads = () => {
             >
               <option value="recent">Latest first</option>
               <option value="name">A → Z</option>
-              <option value="ats">ATS Score</option>
             </select>
           </div>
 
@@ -755,7 +690,11 @@ const Downloads = () => {
                   <button
                     key={p}
                     onClick={() => setCurrentPage(p)}
-                    className={`w-8 h-8 flex items-center justify-center rounded-xl text-xs font-bold transition-all ${currentPage === p ? "bg-gray-900 text-white" : "bg-white border border-gray-100 text-gray-500 hover:bg-gray-50"}`}
+                    className={`w-8 h-8 flex items-center justify-center rounded-xl text-xs font-bold transition-all ${
+                      currentPage === p
+                        ? "bg-gray-900 text-white"
+                        : "bg-white border border-gray-100 text-gray-500 hover:bg-gray-50"
+                    }`}
                   >
                     {p}
                   </button>
