@@ -7,7 +7,6 @@ import {
   FileUser,
   FilePen,
   CheckCircle,
-  Files,
   Download,
   LogOut,
   Menu,
@@ -72,13 +71,6 @@ export default function UserSidebar() {
       icon: CheckCircle,
       label: "ATS Score Checker",
       path: "/user/ats-checker",
-    },
-
-    {
-      id: "myresumes",
-      icon: Files,
-      label: "My Resumes",
-      path: "/user/my-resumes",
     },
     {
       id: "downloads",

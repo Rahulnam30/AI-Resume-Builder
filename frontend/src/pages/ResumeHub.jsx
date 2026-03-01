@@ -38,16 +38,16 @@ const ResumeHubPage = () => {
   return (
     <div className="min-h-screen bg-white font-['Outfit'] text-[#1a2e52] selection:bg-orange-100 overflow-x-hidden select-none">
       <NavBar />
-      
+
       {/* --- 1. HERO SECTION --- */}
-<section className="relative pb-8 overflow-hidden bg-white">
+      <section className="relative pb-8 overflow-hidden bg-white">
         {/* Brand Decorative Blurs */}
         <div className="absolute top-0 right-0 w-1/3 h-1/2 bg-orange-50 rounded-full blur-[120px] -z-10 opacity-50" />
         <div className="absolute bottom-0 left-0 w-1/3 h-1/2 bg-blue-50 rounded-full blur-[120px] -z-10 opacity-50" />
 
         <div className="relative  mt-16 z-10 px-8 mx-auto max-w-7xl">
-          
-          
+
+
 
           <div className="flex flex-col items-center gap-4 pt-16 lg:flex-row lg:text-left -mt-12">
             <div className="flex-1 text-center lg:text-left">
@@ -61,9 +61,9 @@ const ResumeHubPage = () => {
               <p className="max-w-xl mx-auto mb-12 text-xl font-medium text-gray-500 lg:mx-0">
                 Manage every version and land interviews faster with your centralized career command center.
               </p>
-              
-              <button 
-                onClick={() => handleFeatureClick("/user/my-resumes")} 
+
+              <button
+                onClick={() => handleFeatureClick("/user/dashboard")}
                 className="group relative inline-flex items-center gap-3 px-10 py-5 bg-gradient-to-r from-[#e65100] to-[#f4511e] text-white rounded-xl font-bold text-lg transition-all duration-300 shadow-[0_10px_25px_rgba(230,81,0,0.3)] hover:shadow-[0_15px_35px_rgba(230,81,0,0.45)] hover:-translate-y-1 active:scale-95"
               >
                 <span className="relative z-10">Access My Hub</span>
@@ -71,65 +71,65 @@ const ResumeHubPage = () => {
               </button>
             </div>
 
-<div className="relative flex-1 flex justify-center lg:justify-end w-full">
-  <img
-    src={hub}
-    alt="Hub"
-    className="hidden md:block w-full max-w-[720px] lg:max-w-[850px] xl:max-w-[950px] h-auto drop-shadow-2xl"
-  />
+            <div className="relative flex-1 flex justify-center lg:justify-end w-full">
+              <img
+                src={hub}
+                alt="Hub"
+                className="hidden md:block w-full max-w-[720px] lg:max-w-[850px] xl:max-w-[950px] h-auto drop-shadow-2xl"
+              />
 
-  {/* Floating Badge */}
-  <div className="absolute hidden md:flex items-center gap-3 p-4 bg-white border border-gray-100 shadow-xl rounded-2xl bottom-10 right-10 animate-bounce" style={{ animationDuration: '5s' }}>
-    <div className="p-2 rounded-lg bg-green-50">
-      <BarChart3 className="text-green-600" size={20} />
-    </div>
-    <div>
-      <p className="text-[10px] font-black text-gray-400 uppercase">Avg. AI Score</p>
-      <p className="text-lg font-black text-[#1a2e52]">92%</p>
-    </div>
-  </div>
-</div>
+              {/* Floating Badge */}
+              <div className="absolute hidden md:flex items-center gap-3 p-4 bg-white border border-gray-100 shadow-xl rounded-2xl bottom-10 right-10 animate-bounce" style={{ animationDuration: '5s' }}>
+                <div className="p-2 rounded-lg bg-green-50">
+                  <BarChart3 className="text-green-600" size={20} />
+                </div>
+                <div>
+                  <p className="text-[10px] font-black text-gray-400 uppercase">Avg. AI Score</p>
+                  <p className="text-lg font-black text-[#1a2e52]">92%</p>
+                </div>
+              </div>
+            </div>
 
           </div>
         </div>
       </section>
 
       {/* 2.--- WHAT IS RESUME HUB --- */}
-<section className="px-8 py-20 bg-white font-['Outfit']">
-  <div className="relative mx-auto w-full max-w-5xl px-4 sm:px-6">
+      <section className="px-8 py-20 bg-white font-['Outfit']">
+        <div className="relative mx-auto w-full max-w-5xl px-4 sm:px-6">
 
-    <h2 className="text-4xl font-bold text-center text-[#1a2e52] mb-12">What is Resume Hub?</h2>
-    
-    <div className="mb-12 space-y-6 text-lg text-gray-600">
-      <p>
-        Resume Hub is your centralized command center for managing every version of your professional identity. Instead of juggling multiple PDF files and messy folders, our hub allows you to store, organize, and track your resumes and cover letters in one secure, cloud-based environment.
-      </p>
-      <p>
-        By leveraging our intelligent version control, you can quickly duplicate and tailor documents for different industries while maintaining a master record of your achievements. It is designed to streamline the application process, ensuring you always send the right document to the right recruiter at the right time.
-      </p>
-    </div>
+          <h2 className="text-4xl font-bold text-center text-[#1a2e52] mb-12">What is Resume Hub?</h2>
 
-    {/* Featured Blue Box - Consistent with Image Design */}
-    <div className="bg-[#f0f7ff] border-l-4 border-[#0077cc] rounded-2xl p-5 shadow-xl sm:p-8">
-      <h3 className="text-xl font-bold text-[#1a2e52] mb-6">Resume Hub Features:</h3>
-      <ul className="space-y-4">
-        {[
-          { title: "Cloud Storage", desc: "Access your career documents from any device, anywhere." },
-          { title: "Version Control", desc: "Keep track of multiple versions tailored for different job roles." },
-          { title: "One-Click Duplication", desc: "Easily clone your best resume to start a new application." },
-          { title: "Organized Workspace", desc: "Tag and filter documents by industry or application status." }
-        ].map((item, i) => (
-          <li key={i} className="flex items-start gap-3">
-            <CheckCircle2 size={20} className="text-[#0077cc] mt-1 shrink-0" />
-            <p className="text-gray-700">
-              <span className="font-bold">{item.title}:</span> {item.desc}
+          <div className="mb-12 space-y-6 text-lg text-gray-600">
+            <p>
+              Resume Hub is your centralized command center for managing every version of your professional identity. Instead of juggling multiple PDF files and messy folders, our hub allows you to store, organize, and track your resumes and cover letters in one secure, cloud-based environment.
             </p>
-          </li>
-        ))}
-      </ul>
-    </div>
-  </div>
-</section>
+            <p>
+              By leveraging our intelligent version control, you can quickly duplicate and tailor documents for different industries while maintaining a master record of your achievements. It is designed to streamline the application process, ensuring you always send the right document to the right recruiter at the right time.
+            </p>
+          </div>
+
+          {/* Featured Blue Box - Consistent with Image Design */}
+          <div className="bg-[#f0f7ff] border-l-4 border-[#0077cc] rounded-2xl p-5 shadow-xl sm:p-8">
+            <h3 className="text-xl font-bold text-[#1a2e52] mb-6">Resume Hub Features:</h3>
+            <ul className="space-y-4">
+              {[
+                { title: "Cloud Storage", desc: "Access your career documents from any device, anywhere." },
+                { title: "Version Control", desc: "Keep track of multiple versions tailored for different job roles." },
+                { title: "One-Click Duplication", desc: "Easily clone your best resume to start a new application." },
+                { title: "Organized Workspace", desc: "Tag and filter documents by industry or application status." }
+              ].map((item, i) => (
+                <li key={i} className="flex items-start gap-3">
+                  <CheckCircle2 size={20} className="text-[#0077cc] mt-1 shrink-0" />
+                  <p className="text-gray-700">
+                    <span className="font-bold">{item.title}:</span> {item.desc}
+                  </p>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </section>
 
       {/* --- 3. TABLE SHOWCASE --- */}
       <section className="px-8 py-20 bg-gray-50/50">
@@ -195,9 +195,9 @@ const ResumeHubPage = () => {
                       </td>
                       <td className="px-6 py-5 text-right border-r border-gray-100 rounded-r-2xl border-y">
                         <div className="flex items-center justify-end gap-2">
-                           <button className="p-2 text-gray-400 hover:text-[#0077cc]"><Eye size={18} /></button>
-                           <button className="p-2 text-gray-400 hover:text-[#0077cc]"><Download size={18} /></button>
-                           <button className="p-2 text-gray-400 hover:text-[#0077cc]"><MoreHorizontal size={18} /></button>
+                          <button className="p-2 text-gray-400 hover:text-[#0077cc]"><Eye size={18} /></button>
+                          <button className="p-2 text-gray-400 hover:text-[#0077cc]"><Download size={18} /></button>
+                          <button className="p-2 text-gray-400 hover:text-[#0077cc]"><MoreHorizontal size={18} /></button>
                         </div>
                       </td>
                     </tr>
@@ -246,18 +246,18 @@ const ResumeHubPage = () => {
       <section className="relative px-8 pt-12 pb-24 overflow-hidden bg-white">
         <div className="absolute top-0 right-0 w-1/3 h-full bg-orange-50 rounded-full blur-[120px] -z-10 opacity-60" />
         <div className="absolute bottom-0 left-0 w-1/3 h-full bg-blue-50 rounded-full blur-[120px] -z-10 opacity-60" />
-        
+
         <div className="relative z-10 max-w-4xl mx-auto text-center">
           <h2 className="mb-6 text-4xl font-black md:text-6xl text-[#1a2e52] tracking-tighter font-jakarta leading-tight">
             Your Career. <span className="text-[#0077cc]">Organized.</span>
           </h2>
-          
+
           <p className="max-w-2xl mx-auto mb-10 text-xl font-medium text-gray-500">
             Manage every version, track real-time performance, and keep your job search organized in one central location.
           </p>
 
-          <button 
-            onClick={() => handleFeatureClick("/user/my-resumes")} 
+          <button
+            onClick={() => handleFeatureClick("/user/dashboard")}
             className="group relative inline-flex items-center gap-3 px-10 py-5 bg-gradient-to-r from-[#e65100] to-[#f4511e] text-white rounded-xl font-bold text-lg transition-all duration-300 shadow-[0_10px_25px_rgba(230,81,0,0.3)] 
                        hover:shadow-[0_15px_35px_rgba(230,81,0,0.45)] hover:-translate-y-1 active:scale-95"
           >
