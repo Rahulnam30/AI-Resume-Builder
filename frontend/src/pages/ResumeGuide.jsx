@@ -543,4 +543,4 @@ const ResumeGuide = () => {
   );
 };
 
-export default ResumeGuide
+export default ResumeGuide;
