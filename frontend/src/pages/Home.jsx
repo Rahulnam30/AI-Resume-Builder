@@ -8,7 +8,8 @@ import featureImage3 from "../assets/solve.png";
 import featureImage4 from "../assets/get.png";
 import quick from "../assets/customize1.png";
 import work2 from "../assets/analysis3.png";
-import work1 from "../assets/goodResume.png";
+import work1 from "../assets/GoodResume.png";
+
 import work4 from "../assets/oneClick1.png";
 import work5 from "../assets/win4.png";
 import template1 from "../assets/template_thumnail/JessicaClaire1.png";
@@ -284,9 +285,8 @@ function LandingPage() {
       {/*  OVERLAY */}
       <div
         onClick={toggleMobileMenu}
-        className={`w-full h-full absolute top-0 left-0 z-30 bg-black/20 ${
-          mobileMenuOpen ? "" : "hidden"
-        }`}
+        className={`w-full h-full absolute top-0 left-0 z-30 bg-black/20 ${mobileMenuOpen ? "" : "hidden"
+          }`}
       ></div>
 
       {/* HERO SECTION - padding added and mobile padding reudced */}
@@ -355,21 +355,19 @@ function LandingPage() {
               {templates.map((template, idx) => (
                 <div
                   key={idx}
-                  className={`absolute inset-0 transition-all duration-700 ease-out flex items-center justify-center select-none ${
-                    idx === currentTemplateIndex
-                      ? "opacity-100 scale-100"
-                      : "opacity-0 scale-95"
-                  }`}
+                  className={`absolute inset-0 transition-all duration-700 ease-out flex items-center justify-center select-none ${idx === currentTemplateIndex
+                    ? "opacity-100 scale-100"
+                    : "opacity-0 scale-95"
+                    }`}
                 >
                   <img
                     src={template.image}
                     alt={template.name}
-                    className={`object-contain ${
-                      template.name === "Tailored Summary" ||
+                    className={`object-contain ${template.name === "Tailored Summary" ||
                       template.name === "Tailor to Job"
-                        ? "w-[100%] h-[70%]"
-                        : "w-full h-full"
-                    }`}
+                      ? "w-[100%] h-[70%]"
+                      : "w-full h-full"
+                      }`}
                     onError={(e) => {
                       e.target.style.display = "none";
                     }}
@@ -397,9 +395,8 @@ function LandingPage() {
             {howItWorksSteps.map((step, index) => (
               <div
                 key={index}
-                className={`flex flex-col md:flex-row items-center gap-6 md:gap-12 ${
-                  index % 2 !== 0 ? "md:flex-row-reverse" : ""
-                }`}
+                className={`flex flex-col md:flex-row items-center gap-6 md:gap-12 ${index % 2 !== 0 ? "md:flex-row-reverse" : ""
+                  }`}
               >
                 {/* IMAGE BOX */}
                 <img

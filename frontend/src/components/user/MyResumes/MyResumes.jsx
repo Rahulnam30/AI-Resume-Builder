@@ -1,5 +1,5 @@
 import { useState } from "react";
-import "./myresumes.css";
+import "./MyResumes.css";
 import UserNavBar from "../UserNavBar/UserNavBar"; // ✅ keep navbar
 
 export default function MyResumes({ onSidebarToggle }) {

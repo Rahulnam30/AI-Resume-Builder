@@ -8,11 +8,11 @@ import ProfessionalTemplate from "./Templates/ProfessionalTemplate";
 import Simple from "./Templates/Simple";
 import AcademicSidebarTemplate from "./Templates/AcademicSidebarTemplate";
 import ClinicaElegantTemplate from "./Templates/ClinicaElegantTemplate.jsx";
-import VertexSidebarCV from "./templates/VertexSidebarCV";
-import EliteSidebarResume from "./templates/EliteSidebarTemplate";
-import EclipseTemplate from "./templates/EclipseTemplate";
-import Eclipse from "./templates/Eclipse";
-import Harbor from "./templates/HarborTemplate.jsx";
+import VertexSidebarCV from "./Templates/VertexSidebarCV";
+import EliteSidebarResume from "./Templates/EliteSidebarTemplate";
+import EclipseTemplate from "./Templates/EclipseTemplate";
+import Eclipse from "./Templates/Eclipse";
+import Harbor from "./Templates/HarborTemplate.jsx";
 
 
 const CVTemplates = {
