@@ -11,29 +11,12 @@ import {
   Link2, 
   FileDown, 
   MousePointer2,
-  ArrowLeft,
-} from "lucide-react";
+  ArrowLeft
+} from 'lucide-react';
 import NavBar from "../components/NavBar";
 import Footer from "./Footer";
 import { useNavigate } from "react-router-dom";
 import cover from "../assets/cover1.png";
-import { motion } from "framer-motion";
-
-const fadeUp = {
-  hidden: { opacity: 0, y: 40 },
-  show: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.6, ease: "easeOut" },
-  },
-};
-
-const staggerContainer = {
-  hidden: {},
-  show: {
-    transition: { staggerChildren: 0.15 },
-  },
-};
 
 const useInView = (threshold = 0.15) => {
   const ref = useRef(null);
@@ -93,24 +76,13 @@ const [ctaRef, ctaVisible] = useInView(0.2);
               onClick={handleBackHome}
               className="group inline-flex items-center gap-2 text-sm font-bold text-[#0077cc] transition-all duration-200"
             >
-              <ArrowLeft
-                size={16}
-                className="transition-transform duration-200 group-hover:-translate-x-1"
-              />
+              <ArrowLeft size={16} className="transition-transform duration-200 group-hover:-translate-x-1" />
               <span>Back to home</span>
             </button>
           </div>
 
-          <motion.div
-            variants={staggerContainer}
-            initial="hidden"
-            animate="show"
-            className="flex flex-col items-center gap-16 lg:flex-row lg:text-left pt-10"
-          >
-            <motion.div
-              variants={fadeUp}
-              className="flex-1 text-center lg:text-left"
-            >
+          <div className="flex flex-col items-center gap-16 lg:flex-row lg:text-left pt-10">
+            <div className="flex-1 text-center lg:text-left">
               <div className="inline-flex items-center gap-2 px-4 py-2 mb-8 rounded-full bg-blue-50">
                 <Sparkles size={16} className="text-[#0077cc]" />
                 <span className="text-xs font-black tracking-widest text-[#0077cc] uppercase">
@@ -124,8 +96,8 @@ const [ctaRef, ctaVisible] = useInView(0.2);
               </h1>
 
               <p className="max-w-xl mx-auto mb-10 text-xl font-medium text-gray-500 lg:mx-0">
-                Stop staring at a blank page. Our AI reads your resume and job
-                description to write a perfect letter that gets you hired.
+                Stop staring at a blank page. Our AI reads your resume and job description to write a
+                perfect letter that gets you hired.
               </p>
 
               <button
@@ -133,36 +105,29 @@ const [ctaRef, ctaVisible] = useInView(0.2);
                 className="group relative inline-flex items-center gap-3 px-10 py-5 bg-gradient-to-r from-[#e65100] to-[#f4511e] text-white rounded-xl font-bold text-lg transition-all duration-300 shadow-[0_10px_25px_rgba(230,81,0,0.3)] hover:shadow-[0_15px_35px_rgba(230,81,0,0.45)] hover:-translate-y-1 active:scale-95 mx-auto lg:mx-0"
               >
                 <span>Generate Now — It's Free</span>
-                <ArrowRight
-                  size={22}
-                  className="transition-transform duration-300 group-hover:translate-x-2"
-                />
+                <ArrowRight size={22} className="transition-transform duration-300 group-hover:translate-x-2" />
               </button>
-            </motion.div>
+            </div>
 
-            <motion.div
-              variants={fadeUp}
-              className="relative flex-1 w-full max-w-[550px]"
-            >
+            <div className="relative flex-1 w-full max-w-[550px]">
               <img
                 src={cover}
                 alt="AI Cover Letter Preview"
                 className="hidden md:block w-full h-auto rounded-[2rem]"
               />
-            </motion.div>
-          </motion.div>
+            </div>
+          </div>
         </div>
       </section>
 
       {/* --- WHAT IS A COVER LETTER --- */}
-      <section className="px-8 py-20 bg-white font-['Outfit']">
-        <motion.div
-          variants={fadeUp}
-          initial="hidden"
-          whileInView="show"
-          viewport={{ once: true }}
-          className="max-w-4xl mx-auto"
-        >
+     <section
+  ref={whatRef}
+  className={`px-8 py-20 bg-white transition-all duration-700 ${
+    whatVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
+  }`}
+>
+        <div className="max-w-4xl mx-auto">
           <h2 className="text-4xl font-bold text-center text-[#1a2e52] mb-12">
             What is a Cover Letter?
           </h2>
@@ -175,43 +140,25 @@ const [ctaRef, ctaVisible] = useInView(0.2);
               to a potential employer.
             </p>
             <p>
-              Our AI Cover Letter builder analyzes the job description and your
-              resume to create a narrative that highlights your most relevant
-              achievements. A well-crafted letter increases your chances of
-              getting noticed by recruiters by showing that you've done your
+              Our AI Cover Letter builder analyzes the job description and your resume to create a
+              narrative that highlights your most relevant achievements. A well-crafted letter
+              increases your chances of getting noticed by recruiters by showing that you've done your
               research and are genuinely interested in the position.
             </p>
           </div>
 
           {/* Featured Blue Box */}
           <div className="bg-[#f0f7ff] border-l-4 border-[#0077cc] rounded-2xl p-8 shadow-sm">
-            <h3 className="text-xl font-bold text-[#1a2e52] mb-6">
-              Our AI Cover Letter Scans for:
-            </h3>
+            <h3 className="text-xl font-bold text-[#1a2e52] mb-6">Our AI Cover Letter Scans for:</h3>
             <ul className="space-y-4">
               {[
-                {
-                  title: "Personalized Narrative",
-                  desc: "Tailors your story to match the company culture.",
-                },
-                {
-                  title: "Role-Specific Keywords",
-                  desc: "Identifies and includes crucial industry terms.",
-                },
-                {
-                  title: "Professional Formatting",
-                  desc: "Ensures the layout is clean and recruiter-ready.",
-                },
-                {
-                  title: "Direct Value Alignment",
-                  desc: "Connects your past results to future job requirements.",
-                },
+                { title: "Personalized Narrative", desc: "Tailors your story to match the company culture." },
+                { title: "Role-Specific Keywords", desc: "Identifies and includes crucial industry terms." },
+                { title: "Professional Formatting", desc: "Ensures the layout is clean and recruiter-ready." },
+                { title: "Direct Value Alignment", desc: "Connects your past results to future job requirements." }
               ].map((item, i) => (
                 <li key={i} className="flex items-start gap-3">
-                  <CheckCircle2
-                    size={20}
-                    className="text-[#0077cc] mt-1 shrink-0"
-                  />
+                  <CheckCircle2 size={20} className="text-[#0077cc] mt-1 shrink-0" />
                   <p className="text-gray-700">
                     <span className="font-bold">{item.title}:</span> {item.desc}
                   </p>
@@ -219,18 +166,17 @@ const [ctaRef, ctaVisible] = useInView(0.2);
               ))}
             </ul>
           </div>
-        </motion.div>
+        </div>
       </section>
 
       {/* --- 2. THE DIFFERENCE --- */}
-      <section className="px-8 py-24 group/section">
-        <motion.div
-          variants={fadeUp}
-          initial="hidden"
-          whileInView="show"
-          viewport={{ once: true }}
-          className="mx-auto max-w-7xl"
-        >
+      <section
+  ref={differenceRef}
+  className={`px-8 py-24 transition-all duration-700 ${
+    differenceVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
+  }`}
+>
+        <div className="mx-auto max-w-7xl">
           <h2 className="mb-16 text-4xl font-black tracking-tight text-center">
             The AI Difference
           </h2>
@@ -267,7 +213,7 @@ const [ctaRef, ctaVisible] = useInView(0.2);
                 {[
                   "Tailored to specific Job Role",
                   "Finished in under 10 seconds",
-                  "Guaranteed ATS compatibility",
+                  "Guaranteed ATS compatibility"
                 ].map((text, i) => (
                   <li
                     key={i}
@@ -280,7 +226,7 @@ const [ctaRef, ctaVisible] = useInView(0.2);
               </ul>
             </div>
           </div>
-        </motion.div>
+        </div>
       </section>
 
       {/* --- 3. SIMPLE 3-STEP PROCESS (ICON-ONLY DARK BUTTONS) --- */}
@@ -316,14 +262,10 @@ const [ctaRef, ctaVisible] = useInView(0.2);
                 icon: FileDown,
                 t: "Export PDF",
                 d: "Instantly download a polished, recruiter-ready document that lands interviews.",
-              },
+              }
             ].map((step, i) => (
-              <motion.div
+              <div
                 key={i}
-                variants={fadeUp}
-                initial="hidden"
-                whileInView="show"
-                viewport={{ once: true }}
                 className="relative p-10 bg-white rounded-[32px] border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-500 group flex flex-col items-center text-center"
               >
                 {/* Step Number Badge */}
@@ -347,40 +289,24 @@ const [ctaRef, ctaVisible] = useInView(0.2);
                 <div className="flex items-center gap-2 mt-8 text-sm font-bold text-blue-600 transition-opacity opacity-0 group-hover:opacity-100">
                   Learn More <MousePointer2 size={14} />
                 </div>
-              </motion.div>
+              </div>
             ))}
           </div>
         </div>
       </section>
 
       {/* --- 4. BENTO FEATURES --- */}
-      <section className="px-8 pt-4 mx-auto pb-14 max-w-7xl">
-        <motion.div
-          variants={staggerContainer}
-          initial="hidden"
-          whileInView="show"
-          viewport={{ once: true }}
-          className="grid grid-cols-1 gap-8 md:grid-cols-3"
-        >
+     <section
+  ref={featureRef}
+  className={`px-8 pt-4 mx-auto pb-14 max-w-7xl transition-all duration-700 ${
+    featureVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
+  }`}
+>
+        <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
           {[
-            {
-              icon: Zap,
-              color: "blue",
-              title: "Instant Generation",
-              desc: "Drafts ready in seconds, not hours.",
-            },
-            {
-              icon: History,
-              color: "indigo",
-              title: "Infinite Edits",
-              desc: "One click to rewrite any section.",
-            },
-            {
-              icon: FileCheck,
-              color: "cyan",
-              title: "Recruiter Approved",
-              desc: "Designed to pass every ATS screen.",
-            },
+            { icon: Zap, color: "blue", title: "Instant Generation", desc: "Drafts ready in seconds, not hours." },
+            { icon: History, color: "indigo", title: "Infinite Edits", desc: "One click to rewrite any section." },
+            { icon: FileCheck, color: "cyan", title: "Recruiter Approved", desc: "Designed to pass every ATS screen." }
           ].map((feature, i) => (
             <div
               key={i}
@@ -396,7 +322,7 @@ const [ctaRef, ctaVisible] = useInView(0.2);
               </p>
             </div>
           ))}
-        </motion.div>
+        </div>
       </section>
 
       {/* --- 5. FINAL CTA --- */}
@@ -409,32 +335,23 @@ const [ctaRef, ctaVisible] = useInView(0.2);
         <div className="absolute top-0 right-0 w-1/3 h-full bg-orange-50 rounded-full blur-[120px] -z-10 opacity-60" />
         <div className="absolute bottom-0 left-0 w-1/3 h-full bg-blue-50 rounded-full blur-[120px] -z-10 opacity-60" />
 
-        <motion.div
-          variants={fadeUp}
-          initial="hidden"
-          whileInView="show"
-          viewport={{ once: true }}
-          className="relative z-10 max-w-4xl mx-auto text-center"
-        >
+        <div className="relative z-10 max-w-4xl mx-auto text-center">
           <h2 className="mb-6 text-4xl font-black md:text-6xl text-[#1a2e52] tracking-tighter font-jakarta leading-tight">
             Write your Cover Letter <br />
             <span className="text-[#0077cc]">in 10 Seconds.</span>
           </h2>
           <p className="mb-10 text-xl font-medium text-gray-500">
-            Our AI reads your resume and job description to write a perfect
-            letter that gets you hired.
+            Our AI reads your resume and job description to write a perfect letter that gets you
+            hired.
           </p>
           <button
             onClick={() => navigate("/register")}
             className="group relative inline-flex items-center gap-3 px-10 py-5 bg-gradient-to-r from-[#e65100] to-[#f4511e] text-white rounded-xl font-bold text-lg transition-all duration-300 shadow-[0_10px_25px_rgba(230,81,0,0.3)] hover:shadow-[0_15px_35px_rgba(230,81,0,0.45)] hover:-translate-y-1 active:scale-95"
           >
             <span>Generate Now — It's Free</span>
-            <ArrowRight
-              size={22}
-              className="transition-transform duration-300 group-hover:translate-x-2"
-            />
+            <ArrowRight size={22} className="transition-transform duration-300 group-hover:translate-x-2" />
           </button>
-        </motion.div>
+        </div>
       </section>
 
       <Footer />
