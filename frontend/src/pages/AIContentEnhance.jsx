@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef, useState } from "react";
 import { 
   Sparkles, 
   Cpu, 
@@ -59,12 +59,24 @@ const AIEnhancementPage = () => {
     navigate("/?scrollTo=features");
   };
 
+  const [heroRef, heroVisible] = useInView(0.2);
+const [whatRef, whatVisible] = useInView(0.15);
+const [featureRef, featureVisible] = useInView(0.15);
+const [ctaRef, ctaVisible] = useInView(0.2);
+
   return (
     <div className="min-h-screen bg-white font-['Outfit'] text-[#1a2e52] selection:bg-orange-100 overflow-x-hidden select-none">
       <NavBar />
       
       {/* --- 1. HERO SECTION --- */}
-     <section className="relative px-6 pt-16 overflow-hidden bg-white">
+    <section
+  ref={heroRef}
+  className={`relative px-6 pt-16 overflow-hidden bg-white transition-all duration-700 ease-out ${
+    heroVisible
+      ? "opacity-100 translate-y-0"
+      : "opacity-0 translate-y-10"
+  }`}
+>
 
   {/* Soft background glow */}
   <div className="absolute top-0 right-0 w-[40%] h-[60%] bg-blue-50 rounded-full blur-[140px] -z-10 opacity-60" />
@@ -164,7 +176,14 @@ const AIEnhancementPage = () => {
       </section>
 
       {/* --- 3. DYNAMIC FEATURE GRID ---  */}
-      <section className="relative px-8 overflow-hidden py-14 bg-gray-50/50">
+     <section
+  ref={featureRef}
+  className={`relative px-8 overflow-hidden py-14 bg-gray-50/50 transition-all duration-700 ease-out ${
+    featureVisible
+      ? "opacity-100 translate-y-0"
+      : "opacity-0 translate-y-10"
+  }`}
+>
         <div className="mx-auto max-w-7xl">
           <div className="mb-16 text-center">
             <h2 className="text-4xl font-black text-[#1a2e52] mb-4 tracking-tight font-jakarta">
@@ -207,7 +226,14 @@ const AIEnhancementPage = () => {
       </section>
 
       {/* --- 4. CTA SECTION --- */}
-      <section className="relative px-8 pt-12 pb-24 overflow-hidden bg-white">
+     <section
+  ref={ctaRef}
+  className={`relative px-8 pt-12 pb-24 overflow-hidden bg-white transition-all duration-700 ease-out ${
+    ctaVisible
+      ? "opacity-100 translate-y-0"
+      : "opacity-0 translate-y-10"
+  }`}
+>
         <div className="absolute top-0 right-0 w-1/3 h-full bg-orange-50 rounded-full blur-[120px] -z-10 opacity-60" />
         <div className="absolute bottom-0 left-0 w-1/3 h-full bg-blue-50 rounded-full blur-[120px] -z-10 opacity-60" />
         

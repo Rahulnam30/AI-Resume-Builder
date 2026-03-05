@@ -86,6 +86,14 @@ const ScoreChecker = () => {
 
   const [openFaq, setOpenFaq] = useState(0);
 
+  const [heroRef, heroVisible] = useInView(0.2);
+const [demoRef, demoVisible] = useInView(0.15);
+const [breakRef, breakVisible] = useInView(0.15);
+const [calcRef, calcVisible] = useInView(0.15);
+const [whyRef, whyVisible] = useInView(0.15);
+const [faqRef, faqVisible] = useInView(0.15);
+const [ctaRef, ctaVisible] = useInView(0.2);
+
   const scoreValue = useMemo(() => {
     const len = text.trim().length;
     const bullets = (text.match(/- /g) || []).length;
@@ -142,7 +150,12 @@ const ScoreChecker = () => {
       <NavBar />
 
       {/* 1) HERO SECTION (Centered, distinct from ATS) */}
-      <section className="relative px-6 pt-20 pb-16 bg-white overflow-hidden">
+      <section
+  ref={heroRef}
+  className={`relative px-6 pt-20 pb-16 bg-white overflow-hidden transition-all duration-700 ${
+    heroVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
+  }`}
+>
         <div className="mx-auto max-w-7xl">
           <motion.div
             variants={staggerContainer}
@@ -443,7 +456,12 @@ const ScoreChecker = () => {
       </section>
 
       {/* 3) SECTION SCORE TILES */}
-      <section className="px-6 py-12 bg-white">
+      <section
+  ref={breakRef}
+  className={`px-6 py-12 bg-white transition-all duration-700 ${
+    breakVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
+  }`}
+>
         <div className="max-w-7xl mx-auto">
           <h2 className="text-2xl font-black text-[#1a2e52] mb-8 text-center md:text-left">
             Detailed Breakdown
@@ -513,7 +531,12 @@ const ScoreChecker = () => {
       </section>
 
       {/* 4) HOW WE CALCULATE (New Section) */}
-      <section className="px-6 py-20 bg-gray-50/50">
+     <section
+  ref={calcRef}
+  className={`px-6 py-20 bg-gray-50/50 transition-all duration-700 ${
+    calcVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
+  }`}
+>
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-3xl font-black text-[#1a2e52]">
@@ -697,7 +720,12 @@ const ScoreChecker = () => {
       </section>
 
       {/* 6) FAQ (New Section) */}
-      <section className="px-6 py-20 bg-[#F8F9FC]">
+      <section
+  ref={faqRef}
+  className={`px-6 py-20 bg-[#F8F9FC] transition-all duration-700 ${
+    faqVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
+  }`}
+>
         <div className="max-w-3xl mx-auto">
           <h2 className="text-3xl font-black text-center text-[#1a2e52] mb-12">
             Frequently Asked Questions
@@ -751,7 +779,12 @@ const ScoreChecker = () => {
       </section>
 
       {/* CTA (keeps your style) */}
-      <section className="relative px-8 py-20 overflow-hidden bg-white text-center">
+      <section
+  ref={ctaRef}
+  className={`relative px-8 py-20 overflow-hidden bg-white text-center transition-all duration-700 ${
+    ctaVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
+  }`}
+>
         <div className="absolute top-0 right-0 w-1/3 h-full bg-orange-50 rounded-full blur-[120px] -z-10 opacity-60" />
         <div className="absolute bottom-0 left-0 w-1/3 h-full bg-blue-50 rounded-full blur-[120px] -z-10 opacity-60" />
 

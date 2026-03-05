@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Layers,
@@ -57,7 +57,12 @@ const ResumeHubPage = () => {
       <NavBar />
 
       {/* --- 1. HERO SECTION --- */}
-      <section className="relative pb-8 overflow-hidden bg-white">
+     <section
+  ref={heroRef}
+  className={`relative pb-8 overflow-hidden bg-white transition-all duration-700 ${
+    heroVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
+  }`}
+>
         {/* Brand Decorative Blurs */}
         <div className="absolute top-0 right-0 w-1/3 h-1/2 bg-orange-50 rounded-full blur-[120px] -z-10 opacity-50" />
         <div className="absolute bottom-0 left-0 w-1/3 h-1/2 bg-blue-50 rounded-full blur-[120px] -z-10 opacity-50" />
@@ -200,7 +205,12 @@ const ResumeHubPage = () => {
       </section>
 
       {/* --- 3. TABLE SHOWCASE --- */}
-      <section className="px-8 py-20 bg-gray-50/50">
+     <section
+  ref={tableRef}
+  className={`px-8 py-20 bg-gray-50/50 transition-all duration-700 ${
+    tableVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
+  }`}
+>
         <div className="mx-auto max-w-7xl">
           <motion.div
             variants={fadeUp}
@@ -319,7 +329,12 @@ const ResumeHubPage = () => {
       </section>
 
       {/* --- 4. BENTO GRID CAPABILITIES --- */}
-      <section className="px-8 bg-white py-14">
+      <section
+  ref={bentoRef}
+  className={`px-8 bg-white py-14 transition-all duration-700 ${
+    bentoVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
+  }`}
+>
         <div className="mx-auto max-w-7xl">
           <div className="mb-16 text-center">
             <h2 className="mb-4 text-xs font-black tracking-[0.3em] text-[#0077cc] uppercase">
@@ -376,7 +391,12 @@ const ResumeHubPage = () => {
       </section>
 
       {/* --- RESUME HUB CTA --- */}
-      <section className="relative px-8 pt-12 pb-24 overflow-hidden bg-white">
+     <section
+  ref={ctaRef}
+  className={`relative px-8 pt-12 pb-24 overflow-hidden bg-white transition-all duration-700 ${
+    ctaVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
+  }`}
+>
         <div className="absolute top-0 right-0 w-1/3 h-full bg-orange-50 rounded-full blur-[120px] -z-10 opacity-60" />
         <div className="absolute bottom-0 left-0 w-1/3 h-full bg-blue-50 rounded-full blur-[120px] -z-10 opacity-60" />
 

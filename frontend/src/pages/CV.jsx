@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   Layout,
   Layers,
@@ -341,7 +341,12 @@ const CVFormattingPage = () => {
       </section>
 
       {/* --- 3. CV ARCHITECTURE PROCESS (MATCHING REFERENCE UI) --- */}
-      <section className="px-8 py-15 bg-white font-['Outfit']">
+      <section
+  ref={processRef}
+  className={`px-8 py-15 bg-white font-['Outfit'] transition-all duration-700 ${
+    processVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
+  }`}
+>
         <div className="mx-auto max-w-7xl">
           <div className="mb-16 text-center">
             <h2 className="mb-4 text-4xl md:text-5xl font-black text-[#1a2e52]">
@@ -461,7 +466,12 @@ const CVFormattingPage = () => {
       </section>
 
       {/* --- CTA SECTION --- */}
-      <section className="relative px-8 pt-12 pb-15 overflow-hidden bg-white">
+     <section
+  ref={ctaRef}
+  className={`relative px-8 pt-12 pb-15 overflow-hidden bg-white transition-all duration-1000 ${
+    ctaVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12"
+  }`}
+>
         <div className="absolute top-0 right-0 w-1/3 h-full bg-orange-50 rounded-full blur-[120px] -z-10 opacity-60" />
         <div className="absolute bottom-0 left-0 w-1/3 h-full bg-blue-50 rounded-full blur-[120px] -z-10 opacity-60" />
 
