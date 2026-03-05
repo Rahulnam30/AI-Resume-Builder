@@ -78,7 +78,7 @@ const Pricing = () => {
       period: " / year",
       description: "For career acceleration",
       buttonText: "Unlock Premium",
-      buttonAction: () => {},
+      buttonAction: () => navigate(`${isLoggedIn ? "/user/dashboard" : "/login"}`),
       gradient: false,
       features: getDynamicFeaturesById(3),
     },
@@ -144,24 +144,28 @@ const Pricing = () => {
                   </div>
                 </div>
 
-                <div className="mb-6">
-                  {plan.features && plan.features.length > 0 ? (
-                    plan.features.map((feature, i) => (
-                      <div
-                        key={i}
-                        className="flex items-center gap-3 mb-4"
+               <div className="mb-6">
+                  {plan.features.map((feature, i) => (
+                    <div
+                      key={i}
+                      className={`flex items-center gap-3 mb-4 ${
+                        !feature.included ? "text-gray-400" : ""
+                      }`}
+                    >
+                      {feature.included ? (
+                        <Check className={`${plan.checkColor} w-5 h-5 flex-shrink-0`} />
+                      ) : (
+                        <Lock className="w-4 h-4 flex-shrink-0" />
+                      )}
+                      <span
+                        className={`text-sm ${
+                          feature.included ? "text-gray-700" : "line-through"
+                        }`}
                       >
-                        <Check
-                          className={`${plan.checkColor} w-5 h-5 flex-shrink-0`}
-                        />
-                        <span className="text-sm text-gray-700">
-                          {feature}
-                        </span>
-                      </div>
-                    ))
-                  ) : (
-                    <p className="text-sm text-gray-400 text-center">No features listed</p>
-                  )}
+                        {feature.name}
+                      </span>
+                    </div>
+                  ))}
                 </div>
 
                 <button
