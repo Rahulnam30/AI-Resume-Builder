@@ -6,6 +6,7 @@ import Payment from "../Models/payment.js";
 import Resume from "../Models/resume.js";
 import Subscription from "../Models/subscription.js";
 import ApiMetric from "../Models/ApiMetric.js";
+import Download from "../Models/Download.js";
 
 /* ================== HELPERS ================== */
 const getLastMonthDate = () => {
@@ -24,8 +25,14 @@ export const getDashboardData = async (req, res) => {
     const oneWeekAgo = new Date();
     oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
 
+    // Document Breakdown counts (per logged-in user)
+    const [totalResumes, totalCvs, totalCoverLetters] = await Promise.all([
+      Download.countDocuments({ user: userId, type: "resume" }),
+      Download.countDocuments({ user: userId, type: "cv" }),
+      Download.countDocuments({ user: userId, type: "cover-letter" }),
+    ]);
+
     // Total and Weekly Resumes
-    const totalResumes = await Resume.countDocuments({ user: userId });
     const resumesThisWeek = await Resume.countDocuments({
       user: userId,
       createdAt: { $gte: oneWeekAgo },
@@ -57,6 +64,8 @@ export const getDashboardData = async (req, res) => {
       },
       stats: {
         resumesCreated: totalResumes,
+        cvsCreated: totalCvs,
+        coverLettersCreated: totalCoverLetters,
         resumesThisWeek,
         avgAtsScore: avgAtsScore,
         latestAts: latestAts,

@@ -112,10 +112,10 @@ const Dashboard = ({ setActivePage }) => {
   const user = dashboardData?.user || {};
 
   const avgAtsScore = stats.avgAtsScore || 0;
-  // Temporary mock data to show in document breakdown chart
-  const resumesCreatedCount = stats.resumesCreated || 12;
-  const cvsCreatedCount = stats.cvsCreated || 5;
-  const coverLettersCreatedCount = stats.coverLettersCreated || 8;
+  // Document breakdown counts (per logged-in user)
+  const resumesCreatedCount = stats.resumesCreated || 0;
+  const cvsCreatedCount = stats.cvsCreated || 0;
+  const coverLettersCreatedCount = stats.coverLettersCreated || 0;
   const totalAssets =
     resumesCreatedCount + cvsCreatedCount + coverLettersCreatedCount;
 
