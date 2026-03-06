@@ -20,16 +20,18 @@ export const getDashboardData = async (req, res) => {
   try {
     const userId = req.userId;
 
-    const user = await User.findById(userId).select("username email profileViews isAdmin adminRequestStatus");
+    const user = await User.findById(userId).select(
+      "username email profileViews isAdmin adminRequestStatus",
+    );
 
     const oneWeekAgo = new Date();
     oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
 
     // Document Breakdown counts (per logged-in user)
     const [totalResumes, totalCvs, totalCoverLetters] = await Promise.all([
-      Download.countDocuments({ user: userId, type: "resume", action: "download" }),
-      Download.countDocuments({ user: userId, type: "cv", action: "download" }),
-      Download.countDocuments({ user: userId, type: "cover-letter", action: "download" }),
+      Download.countDocuments({ user: userId, type: "resume" }),
+      Download.countDocuments({ user: userId, type: "cv" }),
+      Download.countDocuments({ user: userId, type: "cover-letter" }),
     ]);
 
     // Total and Weekly Resumes
@@ -60,7 +62,7 @@ export const getDashboardData = async (req, res) => {
         name: user?.username || "User",
         email: user?.email,
         isAdmin: user?.isAdmin || false,
-        adminRequestStatus: user?.adminRequestStatus || "none"
+        adminRequestStatus: user?.adminRequestStatus || "none",
       },
       stats: {
         resumesCreated: totalResumes,
@@ -114,7 +116,9 @@ export const getAllUsers = async (req, res) => {
     const users = await User.find({}, { password: 0 });
     res.status(200).json(users);
   } catch (error) {
-    res.status(500).json({ message: "Something went wrong", error: error.message });
+    res
+      .status(500)
+      .json({ message: "Something went wrong", error: error.message });
   }
 };
 
@@ -134,14 +138,24 @@ export const getProfile = async (req, res) => {
 export const updateProfile = async (req, res) => {
   try {
     const userId = req.userId;
-    const { fullName, username, email, phone, location, bio, github, linkedin } = req.body;
+    const {
+      fullName,
+      username,
+      email,
+      phone,
+      location,
+      bio,
+      github,
+      linkedin,
+    } = req.body;
 
     const user = await User.findById(userId);
     if (!user) return res.status(404).json({ message: "User not found" });
 
     if (email && email !== user.email) {
       const exists = await User.findOne({ email });
-      if (exists) return res.status(400).json({ message: "Email already exists" });
+      if (exists)
+        return res.status(400).json({ message: "Email already exists" });
     }
 
     if (fullName !== undefined) user.fullName = fullName;
@@ -154,7 +168,12 @@ export const updateProfile = async (req, res) => {
     if (linkedin !== undefined) user.linkedin = linkedin;
 
     await user.save();
-    res.status(200).json({ message: "Profile updated", user: await User.findById(userId).select("-password") });
+    res
+      .status(200)
+      .json({
+        message: "Profile updated",
+        user: await User.findById(userId).select("-password"),
+      });
   } catch (error) {
     console.error("Update profile error:", error);
     res.status(500).json({ message: "Failed to update profile" });
@@ -165,14 +184,19 @@ export const changePassword = async (req, res) => {
   try {
     const userId = req.userId;
     const { currentPassword, newPassword } = req.body;
-    if (!currentPassword || !newPassword) return res.status(400).json({ message: "Both passwords are required" });
-    if (newPassword.length < 8) return res.status(400).json({ message: "Password must be at least 8 characters" });
+    if (!currentPassword || !newPassword)
+      return res.status(400).json({ message: "Both passwords are required" });
+    if (newPassword.length < 8)
+      return res
+        .status(400)
+        .json({ message: "Password must be at least 8 characters" });
 
     const user = await User.findById(userId);
     if (!user) return res.status(404).json({ message: "User not found" });
 
     const isMatch = await bcrypt.compare(currentPassword, user.password);
-    if (!isMatch) return res.status(401).json({ message: "Current password is incorrect" });
+    if (!isMatch)
+      return res.status(401).json({ message: "Current password is incorrect" });
 
     const hashed = await bcrypt.hash(newPassword, 10);
     user.password = hashed;
@@ -180,7 +204,9 @@ export const changePassword = async (req, res) => {
 
     res.status(200).json({ message: "Password updated successfully" });
   } catch (error) {
-    res.status(500).json({ message: "Failed to change password", error: error.message });
+    res
+      .status(500)
+      .json({ message: "Failed to change password", error: error.message });
   }
 };
 
@@ -217,8 +243,9 @@ export const updateUser = async (req, res) => {
       // 🔔 USER
       await Notification.create({
         type: "ACCOUNT_STATUS",
-        message: `Your account was ${isActive ? "activated" : "deactivated"
-          } by admin`,
+        message: `Your account was ${
+          isActive ? "activated" : "deactivated"
+        } by admin`,
         userId: user._id,
         actor: "system",
       });
@@ -226,8 +253,9 @@ export const updateUser = async (req, res) => {
       // 🔔 ADMIN
       await Notification.create({
         type: "USER_STATUS",
-        message: `${user.username} was ${isActive ? "activated" : "deactivated"
-          }`,
+        message: `${user.username} was ${
+          isActive ? "activated" : "deactivated"
+        }`,
         userId: req.userId,
         actor: "user",
         fromAdmin: true,
@@ -239,9 +267,7 @@ export const updateUser = async (req, res) => {
     );
     res.status(200).json({ message: "User updated successfully", user });
   } catch (error) {
-    res
-      .status(500)
-      .json({ message: "Update failed", error: error.message });
+    res.status(500).json({ message: "Update failed", error: error.message });
   }
 };
 
@@ -256,7 +282,7 @@ export const deleteUser = async (req, res) => {
       message: `${user.username} account was deleted`,
       userId: req.userId, // admin id
       actor: "user",
-      fromAdmin: true
+      fromAdmin: true,
     });
 
     await user.deleteOne();
@@ -264,9 +290,7 @@ export const deleteUser = async (req, res) => {
     res.status(200).json({ message: "User deleted successfully" });
   } catch (error) {
     console.error("Delete user error:", error);
-    res
-      .status(500)
-      .json({ message: "Delete failed", error: error.message });
+    res.status(500).json({ message: "Delete failed", error: error.message });
   }
 };
 
@@ -281,37 +305,39 @@ export const requestAdminAccess = async (req, res) => {
       return res.status(400).json({ message: "You are already an admin" });
     }
 
-    if (user.adminRequestStatus === 'pending') {
-      return res.status(400).json({ message: "Admin request is already pending" });
+    if (user.adminRequestStatus === "pending") {
+      return res
+        .status(400)
+        .json({ message: "Admin request is already pending" });
     }
 
-    user.adminRequestStatus = 'pending';
+    user.adminRequestStatus = "pending";
     await user.save();
 
-    // 🔔 USER NOTIFICATION (Self acknowledgement)
-    await Notification.create({
-      type: "ADMIN_REQUEST_USER",
-      message: "Your request for admin access has been submitted",
-      userId: user._id,
-      actor: "system"
-    });
-
     // 🔔 ADMIN NOTIFICATION
+    // Send to a placeholder admin or skip if direct broadcast isn't supported by the schema.
     const adminUser = await User.findOne({ isAdmin: true });
     if (adminUser) {
       await Notification.create({
         type: "ADMIN_REQUEST",
-        message: `${user.username || user.email} has requested for admin access`,
+        message: `${user.username || user.email} requested admin access`,
         userId: adminUser._id,
-        actor: "user"
+        actor: "user",
       });
     }
 
-    res.status(200).json({ message: "Admin request submitted successfully", user });
+    res
+      .status(200)
+      .json({ message: "Admin request submitted successfully", user });
   } catch (error) {
     console.error("Request admin error DETAILED:", error.message, error.stack);
-    import('fs').then(fs => fs.writeFileSync('error_log.txt', error.stack));
-    res.status(500).json({ message: "Failed to submit admin request", error: error.message });
+    import("fs").then((fs) => fs.writeFileSync("error_log.txt", error.stack));
+    res
+      .status(500)
+      .json({
+        message: "Failed to submit admin request",
+        error: error.message,
+      });
   }
 };
 
@@ -322,38 +348,33 @@ export const approveAdminRequest = async (req, res) => {
 
     if (!user) return res.status(404).json({ message: "User not found" });
 
-    if (user.adminRequestStatus !== 'pending') {
-      return res.status(400).json({ message: "No pending admin request for this user" });
+    if (user.adminRequestStatus !== "pending") {
+      return res
+        .status(400)
+        .json({ message: "No pending admin request for this user" });
     }
 
     user.isAdmin = true;
-    user.adminRequestStatus = 'approved';
+    user.adminRequestStatus = "approved";
     await user.save();
-
-    const admin = await User.findById(req.userId);
-    const adminName = admin?.username || "Admin";
 
     // 🔔 USER NOTIFICATION
     await Notification.create({
       type: "ROLE_UPDATE",
-      message: `Your admin access request has been approved by ${adminName}`,
+      message: `Your request for admin access has been approved`,
       userId: user._id,
-      actor: "system"
-    });
-
-    // 🔔 ADMIN NOTIFICATION (Confirmation)
-    await Notification.create({
-      type: "ROLE_APPROVED_ADMIN",
-      message: `You approved ${user.username || user.email}'s admin access request`,
-      userId: req.userId,
-      actor: "user",
-      fromAdmin: true
+      actor: "system",
     });
 
     res.status(200).json({ message: "Admin request approved", user });
   } catch (error) {
     console.error("Approve admin error:", error);
-    res.status(500).json({ message: "Failed to approve admin request", error: error.message });
+    res
+      .status(500)
+      .json({
+        message: "Failed to approve admin request",
+        error: error.message,
+      });
   }
 };
 
@@ -364,37 +385,32 @@ export const rejectAdminRequest = async (req, res) => {
 
     if (!user) return res.status(404).json({ message: "User not found" });
 
-    if (user.adminRequestStatus !== 'pending') {
-      return res.status(400).json({ message: "No pending admin request for this user" });
+    if (user.adminRequestStatus !== "pending") {
+      return res
+        .status(400)
+        .json({ message: "No pending admin request for this user" });
     }
 
-    user.adminRequestStatus = 'rejected';
+    user.adminRequestStatus = "rejected";
     await user.save();
-
-    const admin = await User.findById(req.userId);
-    const adminName = admin?.username || "Admin";
 
     // 🔔 USER NOTIFICATION
     await Notification.create({
       type: "ROLE_UPDATE",
-      message: `Your admin access request was rejected by ${adminName}`,
+      message: `Your request for admin access was rejected`,
       userId: user._id,
-      actor: "system"
-    });
-
-    // 🔔 ADMIN NOTIFICATION (Confirmation)
-    await Notification.create({
-      type: "ROLE_REJECTED_ADMIN",
-      message: `You rejected ${user.username || user.email}'s admin access request`,
-      userId: req.userId,
-      actor: "user",
-      fromAdmin: true
+      actor: "system",
     });
 
     res.status(200).json({ message: "Admin request rejected", user });
   } catch (error) {
     console.error("Reject admin error:", error);
-    res.status(500).json({ message: "Failed to reject admin request", error: error.message });
+    res
+      .status(500)
+      .json({
+        message: "Failed to reject admin request",
+        error: error.message,
+      });
   }
 };
 
@@ -429,7 +445,9 @@ export const getAnalyticsStats = async (req, res) => {
     ]);
 
     const subscriptionBreakdown = subscriptionDistribution.map((item) => ({
-      plan: (item._id || "Free").charAt(0).toUpperCase() + (item._id || "Free").slice(1),
+      plan:
+        (item._id || "Free").charAt(0).toUpperCase() +
+        (item._id || "Free").slice(1),
       count: item.count,
     }));
 
@@ -455,20 +473,27 @@ export const getAnalyticsStats = async (req, res) => {
     let totalRespTime = 0;
     let callsForAvg = 0;
 
-    apiStats.forEach(stat => {
+    apiStats.forEach((stat) => {
       if (stat._id === "success") apiSuccessCount = stat.count;
       else apiFailureCount = stat.count;
 
       if (stat.avgResponse) {
-        totalRespTime += (stat.avgResponse * stat.count);
+        totalRespTime += stat.avgResponse * stat.count;
         callsForAvg += stat.count;
       }
     });
 
     const totalApiCalls = apiSuccessCount + apiFailureCount;
-    const apiSuccessRate = totalApiCalls > 0 ? ((apiSuccessCount / totalApiCalls) * 100).toFixed(1) : 100;
-    const apiFailureRate = totalApiCalls > 0 ? ((apiFailureCount / totalApiCalls) * 100).toFixed(1) : 0;
-    const avgResponseTime = callsForAvg > 0 ? Math.round(totalRespTime / callsForAvg) : 250;
+    const apiSuccessRate =
+      totalApiCalls > 0
+        ? ((apiSuccessCount / totalApiCalls) * 100).toFixed(1)
+        : 100;
+    const apiFailureRate =
+      totalApiCalls > 0
+        ? ((apiFailureCount / totalApiCalls) * 100).toFixed(1)
+        : 0;
+    const avgResponseTime =
+      callsForAvg > 0 ? Math.round(totalRespTime / callsForAvg) : 250;
 
     // ---------- CONSOLIDATED TREND DATA (LAST 6 MONTHS) ----------
     const trendData = [];
@@ -484,7 +509,7 @@ export const getAnalyticsStats = async (req, res) => {
         month: month,
         monthName,
         users: 0,
-        revenue: 0
+        revenue: 0,
       });
     }
 
@@ -515,9 +540,13 @@ export const getAnalyticsStats = async (req, res) => {
       },
     ]);
 
-    trendData.forEach(tick => {
-      const growthMatch = userGrowthAgg.find(g => g._id.year === tick.year && g._id.month === tick.month);
-      const revenueMatch = revenueByMonth.find(r => r._id.year === tick.year && r._id.month === tick.month);
+    trendData.forEach((tick) => {
+      const growthMatch = userGrowthAgg.find(
+        (g) => g._id.year === tick.year && g._id.month === tick.month,
+      );
+      const revenueMatch = revenueByMonth.find(
+        (r) => r._id.year === tick.year && r._id.month === tick.month,
+      );
 
       if (growthMatch) tick.users = growthMatch.count;
       if (revenueMatch) tick.revenue = revenueMatch.revenue;
@@ -526,7 +555,7 @@ export const getAnalyticsStats = async (req, res) => {
     // ---------- MOST USED TEMPLATES (Top 5) ----------
     const mostUsedTemplatesAgg = await Resume.aggregate([
       {
-        $match: { templateId: { $exists: true, $ne: null } }
+        $match: { templateId: { $exists: true, $ne: null } },
       },
       {
         $group: {
@@ -541,10 +570,10 @@ export const getAnalyticsStats = async (req, res) => {
               input: "$_id",
               to: "objectId",
               onError: "$_id",
-              onNull: "$_id"
-            }
-          }
-        }
+              onNull: "$_id",
+            },
+          },
+        },
       },
       {
         $lookup: {
@@ -554,12 +583,16 @@ export const getAnalyticsStats = async (req, res) => {
           as: "templateDetails",
         },
       },
-      { $unwind: { path: "$templateDetails", preserveNullAndEmptyArrays: true } },
+      {
+        $unwind: { path: "$templateDetails", preserveNullAndEmptyArrays: true },
+      },
       { $sort: { count: -1 } },
       { $limit: 5 },
     ]);
 
-    const totalTemplateUsage = await Resume.countDocuments({ templateId: { $ne: null } });
+    const totalTemplateUsage = await Resume.countDocuments({
+      templateId: { $ne: null },
+    });
 
     const mostUsedTemplates = mostUsedTemplatesAgg.map((item) => {
       let name = item.templateDetails?.name;
@@ -579,27 +612,36 @@ export const getAnalyticsStats = async (req, res) => {
           elite: "Elite Sidebar",
           eclipse: "Eclipse",
           eclipse1: "Eclipse Alt",
-          harbor: "Harbor"
+          harbor: "Harbor",
         };
-        name = hardcodedNames[item._id] || (typeof item._id === 'string' && item._id.length > 20 ? `ID: ${item._id.substring(0, 8)}...` : item._id);
+        name =
+          hardcodedNames[item._id] ||
+          (typeof item._id === "string" && item._id.length > 20
+            ? `ID: ${item._id.substring(0, 8)}...`
+            : item._id);
       }
       return {
         templateId: name || "Standard",
         count: item.count,
-        percentage: totalTemplateUsage > 0 ? Math.round((item.count / totalTemplateUsage) * 100) : 0,
+        percentage:
+          totalTemplateUsage > 0
+            ? Math.round((item.count / totalTemplateUsage) * 100)
+            : 0,
       };
     });
 
-    const chartData = trendData.map(item => ({
+    const chartData = trendData.map((item) => ({
       month: item.monthName,
       users: item.users,
-      revenue: item.revenue
+      revenue: item.revenue,
     }));
 
     // ---------- SYSTEM UPTIME ----------
     const baseUptime = 99.95;
     const uptimeDeduction = (100 - parseFloat(apiSuccessRate)) * 0.01;
-    const systemUptime = Math.max(99.90, baseUptime - uptimeDeduction).toFixed(2);
+    const systemUptime = Math.max(99.9, baseUptime - uptimeDeduction).toFixed(
+      2,
+    );
 
     res.status(200).json({
       userGrowth: {
@@ -631,7 +673,9 @@ export const getAnalyticsStats = async (req, res) => {
     });
   } catch (error) {
     console.error("Analytics Error:", error);
-    res.status(500).json({ message: "Analytics fetch failed", error: error.message });
+    res
+      .status(500)
+      .json({ message: "Analytics fetch failed", error: error.message });
   }
 };
 
@@ -646,21 +690,36 @@ export const getAdminDashboardStats = async (req, res) => {
     // ---------- CORE STATS ----------
     // USERS
     const totalUsers = await User.countDocuments();
-    const lastMonthUsers = await User.countDocuments({ createdAt: { $lt: lastMonth } });
-    const userChange = lastMonthUsers === 0 ? 0 : ((totalUsers - lastMonthUsers) / lastMonthUsers) * 100;
+    const lastMonthUsers = await User.countDocuments({
+      createdAt: { $lt: lastMonth },
+    });
+    const userChange =
+      lastMonthUsers === 0
+        ? 0
+        : ((totalUsers - lastMonthUsers) / lastMonthUsers) * 100;
 
     // RESUMES
     const totalResumes = await Resume.countDocuments();
-    const lastMonthResumes = await Resume.countDocuments({ createdAt: { $lt: lastMonth } });
-    const resumeChange = lastMonthResumes === 0 ? 0 : ((totalResumes - lastMonthResumes) / lastMonthResumes) * 100;
+    const lastMonthResumes = await Resume.countDocuments({
+      createdAt: { $lt: lastMonth },
+    });
+    const resumeChange =
+      lastMonthResumes === 0
+        ? 0
+        : ((totalResumes - lastMonthResumes) / lastMonthResumes) * 100;
 
     // SUBSCRIPTIONS
-    const totalActiveSubs = await Subscription.countDocuments({ status: "active" });
+    const totalActiveSubs = await Subscription.countDocuments({
+      status: "active",
+    });
     const lastMonthActiveSubs = await Subscription.countDocuments({
       status: "active",
-      createdAt: { $lt: lastMonth }
+      createdAt: { $lt: lastMonth },
     });
-    const subsChange = lastMonthActiveSubs === 0 ? 0 : ((totalActiveSubs - lastMonthActiveSubs) / lastMonthActiveSubs) * 100;
+    const subsChange =
+      lastMonthActiveSubs === 0
+        ? 0
+        : ((totalActiveSubs - lastMonthActiveSubs) / lastMonthActiveSubs) * 100;
 
     // REVENUE
     const totalRevenueAgg = await Payment.aggregate([
@@ -679,7 +738,10 @@ export const getAdminDashboardStats = async (req, res) => {
       { $group: { _id: null, total: { $sum: "$amount" } } },
     ]);
     const lastMonthRevenue = lastMonthRevenueAgg[0]?.total || 0;
-    const revenueChange = lastMonthRevenue === 0 ? 0 : ((totalRevenue - lastMonthRevenue) / lastMonthRevenue) * 100;
+    const revenueChange =
+      lastMonthRevenue === 0
+        ? 0
+        : ((totalRevenue - lastMonthRevenue) / lastMonthRevenue) * 100;
 
     // ---------- CHARTS & DISTRIBUTIONS ----------
     // RESUME CHART (LAST 6 MONTHS)
@@ -697,19 +759,23 @@ export const getAdminDashboardStats = async (req, res) => {
       { $limit: 6 },
     ]);
 
-    const resumeChart = resumeGraph.length > 0
-      ? resumeGraph.map((item) => ({
-        month: new Date(item._id.year, item._id.month - 1).toLocaleString("default", { month: "short" }),
-        resumes: item.total,
-      }))
-      : [
-        { month: "Aug", resumes: 5 },
-        { month: "Sep", resumes: 12 },
-        { month: "Oct", resumes: 20 },
-        { month: "Jan", resumes: 50 },
-        { month: "Feb", resumes: 120 },
-        { month: "Mar", resumes: 2 },
-      ];
+    const resumeChart =
+      resumeGraph.length > 0
+        ? resumeGraph.map((item) => ({
+            month: new Date(item._id.year, item._id.month - 1).toLocaleString(
+              "default",
+              { month: "short" },
+            ),
+            resumes: item.total,
+          }))
+        : [
+            { month: "Aug", resumes: 5 },
+            { month: "Sep", resumes: 12 },
+            { month: "Oct", resumes: 20 },
+            { month: "Jan", resumes: 50 },
+            { month: "Feb", resumes: 120 },
+            { month: "Mar", resumes: 2 },
+          ];
 
     // SUBSCRIPTION DISTRIBUTION
     const subscriptionDistribution = await Subscription.aggregate([
@@ -722,16 +788,19 @@ export const getAdminDashboardStats = async (req, res) => {
       },
     ]);
 
-    const subscriptionSplit = subscriptionDistribution.length > 0
-      ? subscriptionDistribution.map((item) => ({
-        name: (item._id || "Free").charAt(0).toUpperCase() + (item._id || "Free").slice(1),
-        value: item.count,
-      }))
-      : [
-        { name: "Free", value: 80 },
-        { name: "Basic", value: 20 },
-        { name: "Pro", value: 20 },
-      ];
+    const subscriptionSplit =
+      subscriptionDistribution.length > 0
+        ? subscriptionDistribution.map((item) => ({
+            name:
+              (item._id || "Free").charAt(0).toUpperCase() +
+              (item._id || "Free").slice(1),
+            value: item.count,
+          }))
+        : [
+            { name: "Free", value: 80 },
+            { name: "Basic", value: 20 },
+            { name: "Pro", value: 20 },
+          ];
 
     // USER GROWTH (LAST 6 MONTHS)
     const userGrowthAgg = await User.aggregate([
@@ -749,7 +818,10 @@ export const getAdminDashboardStats = async (req, res) => {
     ]);
 
     const userGrowth = userGrowthAgg.map((item) => ({
-      month: new Date(item._id.year, item._id.month - 1).toLocaleString("default", { month: "short" }),
+      month: new Date(item._id.year, item._id.month - 1).toLocaleString(
+        "default",
+        { month: "short" },
+      ),
       users: item.total,
     }));
 
@@ -792,13 +864,14 @@ export const getAdminDashboardStats = async (req, res) => {
 
     let successCalls = 0;
     let failureCalls = 0;
-    apiStats.forEach(s => {
+    apiStats.forEach((s) => {
       if (s._id === "success") successCalls = s.count;
       else failureCalls = s.count;
     });
 
     const totalCalls = successCalls + failureCalls;
-    const apiSuccessRate = totalCalls > 0 ? ((successCalls / totalCalls) * 100).toFixed(1) : 100;
+    const apiSuccessRate =
+      totalCalls > 0 ? ((successCalls / totalCalls) * 100).toFixed(1) : 100;
 
     // ---------- FINAL RESPONSE ---------
     res.status(200).json({
@@ -829,7 +902,8 @@ export const getAdminDashboardStats = async (req, res) => {
     });
   } catch (error) {
     console.error("Dashboard stats error:", error);
-    res.status(500).json({ message: "Dashboard stats fetch failed", error: error.message });
+    res
+      .status(500)
+      .json({ message: "Dashboard stats fetch failed", error: error.message });
   }
 };
-
