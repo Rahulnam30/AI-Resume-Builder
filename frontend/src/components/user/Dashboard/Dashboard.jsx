@@ -1,4 +1,3 @@
-import RecentResumes from "./RecentResumes";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import UserNavBar from "../UserNavBar/UserNavBar";
@@ -508,12 +507,8 @@ const Dashboard = ({ setActivePage }) => {
           </div>
         </div>
 
-        {/* --- BOTTOM ROW: Recent Resumes & Admin Section --- */}
+        {/* --- BOTTOM ROW: Admin Section --- */}
         <div className="grid grid-cols-1 gap-6 pb-12 w-full">
-          <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden w-full p-4 sm:p-6 pb-2">
-            <RecentResumes resumes={recentResumes} />
-          </div>
-
           {/* Upgrade to Admin Card (Moved to bottom, visually secondary) */}
           {!isAdmin && (
             <div className="bg-slate-50/50 rounded-xl border border-slate-200 p-5 mt-4 flex flex-col sm:flex-row items-center justify-between gap-4 transition-all hover:bg-slate-50">
