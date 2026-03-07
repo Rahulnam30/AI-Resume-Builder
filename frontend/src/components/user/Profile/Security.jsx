@@ -2,7 +2,6 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { X, Eye, EyeOff, Loader2 } from "lucide-react";
 import axios from "../../../api/axios";
-import logo from "../../../assets/UptoSkills.webp";
 import UserNavBar from "../UserNavBar/UserNavBar";
 
 export default function Security() {
@@ -96,8 +95,9 @@ export default function Security() {
 
   return (
     <div className="w-full min-h-screen bg-[#f4f6f8]">
-      <UserNavBar/>
 
+      {/* TOP NAVBAR */}
+      <UserNavBar />
 
       {/* CENTERED CONTENT */}
       <div className="flex items-center justify-center min-h-[calc(100vh-64px)] px-4">
