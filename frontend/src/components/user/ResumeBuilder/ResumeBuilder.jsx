@@ -401,6 +401,7 @@ const saveRecentActivity = async (html, action = "visited") => {
         return (
           <PersonalInfoForm
             formData={formData}
+            templateId={selectedTemplate}
             onInputChange={handleInputChange}
             onUseSummary={handleUseSummary}
           />
