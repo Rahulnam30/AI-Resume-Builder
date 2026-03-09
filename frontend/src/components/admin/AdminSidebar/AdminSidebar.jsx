@@ -8,6 +8,7 @@ import {
   User,
   Drone,
   BarChart,
+  BookOpen,
   LogOut,
   Bell,  // ← ADDED
 } from "lucide-react";
@@ -72,6 +73,12 @@ export default function AdminSidebar({ isCollapsed, setIsCollapsed, isMobileOpen
         icon: BarChart,
         label: "Analytics",
         path: "/admin/analytics",
+      },
+      {
+        id: "blog",
+        icon: BookOpen,
+        label: "Blog",
+        path: "/admin/blog",
       },
     ],
     []
