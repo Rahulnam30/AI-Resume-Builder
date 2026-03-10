@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { TrendingUp, Users, UserCheck, UserMinus, Activity, Zap, Shield, Crown, Award, Gem, RefreshCw } from "lucide-react";
+import { TrendingUp, Users, UserCheck, UserMinus, Activity, Zap, Shield, Crown, Award, Gem, RefreshCw, ChevronDown } from "lucide-react";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
 import axiosInstance from "../../../api/axios";
 import AdminTopPagesAnalytics from "../AdminTopPagesAnalytics";
+import CustomDateRange from "./CustomeDatePicker";
 
 export default function AdminAnalytics() {
   const [userGrowth, setUserGrowth] = useState({ count: 0, note: "" });
@@ -12,6 +13,9 @@ export default function AdminAnalytics() {
   const [mostUsedTemplates, setMostUsedTemplates] = useState([]);
   const [chartData, setChartData] = useState([]);
   const [subscriptionBreakdown, setSubscriptionBreakdown] = useState([]);
+  const [open, setOpen] = useState(false);
+  const [selected, setSelected] = useState({ name: "Last 30days", range: 30 });
+  const [showCustomDate,setCustomDate] = useState(false);
   const [summary, setSummary] = useState({
     apiSuccessRate: "0%",
     apiFailureRate: "0%",
@@ -20,37 +24,65 @@ export default function AdminAnalytics() {
     systemUptime: "99.98%"
   });
   const [loading, setLoading] = useState(true);
-
+ const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
   useEffect(() => {
-     const fetchAnalyticsData = async () => {
-    try {
-      const response = await axiosInstance.get("/api/admin/analytics-stat");
-      setUserGrowth(response.data.userGrowth);
-      setConversions(response.data.conversions);
-      setActiveUsers(response.data.activeUsers);
-      setDeletedUsers(response.data.deletedUsers || { count: 0, note: "" });
-      setMostUsedTemplates(response.data.mostUsedTemplates || []);
-      setChartData(response.data.chartData || []);
-      setSubscriptionBreakdown(response.data.subscriptionBreakdown || []);
-      setSummary(response.data.summary || {
-        apiSuccessRate: "0%",
-        apiFailureRate: "0%",
-        avgResponseTime: "0ms",
-        totalApiCalls: 0,
-        systemUptime: "99.98%"
-      });
-      setLoading(false);
-    } catch (error) {
-      console.error("Error fetching analytics:", error);
-      setLoading(false);
-    }
-  };
+    const fetchAnalyticsData = async () => {
+      try {
+        const response = await axiosInstance.get("/api/admin/analytics-stat");
+        setUserGrowth(response.data.userGrowth);
+        setConversions(response.data.conversions);
+        setActiveUsers(response.data.activeUsers);
+        setDeletedUsers(response.data.deletedUsers || { count: 0, note: "" });
+        setMostUsedTemplates(response.data.mostUsedTemplates || []);
+        setChartData(response.data.chartData || []);
+        setSubscriptionBreakdown(response.data.subscriptionBreakdown || []);
+        setSummary(response.data.summary || {
+          apiSuccessRate: "0%",
+          apiFailureRate: "0%",
+          avgResponseTime: "0ms",
+          totalApiCalls: 0,
+          systemUptime: "99.98%"
+        });
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching analytics:", error);
+        setLoading(false);
+      }
+    };
     fetchAnalyticsData();
-    const fetchInterval = setInterval(fetchAnalyticsData,30000);
-    return () => clearInterval(fetchInterval); 
   }, []);
 
- 
+const handlelDatePick = async () => {
+    if (startDate && endDate) {
+     try{
+        setCustomDate(true);
+        setLoading(true);
+        const response = await axiosInstance.get(`/api/admin/analytics-stat?start=${startDate.toISOString()}&end=${endDate.toISOString()}`);
+        setUserGrowth(response.data.userGrowth);
+        setConversions(response.data.conversions);
+        setActiveUsers(response.data.activeUsers);
+        setDeletedUsers(response.data.deletedUsers || { count: 0, note: "" });
+        setMostUsedTemplates(response.data.mostUsedTemplates || []);
+        setChartData(response.data.chartData || []);
+        setSubscriptionBreakdown(response.data.subscriptionBreakdown || []);
+        setSummary(response.data.summary || {
+          apiSuccessRate: "0%",
+          apiFailureRate: "0%",
+          avgResponseTime: "0ms",
+          totalApiCalls: 0,
+          systemUptime: "99.98%"
+        });
+        setLoading(false);
+        setCustomDate(false);
+        setOpen(false);
+      } catch (error) {
+        console.log("Error fetching analytics:", error);
+        setLoading(false);
+      }
+    }
+    return;
+}
 
   const stats = [
     {
@@ -86,15 +118,83 @@ export default function AdminAnalytics() {
       valueColor: "text-slate-900",
     },
   ];
-
+  const options = [
+    { name: "Last 7 days", range: "7d" },
+    { name: "Last 30 days", range: "30d" },
+    { name: "Last 3 months", range: "3m" },
+    { name: "Custom date", custom : true }
+  ]
+  const handleFilter = async (item) => {
+  if(!item.custom){
+    setLoading(true);
+      try{
+        const response = await axiosInstance.get(`/api/admin/analytics-stat?range=${item.range}`);
+        setUserGrowth(response.data.userGrowth);
+        setConversions(response.data.conversions);
+        setActiveUsers(response.data.activeUsers);
+        setDeletedUsers(response.data.deletedUsers || { count: 0, note: "" });
+        setMostUsedTemplates(response.data.mostUsedTemplates || []);
+        setChartData(response.data.chartData || []);
+        setSubscriptionBreakdown(response.data.subscriptionBreakdown || []);
+        setSummary(response.data.summary || {
+          apiSuccessRate: "0%",
+          apiFailureRate: "0%",
+          avgResponseTime: "0ms",
+          totalApiCalls: 0,
+          systemUptime: "99.98%"
+        });
+        setLoading(false);
+      } catch (error) {
+        console.log("Error fetching analytics:", error);
+        setLoading(false);
+      }
+    }; 
+  }
   return (
     <div className="min-h-screen flex-1 p-4 sm:p-6 bg-slate-50 text-slate-900">
       {/* Header */}
-      <div className="mb-6 sm:mb-8">
-        <h1 className="text-2xl sm:text-3xl font-bold">System Analytics</h1>
-        <p className="text-sm sm:text-base text-slate-600 mt-1 sm:mt-2">
-          Deep dive into platform performance & user engagement.
-        </p>
+      <div className="mb-6 sm:mb-8 flex justify-between">
+        <div>
+          <h1 className="text-2xl sm:text-3xl font-bold">System Analytics</h1>
+          <p className="text-sm sm:text-base text-slate-600 mt-1 sm:mt-2">
+            Deep dive into platform performance & user engagement.
+          </p>
+        </div>
+        <div className="relative w-44">
+
+          {/* Button */}
+          <button
+            onClick={() => setOpen(!open)}
+            className="flex items-center justify-between w-full px-3 py-2 bg-white border rounded-md shadow-sm text-sm font-medium hover:bg-gray-50"
+          >
+            {selected.name}
+            <ChevronDown size={16} />
+          </button>
+
+          {/* Dropdown */}
+          {open && (
+            <div className="absolute mt-2 w-full bg-white border rounded-md shadow-lg z-10">
+              {options.map((item) => (
+                <div
+                  key={item.name}
+                  onClick={() => {
+                    setSelected(item);
+                    handleFilter(item);
+                    item.custom ? setCustomDate(true) : setOpen(false);
+                  }}
+                  className="px-3 py-2 text-sm cursor-pointer hover:bg-gray-100"
+                >
+                  {item.name}
+                </div>
+              ))}
+            </div>
+          )}
+           {showCustomDate && (
+          <div className="absolute right-0 mt-2 z-20">
+            <CustomDateRange startDate={startDate} endDate={endDate} setStartDate={setStartDate} setEndDate={setEndDate} handleDatePick={handlelDatePick}/>
+          </div>
+        )}
+        </div>
       </div>
 
       {/* Stats Cards */}
