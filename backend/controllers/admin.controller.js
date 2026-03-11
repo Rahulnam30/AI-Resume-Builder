@@ -3,7 +3,7 @@ import Payment from "../Models/payment.js";
 import Subscription from "../Models/subscription.js";
 import Resume from "../Models/resume.js";
 import ApiMetric from "../Models/ApiMetric.js";
-import Notification from "../Models/notification.js"
+import Notification from "../Models/notification.js";
 /* ================== ADMIN DASHBOARD ================== */
 
 export const getAdminDashboardStats = async (req, res) => {
@@ -248,22 +248,61 @@ export const getAdminDashboardStats = async (req, res) => {
 
 export const getAnalyticsStats = async (req, res) => {
   try {
-    const last30Days = new Date();
-    last30Days.setDate(last30Days.getDate() - 30);
+    const range = req.query.range || "30d";
+    const {start,end} = req.query;
+    let threeMonth = false;
+    let filter = {};
+    if(start && end){
+        filter.createdAt = {
+            $gte : new Date(start),
+            $lte : new Date(end)
+        }
+        filter.updatedAt = {
+            $gte : new Date(start),
+            $lte : new Date(end)
+        }
+    }
+    else if(range == "30d"){
+       const date = new Date();
+       date.setDate(date.getDate() - 30)
+       filter.createdAt = {
+         $gte : date
+       }
+       filter.updatedAt = {
+        $gte : date
+       }
+    }else if(range === "7d"){
+        const date = new Date();
+        date.setDate(date.getDate() - 7)
+          filter.createdAt = {
+         $gte : date
+       }
+       filter.updatedAt = {
+        $gte : date
+       }
+    }
+    else if(range === "3m"){
+        const date = new Date();
+        date.setMonth(date.getMonth() - 3)
+        date.setDate(1)
+        threeMonth = true;
+          filter.createdAt = {
+         $gte : date
+       }
+       filter.updatedAt = {
+        $gte : date
+       }
+       ;
+    }
+   
+    const newUsers = await User.countDocuments({createdAt : filter.createdAt});
 
-    const newUsersLast30Days = await User.countDocuments({
-      createdAt: { $gte: last30Days },
-    });
-
-    const last7Days = new Date();
-    last7Days.setDate(last7Days.getDate() - 7);
-    const activeUsersLast7Days = await User.countDocuments({
-      updatedAt: { $gte: last7Days },
-    });
+    const activeUsers = await User.countDocuments({updatedAt : filter.updatedAt});
 
     // ---------- DELETED USERS ----------
     const deletedUsersCount = await Notification.countDocuments({
       type: "USER_DELETED",
+      createdAt : filter.createdAt
     });
 
     // ---------- SUBSCRIPTION BREAKDOWN ----------
@@ -288,7 +327,7 @@ export const getAnalyticsStats = async (req, res) => {
 
     // ---------- API PERFORMANCE ----------
     const apiStats = await ApiMetric.aggregate([
-      { $match: { createdAt: { $gte: last30Days } } },
+      { $match: {createdAt : filter.createdAt} },
       {
         $group: {
           _id: { $cond: [{ $lt: ["$statusCode", 400] }, "success", "failure"] },
@@ -320,7 +359,7 @@ export const getAnalyticsStats = async (req, res) => {
 
     // ---------- CONSOLIDATED TREND DATA (LAST 6 MONTHS) ----------
     const trendData = [];
-    for (let i = 5; i >= 0; i--) {
+    for (let i = threeMonth ? 2 : 5; i >= 0; i--) {
       const d = new Date();
       d.setMonth(d.getMonth() - i);
       const year = d.getFullYear();
@@ -451,16 +490,16 @@ export const getAnalyticsStats = async (req, res) => {
 
     res.status(200).json({
       userGrowth: {
-        count: newUsersLast30Days,
-        note: "New users in last 30 days",
+        count: newUsers,
+        note: `New users`,
       },
       conversions: {
         count: totalPaidUsers,
         note: "Total paid subscriptions",
       },
       activeUsers: {
-        count: activeUsersLast7Days,
-        note: "Active last 7 days",
+        count: activeUsers,
+        note: `Active users`,
       },
       deletedUsers: {
         count: deletedUsersCount,
@@ -477,7 +516,8 @@ export const getAnalyticsStats = async (req, res) => {
         systemUptime: `${systemUptime}%`,
       },
     });
-  } catch (error) {
+    }
+   catch (error) {
     console.error("Analytics Error:", error);
     res.status(500).json({ message: "Analytics fetch failed", error: error.message });
   }

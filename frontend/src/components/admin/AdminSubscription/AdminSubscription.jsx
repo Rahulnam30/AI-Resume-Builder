@@ -114,7 +114,7 @@ const AdminSubscription = () => {
       const paidPlanNames = allPlans.filter(p => p.price > 0).map(p => p.name.toLowerCase());
 
       const pro = allUsers.filter(user => user.plan && paidPlanNames.includes(user.plan.toLowerCase()));
-      const free = allUsers.filter(user => !user.plan || !paidPlanNames.includes(user.plan.toLowerCase()));
+      const free = allUsers.filter(user => user.plan === "Free" && user.isAdmin === false);
 
       setPaidUsers(pro);
       setFreeUsersCount(free.length);
