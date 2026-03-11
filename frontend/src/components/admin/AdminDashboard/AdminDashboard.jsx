@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Users, FileText, CreditCard, DollarSign } from "lucide-react";
+import { Users, FileText, CreditCard, IndianRupee } from "lucide-react";
 import {
   BarChart,
   Bar,
@@ -60,18 +60,19 @@ export default function AdminDashboard() {
     },
     {
       title: "Total Revenue",
-      value: `$ ${totalRevenue}`,
+      value: `₹ ${totalRevenue}`,
       change: `+${totalRevenueChange}%`,
-      icon: DollarSign,
+      icon: IndianRupee,
       color: "text-green-600",
       bg: "bg-green-50",
     },
   ];
 
-  const fetchTotalUser = async () => {
+  useEffect(()=>{
+    const fetchTotalUser = async () => {
     try {
       const result = await axiosInstance.get(
-        "/api/user/dashboard-stat"
+        "/api/admin/dashboard-stat"
       );
 
       setTotalUser(result.data?.users?.total || 0);
@@ -90,10 +91,12 @@ export default function AdminDashboard() {
       console.error(error);
     }
   };
-
-  useEffect(() => {
     fetchTotalUser();
-  }, []);
+    
+    const fetchInterval = setInterval(()=>{fetchTotalUser()},4000);
+    return() => clearInterval(fetchInterval);
+  },[])
+  
 
   return (
     <div className="bg-slate-50 p-4 sm:p-6">

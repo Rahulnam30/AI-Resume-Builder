@@ -25,6 +25,7 @@ import analyticsRouter from "./routes/analytics.routes.js";
 
 import chatbotRouter from "./routers/chatbot.router.js";
 
+import adminRouter from "./routers/admin.router.js";
 
 // Config
 import connectDB from "./config/db.js";
@@ -75,6 +76,7 @@ app.use("/api/plans", planRouter);
 app.use("/api/blog", blogRouter);
 app.use("/api/chatbot", chatbotRouter);
 app.use("/api/dashboard", dashboardRouter);
+app.use("/api/admin", adminRouter);
 app.use("/api", analyticsRouter);
 
 // Serve uploads directory (for images/resumes)

@@ -8,8 +8,6 @@ import {
   getProfile,
   updateProfile,
   changePassword,
-  getAdminDashboardStats,
-  getAnalyticsStats,
   getUserName,
   requestAdminAccess,
   approveAdminRequest,
@@ -27,9 +25,6 @@ userRouter.put("/password", isAuth, changePassword);
 userRouter.get("/profile/:id", isAuth, getUserName);
 userRouter.post("/request-admin", isAuth, requestAdminAccess);
 
-// ---- Admin Stats Routes (STATIC FIRST) ----
-userRouter.get("/dashboard-stat", isAuth, getAdminDashboardStats);
-userRouter.get("/analytics-stat", isAuth, getAnalyticsStats);
 
 // ---- Admin User Routes (DYNAMIC LAST) ----
 userRouter.get("/", isAuth, getAllUsers);
