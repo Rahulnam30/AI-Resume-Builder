@@ -129,47 +129,35 @@ export async function refineExperienceDescription(data) {
     console.log("AI FUNCTION CALLED");
     console.log("INPUT DATA:", data);
     const prompt = `
-      You are a deterministic ATS resume experience rewriting engine.
+      Create ONLY a professional resume summary in first person.
 
-      NON-NEGOTIABLE RULES:
-      - Rewrite ONLY the provided experience description.
-      - NEVER ask questions.
-      - NEVER request more information.
-      - NEVER explain your reasoning.
-      - NEVER generate summaries, overviews, or placeholders.
-      - NEVER invent or infer details.
+      Rules:
+      - 3 to 4 lines only
+      - Write in FIRST PERSON using "I" (not the candidate's name)
+      - No headings
+      - No bullet points
+      - No explanations
+      - No notes
+      - Plain text only
+      - Focus on key achievements and skills
+      - Start with "I am" or "I have"
 
-      HARD FAILURE CONDITION:
-      If the experience description is missing, empty, null, undefined,
-      or has fewer than 5 meaningful words,
-      OUTPUT EXACTLY this JSON and STOP IMMEDIATELY:
-      { "status": "error", "text": "No description is provided." }
+      Instructions:
+      - If a professional summary is provided by the user, analyze it and improve it.
+      - Preserve the user's intent and core information.
+      - Do NOT repeat the summary verbatim.
+      - If no summary is provided, generate one from the candidate details.
 
-      OUTPUT FORMAT:
-      - JSON only
-      - No extra keys
-      - No surrounding text
-      - No markdown
+      Candidate Details:
+      Name: ${data.fullName}
+      Skills: ${formatSkills(data.skills) || "Not provided"}
+      Education: ${formatEducation(data.education) || "Not provided"}
+      Experience: ${formatExperience(data.experience) || "Not provided"}
+      Certifications: ${formatCertifications(data.certifications) || "Not provided"}
+      Projects: ${formatProjects(data.projects) || "Not provided"}
+      Existing Summary: ${data.summary?.trim() || "Not provided"}
 
-      SUCCESS FORMAT:
-      {
-        "status": "success",
-        "text": "ATS-optimized rewritten experience description"
-      }
-
-      STYLE CONSTRAINTS:
-      - 1-2 concise lines
-      - Resume-ready
-      - Plain English
-      - Strong action verbs
-      - No buzzwords, no fluff
-
-      IMPORTANT:
-      Job title, company, and dates are CONTEXT ONLY.
-      They must NOT be used to generate new content.
-
-      EXPERIENCE DESCRIPTION (rewrite ONLY this text):
-      <<<${data.description}>>>
+      Example format: "I am a skilled software developer with expertise in..."
     `;
     const response = await getAIResponse(prompt);
     return response;
@@ -184,47 +172,25 @@ export async function refineProjectDescription(data) {
     console.log("AI FUNCTION CALLED");
     console.log("INPUT DATA:", data);
     const prompt = `
-      You are a deterministic ATS resume project description rewriting engine.
+      You are an expert resume writer specializing in ATS (Applicant Tracking System) optimization.
 
-      NON-NEGOTIABLE RULES:
-      - Rewrite ONLY the provided project description.
-      - NEVER ask questions.
-      - NEVER request more information.
-      - NEVER explain your reasoning.
-      - NEVER generate summaries, overviews, or placeholders.
-      - NEVER invent or infer details.
+      Your task is to enhance and rewrite the provided project description to make it ATS-friendly while keeping it concise, professional, and impactful.
 
-      HARD FAILURE CONDITION:
-      If the project description is missing, empty, null, undefined,
-      or has fewer than 5 meaningful words,
-      OUTPUT EXACTLY this JSON and STOP IMMEDIATELY:
-      { "status": "error", "text": "No description is provided." }
+      Requirements:
+      - The final output must be a single paragraph.
+      - Do NOT use bullet points, numbering, or lists.
+      - The description must NOT exceed 500 characters.
+      - Use clear professional language suitable for resumes.
+      - Include relevant technical keywords, tools, technologies, and outcomes when possible.
+      - Preserve the original meaning and core details of the project.
+      - Focus on impact, functionality, and technologies used.
 
-      OUTPUT FORMAT:
-      - JSON only
-      - No extra keys
-      - No surrounding text
-      - No markdown
+      Return ONLY the improved project description with no additional text, explanations, or headings.
 
-      SUCCESS FORMAT:
-      {
-        "status": "success",
-        "text": "ATS-optimized rewritten experience description"
-      }
-
-      STYLE CONSTRAINTS:
-      - 1-2 concise lines
-      - Resume-ready
-      - Plain English
-      - Strong action verbs
-      - No buzzwords, no fluff
-
-      IMPORTANT:
-      Job title, company, and dates are CONTEXT ONLY.
-      They must NOT be used to generate new content.
-
-      EXPERIENCE DESCRIPTION (rewrite ONLY this text):
-      <<<${data.description}>>>
+      Project Description:
+      ${data.name}
+      ${data.technologies}
+      ${data.description}
     `;
     const response = await getAIResponse(prompt);
     return response;
@@ -728,8 +694,6 @@ export async function chatBotAPIResponse(userQuestion, history, isLoggedin) {
       - ATS score checking
 
       Please ask a question related to these topics.
-
-
 
       ==============================
       PREVIOUS CHAT

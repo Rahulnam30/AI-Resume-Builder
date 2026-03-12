@@ -704,13 +704,12 @@ export const enhanceWorkExperience = async (req, res) => {
   try {
     console.log("Received AI generation request:", req.body);
     // 1. Generate AI professional summary
-    const aiResponse = await refineExperienceDescription(req.body);
-    console.log(aiResponse);
+    const aiText = await refineExperienceDescription(req.body);
+    console.log(aiText);
 
     console.log("AI Summary generated successfully");
-    const aiText = JSON.parse(aiResponse);
     // 2. Try to save to MongoDB (optional - won't fail if DB is down)
-    if (aiText.status === "success") {
+    if (aiText) {
       try {
         await Resume.findOneAndUpdate(
           {
@@ -732,10 +731,10 @@ export const enhanceWorkExperience = async (req, res) => {
       // 3. Send AI summary back to frontend
       return res.json({
         message: "Experience description enhanced successfully",
-        aiResume: aiText.text
+        aiResume: aiText
       });
     }
-    throw new Error(aiText.text || "AI generation failed without specific error message");
+    throw new Error(aiText || "AI generation failed without specific error message");
   } catch (error) {
     console.error("AI ERROR:", error);
     res.status(500).json({
@@ -751,13 +750,12 @@ export const enhanceProjectDescription = async (req, res) => {
   try {
     console.log("Received AI generation request:", req.body);
     // 1. Generate AI professional summary
-    const aiResponse = await refineProjectDescription(req.body);
-    console.log(aiResponse);
+    const projectDescription = await refineProjectDescription(req.body);
+    console.log(projectDescription);
 
     console.log("AI Summary generated successfully");
-    const projectDescription = JSON.parse(aiResponse);
     // 2. Try to save to MongoDB (optional - won't fail if DB is down)
-    if (projectDescription.status === "success") {
+    if (projectDescription) {
       try {
         await Resume.findOneAndUpdate(
           {
@@ -779,10 +777,10 @@ export const enhanceProjectDescription = async (req, res) => {
       // 3. Send AI summary back to frontend
       return res.json({
         message: "Project Description enhanced successfully",
-        projectDescription: projectDescription.text
+        projectDescription: projectDescription
       });
     }
-    throw new Error(projectDescription.text || "AI generation failed without specific error message");
+    throw new Error(projectDescription || "AI generation failed without specific error message");
   } catch (error) {
     console.error("AI ERROR:", error);
     res.status(500).json({

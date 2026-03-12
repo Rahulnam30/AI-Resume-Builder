@@ -115,6 +115,7 @@ export default function Aichat() {
       }, 20);
       if (reply.mode === "navigation" && reply.path) {
         setTimeout(() => {
+          setOpen(false);
           navigate(reply.path);
         }, 1000);
       }

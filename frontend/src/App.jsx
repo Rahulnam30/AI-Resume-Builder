@@ -65,70 +65,70 @@ function App() {
       <ScrollToTop />
       <div className="flex flex-col min-h-screen">
         <Routes>
-          {/* ================= PUBLIC ROUTES ================= */}
-          <Route path="/templates" element={<TemplatesPage />} />
-          <Route path="/templates/:id" element={<TemplateEditor />} />
-          <Route path="/builder" element={<BuilderPage />} />
-
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/register" element={<RegisterPage />} />
-          <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-
           <Route element={<LandingPageLayouts />}>
-            <Route path="/" element={<Home />} />
-            <Route path="/contact" element={<Contact />} />
-            <Route path="/HelpCenter" element={<HelpCenter />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/pricing" element={<Pricing />} />
-            <Route path="/blog" element={<BlogPage />} />
-            <Route path="/ats-checker" element={<ATSCheckerPage />} />
-            <Route path="/AI-builder" element={<AIBuilderPage />} />
-            <Route path="/content-enhance" element={<AIContentEnhancementPage />} />
-            <Route path="/score-checker" element={<ScoreChecker />} />
-            <Route path="/resume-hub" element={<ResumeHubPage />} />
-            <Route path="/growths" element={<GrowthInsightsPage />} />
-            <Route path="/careers" element={<CareersPage />} />
-            <Route path="/resume-examples" element={<ResumeExamplesPage />} />
-            <Route path="/how-to-write-a-resume" element={<ResumeGuide />} />
-            <Route path="/cover-letter-templates" element={<CoverLetterTemplates />} />
-            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-            <Route path="/faq" element={<Faq />} />
-            <Route path="/resume-checker" element={<ResumeChecker />} />
-            <Route path="/terms" element={<Terms />} />
-            <Route path="/help-center" element={<HelpCenter />} />
-            <Route path="/ats-checker" element={<ATSCheckerPage />} />
-            <Route path="/TemplatesFeature" element={<TemplatesFeature />} />
-            <Route path="/AI-builder" element={<AIBuilderPage />} />
-            <Route path="/content-enhance" element={<AIContentEnhancementPage />} />
-            <Route path="/score-checker" element={<ScoreChecker />} />
-            <Route path="/resume-hub" element={<ResumeHubPage />} />
-            <Route path="/growths" element={<GrowthInsightsPage />} />
-            <Route path="/cover-letter" element={<AICoverLetterPage />} />
-            <Route path="/cover-letter-examples" element={<CoverLetterExamples />} />
-            <Route path="/cv" element={<CVFormattingPage />} />
-            <Route path="/WritingCoverLetter" element={<WritingCoverLetter />} />
+            {/* ================= PUBLIC ROUTES ================= */}
+            <Route path="/templates" element={<TemplatesPage />} />
+            <Route path="/templates/:id" element={<TemplateEditor />} />
+            <Route path="/builder" element={<BuilderPage />} />
+
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/register" element={<RegisterPage />} />
+            <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+
+              <Route path="/" element={<Home />} />
+              <Route path="/contact" element={<Contact />} />
+              <Route path="/HelpCenter" element={<HelpCenter />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/pricing" element={<Pricing />} />
+              <Route path="/blog" element={<BlogPage />} />
+              <Route path="/ats-checker" element={<ATSCheckerPage />} />
+              <Route path="/AI-builder" element={<AIBuilderPage />} />
+              <Route path="/content-enhance" element={<AIContentEnhancementPage />} />
+              <Route path="/score-checker" element={<ScoreChecker />} />
+              <Route path="/resume-hub" element={<ResumeHubPage />} />
+              <Route path="/growths" element={<GrowthInsightsPage />} />
+              <Route path="/careers" element={<CareersPage />} />
+              <Route path="/resume-examples" element={<ResumeExamplesPage />} />
+              <Route path="/how-to-write-a-resume" element={<ResumeGuide />} />
+              <Route path="/cover-letter-templates" element={<CoverLetterTemplates />} />
+              <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+              <Route path="/faq" element={<Faq />} />
+              <Route path="/resume-checker" element={<ResumeChecker />} />
+              <Route path="/terms" element={<Terms />} />
+              <Route path="/help-center" element={<HelpCenter />} />
+              <Route path="/ats-checker" element={<ATSCheckerPage />} />
+              <Route path="/TemplatesFeature" element={<TemplatesFeature />} />
+              <Route path="/AI-builder" element={<AIBuilderPage />} />
+              <Route path="/content-enhance" element={<AIContentEnhancementPage />} />
+              <Route path="/score-checker" element={<ScoreChecker />} />
+              <Route path="/resume-hub" element={<ResumeHubPage />} />
+              <Route path="/growths" element={<GrowthInsightsPage />} />
+              <Route path="/cover-letter" element={<AICoverLetterPage />} />
+              <Route path="/cover-letter-examples" element={<CoverLetterExamples />} />
+              <Route path="/cv" element={<CVFormattingPage />} />
+              <Route path="/WritingCoverLetter" element={<WritingCoverLetter />} />
+            {/* ================= USER DASHBOARD ROUTES ================= */}
+            <Route path="/user/*" element={<RequireAuth allowedRoles={['user']}><UserRoutes /></RequireAuth>} />
+
+            {/* ================= ADMIN ROUTES ================= */}
+            <Route path="/admin" element={<RequireAuth allowedRoles={['admin']}><AdminLayout /></RequireAuth>}>
+              <Route index element={<AdminDashboard />} />
+              <Route path="manage-templates" element={<AdminTemplates />} />
+
+              <Route path="templates" element={<Resume />} />
+              <Route path="users" element={<AdminUsers />} />
+              <Route path="notifications" element={<AdminNotification />} />
+              <Route path="subscription" element={<AdminSubscription />} />
+
+              <Route path="analytics" element={<AdminAnalytics />} />
+              <Route path="blog" element={<AdminBlog />} />
+              <Route path="change-password" element={<AdminSecurity />} />
+              <Route path="profile" element={<AdminProfile />} />
+            </Route>
+
+            {/* ================= 404 ================= */}
+            <Route path="*" element={<NotFound />} />
           </Route>
-          {/* ================= USER DASHBOARD ROUTES ================= */}
-          <Route path="/user/*" element={<RequireAuth allowedRoles={['user']}><UserRoutes /></RequireAuth>} />
-
-          {/* ================= ADMIN ROUTES ================= */}
-          <Route path="/admin" element={<RequireAuth allowedRoles={['admin']}><AdminLayout /></RequireAuth>}>
-            <Route index element={<AdminDashboard />} />
-            <Route path="manage-templates" element={<AdminTemplates />} />
-
-            <Route path="templates" element={<Resume />} />
-            <Route path="users" element={<AdminUsers />} />
-            <Route path="notifications" element={<AdminNotification />} />
-            <Route path="subscription" element={<AdminSubscription />} />
-
-            <Route path="analytics" element={<AdminAnalytics />} />
-            <Route path="blog" element={<AdminBlog />} />
-            <Route path="change-password" element={<AdminSecurity />} />
-            <Route path="profile" element={<AdminProfile />} />
-          </Route>
-
-          {/* ================= 404 ================= */}
-          <Route path="*" element={<NotFound />} />
         </Routes>
       </div>
     </BrowserRouter>
