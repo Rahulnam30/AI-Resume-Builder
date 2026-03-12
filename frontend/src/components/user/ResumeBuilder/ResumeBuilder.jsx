@@ -41,12 +41,48 @@ import CVBuilderTopBar from "../CV/Cvbuildernavbar";
    stays pinned beneath the sticky navbar while scrolling.
 ───────────────────────────────────────────────────────── */
 const FloatingFormPanel = ({ children, topOffset, containerRef }) => {
+  const panelRef = useRef(null);
+  const rafRef = useRef(null);
+  const currentY = useRef(0);
+  const targetY = useRef(0);
+
+  // spring animation loop
+  useEffect(() => {
+    const STIFFNESS = 0.12;
+    const tick = () => {
+      currentY.current += (targetY.current - currentY.current) * STIFFNESS;
+      if (panelRef.current) {
+        panelRef.current.style.transform = `translateY(${currentY.current}px)`;
+      }
+      rafRef.current = requestAnimationFrame(tick);
+    };
+    rafRef.current = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(rafRef.current);
+  }, []);
+
+  // update target on scroll — anchor to container's top in the DOM
+  useEffect(() => {
+    const onScroll = () => {
+      if (!containerRef?.current) {
+        targetY.current = Math.max(0, window.scrollY - topOffset);
+        return;
+      }
+      const containerTop =
+        containerRef.current.getBoundingClientRect().top + window.scrollY;
+      const desired = window.scrollY + topOffset - containerTop;
+      targetY.current = Math.max(0, desired);
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    onScroll();
+    return () => window.removeEventListener("scroll", onScroll);
+  }, [topOffset, containerRef]);
+
   return (
     <div
+      ref={panelRef}
       style={{
-        position: 'sticky',
-        top: `${topOffset}px`,
-        height: `calc(100vh - ${topOffset}px - 80px)`,
+        willChange: "transform",
+        height: `calc(100vh - ${topOffset}px)`,
       }}
       className="flex flex-col"
     >
@@ -55,7 +91,7 @@ const FloatingFormPanel = ({ children, topOffset, containerRef }) => {
   );
 };
 
-const ResumeBuilder = ({ setActivePage = () => { } }) => {
+const ResumeBuilder = ({ setActivePage = () => {} }) => {
   const headerRef = useRef(null);
   const leftColRef = useRef(null);
   const formContainerRef = useRef(null);
@@ -148,37 +184,6 @@ const ResumeBuilder = ({ setActivePage = () => { } }) => {
   const [exporting, setExporting] = useState(false);
   const previewRef = useRef(null);
 
-  /* ======================================================
-   SAVE ACTIVITY WHEN BUILDER OPENS
-====================================================== */
-  useEffect(() => {
-    const saveVisit = async () => {
-      const html = await previewRef.current?.getResumeHTML();
-      if (!html) return;
-
-      await saveRecentActivity(html, "visited");
-    };
-
-    const timer = setTimeout(saveVisit, 2000);
-    return () => clearTimeout(timer);
-  }, []);
-
-  /* ======================================================
-     SAVE ACTIVITY WHEN USER EDITS RESUME
-  ====================================================== */
-  useEffect(() => {
-    const saveEditActivity = async () => {
-      const html = await previewRef.current?.getResumeHTML();
-      if (!html) return;
-
-      await saveRecentActivity(html, "preview");
-    };
-
-    const timer = setTimeout(saveEditActivity, 1500);
-
-    return () => clearTimeout(timer);
-  }, [formData]);
-
   /* Measure sticky navbar height for float offset (same as CV) */
   useEffect(() => {
     const measure = () => {
@@ -245,8 +250,21 @@ const ResumeBuilder = ({ setActivePage = () => { } }) => {
     try {
       setExporting(true);
       await GenerateResumePDF(html);
-      // Save to downloads page
-      await saveDownloadRecord(html, "PDF");
+      
+      // Save download record to database
+      try {
+        const nameToUse = documentTitle || formData.fullName || "Resume";
+        await axiosInstance.post("/api/downloads", {
+          name: `Resume - ${nameToUse}`,
+          type: "resume",
+          format: "PDF",
+          html,
+          template: selectedTemplate,
+          size: "250 KB",
+        });
+      } catch (err) {
+        console.error("Failed to save resume download:", err);
+      }
     } finally {
       setExporting(false);
     }
@@ -270,64 +288,22 @@ const ResumeBuilder = ({ setActivePage = () => { } }) => {
     a.download = `${fileName}.doc`;
     a.click();
     URL.revokeObjectURL(url);
-
-    // Save to downloads page
-    await saveDownloadRecord(html, "DOCX");
-  };
-
-  /* ======================================================
-     SAVE RESUME DOWNLOAD RECORD
-  ====================================================== */
-  const saveDownloadRecord = async (html, format = "PDF") => {
+    
+    // Save download record to database
     try {
-      const sanitize = (s) =>
-        (s || "")
-          .replace(/[^a-z0-9_\- ]/gi, "")
-          .trim()
-          .replace(/\s+/g, "_");
-      const nameToUse = sanitize(documentTitle) || sanitize(formData.fullName) || "Document";
-
+      const nameToUse = documentTitle || formData.fullName || "Resume";
       await axiosInstance.post("/api/downloads", {
         name: `Resume - ${nameToUse}`,
         type: "resume",
-        format,
+        format: "DOCX",
         html,
         template: selectedTemplate,
-        size: format === "PDF" ? "250 KB" : "200 KB",
+        size: "200 KB",
       });
     } catch (err) {
       console.error("Failed to save resume download:", err);
     }
   };
-
-  /* ======================================================
-   SAVE RECENT ACTIVITY (VISITED / PREVIEW / DOWNLOAD)
-====================================================== */
-  const saveRecentActivity = async (html, action = "visited") => {
-    try {
-      const sanitize = (s) =>
-        (s || "")
-          .replace(/[^a-z0-9_\- ]/gi, "")
-          .trim()
-          .replace(/\s+/g, "_");
-
-      const nameToUse =
-        sanitize(documentTitle) || sanitize(formData.fullName) || "Document";
-
-      await axiosInstance.post("/api/downloads", {
-        name: `Resume - ${nameToUse}`,
-        type: "resume",
-        action, // visited | preview | download
-        format: "PDF",
-        html,
-        template: selectedTemplate,
-        size: "250 KB",
-      });
-    } catch (err) {
-      console.error("Failed to save activity:", err);
-    }
-  };
-
 
   /*------------------- PREVIOUS & NEXT BUTTON ------------*/
   const tabs = [
@@ -400,59 +376,103 @@ const ResumeBuilder = ({ setActivePage = () => { } }) => {
 
     // BUILDER TAB – mirror CV layout with floating form + desktop preview
     return (
-      <div className="flex flex-col w-full relative z-10 mx-auto max-w-[1920px]">
-
-        {/* Floating Global Banner logic moved from inside the left col */}
-        {activeTab !== "templates" && (
-          <div className={`flex gap-3 pt-3 pb-3 px-4 border rounded-xl mb-4 shadow-sm items-center w-full ${completion?.isComplete ? "bg-emerald-50 border-emerald-200" : "bg-amber-50 border-amber-200"}`}>
-            {!completion.isComplete ? (
-              <AlertTriangle className="text-amber-500 flex-shrink-0" size={18} />
-            ) : (
-              <CheckCircle className="text-emerald-500 flex-shrink-0" size={18} />
-            )}
-            <span className={`text-sm font-medium ${completion?.isComplete ? "text-emerald-800" : "text-amber-800"}`}>
-              {!completion.isComplete
-                ? `Complete Your Resume: Add ${completion?.missingSections?.join(', ') || 'missing details'} to enable export functionality.`
-                : "Your resume is ready to export."}
-            </span>
-          </div>
-        )}
-
-        {/* 2-Column Flex Layout */}
-        <div className="flex gap-[10px] w-full mt-2 lg:mt-5 p-0 sm:p-2 lg:flex-row flex-col max-w-[1920px] mx-auto relative z-10">
+      <>
+        <div className="flex gap-5 px-4 pb-20 pt-4 items-start">
           {/* Desktop floating form panel */}
           {!isPreviewExpanded && (
             <div
               ref={leftColRef}
               className="flex-shrink-0 hidden lg:block"
-              style={{ width: 520 }}
+              style={{ width: 480 }}
             >
               <FloatingFormPanel
                 topOffset={headerHeight}
                 containerRef={leftColRef}
               >
-                <div className="bg-white rounded-xl h-full overflow-hidden flex flex-col border border-slate-200">
+                <div
+                  className="bg-white rounded-2xl flex flex-col overflow-hidden"
+                  style={{
+                    height: "100%",
+                    boxShadow:
+                      "0 4px 24px rgba(0,0,0,0.07), 0 1px 4px rgba(0,0,0,0.04)",
+                  }}
+                >
                   {/* Tabs + step info */}
-                  <div className="flex-shrink-0 border-b border-slate-100 px-4 py-3 bg-white">
+                  <div className="flex-shrink-0 border-b border-slate-100 px-4 py-3 bg-white rounded-t-2xl">
                     <FormTabs
                       activeSection={activeSection}
                       setActiveSection={setActiveSection}
                       showPreview={showMobilePreview}
-                      onTogglePreview={() =>
-                        setShowMobilePreview((v) => !v)
-                      }
+                      onTogglePreview={() => setShowMobilePreview((v) => !v)}
                     />
                   </div>
 
                   {/* Scrollable form content */}
                   <div
                     ref={formContainerRef}
-                    className="flex-1 overflow-y-auto p-6"
+                    className="flex-1 overflow-y-auto p-4"
                     style={{
                       scrollbarWidth: "thin",
                       scrollbarColor: "#e2e8f0 transparent",
                     }}
                   >
+                    {/* Alert Banner */}
+                    <div
+                      className={`flex items-center w-full gap-3 p-4 border rounded-lg mb-4 ${completion?.isComplete ? "bg-emerald-50 border-emerald-200" : "bg-amber-50 border-amber-200"} md:text-base text-sm md:flex-row flex-col select-none`}
+                    >
+                      {!completion.isComplete && (
+                        <>
+                          <AlertTriangle
+                            className="text-amber-800 md:block hidden"
+                            size={30}
+                          />
+                          <div className="flex flex-col md:w-auto w-full">
+                            <div className="block font-medium text-amber-800 mb-0.5 md:text-sm text-xs">
+                              Complete Your Resume
+                            </div>
+                            <p className="text-yellow-700 m-0 md:text-md text-xs">
+                              Add the following information to enable export
+                              functionality:
+                            </p>
+                          </div>
+                          <div className="w-full flex flex-wrap gap-2 justify-start md:justify-end">
+                            {!completion?.isComplete &&
+                              completion?.missingSections?.map(
+                                (missing, idx) => (
+                                  <span
+                                    key={idx}
+                                    className="px-2.5 py-1 rounded-md font-medium bg-amber-100 text-amber-800 text-xs"
+                                  >
+                                    {missing}
+                                  </span>
+                                ),
+                              )}
+                          </div>
+                        </>
+                      )}
+                      {completion.isComplete && (
+                        <>
+                          <CheckCircle
+                            className="text-emerald-500 md:block hidden"
+                            size={20}
+                          />
+                          <div className="flex flex-col md:w-auto w-full">
+                            <strong className="block text-left mb-0.5 text-emerald-500 md:text-xs text-sm">
+                              Resume Ready
+                            </strong>
+                            <p className="text-emerald-500 m-0 md:text-md text-xs">
+                              Your resume is ready to export.
+                            </p>
+                          </div>
+                          <div className="flex gap-2 ml-auto flex-wrap">
+                            <span className="px-2.5 py-1 rounded-md font-medium bg-emerald-100 text-emerald-800 md:text-md text-xs">
+                              Resume is Ready
+                            </span>
+                          </div>
+                        </>
+                      )}
+                    </div>
+
                     {/* Validation warning */}
                     {warning && (
                       <div className="text-sm text-red-700 bg-yellow-100 border border-yellow-300 px-4 py-2 mb-3 rounded-lg">
@@ -511,7 +531,46 @@ const ResumeBuilder = ({ setActivePage = () => { } }) => {
                 />
               </div>
               <div className="p-4">
-
+                <div
+                  className={`flex items-center w-full gap-3 p-3 border rounded-lg mb-4 ${completion?.isComplete ? "bg-emerald-50 border-emerald-200" : "bg-amber-50 border-amber-200"} text-sm flex-col select-none`}
+                >
+                  {!completion.isComplete && (
+                    <>
+                      <div className="flex flex-col w-full">
+                        <div className="block font-medium text-amber-800 mb-0.5 text-xs">
+                          Complete Your Resume
+                        </div>
+                        <p className="text-yellow-700 m-0 text-xs">
+                          Add the following information to enable export
+                          functionality:
+                        </p>
+                      </div>
+                      <div className="w-full flex flex-wrap gap-2 justify-start">
+                        {!completion?.isComplete &&
+                          completion?.missingSections?.map((missing, idx) => (
+                            <span
+                              key={idx}
+                              className="px-2.5 py-1 rounded-md font-medium bg-amber-100 text-amber-800 text-xs"
+                            >
+                              {missing}
+                            </span>
+                          ))}
+                      </div>
+                    </>
+                  )}
+                  {completion.isComplete && (
+                    <>
+                      <div className="flex flex-col w-full">
+                        <strong className="block text-left mb-0.5 text-emerald-500 text-xs">
+                          Resume Ready
+                        </strong>
+                        <p className="text-emerald-500 m-0 text-xs">
+                          Your resume is ready to export.
+                        </p>
+                      </div>
+                    </>
+                  )}
+                </div>
 
                 {warning && (
                   <div className="text-sm text-red-700 bg-yellow-100 border border-yellow-300 px-4 py-2 mb-3 rounded-lg">
@@ -553,29 +612,38 @@ const ResumeBuilder = ({ setActivePage = () => { } }) => {
 
           {/* Desktop preview panel */}
           {!isPreviewHidden && !isPreviewExpanded && (
-            <div className="hidden lg:flex flex-col flex-1 min-w-0 bg-[#eef2f7] rounded-xl overflow-hidden border border-slate-200 relative order-1 lg:order-2 z-10" style={{ minHeight: 'calc(100vh - 80px)' }}>
-              <LivePreview
-                ref={previewRef}
-                formData={formData}
-                currentTemplate={currentTemplate}
-                isExpanded={false}
-                onExpand={() => setIsPreviewExpanded(true)}
-                onCollapse={() => setIsPreviewExpanded(false)}
-                onMinimize={() => setIsPreviewHidden(true)}
-              />
+            <div className="hidden lg:flex flex-1 flex-col min-w-0">
+              <div
+                className="rounded-2xl overflow-hidden border border-slate-100 bg-white"
+                style={{
+                  minHeight: "calc(100vh - 80px)",
+                  boxShadow:
+                    "0 4px 24px rgba(0,0,0,0.07), 0 1px 4px rgba(0,0,0,0.04)",
+                }}
+              >
+                <LivePreview
+                  ref={previewRef}
+                  formData={formData}
+                  currentTemplate={currentTemplate}
+                  isExpanded={false}
+                  onExpand={() => setIsPreviewExpanded(true)}
+                  onCollapse={() => setIsPreviewExpanded(false)}
+                  onMinimize={() => setIsPreviewHidden(true)}
+                />
+              </div>
             </div>
           )}
         </div>
         <div className="w-full h-4" />
-      </div>
+      </>
     );
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-gray-50 font-sans tracking-[0.01em] relative z-0 flex flex-col">
+    <div className="min-h-screen bg-[#f1f3f6] font-sans tracking-[0.01em]">
       {/* Sticky navbar like CV */}
       {!isPreviewExpanded && (
-        <div ref={headerRef} className="sticky top-0 z-30 bg-gradient-to-br from-slate-50 to-gray-50">
+        <div ref={headerRef} className="sticky top-0 z-30 bg-[#f1f3f6]">
           <UserNavbar />
         </div>
       )}
@@ -588,7 +656,7 @@ const ResumeBuilder = ({ setActivePage = () => { } }) => {
             formData={formData}
             currentTemplate={currentTemplate}
             isExpanded={true}
-            onExpand={() => { }}
+            onExpand={() => {}}
             onCollapse={() => setIsPreviewExpanded(false)}
             onMinimize={() => setIsPreviewHidden(true)}
           />
@@ -623,7 +691,7 @@ const ResumeBuilder = ({ setActivePage = () => { } }) => {
         }
       />
 
-      <div className="px-2 py-4 sm:px-4 lg:px-4 w-screen max-w-full mx-0 flex flex-col">
+      <div className="p-2.5 overflow-hidden">
         {activeTab !== "builder" && (
           <div className="relative w-full md:w-80 mb-4 px-3">
             <Search
@@ -677,8 +745,8 @@ const ResumeBuilder = ({ setActivePage = () => { } }) => {
                   formData={formData}
                   currentTemplate={currentTemplate}
                   isExpanded={false}
-                  onExpand={() => { }}
-                  onCollapse={() => { }}
+                  onExpand={() => {}}
+                  onCollapse={() => {}}
                   onMinimize={() => setShowMobilePreview(false)}
                 />
               </div>
@@ -686,11 +754,10 @@ const ResumeBuilder = ({ setActivePage = () => { } }) => {
           </div>
         )}
 
+        <footer className="mt-auto text-center py-4 bg-white border-t text-sm text-gray-600">
+          © {new Date().getFullYear()} ResumeAI Inc. All rights reserved.
+        </footer>
       </div>
-
-      <footer className="mt-auto text-center py-4 bg-white border-t text-sm text-gray-600">
-        © {new Date().getFullYear()} ResumeAI Inc. All rights reserved.
-      </footer>
 
       <style>{`
         @keyframes resumePreviewSlideUp {

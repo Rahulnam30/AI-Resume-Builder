@@ -1,11 +1,15 @@
 import { useEffect, useRef, useState } from "react";
-import { Bot, SendHorizontal, X } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Bot, SendHorizontal, Trash2, X } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
 import ReactMarkdown from "react-markdown";
 import axiosInstance from "./../api/axios";
+import chatbotIcon from "../assets/chatbot_image.png";
 
 export default function Aichat() {
+  const navigate = useNavigate();
   const [open, setOpen] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showTooltip, setShowTooltip] = useState(false);
   const [messages, setMessages] = useState(() => {
     const savedMessages = sessionStorage.getItem("chatMessages");
     return savedMessages
@@ -40,6 +44,8 @@ export default function Aichat() {
 
   useEffect(() => {
     const handleClickOutside = (e) => {
+      if (showDeleteModal) return;
+
       if (
         open &&
         chatbotContainerRef.current &&
@@ -52,7 +58,19 @@ export default function Aichat() {
     };
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [open]);
+  }, [open, showDeleteModal]);
+
+  // hotkey to open/close chatbot
+  useEffect(() => {
+    const listener = (e) => {
+      if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === "c") {
+        e.preventDefault();
+        setOpen((prev) => !prev);
+      }
+    };
+    document.addEventListener("keydown", listener);
+    return () => document.removeEventListener("keydown", listener);
+  }, []);
 
   useEffect(() => {
     if (messagesRef.current) {
@@ -78,11 +96,28 @@ export default function Aichat() {
         prevMsg: messages,
         isLoggedIn,
       });
+      // add an empty bot message that we'll fill in one char at a time
+      setMessages((prev) => [...prev, { from: "bot", text: "" }]);
+      console.log(res);
 
-      setMessages((prev) => [
-        ...prev,
-        { from: "bot", text: res.data.reply },
-      ]);
+      const reply = res.data;
+      let idx = 0;
+      const typingInterval = setInterval(() => {
+        idx += 1;
+        setMessages((prev) => {
+          const msgs = [...prev];
+          msgs[msgs.length - 1].text = reply.text.slice(0, idx);
+          return msgs;
+        });
+        if (idx >= reply.text.length) {
+          clearInterval(typingInterval);
+        }
+      }, 20);
+      if (reply.mode === "navigation" && reply.path) {
+        setTimeout(() => {
+          navigate(reply.path);
+        }, 1000);
+      }
     } catch {
       setMessages((prev) => [
         ...prev,
@@ -94,6 +129,26 @@ export default function Aichat() {
     }
 
     setResponseLoading(false);
+  }
+
+  function clearChat() {
+    setMessages([
+      {
+        from: "bot",
+        text: "Hi! I'm the UpToSkills AI Resume Assistant.\nHow can I help you today?",
+      },
+    ]);
+    sessionStorage.setItem(
+      "chatMessages",
+      JSON.stringify([
+        {
+          from: "bot",
+          text: "Hi! I'm the UpToSkills AI Resume Assistant.\nHow can I help you today?",
+        },
+      ]),
+    );
+    setShowDeleteModal(false);
+    setOpen(false);
   }
 
   const suggestions = [
@@ -108,7 +163,7 @@ export default function Aichat() {
       {/* CHAT CONTAINER */}
       <div
         ref={chatbotContainerRef}
-        className="fixed right-8 bottom-8 w-[380px] h-[560px] flex flex-col bg-white rounded-2xl border border-slate-200 shadow-[0_20px_60px_rgba(0,0,0,0.08)] transition-all duration-500 ease-in-out z-[9999]"
+        className="fixed right-8 md:bottom-8 bottom-16 md:w-[380px] w-[350px] h-[560px] flex flex-col bg-white rounded-2xl border border-slate-200 shadow-[0_20px_60px_rgba(0,0,0,0.08)] transition-all duration-500 ease-in-out z-[9999]"
         style={{
           transform: open ? "translateX(0)" : "translateX(120%)",
           opacity: open ? 1 : 0,
@@ -126,11 +181,21 @@ export default function Aichat() {
             </span>
           </div>
 
-          <X
-            size={18}
-            className="cursor-pointer text-slate-500 hover:text-black transition"
-            onClick={() => setOpen(false)}
-          />
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => setShowDeleteModal(true)}
+              disabled={messages.length <= 1}
+              className="cursor-pointer text-orange-600 hover:text-orange-700 hover:bg-orange-50 p-1.5 rounded-lg transition disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-transparent"
+              title="Clear chat"
+            >
+              <Trash2 size={16} />
+            </button>
+            <X
+              size={18}
+              className="cursor-pointer text-slate-500 hover:text-black transition"
+              onClick={() => setOpen(false)}
+            />
+          </div>
         </div>
 
         {/* MESSAGES - scrollbar hidden */}
@@ -142,55 +207,64 @@ export default function Aichat() {
             <div
               key={i}
               className={`flex gap-2 ${
-                m.from === "user" ? "justify-end" : "justify-start"
+                m.from === "user" ? "justify-end" : "flex-col items-start"
               }`}
             >
               {m.from === "bot" && (
-                <div className="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center">
-                  <Bot size={16} className="text-orange-600" />
+                <div className="w-8 h-8 rounded-full overflow-hidden">
+                  <img
+                    src={chatbotIcon}
+                    alt="Chatbot"
+                    className="w-full h-full object-cover"
+                  />
                 </div>
               )}
 
               {m.from === "user" && (
                 <div className="relative max-w-[250px] text-sm px-4 py-3 bg-orange-600 text-white rounded-2xl rounded-tr-none after:absolute after:top-0 after:right-[-6px] after:content-[''] after:w-0 after:h-0 after:border-t-[8px] after:border-r-[8px] after:border-b-0 after:border-l-0 after:border-solid after:border-t-orange-600 after:border-r-transparent">
-                  <ReactMarkdown
-                    components={{
-                      a: ({ href, children }) => (
-                        <Link
-                          to={href}
-                          className="text-blue-600 font-semibold underline"
-                        >
-                          {children}
-                        </Link>
-                      ),
-                    }}
-                  >
-                    {m.text}
-                  </ReactMarkdown>
+                  {m.text}
                 </div>
               )}
 
               {m.from === "bot" && (
-                <div className="relative max-w-[250px] text-sm px-4 py-3 bg-white text-black border border-slate-200 rounded-2xl rounded-tl-none">
-                  {/* Outer border triangle (slate-200) – slightly larger to connect seamlessly */}
-                  <div className="absolute top-0 left-[-10px] w-0 h-0 border-t-[10px] border-l-[10px] border-b-0 border-r-0 border-solid border-t-slate-200 border-l-transparent"></div>
-                  {/* Inner fill triangle (white) – creates the 1px border effect */}
-                  <div className="absolute top-[1px] left-[-8px] w-0 h-0 border-t-[8px] border-l-[8px] border-b-0 border-r-0 border-solid border-t-white border-l-transparent"></div>
-                  
+                <div className="relative group w-full max-w-full text-sm px-4 py-3 bg-white text-black rounded-2xl ai-bot-no-border">
                   <ReactMarkdown
                     components={{
                       a: ({ href, children }) => (
                         <Link
                           to={href}
-                          className="text-blue-600 font-semibold underline"
+                          className="block text-blue-600 font-semibold"
                         >
                           {children}
                         </Link>
+                      ),
+                      h1: ({ children }) => (
+                        <h1 className="text-3xl font-bold mt-2 mb-1">
+                          {children}
+                        </h1>
+                      ),
+                      h2: ({ children }) => (
+                        <h2 className="text-2xl font-bold mt-2 mb-1">
+                          {children}
+                        </h2>
+                      ),
+                      h3: ({ children }) => (
+                        <h3 className="text-lg font-bold mt-2 mb-4">
+                          {children}
+                        </h3>
+                      ),
+                      li: ({ children }) => (
+                        <li className="mb-4">{children}</li>
+                      ),
+                      hr: () => <hr className="my-4" />,
+                      p: ({ children }) => (
+                        <p className="mb-3 last:mb-0">{children}</p>
                       ),
                     }}
                   >
                     {m.text}
                   </ReactMarkdown>
+                  <hr className="mt-8" />
                 </div>
               )}
             </div>
@@ -223,10 +297,10 @@ export default function Aichat() {
               <div className="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center">
                 <Bot size={16} className="text-orange-600" />
               </div>
-              <div className="flex gap-1">
-                <span className="w-2 h-2 bg-slate-400 rounded-full animate-bounce"></span>
-                <span className="w-2 h-2 bg-slate-400 rounded-full animate-bounce delay-100"></span>
-                <span className="w-2 h-2 bg-slate-400 rounded-full animate-bounce delay-200"></span>
+              <div className="flex items-center gap-0.5">
+                <span className="h-1.5 w-1.5 rounded-full bg-slate-400 animate-bounce"></span>
+                <span className="h-1.5 w-1.5 rounded-full bg-slate-400 animate-bounce [animation-delay:120ms]"></span>
+                <span className="h-1.5 w-1.5 rounded-full bg-slate-400 animate-bounce [animation-delay:240ms]"></span>
               </div>
             </div>
           )}
@@ -237,13 +311,14 @@ export default function Aichat() {
           <input
             ref={inputRef}
             value={input}
+            name="chatBotMessage"
             className="flex-1 p-2.5 bg-slate-100 text-sm rounded-xl outline-none border border-transparent focus:border-slate-300 transition"
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && sendMessage()}
             placeholder="Ask about resume..."
           />
           <button
-            className="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-xl transition disabled:opacity-[0.6] disabled:cursor-not-allowed disabled:pointer-events-none"
+            className="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-xl transition disabled:opacity-40 disabled:cursor-not-allowed"
             disabled={responseLoading || !input.trim()}
             onClick={() => sendMessage()}
           >
@@ -253,13 +328,63 @@ export default function Aichat() {
       </div>
 
       {/* FLOATING BUTTON */}
-      <button
-        ref={chatbotBtnRef}
-        className="fixed right-10 bottom-10 z-50 bg-orange-600 hover:bg-orange-700 p-4 text-white rounded-full shadow-lg transition"
-        onClick={() => setOpen(true)}
-      >
-        <Bot size={28} />
-      </button>
+      <div className="fixed right-10 bottom-10 z-50 group">
+        <button
+          ref={chatbotBtnRef}
+          className="bg-orange-600 hover:bg-orange-700 p-4 text-white rounded-full shadow-lg transition"
+          onClick={() => setOpen(true)}
+          onMouseEnter={() => setShowTooltip(true)}
+          onMouseLeave={() => setShowTooltip(false)}
+        >
+          <Bot size={30} />
+        </button>
+        {/* Tooltip */}
+        {showTooltip && (
+          <div className="absolute bottom-full right-0 mb-3 bg-slate-900 text-white text-sm font-medium px-3 py-2 rounded-lg whitespace-nowrap shadow-lg z-50 animate-fadeIn pointer-events-none">
+            <div className="flex flex-col gap-1">
+              <span>AI Chatbot</span>
+              <span className="text-xs text-gray-300">Ctrl + Shift + C</span>
+            </div>
+            <div className="absolute top-full right-4 -mr-1 border-4 border-transparent border-t-slate-900"></div>
+          </div>
+        )}
+      </div>
+
+      {/* CLEAR CONFIRMATION MODAL */}
+      {showDeleteModal && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[10000]"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) {
+              setShowDeleteModal(false);
+            }
+          }}
+        >
+          <div className="bg-white rounded-2xl p-6 max-w-sm mx-4 shadow-2xl">
+            <h3 className="text-lg font-semibold text-slate-900 mb-2">
+              Clear Conversation?
+            </h3>
+            <p className="text-sm text-slate-600 mb-6">
+              Are you sure you want to clear all messages? This action cannot be
+              undone.
+            </p>
+            <div className="flex gap-3 justify-end">
+              <button
+                onClick={() => setShowDeleteModal(false)}
+                className="px-4 py-2 text-sm font-medium text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-lg transition"
+              >
+                Cancel
+              </button>
+              <button
+                className="px-4 py-2 text-sm font-medium text-white bg-orange-600 hover:bg-orange-700 rounded-lg transition"
+                onClick={clearChat}
+              >
+                Clear and Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }

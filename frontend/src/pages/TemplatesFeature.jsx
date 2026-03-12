@@ -41,14 +41,26 @@ const TemplatesFeature = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white font-['Outfit']">
+    <div className="min-h-screen bg-white font-['Outfit'] overflow-x-hidden">
       <NavBar />
 
       {/* HERO */}
       <section
   ref={heroRef}
-  className="relative px-6 overflow-hidden bg-gradient-to-br from-blue-50 via-white to-blue-50"
+        className="relative px-4 sm:px-6 lg:px-8 overflow-hidden bg-gradient-to-br from-blue-50 via-white to-blue-50"
 >
+  {/* Back To Home Button */}
+      <div className="absolute z-20 top-16 sm:top-20 left-4 sm:left-6">
+    <button
+      onClick={handleBackHome}
+        className="inline-flex items-center gap-2 sm:gap-3 text-xs sm:text-sm font-bold text-blue-500 transition-all group hover:text-blue-800"
+    >
+      <i className="transition-transform fas fa-arrow-left group-hover:-translate-x-1"></i>
+      <span className="relative transition-transform duration-300 group-hover:scale-105">
+        Back to home
+      </span>
+    </button>
+  </div>
 
   {/* Background blobs */}
   <div className="absolute rounded-full -top-24 -left-24 w-72 h-72 bg-blue-200/30 blur-3xl animate-pulse" />
@@ -56,28 +68,28 @@ const TemplatesFeature = () => {
 
   <div className="mx-auto max-w-7xl">
     {/* HERO GRID */}
-    <div className="grid items-center min-h-[85vh] gap-12 pt-36 pb-16 lg:grid-cols-2">
+    <div className="grid items-center min-h-[80vh] gap-8 sm:gap-10 lg:gap-12 pt-28 sm:pt-32 lg:pt-20 pb-12 sm:pb-14 lg:pb-16 lg:grid-cols-2">
 
       {/* LEFT CONTENT */}
       <div
-        className={`transition-all duration-700 ${
+        className={`min-w-0 transition-all duration-700 ${
           heroVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
         }`}
       >
-        <div className="inline-block mt-4 px-5 py-2 mb-5 text-sm font-semibold text-blue-700 bg-blue-100 rounded-full">
+        <div className="inline-block px-3 sm:px-5 py-2 mb-4 sm:mb-5 text-xs sm:text-sm font-semibold text-blue-700 bg-blue-100 rounded-full">
           Professional Resume Templates
         </div>
 
-        <h1 className="mb-5 text-4xl font-black leading-tight text-gray-900 md:text-5xl lg:text-6xl">
+        <h1 className="mb-4 sm:mb-5 text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black leading-tight text-gray-900 break-words">
           Professional Resume <span className="text-blue-600">Templates</span>
         </h1>
 
-        <p className="max-w-xl mb-6 text-lg leading-relaxed text-gray-600 md:text-xl">
+        <p className="max-w-xl mb-5 sm:mb-6 text-base sm:text-lg md:text-xl leading-relaxed text-gray-600 break-words">
           Choose from ATS-optimized templates designed by experts. Trusted by
           100,000+ professionals worldwide.
         </p>
 
-        <p className="flex items-center gap-2 text-sm text-gray-500">
+        <p className="flex items-start sm:items-center gap-2 text-xs sm:text-sm text-gray-500">
           <CheckCircle size={16} className="text-green-600" />
           100% free • No credit card required • ATS-optimized
         </p>
@@ -85,14 +97,14 @@ const TemplatesFeature = () => {
 
       {/* RIGHT IMAGE */}
       <div
-        className={`relative flex justify-center lg:justify-end transition-all duration-700 ${
+        className={`relative min-w-0 flex justify-center lg:justify-end transition-all duration-700 ${
           heroVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
         }`}
       >
         <img
           src={image}
           alt="Resume Templates Showcase"
-          className="hidden md:block w-full max-w-[620px] lg:max-w-[680px] drop-shadow-2xl"
+          className="block w-full h-auto mt-4 sm:mt-6 lg:mt-0 max-w-[320px] sm:max-w-[520px] lg:max-w-[680px] drop-shadow-2xl"
         />
       </div>
 
@@ -103,18 +115,18 @@ const TemplatesFeature = () => {
 
 
       {/* WHAT ARE TEMPLATES */}
-      <section ref={whatRef} className="px-6 py-12 bg-white">
+      <section ref={whatRef} className="px-4 sm:px-6 lg:px-8 py-12 sm:py-14 bg-white">
         <div
           className={`max-w-5xl mx-auto transition-all duration-700 ${whatVisible
             ? "opacity-100 translate-y-0"
             : "opacity-0 translate-y-8"
             }`}
         >
-          <h2 className="mb-6 text-4xl font-bold text-center text-gray-900">
+          <h2 className="mb-5 sm:mb-6 text-2xl sm:text-3xl lg:text-4xl font-bold text-center text-gray-900">
             What Are Professional Resume Templates?
           </h2>
 
-          <div className="space-y-6 prose prose-lg text-gray-700 max-w-none">
+          <div className="space-y-5 sm:space-y-6 prose prose-base sm:prose-lg text-gray-700 max-w-none">
             <p>
               Professional resume templates are pre-designed layouts that help
               you create a polished, ATS-friendly resume in minutes. Each
@@ -131,8 +143,8 @@ const TemplatesFeature = () => {
             </p>
 
             {/* ✅ Info Highlight Box */}
-            <div className="p-6 my-8 transition-all duration-300 border-l-4 border-blue-600 bg-blue-50 rounded-xl hover:shadow-xl">
-              <h3 className="mb-4 text-xl font-bold text-gray-900">
+            <div className="p-4 sm:p-6 my-6 sm:my-8 transition-all duration-300 border-l-4 border-blue-600 bg-blue-50 rounded-xl hover:shadow-xl">
+              <h3 className="mb-3 sm:mb-4 text-lg sm:text-xl font-bold text-gray-900">
                 Why our templates are ATS-friendly:
               </h3>
 
@@ -158,17 +170,17 @@ const TemplatesFeature = () => {
       </section>
 
       {/* FEATURES */}
-<section ref={featRef} className="px-6 py-8 bg-white">
+<section ref={featRef} className="px-4 sm:px-6 lg:px-8 py-10 sm:py-12 bg-white">
   <div
     className={`max-w-6xl mx-auto transition-all duration-700 ${
       featVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
     }`}
   >
-    <h2 className="mb-16 text-4xl font-bold text-center text-gray-900">
+    <h2 className="mb-10 sm:mb-12 lg:mb-16 text-2xl sm:text-3xl lg:text-4xl font-bold text-center text-gray-900">
       What Our Templates Offer
     </h2>
 
-    <div className="grid gap-8 md:grid-cols-3">
+    <div className="grid gap-5 sm:gap-6 md:grid-cols-2 lg:grid-cols-3">
       {[
         {
           icon: <CheckCircle size={40} />,
@@ -188,7 +200,7 @@ const TemplatesFeature = () => {
       ].map((feature, i) => (
         <div
           key={i}
-          className="p-8 text-center transition-all duration-300 border border-gray-200 group bg-gray-50 rounded-2xl hover:shadow-2xl hover:-translate-y-2 hover:border-blue-200"
+          className="p-5 sm:p-6 lg:p-8 text-center transition-all duration-300 border border-gray-200 group bg-gray-50 rounded-2xl hover:shadow-2xl hover:-translate-y-2 hover:border-blue-200"
         >
           {/* ICON */}
 <div className="relative flex items-center justify-center w-20 h-20 mx-auto mb-4 transition-transform duration-500 rounded-xl group-hover:-translate-y-3 group-hover:scale-110">
@@ -212,7 +224,7 @@ const TemplatesFeature = () => {
 
 
           {/* TITLE */}
-            <h3 className="mb-2 text-lg font-extrabold text-gray-900 transition-colors duration-300 group-hover:text-blue-600">
+            <h3 className="mb-2 text-base sm:text-lg font-extrabold text-gray-900 transition-colors duration-300 group-hover:text-blue-600">
             {feature.title}
           </h3>
 
@@ -226,22 +238,22 @@ const TemplatesFeature = () => {
 
 
       {/* HOW IT WORKS */}
-      <section ref={howRef} className="px-6 py-14 bg-gray-50">
+      <section ref={howRef} className="px-4 sm:px-6 lg:px-8 py-12 sm:py-14 bg-gray-50">
         <div
           className={`max-w-5xl mx-auto transition-all duration-700 ${howVisible
             ? "opacity-100 translate-y-0"
             : "opacity-0 translate-y-8"
             }`}
         >
-          <h2 className="mb-4 text-4xl font-bold text-center text-gray-900">
+          <h2 className="mb-4 text-2xl sm:text-3xl lg:text-4xl font-bold text-center text-gray-900">
             How It Works
           </h2>
 
-          <p className="max-w-3xl mx-auto mb-16 text-lg text-center text-gray-600">
+          <p className="max-w-3xl mx-auto mb-10 sm:mb-12 lg:mb-16 text-base sm:text-lg text-center text-gray-600">
             Create a professional resume in three simple steps
           </p>
 
-          <div className="p-8 transition-all duration-300 bg-white shadow-xl rounded-2xl md:p-12 hover:shadow-2xl">
+          <div className="p-5 sm:p-8 transition-all duration-300 bg-white shadow-xl rounded-2xl md:p-12 hover:shadow-2xl">
             <div className="space-y-8">
               {[
                 {
@@ -262,17 +274,17 @@ const TemplatesFeature = () => {
               ].map((item, i) => (
                 <div
                   key={i}
-                  className="flex items-start gap-6 p-3 transition-all duration-300 group rounded-xl hover:bg-blue-50"
+                  className="flex items-start gap-4 sm:gap-6 p-3 transition-all duration-300 group rounded-xl hover:bg-blue-50"
                 >
                   <div className="flex items-center justify-center flex-shrink-0 w-12 h-12 text-xl font-bold text-white transition-transform bg-blue-600 rounded-full group-hover:scale-110">
                     {item.step}
                   </div>
 
                   <div>
-                    <h3 className="mb-2 text-xl font-bold text-gray-900">
+                    <h3 className="mb-2 text-lg sm:text-xl font-bold text-gray-900">
                       {item.title}
                     </h3>
-                    <p className="text-gray-600">{item.desc}</p>
+                    <p className="text-sm sm:text-base text-gray-600">{item.desc}</p>
                   </div>
                 </div>
               ))}
@@ -284,7 +296,7 @@ const TemplatesFeature = () => {
       {/* --- CTA SECTION: CREATE RESUME --- */}
 <section
   ref={ctaRef}
-  className="relative px-8 pt-12 pb-24 overflow-hidden bg-white select-none"
+  className="relative px-4 sm:px-6 lg:px-8 pt-12 sm:pt-14 pb-16 sm:pb-20 lg:pb-24 overflow-hidden bg-white select-none"
 >
   {/* Branding Decorative Blurs matching your Hero/LandingPage */}
   <div className="absolute top-0 right-0 w-1/3 h-full bg-orange-50 rounded-full blur-[120px] -z-10 opacity-50" />
@@ -296,18 +308,18 @@ const TemplatesFeature = () => {
     }`}
   >
     {/* Heading using your Navy #1a2e52 and Blue #0077cc highlight */}
-    <h2 className="mb-6 text-4xl font-black md:text-6xl text-[#1a2e52] tracking-tighter font-jakarta leading-tight">
+    <h2 className="mb-5 sm:mb-6 text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-[#1a2e52] tracking-tighter font-jakarta leading-tight">
       Ready to Create Your <span className="text-[#0077cc]">Dream Resume?</span>
     </h2>
 
-    <p className="max-w-2xl mx-auto mb-10 text-xl font-normal leading-relaxed text-gray-600">
+    <p className="max-w-2xl mx-auto mb-8 sm:mb-10 text-base sm:text-lg md:text-xl font-normal leading-relaxed text-gray-600">
       Join 100,000+ professionals who landed their dream jobs using our AI builder and professionally designed templates.
     </p>
 
     {/* Primary Orange Gradient Button - Exact match to your "Start Building" style */}
     <button
       onClick={() => navigate("/login")}
-      className="group relative inline-flex items-center gap-3 px-10 py-5 text-lg font-bold text-white bg-gradient-to-r from-[#e65100] to-[#f4511e] rounded-xl transition-all duration-300 hover:-translate-y-1 shadow-[0_10px_25px_rgba(230,81,0,0.3)] hover:shadow-[0_15px_35px_rgba(230,81,0,0.45)] active:scale-95"
+      className="group relative inline-flex w-full sm:w-auto max-w-full justify-center items-center gap-3 px-6 sm:px-10 py-3.5 sm:py-5 text-base sm:text-lg font-bold text-white bg-gradient-to-r from-[#e65100] to-[#f4511e] rounded-xl transition-all duration-300 hover:-translate-y-1 shadow-[0_10px_25px_rgba(230,81,0,0.3)] hover:shadow-[0_15px_35px_rgba(230,81,0,0.45)] active:scale-95"
     >
       <span className="relative z-10">Get Started Free</span>
       <ArrowRight

@@ -188,7 +188,7 @@ export default function NavBar() {
         <div className="max-w-[1400px] mx-auto px-3 sm:px-4 md:px-6 flex items-center justify-between">
           {/* Mobile Menu Toggle - Now on LEFT */}
           <button
-            className="text-2xl md:hidden p-1 order-1"
+            className="text-2xl lg:hidden p-1 order-1"
             onClick={toggleMobileMenu}
           >
             {mobileMenuOpen ? (
@@ -201,7 +201,7 @@ export default function NavBar() {
           {/* Logo - Now in CENTER on mobile */}
           <button
             onClick={() => navigate("/")}
-            className="flex items-center gap-2 sm:gap-3 focus:outline-none flex-shrink-0 order-2 md:order-1"
+            className="flex items-center gap-2 sm:gap-3 focus:outline-none flex-shrink-0 order-2 lg:order-1"
             aria-label="Go to home"
           >
             <img src={UpToSkillsImg} alt="UptoSkills Logo" className="w-24 sm:w-32 md:w-36 lg:w-[160px]" />
@@ -209,7 +209,7 @@ export default function NavBar() {
 
           {/* Desktop Navigation */}
           <div
-            className={`flex-1 flex justify-center ${isLoggedIn ? "" : "ml-4 lg:ml-24"} hidden md:flex order-2`}
+            className={`flex-1 flex justify-center ${isLoggedIn ? "" : "ml-4 xl:ml-24"} hidden lg:flex order-2`}
           >
             <ul className="flex items-center gap-4 lg:gap-6 xl:gap-8 text-sm lg:text-base">
               <li className="cursor-pointer hover:text-orange-600 transition-colors">
@@ -318,7 +318,7 @@ export default function NavBar() {
               <div className="bg-gray-200 p-2 rounded-full items-center md:flex">
                 <User size={20} />
               </div>
-              <div className="md:flex hidden items-center gap-1">
+              <div className="lg:flex hidden items-center gap-1">
                 {loading && (
                   <div className="w-24 h-4 bg-gray-200 rounded-xl flex justify-center items-center">
                     <div className="w-2 h-2 border border-black border-b-black/30 rounded-xl animate-spin"></div>
@@ -337,7 +337,7 @@ export default function NavBar() {
           {/* DROPDOWN MENU FOR LOGGED IN USER */}
           <div
             ref={menuRef}
-            className={`absolute md:top-20 top-16 right-3 w-48 rounded bg-slate-100 border border-slate-200 shadow-lg p-2
+            className={`absolute lg:top-20 top-16 right-3 w-48 rounded bg-slate-100 border border-slate-200 shadow-lg p-2
                         transition-all duration-200 ease-out origin-top-right
                         ${
                           profileMenuOpen
@@ -378,7 +378,7 @@ export default function NavBar() {
 
           {/* Desktop Auth Buttons */}
           {!isLoggedIn && (
-            <div className="items-center hidden gap-3 lg:gap-4 xl:gap-6 md:flex order-3">
+            <div className="items-center hidden gap-3 lg:gap-4 xl:gap-6 lg:flex order-3">
               <button
                 onClick={() => navigate("/login")}
                 className="flex items-center gap-2 lg:gap-3 px-3 lg:px-5 xl:px-6 py-2 lg:py-2.5 border-2 border-[#0077cc] text-[#0077cc] rounded-xl font-bold text-sm lg:text-base transition-all duration-300 hover:bg-[#0077cc] hover:text-white hover:shadow-lg hover:shadow-blue-100 hover:-translate-y-1 active:scale-95"
@@ -402,14 +402,14 @@ export default function NavBar() {
       {/* Mobile Sidebar Overlay */}
       {mobileMenuOpen && (
         <div
-          className="fixed inset-0 bg-black/50 z-40 md:hidden"
+          className="fixed inset-0 bg-black/50 z-40 lg:hidden"
           onClick={closeMobileMenu}
         />
       )}
 
       {/* Mobile Sidebar - Now slides from LEFT */}
       <div
-        className={`fixed top-0 left-0 h-full w-80 bg-white shadow-2xl z-50 transform transition-transform duration-300 ease-in-out md:hidden ${
+        className={`fixed top-0 left-0 h-full w-80 max-w-[85vw] bg-white shadow-2xl z-50 transform transition-transform duration-300 ease-in-out lg:hidden ${
           mobileMenuOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >

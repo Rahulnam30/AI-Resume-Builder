@@ -55,6 +55,13 @@ body {
   color: #1f2937;
 }
 
+html,
+body,
+#root {
+  width: 100%;
+  overflow-x: hidden;
+}
+
 #root {
   min-height: 100vh;
   display: flex;

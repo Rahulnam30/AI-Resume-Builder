@@ -64,13 +64,13 @@ const AIBuilderFeature = () => {
   const [ctaRef, ctaVisible] = useInView(0.2);
 
   return (
-    <div className="min-h-screen bg-white font-['Outfit'] select-none">
+    <div className="min-h-screen bg-white font-['Outfit'] select-none overflow-x-hidden">
       <NavBar />
 
       {/* HERO */}
       <section
         ref={heroRef}
-         className="relative px-6 pt-32 pb-12 overflow-hidden bg-white"
+         className="relative px-4 sm:px-6 lg:px-8 pt-12 sm:pt-16 lg:pt-24 pb-10 sm:pb-14 overflow-hidden bg-white"
 
 
       >
@@ -78,38 +78,38 @@ const AIBuilderFeature = () => {
         <div className="absolute rounded-full -top-24 -left-24 w-72 h-72 bg-blue-50 blur-3xl opacity-60" />
         <div className="absolute rounded-full -bottom-24 -right-24 w-72 h-72 bg-orange-50 blur-3xl opacity-60" />
 
-        <div className="grid items-center gap-12 mx-auto max-w-7xl lg:grid-cols-2">
+        <div className="grid items-center gap-8 sm:gap-10 lg:gap-12 mx-auto max-w-7xl lg:grid-cols-2">
           <div
-            className={`transition-all duration-700 ${heroVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
+            className={`min-w-0 transition-all duration-700 ${heroVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
               }`}
           >
             
 
-            <div className="inline-block px-4  py-2 bg-blue-50 text-[#0077cc] rounded-full text-sm font-bold mb-6">
+            <div className="inline-block px-3 sm:px-4 py-2 bg-blue-50 text-[#0077cc] rounded-full text-xs sm:text-sm font-bold mb-5 sm:mb-6">
               AI-Powered Resume Builder
             </div>
 
-            <h1 className="mb-6 text-5xl font-black leading-tight text-[#1a2e52] md:text-6xl font-jakarta tracking-tight">
+            <h1 className="mb-5 sm:mb-6 text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black leading-tight text-[#1a2e52] font-jakarta tracking-tight break-words">
               Build Your Resume with{" "}
               <span className="text-[#0077cc]">AI Assistance</span>
             </h1>
 
-            <p className="mb-8 text-xl leading-relaxed text-gray-600">
+            <p className="mb-7 sm:mb-8 text-base sm:text-lg md:text-xl leading-relaxed text-gray-600 max-w-2xl break-words">
               Let our advanced AI guide you through every step of resume
               creation. Get personalized suggestions, optimized content, and
               professional formatting in minutes.
             </p>
 
-            <div className="flex items-center gap-4 mb-8">
+            <div className="flex items-start sm:items-center gap-3 sm:gap-4 mb-7 sm:mb-8 min-w-0">
               <CheckCircle2 size={20} className="flex-shrink-0 text-green-500" />
-              <span className="text-sm font-bold text-gray-400">
+              <span className="text-xs sm:text-sm font-bold text-gray-400 leading-relaxed break-words">
                 100% free • AI-powered • Professional results
               </span>
             </div>
 
             <button
               onClick={handleCTA}
-              className="group relative inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-[#e65100] to-[#f4511e] text-white rounded-xl font-bold text-lg transition-all duration-300 shadow-[0_10px_25px_rgba(230,81,0,0.3)] hover:shadow-[0_15px_35px_rgba(230,81,0,0.45)] hover:-translate-y-1 active:scale-95"
+              className="group relative inline-flex w-full sm:w-auto max-w-full justify-center items-center gap-3 px-6 sm:px-8 py-3.5 sm:py-4 bg-gradient-to-r from-[#e65100] to-[#f4511e] text-white rounded-xl font-bold text-base sm:text-lg transition-all duration-300 shadow-[0_10px_25px_rgba(230,81,0,0.3)] hover:shadow-[0_15px_35px_rgba(230,81,0,0.45)] hover:-translate-y-1 active:scale-95"
             >
               <Zap size={20} className="fill-white" />
               <span>Start Building Now</span>
@@ -118,13 +118,13 @@ const AIBuilderFeature = () => {
           </div>
 
             <div
-              className={`relative transition-all duration-700 ${heroVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+              className={`relative min-w-0 transition-all duration-700 ${heroVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
                 }`}
             >
               <img
                 src={AiBuilder}
                 alt="ATS Score Analysis"
-                className="hidden md:block w-full h-auto object-contain drop-shadow-2xl"
+                className="block w-full h-auto mt-8 sm:mt-10 lg:mt-0 max-w-[340px] sm:max-w-md md:max-w-xl mx-auto object-contain drop-shadow-2xl"
               />
 
             </div>
@@ -133,15 +133,15 @@ const AIBuilderFeature = () => {
       </section>
 
       {/* WHAT IS AI BUILDER */}
-      <section ref={whatRef} className="px-6 py-12 bg-white">
+      <section ref={whatRef} className="px-4 sm:px-6 lg:px-8 py-12 sm:py-14 bg-white">
         <div
           className={`max-w-5xl mx-auto transition-all duration-700 ${whatVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
             }`}
         >
-          <h2 className="mb-8 text-4xl font-black text-center text-[#1a2e52] font-jakarta">
+          <h2 className="mb-6 sm:mb-8 text-2xl sm:text-3xl lg:text-4xl font-black text-center text-[#1a2e52] font-jakarta">
             What is an AI Resume Builder?
           </h2>
-          <div className="space-y-6 text-lg leading-relaxed text-center text-gray-600 max-w-none">
+          <div className="space-y-5 sm:space-y-6 text-base sm:text-lg leading-relaxed text-center text-gray-600 max-w-none">
             <p>
               An AI resume builder uses artificial intelligence to help you
               create a professional, ATS-optimized resume. Unlike traditional
@@ -159,19 +159,19 @@ const AIBuilderFeature = () => {
       </section>
 
       {/* WHY USE AI BUILDER */}
-      <section ref={whyRef} className="px-6 py-12 bg-gray-50/50">
+      <section ref={whyRef} className="px-4 sm:px-6 lg:px-8 py-12 sm:py-14 bg-gray-50/50">
         <div
           className={`max-w-6xl mx-auto transition-all duration-700 ${whyVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
             }`}
         >
-          <h2 className="mb-4 text-4xl font-black text-center text-[#1a2e52] font-jakarta">
+          <h2 className="mb-4 text-2xl sm:text-3xl lg:text-4xl font-black text-center text-[#1a2e52] font-jakarta">
             Why Use an <span className="text-[#e65100]">AI Resume Builder?</span>
           </h2>
-          <p className="max-w-3xl mx-auto mb-16 text-lg text-center text-gray-500">
+          <p className="max-w-3xl mx-auto mb-10 sm:mb-12 lg:mb-16 text-base sm:text-lg text-center text-gray-500">
             Save time and create a better resume with AI-powered assistance
           </p>
 
-          <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
+          <div className="grid gap-5 sm:gap-6 lg:gap-8 md:grid-cols-2 lg:grid-cols-4">
             {[
               {
                 icon: <Zap size={32} />,
@@ -196,7 +196,7 @@ const AIBuilderFeature = () => {
             ].map((item, i) => (
               <div
                 key={i}
-                className="p-8 transition-all duration-300 bg-white border border-gray-100 rounded-2xl hover:shadow-xl hover:-translate-y-1"
+                className="p-5 sm:p-6 lg:p-8 transition-all duration-300 bg-white border border-gray-100 rounded-2xl hover:shadow-xl hover:-translate-y-1"
               >
                 <div className="flex items-center justify-center w-14 h-14 mb-6 text-[#0077cc] bg-blue-50 rounded-xl">
                   {item.icon}
@@ -212,18 +212,18 @@ const AIBuilderFeature = () => {
       </section>
 
       {/* WHAT AI DOES */}
-      <section ref={whatAiRef} className="px-6 py-12 bg-white">
+      <section ref={whatAiRef} className="px-4 sm:px-6 lg:px-8 py-12 sm:py-14 bg-white">
         <div
           className={`max-w-6xl mx-auto transition-all duration-700 ${whatAiVisible
             ? "opacity-100 translate-y-0"
             : "opacity-0 translate-y-8"
             }`}
         >
-          <h2 className="mb-16 text-4xl font-black text-center text-[#1a2e52] font-jakarta">
+              <h2 className="mb-10 sm:mb-12 lg:mb-16 text-2xl sm:text-3xl lg:text-4xl font-black text-center text-[#1a2e52] font-jakarta">
             What Our AI Resume Builder Does
           </h2>
 
-    <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            <div className="grid gap-5 sm:gap-6 md:grid-cols-2 lg:grid-cols-3">
       {[
         { icon: <Sparkles size={32} />, title: "Content Enhancement", desc: "Transforms basic descriptions into achievement-focused bullet points" },
         { icon: <Target size={32} />, title: "Keyword Optimization", desc: "Identifies and adds relevant keywords to pass ATS filters" },
@@ -237,7 +237,7 @@ const AIBuilderFeature = () => {
       ].map((item, i) => (
         <div
           key={i}
-          className="group p-8 text-center transition-all duration-300 border border-gray-100 bg-white rounded-[2rem] hover:border-[#0077cc]/30 hover:shadow-xl hover:-translate-y-1"
+          className="group p-5 sm:p-6 lg:p-8 text-center transition-all duration-300 border border-gray-100 bg-white rounded-[2rem] hover:border-[#0077cc]/30 hover:shadow-xl hover:-translate-y-1"
         >
           <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-blue-50 text-[#0077cc] transition-all duration-300 group-hover:bg-[#0077cc] group-hover:text-white">
             {item.icon}
@@ -253,20 +253,20 @@ const AIBuilderFeature = () => {
 </section>
 
       {/* HOW IT WORKS */}
-      <section ref={howRef} className="px-6 py-14 bg-gray-50/50">
+      <section ref={howRef} className="px-4 sm:px-6 lg:px-8 py-12 sm:py-14 bg-gray-50/50">
         <div
           className={`max-w-5xl mx-auto transition-all duration-700 ${howVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
             }`}
         >
-          <h2 className="mb-4 text-4xl font-black text-center text-[#1a2e52] font-jakarta tracking-tight">
+          <h2 className="mb-4 text-2xl sm:text-3xl lg:text-4xl font-black text-center text-[#1a2e52] font-jakarta tracking-tight">
             How Our <span className="text-[#0077cc]">AI Builder</span> Works
           </h2>
-          <p className="max-w-2xl mx-auto mb-16 text-lg text-center text-gray-500">
+          <p className="max-w-2xl mx-auto mb-10 sm:mb-12 lg:mb-16 text-base sm:text-lg text-center text-gray-500">
             Create a professional resume with AI assistance in three simple steps
           </p>
 
-          <div className="p-10 bg-white border border-gray-100 shadow-2xl rounded-[2.5rem] md:p-14">
-            <h3 className="mb-10 text-2xl font-bold text-center text-[#1a2e52]">
+          <div className="p-5 sm:p-8 md:p-10 bg-white border border-gray-100 shadow-2xl rounded-[2rem] sm:rounded-[2.5rem] md:p-14">
+            <h3 className="mb-8 sm:mb-10 text-xl sm:text-2xl font-bold text-center text-[#1a2e52]">
               Simple 3-Step Process:
             </h3>
 
@@ -278,13 +278,13 @@ const AIBuilderFeature = () => {
               ].map((item, i) => (
                 <div
                   key={i}
-                  className="flex items-start gap-6 p-4 transition-colors rounded-2xl hover:bg-blue-50/50"
+                  className="flex items-start gap-4 sm:gap-6 p-3 sm:p-4 transition-colors rounded-2xl hover:bg-blue-50/50"
                 >
                   <div className="flex items-center justify-center flex-shrink-0 w-12 h-12 text-xl font-black text-white bg-[#0077cc] rounded-full shadow-lg shadow-blue-100">
                     {item.step}
                   </div>
                   <div>
-                    <h4 className="mb-1 text-xl font-bold text-[#1a2e52]">
+                    <h4 className="mb-1 text-lg sm:text-xl font-bold text-[#1a2e52]">
                       {item.title}
                     </h4>
                     <p className="text-sm leading-relaxed text-gray-500">{item.desc}</p>
@@ -299,7 +299,7 @@ const AIBuilderFeature = () => {
       {/* --- CTA SECTION ---  */}
       <section
         ref={ctaRef}
-        className="relative px-8 pt-12 pb-24 overflow-hidden bg-white select-none"
+        className="relative px-4 sm:px-6 lg:px-8 pt-12 sm:pt-14 pb-16 sm:pb-20 lg:pb-24 overflow-hidden bg-white select-none"
       >
         <div className="absolute top-0 right-0 w-1/3 h-full bg-orange-50 rounded-full blur-[120px] -z-10 opacity-60" />
         <div className="absolute bottom-0 left-0 w-1/3 h-full bg-blue-50 rounded-full blur-[120px] -z-10 opacity-60" />
@@ -309,17 +309,17 @@ const AIBuilderFeature = () => {
             ctaVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12"
           }`}
         >
-          <h2 className="mb-6 text-4xl font-black md:text-6xl text-[#1a2e52] tracking-tighter font-jakarta leading-tight">
+          <h2 className="mb-5 sm:mb-6 text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-[#1a2e52] tracking-tighter font-jakarta leading-tight">
             Ready to Build Your <span className="text-[#0077cc]">AI-Powered Resume?</span>
           </h2>
 
-          <p className="max-w-2xl mx-auto mb-10 text-xl font-medium text-gray-500">
+          <p className="max-w-2xl mx-auto mb-8 sm:mb-10 text-base sm:text-lg md:text-xl font-medium text-gray-500">
             Join thousands of professionals who landed their dream jobs with real-time AI assistance and ATS-optimized templates.
           </p>
 
           <button
             onClick={handleCTA}
-            className="group relative inline-flex items-center gap-3 px-10 py-5 bg-gradient-to-r from-[#e65100] to-[#f4511e] text-white rounded-xl font-bold text-lg transition-all duration-300 shadow-[0_10px_25px_rgba(230,81,0,0.3)] 
+            className="group relative inline-flex w-full sm:w-auto justify-center items-center gap-3 px-6 sm:px-10 py-3.5 sm:py-5 bg-gradient-to-r from-[#e65100] to-[#f4511e] text-white rounded-xl font-bold text-base sm:text-lg transition-all duration-300 shadow-[0_10px_25px_rgba(230,81,0,0.3)] 
                        hover:shadow-[0_15px_35px_rgba(230,81,0,0.45)] hover:-translate-y-1 active:scale-95"
           >
             <Zap size={20} className="fill-white" />
