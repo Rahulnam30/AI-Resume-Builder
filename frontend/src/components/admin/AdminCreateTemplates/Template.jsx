@@ -1,4 +1,5 @@
 import React from "react";
+import { createPortal } from "react-dom";
 import { Filter, Plus, Eye, X, Power, PowerOff, Search, ChevronDown } from "lucide-react";
 import toast, { Toaster } from "react-hot-toast";
 import { TEMPLATES } from "../../user/Templates/TemplateRegistry";
@@ -354,10 +355,10 @@ const matchesSearch =
 
 
         {/* Preview Modal */}
-        {isPreviewModalOpen && (
+        {isPreviewModalOpen && createPortal(
 
           <div
-            className="fixed inset-0 z-[220] bg-black/80 p-4 sm:p-6"
+            className="fixed inset-0 z-[9999] flex h-screen w-screen items-center justify-center bg-black/85 p-4 sm:p-6"
             onClick={() => setIsPreviewModalOpen(false)}
           >
 
@@ -411,8 +412,8 @@ const matchesSearch =
 
             </div>
 
-          </div>
-
+          </div>,
+          document.body,
         )}
 
       </div>
