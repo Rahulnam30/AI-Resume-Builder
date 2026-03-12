@@ -175,7 +175,9 @@ const ResumeBuilder = ({ setActivePage = () => {} }) => {
   /* ------------Input Validation ------------- */
   const [warning, setWarning] = useState(false);
   const isInputValid = (label) => {
-    return completion?.missingSections?.includes(label);
+    // For now, allow navigation to all sections regardless of completion status
+    // Users can navigate freely and fill sections as needed
+    return false; // Always return false to allow navigation
   };
 
   /*------------------- PREVIOUS & NEXT BUTTON ------------*/
@@ -305,6 +307,74 @@ const ResumeBuilder = ({ setActivePage = () => {} }) => {
     }
   };
 
+   
+  // ===============================
+// RESUME UPLOAD HANDLER
+// ===============================
+const handleResumeUpload = async (file) => {
+  try {
+    if (!file) return;
+
+    const formDataUpload = new FormData();
+    formDataUpload.append("resume", file);
+
+    // required backend fields
+    formDataUpload.append("jobTitle", "Resume Builder Upload");
+    formDataUpload.append("templateId", selectedTemplate);
+    formDataUpload.append("resumeprofileId", "000000000000000000000000");
+
+    const res = await axiosInstance.post(
+      "/api/resume/upload",
+      formDataUpload,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
+
+    const parsed = res.data?.data?.extractedData;
+    console.log("🔍 Parsed resume data:", parsed);
+
+    if (!parsed) {
+      alert("Failed to parse resume.");
+      return;
+    }
+
+    // Auto-fill builder form - use correct field names from backend
+    setFormData((prev) => ({
+      ...prev,
+      fullName: parsed.fullName || parsed.name || prev.fullName,
+      email: parsed.email || prev.email,
+      phone: parsed.phone || prev.phone,
+      location: parsed.location || prev.location,
+      summary: parsed.summary || prev.summary, // This should now work
+      linkedin: parsed.linkedin || prev.linkedin,
+      website: parsed.website || prev.website,
+      education: parsed.education || prev.education,
+      experience: parsed.experience || prev.experience,
+      projects: parsed.projects || prev.projects,
+      skills: parsed.skills || prev.skills,
+      certifications: parsed.certifications || prev.certifications,
+    }));
+
+    console.log("📝 Summary extracted:", parsed.summary);
+    alert("Resume uploaded and imported successfully!");
+  } catch (error) {
+    console.error("Upload failed:", error);
+    
+    // Better error handling for authentication issues
+    if (error.response?.status === 401) {
+      alert("Authentication required. Please log in again to upload resume.");
+      // Optionally redirect to login page
+      // window.location.href = "/login";
+    } else {
+      alert(`Resume upload failed: ${error.response?.data?.message || error.message}`);
+    }
+  }
+};
+
+  
   /*------------------- PREVIOUS & NEXT BUTTON ------------*/
   const tabs = [
     { id: "personal", label: "Personal", icon: User },
@@ -484,6 +554,22 @@ const ResumeBuilder = ({ setActivePage = () => {} }) => {
 
                     {/* Previous & Next */}
                     <div className="w-full flex items-center justify-between mt-8">
+                      {/* Step Indicators */}
+                      <div className="flex items-center gap-2">
+                        {tabs.map((tab, index) => (
+                          <div
+                            key={tab.id}
+                            className={`w-8 h-2 rounded-full transition-colors ${
+                              index < currentIdx
+                                ? "bg-blue-600"
+                                : index === currentIdx
+                                ? "bg-blue-600"
+                                : "bg-gray-300"
+                            }`}
+                          />
+                        ))}
+                      </div>
+                      
                       <button
                         onClick={goLeft}
                         disabled={currentIdx === 0}
@@ -669,9 +755,9 @@ const ResumeBuilder = ({ setActivePage = () => {} }) => {
         setActiveTab={setActiveTab}
         onDownload={handleDownload}
         onDownloadWord={handleDownloadWord}
-        onUpload={(file) => console.log("Resume upload:", file?.name)}
+       onUpload={handleResumeUpload}
         isDownloading={loading}
-        downloadDisabled={!completion.isComplete}
+        downloadDisabled={false} // Allow downloads regardless of completion status
         title={documentTitle}
         onTitleChange={(_, val) => setDocumentTitle(val)}
         titlePlaceholder="Untitled Resume"

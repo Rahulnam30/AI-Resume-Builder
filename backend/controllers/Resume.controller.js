@@ -371,13 +371,14 @@ export const uploadAndAnalyzeResume = async (req, res) => {
     const recommendations = generateRecommendations(analysis);
 
     // Validate required fields from frontend
-    const { jobTitle, templateId, resumeprofileId } = req.body;
-    if (!jobTitle || !templateId || !resumeprofileId) {
-      return res.status(400).json({
-        success: false,
-        message: "Missing required fields"
-      });
-    }
+   const { jobTitle, templateId, resumeprofileId } = req.body;
+
+if (!jobTitle) {
+  return res.status(400).json({
+    success: false,
+    message: "Job title is required"
+  });
+}
 
     // ✅ FIX: Ensure File Format Compatibility score is correct
     const isValidFormat = ['pdf', 'doc', 'docx'].includes(fileExtension) ||
@@ -429,8 +430,10 @@ export const uploadAndAnalyzeResume = async (req, res) => {
       extractedText: resumeText,
       extractedData,
       passThreshold: passes,
-      templateId: new mongoose.Types.ObjectId(templateId),
-      resumeprofileId: new mongoose.Types.ObjectId(resumeprofileId),
+      templateId: templateId || null,
+       resumeprofileId: resumeprofileId
+      ? new mongoose.Types.ObjectId(resumeprofileId)
+     : null,
       jobTitle,
     });
 
