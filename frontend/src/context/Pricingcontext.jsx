@@ -28,6 +28,7 @@ export const PricingProvider = ({ children }) => {
         badge : plan.badge,
         price: plan.price,
         active: plan.active,
+        order : plan.order,
         description: plan.description,
         features: plan.features,
       }));
@@ -50,6 +51,7 @@ export const PricingProvider = ({ children }) => {
         badge : plan.badge,
         price: Number(plan.price),
         active: plan.active,
+        order : plan.order,
         description: plan.description,
         features: plan.features,
       }));

@@ -4,7 +4,7 @@ import Plan from "../Models/Plan.js";
 // -------------------- GET ALL PLANS --------------------
 export const getAllPlans = async (req, res) => {
   try {
-    const plans = await Plan.find().sort({ planId: 1 });
+    const plans = await Plan.find().sort({ order: 1 });
     res.status(200).json(plans);
   } catch (error) {
     res
@@ -34,7 +34,6 @@ export const getPlanById = async (req, res) => {
 export const updateAllPlans = async (req, res) => {
   try {
     const plans = req.body;
-
     if (!Array.isArray(plans)) {
       return res.status(400).json({ message: "Invalid data format. Expected an array of plans." });
     }
@@ -68,10 +67,12 @@ export const updateAllPlans = async (req, res) => {
           badge: plan.badge,
           price: plan.price,
           active: plan.active,
+          order : plan.order,
           description: plan.description,
           features: plan.features,
         },
-        { new: true, upsert: true } // Create if doesn't exist
+        { new: true, upsert: true },
+        { $sort : {order : 1}} // Create if doesn't exist
       );
     });
 

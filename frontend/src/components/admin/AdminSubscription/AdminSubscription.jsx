@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Check, ToggleLeft, ToggleRight, Pencil, Plus, Trash2, GripVertical } from "lucide-react";
+import { Check, ToggleLeft, ToggleRight, Pencil, Plus, Trash2, GripVertical, GripHorizontal } from "lucide-react";
 import axiosInstance from "../../../api/axios";
 import { usePricing } from "../../../context/Pricingcontext";
 import toast, { Toaster } from 'react-hot-toast';
@@ -17,8 +17,10 @@ import {
   sortableKeyboardCoordinates,
   verticalListSortingStrategy,
   useSortable,
+  rectSortingStrategy,
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
+import { SortablePlanCard } from "./SortablePlanCard.jsx";
 
 // Helper to generate unique IDs
 const generateId = () => Math.random().toString(36).substr(2, 9);
@@ -148,7 +150,7 @@ const AdminSubscription = () => {
   };
 
   const handleAddPlan = () => {
-    const newPlanId =  Date.now(); // Using a large unique integer ID for the local backend requirements
+    const newPlanId = Date.now(); // Using a large unique integer ID for the local backend requirements
     setLocalPlans((prev) => [
       ...prev,
       {
@@ -157,6 +159,7 @@ const AdminSubscription = () => {
         price: 0,
         active: true,
         description: "Plan description",
+        order: prev.length + 1,
         features: [{ id: generateId(), text: "New Feature" }]
       }
     ]);
@@ -164,10 +167,17 @@ const AdminSubscription = () => {
 
   const handleRemovePlan = (planId) => {
     if (window.confirm("Are you sure you want to delete this plan?")) {
-      setLocalPlans(prev => prev.filter(p => p.id !== planId));
-    }
-  };
-
+      setLocalPlans(prev => {
+        const planAfterDelete = prev.filter(plan => plan.id !== planId);
+        return planAfterDelete.map((plan, index) => (
+          {
+            ...plan,
+            order: index + 1
+          }
+        ))
+      })
+    };
+  }
   const handleFeatureChange = (planId, featureId, newValue) => {
     setLocalPlans((prev) =>
       prev.map((plan) => {
@@ -228,6 +238,20 @@ const AdminSubscription = () => {
     }
   };
 
+  const handlePlanDragEnd = (event) => {
+    const { over, active } = event;
+    if (!over || active.id === over.id) return;
+    setLocalPlans(prev => {
+      const oldIndex = prev.findIndex(p => p.id === active.id);
+      const newIndex = prev.findIndex(p => p.id === over.id);
+      const newPlansArray = arrayMove(prev, oldIndex, newIndex);
+      return newPlansArray.map((item, index) => ({
+        ...item,
+        order: index + 1
+      }))
+    });
+  };
+
   const handleSaveChanges = async () => {
     setSaving(true);
     // Convert back to string array for backend
@@ -235,7 +259,7 @@ const AdminSubscription = () => {
       ...plan,
       features: plan.features.map(f => f.text)
     }));
-
+    console.log(localPlans);
     const result = await savePlans(plansToSave);
     setSaving(false);
 
@@ -289,126 +313,147 @@ const AdminSubscription = () => {
       </div>
 
       {/* Plans */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-        {localPlans.map((plan) => (
-          <div
-            key={plan.id}
-            className="rounded-2xl border border-gray-200 bg-white p-4 sm:p-6 shadow h-full flex flex-col"
-          >
-            <div className="flex items-center justify-between mb-3 sm:mb-4">
-              <input
-                type="text"
-                value={plan.name}
-                onChange={(e) => updatePlanField(plan.id, 'name', e.target.value)}
-                className="text-lg sm:text-xl font-semibold text-gray-900 bg-transparent border border-dashed border-transparent hover:border-gray-300 focus:border-blue-500 focus:outline-none rounded w-2/3 px-1.5 -ml-1.5 py-0.5"
-              />
-              <div className="flex items-center gap-1">
-                <button onClick={() => togglePlan(plan.id)}>
-                  {plan.active ? (
-                    <ToggleRight className="text-green-500 w-6 h-6" />
-                  ) : (
-                    <ToggleLeft className="text-gray-400 w-6 h-6" />
-                  )}
-                </button>
-                <button
-                  onClick={() => handleRemovePlan(plan.id)}
-                  className="p-1 text-red-500 hover:bg-red-50 rounded transition-colors"
-                  title="Delete Plan"
-                >
-                  <Trash2 className="w-5 h-5" />
-                </button>
-              </div>
-            </div>
-            <div className="flex gap-2 items-center justify-start">
-              <h3>Badge Tag :</h3> 
-              <input
-                type="text"
-                value={plan.badge}
-                onChange={(e) => updatePlanField(plan.id, 'badge', e.target.value)}
-                className="text-lg sm:text-xl font-medium text-gray-800 bg-transparent border border-dashed border-transparent hover:border-gray-300 focus:border-blue-500 focus:outline-none rounded w-2/3 px-1.5 -ml-1.5 py-0.5"
-              />
-              </div>
-            <textarea
-              value={plan.description}
-              onChange={(e) => updatePlanField(plan.id, 'description', e.target.value)}
-              className="text-sm text-gray-500 bg-transparent border border-dashed border-transparent hover:border-gray-300 focus:border-blue-500 focus:outline-none rounded w-full resize-none px-1.5 -ml-1.5 py-1"
-              rows={2}
-            />
-
-            {/* Price Control */}
-            <div className="mt-4">
-              <label className="text-sm text-gray-600">Monthly Price (₹)</label>
-              <div className="flex items-center gap-2 mt-1">
-                <input
-                  type="number"
-                  value={plan.price}
-                  disabled={!plan.active}
-                  onChange={(e) => updatePrice(plan.id, e.target.value)}
-                  className="w-full px-3 py-2 rounded-lg border border-gray-300 bg-gray-50 text-gray-900"
-                />
-                <Pencil className="w-4 h-4 text-gray-400" />
-              </div>
-            </div>
-
-            {/* Features with Drag and Drop */}
-            <div className="mt-5 flex-1">
-              <label className="text-sm text-gray-600 mb-2 block">Features</label>
-              <DndContext
-                sensors={sensors}
-                collisionDetection={closestCenter}
-                onDragEnd={(e) => handleDragEnd(e, plan.id)}
-              >
-                <SortableContext
-                  items={plan.features.map(f => f.id)}
-                  strategy={verticalListSortingStrategy}
-                >
-                  <ul className="space-y-2">
-                    {plan.features.map((feature) => (
-                      <SortableFeatureItem
-                        key={feature.id}
-                        id={feature.id}
-                        feature={feature}
-                        onChange={(val) => handleFeatureChange(plan.id, feature.id, val)}
-                        onRemove={() => handleRemoveFeature(plan.id, feature.id)}
-                      />
-                    ))}
-                  </ul>
-                </SortableContext>
-              </DndContext>
-
-              <button
-                onClick={() => handleAddFeature(plan.id)}
-                className="mt-3 flex items-center gap-1 text-sm text-blue-600 hover:text-blue-700 font-medium"
-              >
-                <Plus className="w-4 h-4" /> Add Feature
-              </button>
-            </div>
-
-            <div className="mt-6">
-              <span
-                className={`inline-block px-3 py-1 rounded-full text-xs font-medium 
-                  ${plan.active
-                    ? "bg-green-100 text-green-700"
-                    : "bg-red-100 text-red-700"
-                  }`}
-              >
-                {plan.active ? "Active" : "Disabled"}
-              </span>
-            </div>
-          </div>
-        ))}
-        {/* Add Plan Card */}
-        <div
-          onClick={handleAddPlan}
-          className="rounded-2xl border-2 border-dashed border-gray-300 bg-gray-50 hover:bg-gray-100 p-4 sm:p-6 shadow h-full flex flex-col items-center justify-center cursor-pointer transition-colors min-h-[300px]"
+      <DndContext
+        sensors={sensors}
+        collisionDetection={closestCenter}
+        onDragEnd={handlePlanDragEnd}
+      >
+        <SortableContext
+          items={localPlans.map(p => p.id)}
+          strategy={rectSortingStrategy}
         >
-          <div className="flex flex-col items-center justify-center opacity-60">
-            <Plus className="w-10 h-10 text-gray-500 mb-2" />
-            <span className="text-gray-600 font-medium text-lg">Add New Plan</span>
-          </div>
-        </div>
-      </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+            {localPlans.map((plan) => (
+              <SortablePlanCard key={plan.id} plan={plan}>
+                {({ attributes, listeners }) => (
+                  <div
+                    key={plan.id}
+                    className=" relative rounded-2xl border border-gray-200 bg-white p-4 sm:p-6 shadow h-full flex flex-col"
+                  >
+                    <div
+                      {...attributes}
+                      {...listeners}
+                      className="absolute -top-3 left-1/2 -translate-x-1/2 cursor-grab bg-white border border-gray-200 rounded-full p-1 shadow-sm hover:shadow-md"
+                    >
+                      <GripHorizontal className="w-4 h-4 text-gray-500" />
+                    </div>
+                    <div className="flex items-center justify-between mb-3 sm:mb-4">
+                      <input
+                        type="text"
+                        value={plan.name}
+                        onChange={(e) => updatePlanField(plan.id, 'name', e.target.value)}
+                        className="text-lg sm:text-xl font-semibold text-gray-900 bg-transparent border border-dashed border-transparent hover:border-gray-300 focus:border-blue-500 focus:outline-none rounded w-2/3 px-1.5 -ml-1.5 py-0.5"
+                      />
+                      <div className="flex items-center gap-1">
+                        <button onClick={() => togglePlan(plan.id)}>
+                          {plan.active ? (
+                            <ToggleRight className="text-green-500 w-6 h-6" />
+                          ) : (
+                            <ToggleLeft className="text-gray-400 w-6 h-6" />
+                          )}
+                        </button>
+                        <button
+                          onClick={() => handleRemovePlan(plan.id)}
+                          className="p-1 text-red-500 hover:bg-red-50 rounded transition-colors"
+                          title="Delete Plan"
+                        >
+                          <Trash2 className="w-5 h-5" />
+                        </button>
+                      </div>
+                    </div>
+                    <div className="flex gap-2 items-center justify-start">
+                      <h3>Badge Tag :</h3>
+                      <input
+                        type="text"
+                        value={plan.badge}
+                        onChange={(e) => updatePlanField(plan.id, 'badge', e.target.value)}
+                        className="text-lg sm:text-xl font-medium text-gray-800 bg-transparent border border-dashed border-transparent hover:border-gray-300 focus:border-blue-500 focus:outline-none rounded w-2/3 px-1.5 -ml-1.5 py-0.5"
+                      />
+                    </div>
+                    <textarea
+                      value={plan.description}
+                      onChange={(e) => updatePlanField(plan.id, 'description', e.target.value)}
+                      className="text-sm text-gray-500 bg-transparent border border-dashed border-transparent hover:border-gray-300 focus:border-blue-500 focus:outline-none rounded w-full resize-none px-1.5 -ml-1.5 py-1"
+                      rows={2}
+                    />
 
+                    {/* Price Control */}
+                    <div className="mt-4">
+                      <label className="text-sm text-gray-600">Monthly Price (₹)</label>
+                      <div className="flex items-center gap-2 mt-1">
+                        <input
+                          type="number"
+                          value={plan.price}
+                          disabled={!plan.active}
+                          onChange={(e) => updatePrice(plan.id, e.target.value)}
+                          className="w-full px-3 py-2 rounded-lg border border-gray-300 bg-gray-50 text-gray-900"
+                        />
+                        <Pencil className="w-4 h-4 text-gray-400" />
+                      </div>
+                    </div>
+
+                    {/* Features with Drag and Drop */}
+                    <div className="mt-5 flex-1">
+                      <label className="text-sm text-gray-600 mb-2 block">Features</label>
+                      <DndContext
+                        sensors={sensors}
+                        collisionDetection={closestCenter}
+                        onDragEnd={(e) => handleDragEnd(e, plan.id)}
+                      >
+                        <SortableContext
+                          items={plan.features.map(f => f.id)}
+                          strategy={verticalListSortingStrategy}
+                        >
+                          <ul className="space-y-2">
+                            {plan.features.map((feature) => (
+                              <SortableFeatureItem
+                                key={feature.id}
+                                id={feature.id}
+                                feature={feature}
+                                onChange={(val) => handleFeatureChange(plan.id, feature.id, val)}
+                                onRemove={() => handleRemoveFeature(plan.id, feature.id)}
+                              />
+                            ))}
+                          </ul>
+                        </SortableContext>
+                      </DndContext>
+
+                      <button
+                        onClick={() => handleAddFeature(plan.id)}
+                        className="mt-3 flex items-center gap-1 text-sm text-blue-600 hover:text-blue-700 font-medium"
+                      >
+                        <Plus className="w-4 h-4" /> Add Feature
+                      </button>
+                    </div>
+
+                    <div className="mt-6">
+                      <span
+                        className={`inline-block px-3 py-1 rounded-full text-xs font-medium 
+                  ${plan.active
+                            ? "bg-green-100 text-green-700"
+                            : "bg-red-100 text-red-700"
+                          }`}
+                      >
+                        {plan.active ? "Active" : "Disabled"}
+                      </span>
+                    </div>
+                  </div>
+                )}
+              </SortablePlanCard>
+            ))}
+            {/* Add Plan Card */}
+            <div
+              onClick={handleAddPlan}
+              className="rounded-2xl border-2 border-dashed border-gray-300 bg-gray-50 hover:bg-gray-100 p-4 sm:p-6 shadow h-full flex flex-col items-center justify-center cursor-pointer transition-colors min-h-[300px]"
+            >
+              <div className="flex flex-col items-center justify-center opacity-60">
+                <Plus className="w-10 h-10 text-gray-500 mb-2" />
+                <span className="text-gray-600 font-medium text-lg">Add New Plan</span>
+              </div>
+            </div>
+          </div>
+        </SortableContext>
+      </DndContext>
       {/* Save Button */}
       <div className="mt-12 flex justify-end">
         <button

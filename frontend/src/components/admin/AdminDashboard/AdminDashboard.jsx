@@ -74,7 +74,6 @@ export default function AdminDashboard() {
       const result = await axiosInstance.get(
         "/api/admin/dashboard-stat"
       );
-
       setTotalUser(result.data?.users?.total || 0);
       setTotalUserChange(result.data?.users?.change || 0);
       setTotalActiveSub(result.data?.subscriptions?.total || 0);
