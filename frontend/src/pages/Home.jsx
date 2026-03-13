@@ -308,7 +308,7 @@ function LandingPage() {
         initial="hidden"
         whileInView="show"
         viewport={{ once: true, amount: 0.25 }}
-        className="relative px-4 md:px-8  bg-white  ml-2 md:ml-5  lg:min-h-[calc(100vh-80px)]flex items-center lg:items-startpt-[100px] md:pt-[120px] lg:pt-6-mt-12 lg:mt-0"
+        className="relative px-4 md:px-8  bg-white  ml-2 md:ml-5  lg:min-h-[calc(100vh-80px)] flex items-center lg:items-start pt-[100px] md:pt-[120px] lg:pt-6 -mt-12 lg:mt-0"
       >
         <div className="absolute top-0 right-0 w-1/3 h-1/4 bg-orange-50 rounded-full blur-[120px] -z-10 opacity-50"></div>
         <div className="absolute bottom-0 left-0 w-1/3 h-1/4 bg-blue-50 rounded-full blur-[120px] -z-10 opacity-50"></div>
