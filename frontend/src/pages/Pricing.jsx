@@ -2,7 +2,7 @@ import { useNavigate } from "react-router-dom";
 import NavBar from "../components/NavBar";
 import Footer from "./Footer";
 import { Check } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import axiosInstance from "../api/axios";
 import { motion } from "framer-motion";
 
@@ -28,16 +28,13 @@ const staggerContainer = {
 };
 const Pricing = () => {
   const navigate = useNavigate();
-  const isLoggedIn =
-    typeof window !== "undefined" && !!localStorage.getItem("token");
-
+  const isLoggedIn = typeof window !== "undefined" && !!localStorage.getItem("token");
   const [backendPlans, setBackendPlans] = useState([]);
-  const [loading,setLoading] = useState(true);
+  const [loading, setLoading] = useState(true);
   useEffect(() => {
     const fetchPlans = async () => {
       try {
         const res = await axiosInstance.get("/api/plans");
-        console.log("Fetched Plans from API:", res.data); // Debug log
         const activePlans = res.data.filter((item) => item.active === true);
         setBackendPlans(activePlans);
       } catch (err) {
@@ -59,8 +56,7 @@ const Pricing = () => {
       period: "",
       description: "For getting started",
       buttonText: "Get Started",
-      buttonAction: () =>
-        navigate(`${isLoggedIn ? "/user/dashboard" : "/login"}`),
+      buttonAction: () => navigate(`${isLoggedIn ? "/user/dashboard" : "/login"}`),
       gradient: false,
     },
     2: {
@@ -112,7 +108,7 @@ const Pricing = () => {
   return (
     <>
       <NavBar />
-      <section className="page-enter-fade bg-white pt-20 px-6 md:px-16 py-12">
+      <section className="page-enter-fade bg-white px-6 md:px-16 pt-20 pb-12">
         <div className="max-w-7xl mx-auto">
           {/* Header */}
           <motion.div

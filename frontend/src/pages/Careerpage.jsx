@@ -1,9 +1,8 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { 
   MapPin, 
   Briefcase, 
   Clock, 
-  Heart, 
   Sparkles, 
   ArrowRight, 
   Brain, 
@@ -19,7 +18,7 @@ import {
 } from 'lucide-react';
 import NavBar from '../components/NavBar';
 import Footer from "./Footer";
-import career from "../assets/careers.png"
+import career from "../assets/careers.png";
 
 const CareersPage = () => {
   const [activeFilter, setActiveFilter] = useState('All Roles');
@@ -286,17 +285,11 @@ const CareersPage = () => {
                 <button
                   type="button"
                   onClick={() => {
-                    const slug = job.title
-                      .toLowerCase()
-                      .replace(/[()]/g, "")
-                      .replace(/\s+/g, "-");
-
                     window.open(
                       `https://uptoskills.com/homeJobs#${job.title.replace(/\s+/g, "-").toLowerCase()}`,
                       "_blank",
                       "noopener,noreferrer",
                     );
-
                   }}
                   className="px-8 py-4 bg-gradient-to-r from-[#e65100] to-[#f4511e] text-white rounded-xl font-bold transition-all shadow-[0_10px_20px_rgba(230,81,0,0.2)] hover:scale-105"
                 >

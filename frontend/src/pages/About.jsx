@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import NavBar from "../components/NavBar";
 import Footer from "./Footer";
@@ -57,7 +57,7 @@ const AboutUs = () => {
     <p className="mt-4 md:mt-6 text-base sm:text-lg md:text-xl text-slate-600 leading-relaxed max-w-lg mx-auto md:mx-0">
       Built to help students and job seekers transform their skills into
       professional, ATS-friendly resumes that align with real industry expectations.
-    </p><br></br>
+    </p>
     <p className="text-base sm:text-lg md:text-xl text-slate-600 leading-relaxed max-w-lg mx-auto md:mx-0">Our AI-powered platform enhances your resume with impact-driven content, role-specific optimization, and recruiter-friendly formatting-helping students, graduates, and professionals stand out in today's competitive job market.</p>
   </motion.div>
 
@@ -442,11 +442,6 @@ const AboutUs = () => {
 
         <Footer />
       </main>
-
-      <style>{`
-        @keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-15px); } }
-        .animate-float { animation: float 5s ease-in-out infinite; }
-      `}</style>
     </div>
   );
 };

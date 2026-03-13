@@ -5,8 +5,7 @@ import { Check, Lock } from "lucide-react";
 
 const Pricing = () => {
   const navigate = useNavigate();
-  const isLoggedIn =
-    typeof window !== "undefined" && !!localStorage.getItem("token");
+  const isLoggedIn = typeof window !== "undefined" && !!localStorage.getItem("token");
 
   const plans = [
     {

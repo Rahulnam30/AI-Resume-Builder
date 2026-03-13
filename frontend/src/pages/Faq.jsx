@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import NavBar from "../components/NavBar";
 import Footer from "./Footer";
 import { ChevronDown } from "lucide-react";
@@ -64,6 +64,7 @@ const FAQ = () => {
   const [openIndex, setOpenIndex] = useState(null);
   const [heroRef, heroVisible] = useInView(0.2);
   const [faqRef, faqVisible] = useInView(0.15);
+  const toggleFaq = (index) => setOpenIndex((current) => (current === index ? null : index));
 
   return (
     <div className="min-h-screen bg-white font-['Outfit']">
@@ -117,7 +118,7 @@ const FAQ = () => {
                   className="overflow-hidden transition-all duration-300 bg-white border border-gray-200 rounded-2xl hover:shadow-xl"
                 >
                   <button
-                    onClick={() => setOpenIndex(isOpen ? null : index)}
+                    onClick={() => toggleFaq(index)}
                     className="flex items-center justify-between w-full px-6 py-5 text-left"
                   >
                     <h3 className="text-lg font-bold text-gray-900">
