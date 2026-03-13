@@ -7,7 +7,6 @@ import {
   FileSearch,
   Target,
   Shield,
-  TrendingUp,
   Activity,
   UploadCloud,
   ChevronDown,
@@ -370,7 +369,6 @@ const ATSCheckerFeature = () => {
           </div>
         </div>
       </section>
-
       <Footer />
     </div>
   );

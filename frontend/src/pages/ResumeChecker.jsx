@@ -615,7 +615,6 @@ const AIResumeChecker = () => {
           </div>
         </motion.div>
       </section>
-
       <Footer />
     </div>
   );
