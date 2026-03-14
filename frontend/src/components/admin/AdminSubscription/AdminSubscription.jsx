@@ -74,6 +74,7 @@ const AdminSubscription = () => {
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [editingPricePlanId, setEditingPricePlanId] = useState(null);
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -384,11 +385,27 @@ const AdminSubscription = () => {
                         <input
                           type="number"
                           value={plan.price}
-                          disabled={!plan.active}
+                          disabled={!plan.active || editingPricePlanId !== plan.id}
                           onChange={(e) => updatePrice(plan.id, e.target.value)}
-                          className="w-full px-3 py-2 rounded-lg border border-gray-300 bg-gray-50 text-gray-900"
+                          className={`w-full px-3 py-2 rounded-lg border border-gray-300 text-gray-900 ${
+                            editingPricePlanId === plan.id ? "bg-white" : "bg-gray-50"
+                          }`}
                         />
-                        <Pencil className="w-4 h-4 text-gray-400" />
+                        <button
+                          onClick={() =>
+                            setEditingPricePlanId(
+                              editingPricePlanId === plan.id ? null : plan.id
+                            )
+                          }
+                          className="p-1 hover:bg-gray-100 rounded transition-colors"
+                          title={editingPricePlanId === plan.id ? "Save Price" : "Edit Price"}
+                        >
+                          {editingPricePlanId === plan.id ? (
+                            <Check className="w-4 h-4 text-green-600" />
+                          ) : (
+                            <Pencil className="w-4 h-4 text-gray-400" />
+                          )}
+                        </button>
                       </div>
                     </div>
 

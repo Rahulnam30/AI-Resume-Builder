@@ -1,6 +1,6 @@
 import React from "react";
 import { createPortal } from "react-dom";
-import { Filter, Plus, Eye, X, Power, PowerOff, Search, ChevronDown } from "lucide-react";
+import { Filter, Plus, Eye, X, Power, PowerOff, Search, ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
 import toast, { Toaster } from "react-hot-toast";
 import { TEMPLATES } from "../../user/Templates/TemplateRegistry";
 import { templates as CV_LIST } from "../../user/CV/Templatesgallery";
@@ -228,15 +228,12 @@ export default function AdminTemplates() {
 
         {/* Template Sections */}
         {Object.entries(approvedTemplates).map(([section, templates]) => {
-
-          const filtered = templates.filter(tpl => {
-
+          const filtered = templates.filter((tpl) => {
             const term = search.toLowerCase();
-
-const matchesSearch =
-  tpl.name?.toLowerCase().includes(term) ||
-  tpl.previewText?.toLowerCase().includes(term) ||
-  section.toLowerCase().includes(term);
+            const matchesSearch =
+              tpl.name?.toLowerCase().includes(term) ||
+              tpl.previewText?.toLowerCase().includes(term) ||
+              section.toLowerCase().includes(term);
             const active = isTemplateActive(tpl._id);
 
             const matchesStatus =
@@ -247,178 +244,221 @@ const matchesSearch =
             return matchesSearch && matchesStatus;
           });
 
-          return filtered.length > 0 && (
-
-            <div key={section} className="space-y-4">
-
-              <div className="flex items-center justify-between">
-
-                <h2 className="text-lg font-bold text-slate-800">
-                  {section}
-                </h2>
-
-                <span className="text-xs text-slate-500 bg-slate-100 px-2 py-1 rounded">
-                  {filtered.length}
-                </span>
-
-              </div>
-
-
-              <div className="flex md:grid md:grid-cols-3 lg:grid-cols-4 gap-6 overflow-x-auto md:overflow-visible pb-4 hide-scrollbar">
-
-                {filtered.map((tpl, index) => {
-
-                  const active = isTemplateActive(tpl._id);
-
-                  return (
-
-                    <div
-                      key={index}
-                      className={`min-w-[280px] w-[280px] md:w-auto md:min-w-0 flex-shrink-0 bg-white border border-slate-200 rounded-xl p-2 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col overflow-hidden relative ${!active ? "opacity-70 grayscale" : ""}`}
-                    >
-
-                      <div
-                        className="relative w-full aspect-[210/297] rounded-lg overflow-hidden group cursor-pointer"
-                        onClick={() => handlePreview(tpl)}
-                      >
-
-                        {type === "resume" ? (
-
-                          <img
-                            src={tpl.image}
-                            alt={tpl.name}
-                            className="w-full h-full object-contain"
-                            onError={(e) => {
-                              e.target.src = CV_PLACEHOLDER;
-                            }}
-                          />
-
-                        ) : (
-
-                          <div
-                            className="absolute inset-0 pointer-events-none bg-white origin-top-left"
-                            style={{ transform: "scale(0.32)", width: 794 }}
-                          >
-
-                            {CVTemplates?.[tpl.templateId] &&
-                              React.createElement(CVTemplates[tpl.templateId], {
-                                formData: mergeWithSampleData({})
-                              })}
-
-                          </div>
-
-                        )}
-
-                      </div>
-
-
-                      <div className="mt-2 text-sm font-semibold text-slate-800 truncate">
-                        {tpl.name}
-                      </div>
-
-                      <div className="text-xs text-slate-500 truncate">
-                        {tpl.previewText}
-                      </div>
-
-
-                      <div className="flex gap-2 mt-3 pt-2 border-t">
-
-                        <button
-                          onClick={() => handlePreview(tpl)}
-                          className="flex-1 py-1 text-xs bg-slate-50 rounded"
-                        >
-                          View
-                        </button>
-
-                        <button
-                          onClick={() => handleToggleStatus(tpl._id)}
-                          className="flex-1 py-1 text-xs bg-slate-100 rounded"
-                        >
-                          {active ? "Disable" : "Enable"}
-                        </button>
-
-                      </div>
-
-                    </div>
-
-                  );
-
-                })}
-
-              </div>
-
-            </div>
-
+          return (
+            filtered.length > 0 && (
+              <AdminTemplateSection
+                key={section}
+                title={section}
+                items={filtered}
+                type={type}
+                isTemplateActive={isTemplateActive}
+                handlePreview={handlePreview}
+                handleToggleStatus={handleToggleStatus}
+              />
+            )
           );
-
         })}
 
 
         {/* Preview Modal */}
-        {isPreviewModalOpen && createPortal(
-
-          <div
-            className="fixed inset-0 z-[9999] flex h-screen w-screen items-center justify-center bg-black/85 p-4 sm:p-6"
-            onClick={() => setIsPreviewModalOpen(false)}
-          >
-
+        {isPreviewModalOpen &&
+          createPortal(
             <div
-              className="relative mx-auto flex h-full max-h-[95vh] w-full max-w-6xl flex-col overflow-hidden rounded-lg bg-white shadow-xl"
-              onClick={(e) => e.stopPropagation()}
+              className="fixed inset-0 z-[9999] flex h-screen w-screen items-center justify-center bg-black/85 p-4 sm:p-6"
+              onClick={() => setIsPreviewModalOpen(false)}
             >
+              <div
+                className="relative mx-auto flex h-full max-h-[95vh] w-full max-w-6xl flex-col overflow-hidden rounded-lg bg-white shadow-xl"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <div className="flex items-center justify-between border-b border-slate-200 px-4 py-3 pr-14 sm:px-6">
+                  <div>
+                    <h2 className="text-base font-semibold text-slate-900">
+                      {previewImage?.name || "Template Preview"}
+                    </h2>
+                    <p className="text-sm text-slate-500">
+                      {type === "resume" ? "Resume" : "CV"} template preview
+                    </p>
+                  </div>
+                </div>
 
-              <div className="flex items-center justify-between border-b border-slate-200 px-4 py-3 pr-14 sm:px-6">
-                <div>
-                  <h2 className="text-base font-semibold text-slate-900">
-                    {previewImage?.name || "Template Preview"}
-                  </h2>
-                  <p className="text-sm text-slate-500">
-                    {type === "resume" ? "Resume" : "CV"} template preview
-                  </p>
+                <button
+                  onClick={() => setIsPreviewModalOpen(false)}
+                  className="absolute right-3 top-3 z-20 rounded-full bg-black/50 p-2 text-white"
+                >
+                  <X size={20} />
+                </button>
+
+                <div className="flex-1 overflow-auto bg-slate-100 p-4 sm:p-6">
+                  {type === "resume" ? (
+                    <div className="mx-auto flex w-full max-w-4xl justify-center">
+                      <img
+                        src={previewImage.image || previewImage}
+                        alt={previewImage?.name || "Template Preview"}
+                        className="h-auto max-w-full rounded-md bg-white shadow-lg"
+                      />
+                    </div>
+                  ) : PreviewComponent ? (
+                    <div
+                      ref={cvPreviewViewportRef}
+                      className="mx-auto w-full overflow-auto"
+                    >
+                      <div
+                        className="mx-auto origin-top bg-white shadow-lg"
+                        style={{ width: CV_CANVAS_WIDTH, zoom: cvPreviewScale }}
+                      >
+                        <PreviewComponent formData={mergeWithSampleData({})} />
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="flex h-full min-h-[320px] items-center justify-center rounded-md border border-dashed border-slate-300 bg-white text-slate-500">
+                      Preview is not available for this template.
+                    </div>
+                  )}
                 </div>
               </div>
-
-              <button
-                onClick={() => setIsPreviewModalOpen(false)}
-                className="absolute right-3 top-3 z-20 rounded-full bg-black/50 p-2 text-white"
-              >
-                <X size={20} />
-              </button>
-
-              <div className="flex-1 overflow-auto bg-slate-100 p-4 sm:p-6">
-                {type === "resume" ? (
-                  <div className="mx-auto flex w-full max-w-4xl justify-center">
-                    <img
-                      src={previewImage.image || previewImage}
-                      alt={previewImage?.name || "Template Preview"}
-                      className="h-auto max-w-full rounded-md bg-white shadow-lg"
-                    />
-                  </div>
-                ) : PreviewComponent ? (
-                  <div ref={cvPreviewViewportRef} className="mx-auto w-full overflow-auto">
-                    <div
-                      className="mx-auto origin-top bg-white shadow-lg"
-                      style={{ width: CV_CANVAS_WIDTH, zoom: cvPreviewScale }}
-                    >
-                      <PreviewComponent formData={mergeWithSampleData({})} />
-                    </div>
-                  </div>
-                ) : (
-                  <div className="flex h-full min-h-[320px] items-center justify-center rounded-md border border-dashed border-slate-300 bg-white text-slate-500">
-                    Preview is not available for this template.
-                  </div>
-                )}
-              </div>
-
-            </div>
-
-          </div>,
-          document.body,
-        )}
-
+            </div>,
+            document.body
+          )}
       </div>
-
     </div>
-
   );
 }
+
+// ========== HELPER COMPONENTS ==========
+
+const AdminTemplateSection = ({
+  title,
+  items,
+  type,
+  isTemplateActive,
+  handlePreview,
+  handleToggleStatus,
+}) => {
+  const scrollRef = React.useRef(null);
+
+  const scroll = (direction) => {
+    if (scrollRef.current) {
+      const { current } = scrollRef;
+      // We want to scroll by 4 items. Each item is 25% - gap.
+      // A safe bet is current.clientWidth
+      const scrollAmount = current.clientWidth;
+      if (direction === "left") {
+        current.scrollBy({ left: -scrollAmount, behavior: "smooth" });
+      } else {
+        current.scrollBy({ left: scrollAmount, behavior: "smooth" });
+      }
+    }
+  };
+
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <h2 className="text-lg font-bold text-slate-800">{title}</h2>
+        <span className="text-xs text-slate-500 bg-slate-100 px-2 py-1 rounded">
+          {items.length}
+        </span>
+      </div>
+
+      <div className="relative group/section">
+        <button
+          onClick={() => scroll("left")}
+          className="absolute left-0 top-1/2 -translate-y-1/2 -ml-4 z-10 w-10 h-10 bg-white border border-slate-200 shadow-lg rounded-full flex items-center justify-center text-slate-700 opacity-0 group-hover/section:opacity-100 transition-all duration-200 hover:bg-slate-50 hover:scale-110 disabled:opacity-0"
+        >
+          <ChevronLeft size={20} />
+        </button>
+
+        <div
+          ref={scrollRef}
+          className="flex gap-6 overflow-x-auto pb-6 pt-1 px-1 -mx-1 scroll-smooth hide-scrollbar"
+          style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+        >
+          {items.map((tpl, index) => (
+            <AdminTemplateCard
+              key={tpl._id || index}
+              tpl={tpl}
+              type={type}
+              isActive={isTemplateActive(tpl._id)}
+              onPreview={() => handlePreview(tpl)}
+              onToggleStatus={() => handleToggleStatus(tpl._id)}
+            />
+          ))}
+        </div>
+
+        <button
+          onClick={() => scroll("right")}
+          className="absolute right-0 top-1/2 -translate-y-1/2 -mr-4 z-10 w-10 h-10 bg-white border border-slate-200 shadow-lg rounded-full flex items-center justify-center text-slate-700 opacity-0 group-hover/section:opacity-100 transition-all duration-200 hover:bg-slate-50 hover:scale-110"
+        >
+          <ChevronRight size={20} />
+        </button>
+      </div>
+    </div>
+  );
+};
+
+const AdminTemplateCard = ({
+  tpl,
+  type,
+  isActive,
+  onPreview,
+  onToggleStatus,
+}) => {
+  return (
+    <div
+      className={`min-w-[280px] w-full md:w-[calc(33.333%-16px)] lg:w-[calc(25%-18px)] flex-shrink-0 bg-white border border-slate-200 rounded-xl p-2 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col overflow-hidden relative ${
+        !isActive ? "opacity-70 grayscale" : ""
+      }`}
+    >
+      <div
+        className="relative w-full aspect-[210/297] rounded-lg overflow-hidden group cursor-pointer"
+        onClick={onPreview}
+      >
+        {type === "resume" ? (
+          <img
+            src={tpl.image}
+            alt={tpl.name}
+            className="w-full h-full object-contain"
+            onError={(e) => {
+              e.target.src = CV_PLACEHOLDER;
+            }}
+          />
+        ) : (
+          <div
+            className="absolute inset-0 pointer-events-none bg-white origin-top-left"
+            style={{ transform: "scale(0.32)", width: 794 }}
+          >
+            {CVTemplates?.[tpl.templateId] &&
+              React.createElement(CVTemplates[tpl.templateId], {
+                formData: mergeWithSampleData({}),
+              })}
+          </div>
+        )}
+      </div>
+
+      <div className="mt-2 text-sm font-semibold text-slate-800 truncate">
+        {tpl.name}
+      </div>
+
+      <div className="text-xs text-slate-500 truncate">{tpl.previewText}</div>
+
+      <div className="flex gap-2 mt-3 pt-2 border-t">
+        <button
+          onClick={onPreview}
+          className="flex-1 py-1 text-xs bg-slate-50 rounded hover:bg-slate-100 transition-colors"
+        >
+          View
+        </button>
+        <button
+          onClick={onToggleStatus}
+          className={`flex-1 py-1 text-xs rounded transition-colors ${
+            isActive
+              ? "bg-slate-100 hover:bg-red-50 hover:text-red-600"
+              : "bg-blue-50 text-blue-600 hover:bg-blue-100"
+          }`}
+        >
+          {isActive ? "Disable" : "Enable"}
+        </button>
+      </div>
+    </div>
+  );
+};

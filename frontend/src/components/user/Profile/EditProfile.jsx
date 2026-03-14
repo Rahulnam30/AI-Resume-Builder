@@ -29,7 +29,8 @@ const EditProfile = () => {
     bio: "",
     github: "",
     linkedin: "",
-    extraLinks: []
+    extraLinks: [],
+    createdAt: ""
   });
 
   const [loading, setLoading] = useState(false);
@@ -55,7 +56,8 @@ const EditProfile = () => {
             bio: res.data.user.bio || "",
             github: res.data.user.github || "",
             linkedin: res.data.user.linkedin || "",
-            extraLinks: res.data.user.extraLinks || []
+            extraLinks: res.data.user.extraLinks || [],
+            createdAt: res.data.user.createdAt || ""
           }));
 
         }
@@ -145,6 +147,11 @@ const EditProfile = () => {
 
   };
 
+  // 🔹 Dynamic Member Since Year
+  const memberSince = formData.createdAt
+    ? new Date(formData.createdAt).getFullYear()
+    : "";
+
   return (
 
     <div className="edit-profile-page">
@@ -191,9 +198,11 @@ const EditProfile = () => {
 
             <p className="profile-bio">{formData.bio || "No bio added"}</p>
 
+            {/* 🔹 Dynamic Member Since */}
+
             <div className="member-info">
               <User size={14} />
-              <span>Member since 2024</span>
+              <span>Member since {memberSince}</span>
             </div>
 
             <div className="profile-divider" />
