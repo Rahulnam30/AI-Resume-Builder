@@ -278,39 +278,34 @@ const CoverLetterExamples = () => {
                                 className="flex gap-8 px-4 py-10 overflow-x-auto snap-x snap-mandatory scroll-smooth scrollbar-hide"
                                 style={{ perspective: '1000px' }}
                             >
-                                {filteredExamples.map((example, idx) => {
-                                    return (
-                                        <div
-                                            key={example.id}
-                                            className="min-w-[320px] max-w-[320px] snap-center group flex flex-col items-center bg-transparent relative flex-shrink-0"
-                                            style={{ animationDelay: `${idx * 50}ms` }}
-                                        >
-                                            {/* Image Container with Shadow & Hover Effect */}
-                                            <div className="relative w-full bg-white shadow-2xl shadow-slate-200/50 overflow-hidden group-hover:scale-[1.1] transition-transform duration-300 ease-out cursor-pointer">
-                                                {/* Image */}
-                                                <div className="bg-slate-100 w-full aspect-[3/4] overflow-hidden">
-                                                    <img
-                                                        src={example.image}
-                                                        alt={`${example.title} Template`}
-                                                        className="w-full h-full object-cover object-top hover:opacity-95 transition-opacity"
-                                                    />
-                                                </div>
-
-                                                <Link to="/cover-letter" className="absolute inset-0 z-30" />
+                                {filteredExamples.map((example) => (
+                                    <div
+                                        key={example.id}
+                                        className="min-w-[320px] max-w-[320px] snap-center group flex flex-col items-center bg-transparent relative flex-shrink-0"
+                                    >
+                                        {/* Image Container with Shadow & Hover Effect */}
+                                        <div className="relative w-full bg-white shadow-2xl shadow-slate-200/50 overflow-hidden group-hover:scale-[1.1] transition-transform duration-300 ease-out cursor-pointer">
+                                            <div className="bg-slate-100 w-full aspect-[3/4] overflow-hidden">
+                                                <img
+                                                    src={example.image}
+                                                    alt={`${example.title} Template`}
+                                                    className="w-full h-full object-cover object-top hover:opacity-95 transition-opacity"
+                                                />
                                             </div>
-
-                                            {/* Text Info Below */}
-                                            <div className="text-center mt-4 space-y-1">
-                                                <h3 className="text-lg font-bold text-[#1a2e52] group-hover:text-[#0077cc] transition-colors">
-                                                    {example.title}
-                                                </h3>
-                                                <p className="text-xs font-medium text-gray-400 max-w-[200px] mx-auto leading-relaxed">
-                                                    {example.level} • {example.category}
-                                                </p>
-                                            </div>
+                                            <Link to="/cover-letter" className="absolute inset-0 z-30" />
                                         </div>
-                                    );
-                                })}
+
+                                        {/* Text Info Below */}
+                                        <div className="text-center mt-4 space-y-1">
+                                            <h3 className="text-lg font-bold text-[#1a2e52] group-hover:text-[#0077cc] transition-colors">
+                                                {example.title}
+                                            </h3>
+                                            <p className="text-xs font-medium text-gray-400 max-w-[200px] mx-auto leading-relaxed">
+                                                {example.level} • {example.category}
+                                            </p>
+                                        </div>
+                                    </div>
+                                ))}
                             </div>
 
                             <button

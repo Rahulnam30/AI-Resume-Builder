@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   PencilLine,
@@ -12,11 +12,9 @@ import {
   Sparkles,
   XCircle,
   ShieldAlert,
-  Search,
   Zap,
   ArrowLeft,
   Target,
-  FileText,
 } from "lucide-react";
 import NavBar from "../components/NavBar";
 import Footer from "./Footer";
@@ -115,8 +113,6 @@ const ResumeGuide = () => {
 
       {/* --- 1. HERO SECTION (REDUCED SPACING) --- */}
       <section className="relative px-8 pt-4 pb-20 overflow-hidden bg-white">
-        {" "}
-        {/* Changed pt-24 to pt-8 */}
         <div className="absolute top-0 right-0 w-1/3 h-1/2 bg-orange-50 rounded-full blur-[120px] -z-10 opacity-50" />
         <div className="absolute bottom-0 left-0 w-1/3 h-1/2 bg-blue-50 rounded-full blur-[120px] -z-10 opacity-50" />
         <div className="relative z-10 mx-auto max-w-7xl">

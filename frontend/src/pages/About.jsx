@@ -8,6 +8,19 @@ import AiBuilder from "../assets/AboutUs1.png";
 import Company from "../assets/AboutUs2.png";
 import Success from "../assets/AboutUs3.png";
 
+const fadeInUp = {
+  hidden: { opacity: 0, y: 40 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } }
+};
+
+const staggerContainer = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: { staggerChildren: 0.15 }
+  }
+};
+
 const AboutUs = () => {
   const navigate = useNavigate();
 
@@ -19,19 +32,6 @@ const AboutUs = () => {
     navigate('/login');
   };
 
-  // Animation Variants
-  const fadeInUp = {
-    hidden: { opacity: 0, y: 40 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } }
-  };
-
-  const staggerContainer = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: { staggerChildren: 0.15 }
-    }
-  };
 
   return (
     <div className="min-h-screen bg-[#fcfcfd] font-['Outfit'] text-[#1a2e52] overflow-x-hidden">

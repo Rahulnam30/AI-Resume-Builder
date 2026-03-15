@@ -56,13 +56,6 @@ const IconTarget = () => (
   </svg>
 );
 
-const IconBriefcase = () => (
-  <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round">
-    <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
-    <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
-  </svg>
-);
-
 // Animations
 const fadeUp = {
   hidden: { opacity: 0, y: 22 },
@@ -76,10 +69,7 @@ const stagger = {
 
 const App = () => {
   const [activeExample, setActiveExample] = useState("intern");
-  const [copied, setCopied] = useState(false);
   const [exampleCopied, setExampleCopied] = useState(false);
-  const [showPDF, setShowPDF] = useState(false);
-
 
   const handleCopyExample = async (text) => {
     try {
@@ -89,17 +79,6 @@ const App = () => {
     } catch (err) {
       console.log("Copy failed", err);
     }
-  };
-
-  const handleCopy = (text) => {
-    const el = document.createElement("textarea");
-    el.value = text;
-    document.body.appendChild(el);
-    el.select();
-    document.execCommand("copy");
-    document.body.removeChild(el);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
   };
 
   const examples = {
