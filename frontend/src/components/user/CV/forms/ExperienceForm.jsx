@@ -10,9 +10,15 @@ import {
 } from "lucide-react";
 import axiosInstance from "./../../../../api/axios";
 
-const ExperienceForm = ({ formData, setFormData }) => {
+const ExperienceForm = ({ formData, setFormData, highlightEmpty }) => {
   const [editingId, setEditingId] = useState(null);
   const [generatingId, setGeneratingId] = useState(null);
+
+  // Helper to get border class for required fields
+  const getBorderClass = (value) => {
+    if (highlightEmpty && !value?.trim()) return 'border-red-500 focus:border-red-500 focus:ring-4 focus:ring-red-500/10';
+    return 'border-slate-200 focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10';
+  };
   const addExperience = () => {
     const id = crypto.randomUUID();
     setFormData((prev) => ({
@@ -165,7 +171,7 @@ const ExperienceForm = ({ formData, setFormData }) => {
                     </label>
                     <input
                       type="text"
-                      className="w-full px-3.5 py-2.5 border border-slate-200 rounded-lg text-sm text-slate-900 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all bg-white"
+                      className={`w-full px-3.5 py-2.5 border rounded-lg text-sm text-slate-900 focus:outline-none transition-all bg-white ${getBorderClass(exp.title)}`}
                       placeholder="Software Engineer"
                       value={exp.title}
                       onChange={(e) =>
@@ -180,7 +186,7 @@ const ExperienceForm = ({ formData, setFormData }) => {
                     </label>
                     <input
                       type="text"
-                      className="w-full px-3.5 py-2.5 border border-slate-200 rounded-lg text-sm text-slate-900 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all bg-white"
+                      className={`w-full px-3.5 py-2.5 border rounded-lg text-sm text-slate-900 focus:outline-none transition-all bg-white ${getBorderClass(exp.company)}`}
                       placeholder="Tech Company Inc."
                       value={exp.company}
                       onChange={(e) =>
@@ -210,7 +216,7 @@ const ExperienceForm = ({ formData, setFormData }) => {
                     </label>
                     <input
                       type="month"
-                      className="w-full px-3.5 py-2.5 border border-slate-200 rounded-lg text-sm text-slate-900 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all bg-white"
+                      className={`w-full px-3.5 py-2.5 border rounded-lg text-sm text-slate-900 focus:outline-none transition-all bg-white ${getBorderClass(exp.startDate)}`}
                       value={exp.startDate}
                       onChange={(e) =>
                         updateExperience(exp.id, "startDate", e.target.value)
@@ -224,7 +230,7 @@ const ExperienceForm = ({ formData, setFormData }) => {
                     </label>
                     <input
                       type="month"
-                      className="w-full px-3.5 py-2.5 border border-slate-200 rounded-lg text-sm text-slate-900 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all bg-white"
+                      className={`w-full px-3.5 py-2.5 border rounded-lg text-sm text-slate-900 focus:outline-none transition-all bg-white ${getBorderClass(exp.endDate)}`}
                       value={exp.endDate}
                       onChange={(e) =>
                         updateExperience(exp.id, "endDate", e.target.value)
@@ -252,7 +258,7 @@ const ExperienceForm = ({ formData, setFormData }) => {
                     <textarea
                       rows={4}
                       placeholder="Describe your responsibilities and achievements..."
-                      className="w-full px-4 py-3 border border-slate-200 rounded-lg text-sm text-slate-900 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all bg-white resize-y min-h-[100px] leading-relaxed"
+                      className={`w-full px-4 py-3 border rounded-lg text-sm text-slate-900 focus:outline-none transition-all bg-white resize-y min-h-[100px] leading-relaxed ${getBorderClass(exp.description)}`}
                       value={exp.description}
                       onChange={(e) =>
                         updateExperience(exp.id, "description", e.target.value)

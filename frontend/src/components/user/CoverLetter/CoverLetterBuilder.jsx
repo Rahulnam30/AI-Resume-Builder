@@ -1072,6 +1072,7 @@ ${
 
 /* ------------Input Validation ------------- */
 const [warning, setWarning] = useState(false);
+const [highlightEmpty, setHighlightEmpty] = useState(false);
 const [completion, setcompletion] = useState({});
 const [showCompletionPopup, setShowCompletionPopup] = useState(false);
 
@@ -1175,6 +1176,7 @@ const goLeft = () => {
   if (currentIdx > 0) {
     setActiveSection(tabs[currentIdx - 1].id);
     setWarning(false);
+    setHighlightEmpty(false);
   }
 };
 
@@ -1182,8 +1184,10 @@ const goRight = () => {
   if (currentIdx < tabs.length - 1 && isSectionValid()) {
     setActiveSection(tabs[currentIdx + 1].id);
     setWarning(false);
+    setHighlightEmpty(false);
   } else {
     setWarning(true);
+    setHighlightEmpty(true);
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 };
@@ -1195,6 +1199,7 @@ const goRight = () => {
           <SenderInfoForm
             formData={formData}
             onInputChange={handleInputChange}
+            highlightEmpty={highlightEmpty}
           />
         );
 
@@ -1203,6 +1208,7 @@ const goRight = () => {
           <RecipientInfoForm
             formData={formData}
             onInputChange={handleInputChange}
+            highlightEmpty={highlightEmpty}
           />
         );
 
@@ -1211,6 +1217,7 @@ const goRight = () => {
           <JobDetailsForm
             formData={formData}
             onInputChange={handleInputChange}
+            highlightEmpty={highlightEmpty}
           />
         );
 
@@ -1219,12 +1226,13 @@ const goRight = () => {
           <BodyContentForm
             formData={formData}
             onInputChange={handleInputChange}
+            highlightEmpty={highlightEmpty}
           />
         );
 
       case "closing":
         return (
-          <ClosingForm formData={formData} onInputChange={handleInputChange} />
+          <ClosingForm formData={formData} onInputChange={handleInputChange} highlightEmpty={highlightEmpty} />
         );
 
       default:
@@ -1352,14 +1360,14 @@ const goRight = () => {
                     scrollbarColor: "#e2e8f0 transparent",
                   }}
                 >
-                  {renderFormContent()}
-                  
                   {/* Validation warning */}
                   {warning && (
                     <div className="text-sm text-red-700 bg-yellow-100 border border-yellow-300 px-4 py-2 mb-3 rounded-lg">
                       {getRequiredFieldsMessage()}
                     </div>
                   )}
+
+                  {renderFormContent()}
                 </div>
 
                 <div className="flex justify-between items-center mt-auto p-4 border-t border-slate-100 bg-white">

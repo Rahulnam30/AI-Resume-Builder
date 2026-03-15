@@ -184,6 +184,8 @@ const ResumeBuilder = ({ setActivePage = () => { } }) => {
 
   /* ------------Input Validation ------------- */
   const [warning, setWarning] = useState(false);
+  const [warningFields, setWarningFields] = useState([]);
+  const [highlightEmpty, setHighlightEmpty] = useState(false);
   const [showCompletionPopup, setShowCompletionPopup] = useState(false);
   const isSectionValid = () => {
     switch (activeSection) {
@@ -196,7 +198,12 @@ const ResumeBuilder = ({ setActivePage = () => { } }) => {
         );
 
       case "work":
-        return formData?.experience && formData.experience.length > 0;
+        // If no experience entries, allow skipping
+        if (!formData?.experience || formData.experience.length === 0) return true;
+        // If entries exist, check that all required fields are filled
+        return formData.experience.every(
+          (exp) => exp.title?.trim() && exp.company?.trim() && exp.startDate?.trim() && exp.endDate?.trim() && exp.description?.trim()
+        );
 
       case "education":
         return formData?.education && formData.education.length > 0;
@@ -205,14 +212,82 @@ const ResumeBuilder = ({ setActivePage = () => { } }) => {
         return formData?.skills && formData.skills.length > 0;
 
       case "projects":
-        return formData?.projects && formData.projects.length > 0;
+        // If no project entries, allow skipping
+        if (!formData?.projects || formData.projects.length === 0) return true;
+        // If entries exist, check that all required fields are filled
+        return formData.projects.every(
+          (proj) => proj.name?.trim() && proj.technologies?.trim() && proj.description?.trim()
+        );
 
       case "certs":
-        return formData?.certifications && formData.certifications.length > 0;
+        // If no certification entries, allow skipping
+        if (!formData?.certifications || formData.certifications.length === 0) return true;
+        // If entries exist, check that all required fields are filled
+        return formData.certifications.every(
+          (cert) => cert.name?.trim() && cert.issuer?.trim() && cert.date?.trim()
+        );
 
       default:
         return true;
     }
+  };
+
+  // Returns a list of empty mandatory field names for the current section
+  const getEmptyFieldNames = () => {
+    const empty = [];
+    switch (activeSection) {
+      case "personal":
+        if (!formData?.fullName?.trim()) empty.push("Full Name");
+        if (!formData?.email?.trim()) empty.push("Email");
+        if (!formData?.phone?.trim()) empty.push("Phone");
+        if (!formData?.location?.trim()) empty.push("Location");
+        break;
+      case "work":
+        if (formData?.experience?.length > 0) {
+          formData.experience.forEach((exp, i) => {
+            const label = formData.experience.length > 1 ? ` (Experience ${i + 1})` : "";
+            if (!exp.title?.trim()) empty.push(`Job Title${label}`);
+            if (!exp.company?.trim()) empty.push(`Company${label}`);
+            if (!exp.startDate?.trim()) empty.push(`Start Date${label}`);
+            if (!exp.endDate?.trim()) empty.push(`End Date${label}`);
+            if (!exp.description?.trim()) empty.push(`Description${label}`);
+          });
+        }
+        break;
+      case "education":
+        if (!formData?.education || formData.education.length === 0) {
+          empty.push("At least one education entry");
+        }
+        break;
+      case "skills":
+        if (!formData?.skills || formData.skills.length === 0) {
+          empty.push("At least one skill");
+        }
+        break;
+      case "projects":
+        if (formData?.projects?.length > 0) {
+          formData.projects.forEach((proj, i) => {
+            const label = formData.projects.length > 1 ? ` (Project ${i + 1})` : "";
+            if (!proj.name?.trim()) empty.push(`Project Name${label}`);
+            if (!proj.technologies?.trim()) empty.push(`Technologies${label}`);
+            if (!proj.description?.trim()) empty.push(`Description${label}`);
+          });
+        }
+        break;
+      case "certs":
+        if (formData?.certifications?.length > 0) {
+          formData.certifications.forEach((cert, i) => {
+            const label = formData.certifications.length > 1 ? ` (Certification ${i + 1})` : "";
+            if (!cert.name?.trim()) empty.push(`Certification Name${label}`);
+            if (!cert.issuer?.trim()) empty.push(`Issuer${label}`);
+            if (!cert.date?.trim()) empty.push(`Date${label}`);
+          });
+        }
+        break;
+      default:
+        break;
+    }
+    return empty;
   };
   const isInputValid = (label) => {
     // For now, allow navigation to all sections regardless of completion status
@@ -435,6 +510,8 @@ const ResumeBuilder = ({ setActivePage = () => { } }) => {
     if (currentIdx > 0) {
       setActiveSection(tabs[currentIdx - 1].id);
       setWarning(false);
+      setWarningFields([]);
+      setHighlightEmpty(false);
     }
   };
 
@@ -453,19 +530,20 @@ const ResumeBuilder = ({ setActivePage = () => { } }) => {
             formData={formData}
             onInputChange={handleInputChange}
             onUseSummary={handleUseSummary}
+            highlightEmpty={highlightEmpty}
           />
         );
       case "work":
-        return <ExperienceForm formData={formData} setFormData={setFormData} />;
+        return <ExperienceForm formData={formData} setFormData={setFormData} highlightEmpty={highlightEmpty} />;
       case "education":
-        return <EducationForm formData={formData} setFormData={setFormData} />;
+        return <EducationForm formData={formData} setFormData={setFormData} highlightEmpty={highlightEmpty} />;
       case "skills":
         return <SkillsForm formData={formData} setFormData={setFormData} />;
       case "projects":
-        return <ProjectsForm formData={formData} setFormData={setFormData} />;
+        return <ProjectsForm formData={formData} setFormData={setFormData} highlightEmpty={highlightEmpty} />;
       case "certs":
         return (
-          <CertificationsForm formData={formData} setFormData={setFormData} />
+          <CertificationsForm formData={formData} setFormData={setFormData} highlightEmpty={highlightEmpty} />
         );
       default:
         return null;
@@ -554,9 +632,10 @@ const ResumeBuilder = ({ setActivePage = () => { } }) => {
                     }}
                   >
                     {/* Validation warning */}
-                    {warning && (
+                    {warning && warningFields.length > 0 && (
                       <div className="text-sm text-red-700 bg-yellow-100 border border-yellow-300 px-4 py-2 mb-3 rounded-lg">
-                        Please fill in all required fields to continue.
+                        <span className="font-semibold">The following fields are empty:</span>{" "}
+                        {warningFields.join(", ")}
                       </div>
                     )}
 
@@ -580,10 +659,14 @@ const ResumeBuilder = ({ setActivePage = () => { } }) => {
                         } else {
                           if (!isSectionValid()) {
                             setWarning(true);
+                            setWarningFields(getEmptyFieldNames());
+                            setHighlightEmpty(true);
                             window.scrollTo({ top: 0, behavior: "smooth" });
                             return;
                           }
                           setWarning(false);
+                          setWarningFields([]);
+                          setHighlightEmpty(false);
                           goRight();
                         }
                       }}
@@ -611,9 +694,10 @@ const ResumeBuilder = ({ setActivePage = () => { } }) => {
                 />
               </div>
               <div className="flex-1 min-h-[400px] overflow-y-auto p-4 pb-0">
-                {warning && (
+                {warning && warningFields.length > 0 && (
                   <div className="text-sm text-red-700 bg-yellow-100 border border-yellow-300 px-4 py-2 mb-3 rounded-lg">
-                    Please fill in all required fields to continue.
+                    <span className="font-semibold">The following fields are empty:</span>{" "}
+                    {warningFields.join(", ")}
                   </div>
                 )}
 
@@ -636,6 +720,8 @@ const ResumeBuilder = ({ setActivePage = () => { } }) => {
                     } else {
                       if (!isSectionValid()) {
                         setWarning(true);
+                        setWarningFields(getEmptyFieldNames());
+                        setHighlightEmpty(true);
                         formContainerRef.current?.scrollTo({
                           top: 0,
                           behavior: "smooth",
@@ -643,6 +729,8 @@ const ResumeBuilder = ({ setActivePage = () => { } }) => {
                         return;
                       }
                       setWarning(false);
+                      setWarningFields([]);
+                      setHighlightEmpty(false);
                       goRight();
                     }
                   }}

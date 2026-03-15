@@ -11,9 +11,15 @@ import {
 import { getCompletionStatus } from "./../completion";
 import axiosInstance from "../../../../api/axios";
 
-const ExperienceForm = ({ formData, setFormData }) => {
+const ExperienceForm = ({ formData, setFormData, highlightEmpty }) => {
   const [editingId, setEditingId] = useState(null);
   const [generatingId, setGeneratingId] = useState(null);
+
+  // Helper to get border class for required fields
+  const getBorderClass = (value) => {
+    if (highlightEmpty && !value?.trim()) return 'border-red-500 focus:border-red-500 focus:ring-4 focus:ring-red-500/10';
+    return 'border-slate-200 focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10';
+  };
   // initial load effect
   useEffect(() => {
     const { sectionValidationStatus } = getCompletionStatus(formData);
@@ -200,7 +206,7 @@ const ExperienceForm = ({ formData, setFormData }) => {
                     </label>
                     <input
                       type="text"
-                      className="w-full px-3.5 py-2.5 border border-slate-200 rounded-lg text-sm text-slate-900 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all bg-white"
+                      className={`w-full px-3.5 py-2.5 border rounded-lg text-sm text-slate-900 focus:outline-none transition-all bg-white ${getBorderClass(exp.title)}`}
                       value={exp.title || ""}
                       placeholder="Software Engineer"
                       onChange={(e) =>
@@ -214,7 +220,7 @@ const ExperienceForm = ({ formData, setFormData }) => {
                     </label>
                     <input
                       type="text"
-                      className="w-full px-3.5 py-2.5 border border-slate-200 rounded-lg text-sm text-slate-900 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all bg-white"
+                      className={`w-full px-3.5 py-2.5 border rounded-lg text-sm text-slate-900 focus:outline-none transition-all bg-white ${getBorderClass(exp.company)}`}
                       value={exp.company || ""}
                       placeholder="Tech Company Inc."
                       onChange={(e) =>
@@ -228,7 +234,7 @@ const ExperienceForm = ({ formData, setFormData }) => {
                     </label>
                     <input
                       type="month"
-                      className="w-full px-3.5 py-2.5 border border-slate-200 rounded-lg text-sm text-slate-900 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all bg-white"
+                      className={`w-full px-3.5 py-2.5 border rounded-lg text-sm text-slate-900 focus:outline-none transition-all bg-white ${getBorderClass(exp.startDate)}`}
                       value={exp.startDate || ""}
                       onChange={(e) =>
                         updateExperience(exp.id, "startDate", e.target.value)
@@ -241,7 +247,7 @@ const ExperienceForm = ({ formData, setFormData }) => {
                     </label>
                     <input
                       type="text"
-                      className="w-full px-3.5 py-2.5 border border-slate-200 rounded-lg text-sm text-slate-900 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all bg-white"
+                      className={`w-full px-3.5 py-2.5 border rounded-lg text-sm text-slate-900 focus:outline-none transition-all bg-white ${getBorderClass(exp.endDate)}`}
                       value={exp.endDate || ""}
                       placeholder="Present or YYYY-MM"
                       onChange={(e) =>
@@ -269,7 +275,7 @@ const ExperienceForm = ({ formData, setFormData }) => {
                   </div>
                   <textarea
                     placeholder="Describe your responsibilities and achievements..."
-                    className="w-full px-4 py-3 border border-slate-200 rounded-lg text-sm text-slate-900 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all bg-white resize-y min-h-[140px] leading-relaxed"
+                    className={`w-full px-4 py-3 border rounded-lg text-sm text-slate-900 focus:outline-none transition-all bg-white resize-y min-h-[140px] leading-relaxed ${getBorderClass(exp.description)}`}
                     value={exp.description || ""}
                     maxLength={500}
                     onChange={(e) =>
