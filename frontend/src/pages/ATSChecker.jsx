@@ -35,10 +35,6 @@ const useInView = (threshold = 0.15) => {
   return [ref, isVisible];
 };
 
-
-
-
-
 /** ✅ ATS donut chart data */
 const atsBreakdown = [
   { name: "Keyword Match", value: 52 },
@@ -162,11 +158,9 @@ function ATSDonutCard({ score = 78 }) {
 }
 
 const ATSCheckerFeature = () => {
- const navigate = useNavigate();
-
+  const navigate = useNavigate();
   const isLoggedIn =
-  localStorage.getItem("token") || sessionStorage.getItem("token");
-  
+    localStorage.getItem("token") || sessionStorage.getItem("token");
   /** ✅ Updated: Changed to navigate to login page */
   const handleCTA = () => {
     navigate("/login");
@@ -177,20 +171,20 @@ const ATSCheckerFeature = () => {
   const [uploadRef, uploadVisible] = useInView(0.15);
   const [fixesRef, fixesVisible] = useInView(0.15);
   const [faqRef, faqVisible] = useInView(0.15);
-  const [openFaq, setOpenFaq] = useState(0);
+  const [openFaq, setOpenFaq] = useState(-1);
 
   return (
     <div className="min-h-screen bg-[#FDFDFD] font-['Outfit'] select-none overflow-x-hidden">
       <NavBar />
 
       {/* 1) HERO SECTION */}
-      <section ref={heroRef} className="relative px-4 sm:px-6 lg:px-8 pt-12 sm:pt-14 lg:pt-16 pb-14 sm:pb-16 lg:pb-20 overflow-hidden bg-white">
+      <section ref={heroRef} className="relative px-4 sm:px-6 lg:px-8 pt-16 sm:pt-24 lg:pt-24 pb-14 sm:pb-16 lg:pb-20 overflow-hidden bg-white">
         <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-50/50 rounded-full blur-3xl -z-10 opacity-60" />
         <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-orange-50/50 rounded-full blur-3xl -z-10 opacity-60" />
 
         <div className="mx-auto max-w-7xl">
           <div className="grid items-center gap-10 md:gap-12 lg:gap-16 lg:grid-cols-2">
-            <div className={`min-w-0 transition-all duration-700 ${heroVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"}`}>
+            <div className={`min-w-0 flex flex-col items-center text-center lg:items-start lg:text-left transition-all duration-700 ${heroVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"}`}>
               <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-2 mb-6 sm:mb-8 border rounded-full bg-slate-50 border-slate-100">
                 <Shield size={14} className="text-[#0077cc]" />
                 <span className="text-xs font-bold tracking-widest text-slate-500 uppercase">
@@ -233,18 +227,17 @@ const ATSCheckerFeature = () => {
               </div>
             </div>
 
-            <div className={`relative min-w-0 transition-all duration-700 delay-100 ${heroVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}>
+            <div
+              className={`relative transition-all duration-700 delay-100 ${heroVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+                }`}
+            >
               <div className="relative max-w-md mx-auto lg:mr-0">
-                <div className="relative pl-14 sm:pl-16 md:pl-20 lg:pl-24">
-                  <div className="absolute left-0 bottom-0 z-20 pointer-events-none">
-                    <img
-                      src={Lady}
-                      alt="Character pointing to ATS score"
-                      className="w-24 sm:w-28 md:w-32 lg:w-36 xl:w-40 2xl:w-48 object-contain"
-                    />
-                  </div>
-                  <ATSDonutCard score={82} />
-                </div>
+                <img
+                  src={Lady}
+                  alt="Character pointing to ATS score"
+                  className="hidden lg:block absolute left-[-13rem] bottom-0 h-auto w-full min-[1024px]:max-[1200px]:left-[-8rem] min-[1024px]:max-[1200px]:w-72 object-cover"
+                />
+                <ATSDonutCard score={82} />
               </div>
             </div>
           </div>
@@ -337,7 +330,7 @@ const ATSCheckerFeature = () => {
             <p className="mt-4 text-sm sm:text-base text-gray-500">Most common reasons resumes get rejected.</p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
             {[
               { icon: FileSearch, title: "Missing Keywords", desc: "Recruiters search for specific skills. If you don't list them, you don't appear." },
               { icon: AlertCircle, title: "Graphics & Tables", desc: "Complex layouts confuse parsers. Keep it clean and linear." },
@@ -356,7 +349,7 @@ const ATSCheckerFeature = () => {
         </div>
       </section>
 
-      {/* 5) FAQ ACCORDION */}
+      {/* 5) FAQ */}
       <section ref={faqRef} className="px-4 sm:px-6 lg:px-8 py-14 sm:py-16 lg:py-20 bg-[#f8f9fc]">
         <div className={`max-w-3xl mx-auto transition-all duration-700 ${faqVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}>
           <h2 className="text-2xl sm:text-3xl font-black text-center text-[#1a2e52] mb-8 sm:mb-12">
