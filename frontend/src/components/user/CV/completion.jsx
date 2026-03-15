@@ -54,9 +54,11 @@ export const getCompletionStatus = (formData) => {
         project.name?.trim() &&
         project.description?.trim() &&
         project.technologies?.trim() &&
-        (project.link?.github?.trim() ||
+        (typeof project.link === 'string' ? project.link.trim() : (
+          project.link?.github?.trim() ||
           project.link?.liveLink?.trim() ||
-          project.link?.other?.trim()),
+          project.link?.other?.trim()
+        )),
     );
 
   if (!hasValidProject) {

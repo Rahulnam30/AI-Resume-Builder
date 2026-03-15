@@ -116,7 +116,11 @@ const hasArrayItemData = (item) => {
 
   return keys.some((key) => {
     const value = item[key];
-    return typeof value === "string" && value.trim().length > 0;
+    if (typeof value === "string" && value.trim().length > 0) return true;
+    if (value && typeof value === "object") {
+      return Object.values(value).some((v) => typeof v === "string" && v.trim().length > 0);
+    }
+    return false;
   });
 };
 
@@ -185,7 +189,12 @@ export const mergeWithSampleData = (userData) => {
 
     education: mergeArrayData(userData.education, sample.education),
 
-    projects: mergeArrayData(userData.projects, sample.projects),
+    projects: mergeArrayData(userData.projects, sample.projects).map(p => {
+      if (p && p.link && typeof p.link === "object") {
+        return { ...p, link: p.link.github || p.link.liveLink || p.link.other || "" };
+      }
+      return p;
+    }),
 
     certifications: mergeArrayData(
       userData.certifications,

@@ -189,51 +189,54 @@ const CVPreview = ({
   const [moreOpen, setMoreOpen] = useState(false);
 
   const TemplateComponent = CVTemplates[selectedTemplate];
- /* ─── helpers: detect if user entered optional sections ───────────────── */
-const hasUserEnteredExperience = useMemo(() => {
-  return formData?.experience?.some(exp => 
-    exp?.company?.trim() || exp?.position?.trim() || exp?.description?.trim()
-  );
-}, [formData?.experience]);
+  /* ─── helpers: detect if user entered optional sections ───────────────── */
+  const hasUserEnteredExperience = useMemo(() => {
+    return formData?.experience?.some(exp =>
+      exp?.company?.trim() || exp?.position?.trim() || exp?.description?.trim()
+    );
+  }, [formData?.experience]);
 
-const hasUserEnteredEducation = useMemo(() => {
-  return formData?.education?.some(edu => 
-    edu?.school?.trim() || edu?.degree?.trim() || edu?.field?.trim() || edu?.year?.trim()
-  );
-}, [formData?.education]);
+  const hasUserEnteredEducation = useMemo(() => {
+    return formData?.education?.some(edu =>
+      edu?.school?.trim() || edu?.degree?.trim() || edu?.field?.trim() || edu?.year?.trim()
+    );
+  }, [formData?.education]);
 
-const hasUserEnteredProjects = useMemo(() => {
-  return formData?.projects?.some(proj => 
-    proj?.title?.trim() || proj?.description?.trim() || proj?.link?.trim()
-  );
-}, [formData?.projects]);
+  const hasUserEnteredProjects = useMemo(() => {
+    return formData?.projects?.some(proj => {
+      const linkStr = typeof proj?.link === 'string'
+        ? proj.link
+        : (proj?.link?.github || proj?.link?.liveLink || proj?.link?.other || '');
+      return proj?.title?.trim() || proj?.name?.trim() || proj?.description?.trim() || linkStr?.trim();
+    });
+  }, [formData?.projects]);
 
-const hasUserEnteredCertifications = useMemo(() => {
-  return formData?.certifications?.some(cert => 
-    cert?.name?.trim() || cert?.issuer?.trim() || cert?.date?.trim()
-  );
-}, [formData?.certifications]);
+  const hasUserEnteredCertifications = useMemo(() => {
+    return formData?.certifications?.some(cert =>
+      cert?.name?.trim() || cert?.issuer?.trim() || cert?.date?.trim()
+    );
+  }, [formData?.certifications]);
 
-/* ─── merge + filter display data ─────────────────────────────────────── */
-const displayData = useMemo(() => {
-  const merged = mergeWithSampleData(formData);
-  
-  // Clear sections if user didn't enter data (remove sample data)
-  if (!hasUserEnteredExperience && Array.isArray(merged.experience)) {
-    merged.experience = [];
-  }
-  if (!hasUserEnteredEducation && Array.isArray(merged.education)) {
-    merged.education = [];
-  }
-  if (!hasUserEnteredProjects && Array.isArray(merged.projects)) {
-    merged.projects = [];
-  }
-  if (!hasUserEnteredCertifications && Array.isArray(merged.certifications)) {
-    merged.certifications = [];
-  }
-  
-  return merged;
-}, [formData, hasUserEnteredExperience, hasUserEnteredEducation, hasUserEnteredProjects, hasUserEnteredCertifications]);
+  /* ─── merge + filter display data ─────────────────────────────────────── */
+  const displayData = useMemo(() => {
+    const merged = mergeWithSampleData(formData);
+
+    // Clear sections if user didn't enter data (remove sample data)
+    if (!hasUserEnteredExperience && Array.isArray(merged.experience)) {
+      merged.experience = [];
+    }
+    if (!hasUserEnteredEducation && Array.isArray(merged.education)) {
+      merged.education = [];
+    }
+    if (!hasUserEnteredProjects && Array.isArray(merged.projects)) {
+      merged.projects = [];
+    }
+    if (!hasUserEnteredCertifications && Array.isArray(merged.certifications)) {
+      merged.certifications = [];
+    }
+
+    return merged;
+  }, [formData, hasUserEnteredExperience, hasUserEnteredEducation, hasUserEnteredProjects, hasUserEnteredCertifications]);
   const isUserData = useMemo(() => hasAnyUserData(formData), [formData]);
   const previewRef = useRef(null);
 
