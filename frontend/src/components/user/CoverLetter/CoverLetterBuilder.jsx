@@ -10,6 +10,7 @@ import {
   FileText,
   User,
   AlertTriangle,
+  CheckCircle,
   FileText as FileTextIcon,
   X,
 } from "lucide-react";
@@ -139,44 +140,35 @@ const CoverLetterBuilder = () => {
 
   const [headerHeight, setHeaderHeight] = useState(64);
 
-  const [formData, setFormData] = useState({
+  const defaultFormData = {
     fullName: "",
-
     email: "",
-
     phone: "",
-
     address: "",
-
     linkedin: "",
-
     recipientName: "",
-
     recipientTitle: "",
-
     companyName: "",
-
     companyAddress: "",
-
     jobTitle: "",
-
     jobReference: "",
-
     jobSummary: "",
-
     jobDescription: "",
-
     openingParagraph: "",
-
     bodyParagraph1: "",
-
     bodyParagraph2: "",
-
     closingParagraph: "",
-
     salutation: "Sincerely",
-
     customSalutation: "",
+  };
+
+  const [formData, setFormData] = useState(() => {
+    try {
+      const saved = localStorage.getItem("coverLetterFormData");
+      return saved ? { ...defaultFormData, ...JSON.parse(saved) } : defaultFormData;
+    } catch {
+      return defaultFormData;
+    }
   });
 
   const [selectedTemplate, setSelectedTemplate] = useState("professional");
@@ -206,6 +198,14 @@ const CoverLetterBuilder = () => {
       document.body.style.overflow = "";
     };
   }, [showMobilePreview]);
+
+  // Auto-save to localStorage (debounced 400 ms, same as Resume Builder)
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      localStorage.setItem("coverLetterFormData", JSON.stringify(formData));
+    }, 400);
+    return () => clearTimeout(timeout);
+  }, [formData]);
 
   useEffect(() => {
     const saveEditActivity = async () => {
@@ -1265,19 +1265,28 @@ ${
       />
 
       <div className="px-2 py-4 sm:px-4 lg:px-4 w-screen max-w-full mx-0">
-        {/* Warning Banner */}
-
-        <div className="flex gap-3 p-3 bg-amber-50 border border-amber-200 rounded-xl mb-4 shadow-sm px-2">
-          <AlertTriangle
-            className="text-amber-500 flex-shrink-0 mt-0.5"
-            size={18}
-          />
-
-          <span className="text-sm font-medium text-amber-800">
-            Fill Job Summary & Description in Job Details tab for a complete
-            professional letter.
-          </span>
-        </div>
+        {/* Dynamic status bar — mirrors Resume Builder */}
+        {completion?.isComplete ? (
+          <div className="flex gap-3 p-3 bg-emerald-50 border border-emerald-200 rounded-xl mb-4 shadow-sm px-2">
+            <CheckCircle
+              className="text-emerald-500 flex-shrink-0 mt-0.5"
+              size={18}
+            />
+            <span className="text-sm font-medium text-emerald-800">
+              Cover Letter Ready: All required information has been added. You can now export your cover letter.
+            </span>
+          </div>
+        ) : (
+          <div className="flex gap-3 p-3 bg-amber-50 border border-amber-200 rounded-xl mb-4 shadow-sm px-2">
+            <AlertTriangle
+              className="text-amber-500 flex-shrink-0 mt-0.5"
+              size={18}
+            />
+            <span className="text-sm font-medium text-amber-800">
+              Complete Your Cover Letter: Add the missing information to enable export functionality.
+            </span>
+          </div>
+        )}
 
         {/* Main Layout – desktop floating form + preview (matches CV/Resume) */}
 
