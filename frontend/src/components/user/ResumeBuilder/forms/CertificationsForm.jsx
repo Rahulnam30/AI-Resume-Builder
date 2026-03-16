@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import MonthYearPicker from "../../MonthYearPicker";
 import { Award, Check, EditIcon, Plus, Trash2 } from "lucide-react";
 import { getCompletionStatus } from "../completion";
 
@@ -167,10 +168,9 @@ const CertificationsForm = ({ formData, setFormData, highlightEmpty }) => {
                     <label className="text-sm font-semibold text-slate-700">
                       Date Obtained <span className="text-red-500">*</span>
                     </label>
-                    <input
-                      type="month"
+                    <MonthYearPicker
                       className={`w-full px-3.5 py-2.5 border rounded-lg text-sm text-slate-900 focus:outline-none transition-all bg-white ${getBorderClass(cert.date)}`}
-                      value={cert.date || ""}
+                      value={cert.date}
                       onChange={(e) => {
                         const updated = (formData?.certifications ?? []).map(
                           (item) =>

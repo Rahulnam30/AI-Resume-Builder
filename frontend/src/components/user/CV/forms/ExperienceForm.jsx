@@ -1,4 +1,5 @@
 import { useState } from "react";
+import MonthYearPicker from "../../MonthYearPicker";
 import {
   Briefcase,
   Trash2,
@@ -214,8 +215,7 @@ const ExperienceForm = ({ formData, setFormData, highlightEmpty }) => {
                     <label className="text-sm font-semibold text-slate-700">
                       Start Date <span className="text-red-500">*</span>
                     </label>
-                    <input
-                      type="month"
+                    <MonthYearPicker
                       className={`w-full px-3.5 py-2.5 border rounded-lg text-sm text-slate-900 focus:outline-none transition-all bg-white ${getBorderClass(exp.startDate)}`}
                       value={exp.startDate}
                       onChange={(e) =>
@@ -225,13 +225,31 @@ const ExperienceForm = ({ formData, setFormData, highlightEmpty }) => {
                   </div>
 
                   <div className="flex flex-col gap-1.5">
-                    <label className="text-sm font-semibold text-slate-700">
-                      End Date <span className="text-red-500">*</span>
-                    </label>
-                    <input
-                      type="month"
-                      className={`w-full px-3.5 py-2.5 border rounded-lg text-sm text-slate-900 focus:outline-none transition-all bg-white ${getBorderClass(exp.endDate)}`}
-                      value={exp.endDate}
+                    <div className="flex items-center justify-between">
+                      <label className="text-sm font-semibold text-slate-700">
+                        End Date <span className="text-red-500">*</span>
+                      </label>
+                      <label className="flex items-center gap-1.5 cursor-pointer select-none text-sm text-slate-600">
+                        <input
+                          type="checkbox"
+                          className="w-3.5 h-3.5 accent-blue-600 cursor-pointer"
+                          checked={exp.endDate === "Present"}
+                          onChange={(e) => {
+                            if (e.target.checked) {
+                              updateExperience(exp.id, "endDate", "Present");
+                            } else {
+                              updateExperience(exp.id, "endDate", "");
+                            }
+                          }}
+                        />
+                        Present
+                      </label>
+                    </div>
+                    <MonthYearPicker
+                      className={`w-full px-3.5 py-2.5 border rounded-lg text-sm text-slate-900 focus:outline-none transition-all ${exp.endDate === "Present" ? "bg-slate-100 text-slate-400 cursor-not-allowed" : "bg-white"} ${getBorderClass(exp.endDate)}`}
+                      value={exp.endDate === "Present" ? "" : exp.endDate}
+                      disabled={exp.endDate === "Present"}
+                      alignRight={true}
                       onChange={(e) =>
                         updateExperience(exp.id, "endDate", e.target.value)
                       }

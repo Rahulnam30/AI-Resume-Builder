@@ -1,4 +1,5 @@
 import { useState } from "react";
+import MonthYearPicker from "../../MonthYearPicker";
 import { Trash2, EditIcon, Check, Plus } from "lucide-react";
 
 const CertificationsForm = ({ formData, setFormData, highlightEmpty }) => {
@@ -154,8 +155,8 @@ const CertificationsForm = ({ formData, setFormData, highlightEmpty }) => {
 
                 <div className="flex flex-col gap-2 mb-3">
                   <label>Date Obtained *</label>
-                  <input
-                    type="month"
+                  <MonthYearPicker
+                    alignRight={true}
                     className={`px-2.5 py-2 border text-sm rounded focus:outline-none focus:shadow-sm ${getBorderClass(cert.date)}`}
                     value={cert.date}
                     onChange={(e) =>
