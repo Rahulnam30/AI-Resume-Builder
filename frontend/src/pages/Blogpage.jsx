@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import { Search, ChevronDown, Calendar, Sparkles, Loader2, Check, AlertCircle, Mail } from 'lucide-react';
 import NavBar from '../components/NavBar';
 import Footer from "./Footer";
-<<<<<<< HEAD
 import { motion } from "framer-motion";
 
 const fadeUp = {
@@ -20,20 +19,6 @@ const BlogPage = () => {
 
   const togglePost = (id) => {
     setExpandedPosts((prev) => ({ ...prev, [id]: !prev[id] }));
-=======
-import axiosInstance from '../api/axios';
-
-const BlogPage = () => {
-  const [activeCategory, setActiveCategory] = useState('All Articles');
-  const [searchQuery, setSearchQuery] = useState('');
-  const [expandedPosts, setExpandedPosts] = useState({});
-  const [blogPosts, setBlogPosts] = useState([]);
-  const [isLoadingBlogs, setIsLoadingBlogs] = useState(true);
-  const [blogsError, setBlogsError] = useState('');
-
-  const togglePost = (id) => {
-    setExpandedPosts(prev => ({ ...prev, [id]: !prev[id] }));
->>>>>>> b6d6a945 (Updated CV builder validation (education mandatory, certification optional))
   };
 
   // Subscription Logic
@@ -55,7 +40,6 @@ const BlogPage = () => {
     }, 1500);
   };
 
-<<<<<<< HEAD
   const categories = [
     "All Articles",
     "Resume Tips",
@@ -151,47 +135,6 @@ const BlogPage = () => {
       activeCategory === "All Articles" || post.category === activeCategory;
     const matchesSearch =
       post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-=======
-  useEffect(() => {
-    let mounted = true;
-
-    const fetchBlogs = async () => {
-      try {
-        setIsLoadingBlogs(true);
-        setBlogsError('');
-        const response = await axiosInstance.get('/api/blog');
-        const rows = response.data?.data || [];
-
-        if (mounted) {
-          setBlogPosts(rows);
-        }
-      } catch (error) {
-        if (mounted) {
-          setBlogsError(error.response?.data?.message || 'Failed to load blog posts');
-        }
-      } finally {
-        if (mounted) {
-          setIsLoadingBlogs(false);
-        }
-      }
-    };
-
-    fetchBlogs();
-
-    return () => {
-      mounted = false;
-    };
-  }, []);
-
-  const categories = [
-    'All Articles',
-    ...Array.from(new Set(blogPosts.map((post) => post.category).filter(Boolean))),
-  ];
-
-  const filteredPosts = blogPosts.filter(post => {
-    const matchesCategory = activeCategory === 'All Articles' || post.category === activeCategory;
-    const matchesSearch = post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
->>>>>>> b6d6a945 (Updated CV builder validation (education mandatory, certification optional))
       post.excerpt.toLowerCase().includes(searchQuery.toLowerCase());
     return matchesCategory && matchesSearch;
   });
@@ -201,7 +144,6 @@ const BlogPage = () => {
       <NavBar />
 
       {/* Hero Section */}
-<<<<<<< HEAD
       <motion.div
         variants={fadeUp}
         initial="hidden"
@@ -209,9 +151,6 @@ const BlogPage = () => {
         viewport={{ once: true }}
         className="relative px-6 pt-32 pb-20 overflow-hidden bg-white"
       >
-=======
-      <div className="relative px-6 pt-32 pb-20 overflow-hidden bg-white">
->>>>>>> b6d6a945 (Updated CV builder validation (education mandatory, certification optional))
         {/* Brand Blurs */}
         <div className="absolute top-0 right-0 w-1/3 h-1/2 bg-orange-50 rounded-full blur-[120px] -z-10 opacity-50" />
         <div className="absolute bottom-0 left-0 w-1/3 h-1/2 bg-blue-50 rounded-full blur-[120px] -z-10 opacity-50" />
@@ -219,20 +158,11 @@ const BlogPage = () => {
         <div className="relative z-10 max-w-5xl mx-auto text-center">
           <h1 className="mb-6 text-6xl font-black tracking-tighter leading-tight text-[#1a2e52] md:text-7xl font-jakarta">
             Career Insights
-<<<<<<< HEAD
             <span className="block text-[#0077cc]">& Expert Tips</span>
           </h1>
           <p className="max-w-2xl mx-auto mb-10 text-xl font-medium text-gray-500">
             Master the art of job hunting with actionable advice from industry
             experts and career coaches.
-=======
-            <span className="block text-[#0077cc]">
-              & Expert Tips
-            </span>
-          </h1>
-          <p className="max-w-2xl mx-auto mb-10 text-xl font-medium text-gray-500">
-            Master the art of job hunting with actionable advice from industry experts and career coaches.
->>>>>>> b6d6a945 (Updated CV builder validation (education mandatory, certification optional))
           </p>
 
           {/* Search Bar */}
@@ -247,11 +177,7 @@ const BlogPage = () => {
             />
           </div>
         </div>
-<<<<<<< HEAD
       </motion.div>
-=======
-      </div>
->>>>>>> b6d6a945 (Updated CV builder validation (education mandatory, certification optional))
 
       {/* Category Pills */}
       <div className="px-6 mx-auto mb-16 max-w-7xl">
@@ -260,19 +186,11 @@ const BlogPage = () => {
             <button
               key={category}
               onClick={() => setActiveCategory(category)}
-<<<<<<< HEAD
               className={`px-6 py-3 rounded-xl font-bold transition-all duration-300 ${
                 activeCategory === category
                   ? "bg-[#1a2e52] text-white shadow-lg scale-105"
                   : "bg-white text-gray-500 border border-gray-100 hover:bg-gray-50 hover:shadow-md"
               }`}
-=======
-              className={`px-6 py-3 rounded-xl font-bold transition-all duration-300 ${activeCategory === category
-                ? 'bg-[#1a2e52] text-white shadow-lg scale-105'
-                : 'bg-white text-gray-500 border border-gray-100 hover:bg-gray-50 hover:shadow-md'
-                }`}
-
->>>>>>> b6d6a945 (Updated CV builder validation (education mandatory, certification optional))
             >
               {category}
             </button>
@@ -281,7 +199,6 @@ const BlogPage = () => {
       </div>
 
       {/* Featured Post */}
-<<<<<<< HEAD
       <motion.div
         variants={fadeUp}
         initial="hidden"
@@ -289,25 +206,17 @@ const BlogPage = () => {
         viewport={{ once: true }}
         className="px-6 mx-auto mb-20 max-w-7xl"
       >
-=======
-      <div className="px-6 mx-auto mb-20 max-w-7xl">
->>>>>>> b6d6a945 (Updated CV builder validation (education mandatory, certification optional))
         <div className="overflow-hidden shadow-2xl bg-gradient-to-br from-[#1a2e52] to-[#0077cc] rounded-[2.5rem]">
           <div className="grid items-center gap-8 p-10 md:grid-cols-2 md:p-16">
             <div className="text-white">
               <div className="inline-flex items-center gap-2 px-4 py-1 mb-4 text-xs font-black tracking-widest uppercase rounded-full bg-white/10 backdrop-blur-md">
-<<<<<<< HEAD
                 <Sparkles size={14} className="text-orange-400" /> Featured
                 Article
-=======
-                <Sparkles size={14} className="text-orange-400" /> Featured Article
->>>>>>> b6d6a945 (Updated CV builder validation (education mandatory, certification optional))
               </div>
               <h2 className="mb-6 text-4xl font-black leading-tight tracking-tighter md:text-5xl font-jakarta">
                 The Future of Resume Writing is Here
               </h2>
               <p className="mb-8 text-lg font-medium leading-relaxed text-blue-100/80">
-<<<<<<< HEAD
                 Discover how AI is transforming the job application process and
                 helping candidates stand out in competitive markets.
               </p>
@@ -345,29 +254,6 @@ const BlogPage = () => {
                 <ChevronDown
                   className={`w-5 h-5 transition-transform duration-300 ${expandedPosts["featured"] ? "rotate-180" : ""}`}
                 />
-=======
-                Discover how AI is transforming the job application process and helping candidates stand out in competitive markets.
-              </p>
-              
-              <div
-                className={`overflow-hidden transition-all duration-300 ease-in-out ${
-                  expandedPosts['featured'] ? 'max-h-96 opacity-100 mb-8' : 'max-h-0 opacity-0'
-                }`}
-              >
-                <p className="mb-4 text-lg font-medium leading-relaxed text-blue-100/80">
-                  AI-powered resume builders are revolutionizing how job seekers create and optimize their applications. By analyzing millions of successful resumes and job postings, these tools can suggest powerful keywords, optimal formatting, and compelling content that resonates with both ATS systems and human recruiters.
-                </p>
-                <p className="text-lg font-medium leading-relaxed text-blue-100/80">
-                  The integration of machine learning algorithms enables real-time feedback on resume strength, readability scores, and industry-specific customization. This technology democratizes access to professional resume writing expertise, giving every candidate the tools they need to compete effectively in today's digital-first hiring landscape.
-                </p>
-              </div>
-              
-              <button 
-                onClick={() => togglePost('featured')}
-                className="group inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-[#e65100] to-[#f4511e] text-white rounded-xl font-bold transition-all hover:shadow-[0_15px_35px_rgba(230,81,0,0.45)] hover:-translate-y-1">
-                {expandedPosts['featured'] ? 'Show Less' : 'Read Full Article'} 
-                <ChevronDown className={`w-5 h-5 transition-transform duration-300 ${expandedPosts['featured'] ? 'rotate-180' : ''}`} />
->>>>>>> b6d6a945 (Updated CV builder validation (education mandatory, certification optional))
               </button>
             </div>
             <div className="relative">
@@ -382,16 +268,11 @@ const BlogPage = () => {
             </div>
           </div>
         </div>
-<<<<<<< HEAD
       </motion.div>
-=======
-      </div>
->>>>>>> b6d6a945 (Updated CV builder validation (education mandatory, certification optional))
 
       {/* Blog Grid */}
       <div className="px-6 pb-20 mx-auto max-w-7xl">
         <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-<<<<<<< HEAD
           {filteredPosts.map((post, index) => (
             <motion.article
               key={post.id}
@@ -399,11 +280,6 @@ const BlogPage = () => {
               initial="hidden"
               whileInView="show"
               viewport={{ once: true }}
-=======
-          {filteredPosts.map((post) => (
-            <article
-              key={post.id}
->>>>>>> b6d6a945 (Updated CV builder validation (education mandatory, certification optional))
               className="overflow-hidden transition-all duration-300 bg-white border border-gray-100 shadow-sm cursor-pointer rounded-[2rem] hover:shadow-2xl hover:-translate-y-2 group"
             >
               <div className="relative h-56 overflow-hidden">
@@ -432,31 +308,22 @@ const BlogPage = () => {
                 <h3 className="mb-4 text-xl font-black leading-tight text-[#1a2e52] transition-colors group-hover:text-[#0077cc] font-jakarta">
                   {post.title}
                 </h3>
-<<<<<<< HEAD
 
-=======
-                
->>>>>>> b6d6a945 (Updated CV builder validation (education mandatory, certification optional))
                 <p className="mb-4 text-sm font-medium leading-relaxed text-gray-400 line-clamp-3">
                   {post.excerpt}
                 </p>
 
                 <div
                   className={`overflow-hidden transition-all duration-300 ease-in-out ${
-<<<<<<< HEAD
                     expandedPosts[post.id]
                       ? "max-h-40 opacity-100 mb-4"
                       : "max-h-0 opacity-0"
-=======
-                    expandedPosts[post.id] ? 'max-h-40 opacity-100 mb-4' : 'max-h-0 opacity-0'
->>>>>>> b6d6a945 (Updated CV builder validation (education mandatory, certification optional))
                   }`}
                 >
                   <p className="text-sm font-medium leading-relaxed text-gray-500">
                     {post.detail}
                   </p>
                 </div>
-<<<<<<< HEAD
 
                 <button
                   onClick={(e) => {
@@ -496,46 +363,11 @@ const BlogPage = () => {
         viewport={{ once: true }}
         className="px-6 pb-24 mx-auto max-w-7xl"
       >
-=======
-                
-                <button
-                  onClick={(e) => { e.stopPropagation(); togglePost(post.id); }}
-                  className="inline-flex items-center gap-2 font-bold text-[#0077cc] transition-all hover:gap-3"
-                >
-                  {expandedPosts[post.id] ? 'Show Less' : 'Read More'}
-                  <ChevronDown className={`w-4 h-4 transition-transform duration-300 ${expandedPosts[post.id] ? 'rotate-180' : ''}`} />
-                </button>
-              </div>
-            </article>
-          ))}
-        </div>
-
-        {!isLoadingBlogs && filteredPosts.length === 0 && (
-          <div className="py-20 text-center">
-            <div className="mb-4 text-6xl">🔍</div>
-            <h3 className="mb-2 text-2xl font-black text-[#1a2e52]">No articles found</h3>
-            <p className="font-medium text-gray-500">Try adjusting your search or filter criteria</p>
-          </div>
-        )}
-
-        {isLoadingBlogs && (
-          <div className="py-20 text-center text-gray-500">Loading blogs...</div>
-        )}
-
-        {blogsError && (
-          <div className="py-8 text-center text-red-500 font-semibold">{blogsError}</div>
-        )}
-      </div>
-
-      {/* Newsletter Section */}
-      <div className="px-6 pb-24 mx-auto max-w-7xl">
->>>>>>> b6d6a945 (Updated CV builder validation (education mandatory, certification optional))
         <div className="relative pt-12 px-12 pb-20 overflow-hidden text-center bg-[#1a2e52] rounded-[2.5rem]">
           <div className="absolute top-0 right-0 w-64 h-64 rounded-full bg-[#0077cc]/10 blur-3xl"></div>
           <div className="absolute bottom-0 left-0 w-64 h-64 rounded-full bg-orange-400/5 blur-3xl"></div>
 
           <div className="relative z-10">
-<<<<<<< HEAD
             <h2 className="mb-4 text-4xl font-black tracking-tighter text-white font-jakarta">
               Stay Updated
             </h2>
@@ -555,18 +387,6 @@ const BlogPage = () => {
                   ${status === "success" ? "border-green-200 bg-green-50" : ""}
                 `}
                 >
-=======
-            <h2 className="mb-4 text-4xl font-black tracking-tighter text-white font-jakarta">Stay Updated</h2>
-            <p className="max-w-xl mx-auto mb-10 text-lg font-medium text-blue-100/60">
-              Get the latest career tips, industry insights, and resume strategies delivered to your inbox.
-            </p>
-            <form onSubmit={handleSubscribe} className="max-w-lg mx-auto relative" noValidate>
-              <div className="flex flex-col sm:flex-row gap-4">
-                <div className={`flex-1 flex items-center p-1.5 border rounded-xl transition-all duration-300 bg-white
-                  ${status === "error" ? "border-red-200 ring-2 ring-red-500/10" : "border-gray-200 focus-within:ring-2 focus-within:ring-[#0077cc]/10 focus-within:border-[#0077cc]"}
-                  ${status === "success" ? "border-green-200 bg-green-50" : ""}
-                `}>
->>>>>>> b6d6a945 (Updated CV builder validation (education mandatory, certification optional))
                   <div className="pl-4 text-gray-400">
                     {status === "success" ? (
                       <Check size={20} className="text-green-500" />
@@ -584,13 +404,9 @@ const BlogPage = () => {
                       if (status === "error") setStatus("idle");
                     }}
                     disabled={status === "loading" || status === "success"}
-<<<<<<< HEAD
                     placeholder={
                       status === "success" ? "Subscribed!" : "Enter your email"
                     }
-=======
-                    placeholder={status === "success" ? "Subscribed!" : "Enter your email"}
->>>>>>> b6d6a945 (Updated CV builder validation (education mandatory, certification optional))
                     className={`w-full px-4 py-3 bg-transparent outline-none font-medium text-sm placeholder-gray-400
                       ${status === "success" ? "text-green-700 autofill:shadow-[inset_0_0_0_1000px_#f0fdf4]" : "text-[#1a2e52] autofill:shadow-[inset_0_0_0_1000px_white]"}
                     `}
@@ -600,17 +416,11 @@ const BlogPage = () => {
                   type="submit"
                   disabled={status === "loading" || status === "success"}
                   className={`px-8 py-4 rounded-xl font-black transition-all shadow-xl hover:shadow-2xl whitespace-nowrap flex items-center justify-center min-w-[160px]
-<<<<<<< HEAD
                     ${
                       status === "success"
                         ? "bg-green-500 text-white cursor-default scale-100"
                         : "bg-gradient-to-r from-[#e65100] to-[#f4511e] text-white hover:scale-105 active:scale-95"
                     }
-=======
-                    ${status === "success"
-                      ? "bg-green-500 text-white cursor-default scale-100"
-                      : "bg-gradient-to-r from-[#e65100] to-[#f4511e] text-white hover:scale-105 active:scale-95"}
->>>>>>> b6d6a945 (Updated CV builder validation (education mandatory, certification optional))
                     ${status === "loading" ? "opacity-80 cursor-wait" : ""}
                   `}
                 >
@@ -634,18 +444,10 @@ const BlogPage = () => {
             </form>
           </div>
         </div>
-<<<<<<< HEAD
       </motion.div>
-=======
-      </div>
->>>>>>> b6d6a945 (Updated CV builder validation (education mandatory, certification optional))
       <Footer />
     </div>
   );
 };
 
-<<<<<<< HEAD
 export default BlogPage;
-=======
-export default BlogPage;
->>>>>>> b6d6a945 (Updated CV builder validation (education mandatory, certification optional))

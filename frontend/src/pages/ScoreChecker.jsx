@@ -106,12 +106,7 @@ const ScoreChecker = () => {
     "Senior Software Engineer\n\n- Spearheaded a team of 5 developers to build a scalable React application.\n- Improved page load speed by 40% using code splitting and lazy loading.\n- Integrated RESTful APIs and optimized database queries for better performance."
   );
 
-<<<<<<< HEAD
   const [openFaq, setOpenFaq] = useState(0);
-=======
-  // default to -1 so no FAQ item is opened on initial load
-  const [openFaq, setOpenFaq] = useState(-1);
->>>>>>> b6d6a945 (Updated CV builder validation (education mandatory, certification optional))
 
   const [breakRef, breakVisible] = useInView(0.15);
   const [calcRef, calcVisible] = useInView(0.15);
@@ -196,11 +191,7 @@ const ScoreChecker = () => {
 
               <h1 className="mb-6 text-6xl font-black leading-tight tracking-tight sm:text-7xl md:text-8xl xl:text-[96px] text-[#1a2e52]">
                 Write Better. <br />
-<<<<<<< HEAD
                 <span className="text-[#0077cc]">
-=======
-                <span className="text-transparent bg-gradient-to-r from-[#e65100] to-[#ff8f00] bg-clip-text">
->>>>>>> b6d6a945 (Updated CV builder validation (education mandatory, certification optional))
                   Rank Higher.
                 </span>
               </h1>

@@ -139,11 +139,7 @@ function Contact() {
               className="text-5xl lg:text-[72px] font-black text-[#1a2e52] leading-[1.1] mb-6 tracking-tight"
             >
               We're Here to <br />
-<<<<<<< HEAD
               <span className="text-[#0077cc] ">
-=======
-              <span className="text-transparent bg-gradient-to-r from-[#0077cc] via-[#0056b3] to-[#e65100] bg-clip-text">
->>>>>>> b6d6a945 (Updated CV builder validation (education mandatory, certification optional))
                 Help You Succeed
               </span>
             </motion.h1>

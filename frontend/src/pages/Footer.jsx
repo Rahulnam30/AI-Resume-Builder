@@ -105,11 +105,7 @@ function Footer() {
               ))}
             </div>
 
-<<<<<<< HEAD
             <div className="mt-2">
-=======
-            <div className="mt-auto">
->>>>>>> b6d6a945 (Updated CV builder validation (education mandatory, certification optional))
               <h4 className="text-[10px] sm:text-[11px] font-black uppercase tracking-widest text-[#1a2e52] mb-3">
                 Stay Connected
               </h4>

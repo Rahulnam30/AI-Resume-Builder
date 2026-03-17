@@ -124,11 +124,7 @@ const PersonalInfoForm = ({ formData, onInputChange, highlightEmpty }) => {
         {/* Location */}
         <div className="flex flex-col gap-1.5">
           <label className="block text-sm font-semibold text-slate-700">
-<<<<<<< HEAD
             Location <span className="text-red-500">*</span>
-=======
-            Address <span className="text-red-500">*</span>
->>>>>>> b6d6a945 (Updated CV builder validation (education mandatory, certification optional))
           </label>
           <input
             type="text"

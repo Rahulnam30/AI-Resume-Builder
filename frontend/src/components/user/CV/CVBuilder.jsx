@@ -373,15 +373,6 @@ const CVBuilder = () => {
 
   /* ================= DOWNLOAD WORD ================= */
   const downloadWord = async () => {
-<<<<<<< HEAD
-=======
-    const status = getCVCompletionStatus(formData);
-
-if (!status.isComplete) {
-  toast.error("Please complete all required sections before downloading");
-  return;
-}
->>>>>>> b6d6a945 (Updated CV builder validation (education mandatory, certification optional))
     const TemplateComponent = CVTemplates[selectedTemplate];
     if (!TemplateComponent) {
       toast.error("No template selected");
@@ -434,22 +425,9 @@ if (!status.isComplete) {
       setIsDownloading(false);
     }
   };
-<<<<<<< HEAD
 
   /* ================= DOWNLOAD PDF ================= */
   const downloadPDF = async () => {
-=======
-  
-
-  /* ================= DOWNLOAD PDF ================= */
-  const downloadPDF = async () => {
-    const status = getCVCompletionStatus(formData);
-
-if (!status.isComplete) {
-  toast.error("Please complete all required sections (including Education) before downloading");
-  return;
-}
->>>>>>> b6d6a945 (Updated CV builder validation (education mandatory, certification optional))
     const TemplateComponent = CVTemplates[selectedTemplate];
     if (!TemplateComponent) {
       toast.error("No template selected");
@@ -941,23 +919,12 @@ if (!status.isComplete) {
     if (!hasValidExperience) missing.push("Work");
 
     /* ---------- EDUCATION ---------- */
-<<<<<<< HEAD
     const hasValidEducation =
       Array.isArray(formData?.education) &&
       formData.education.length > 0 &&
       formData.education.some(
         (edu) => edu.school?.trim() && edu.degree?.trim()
       );
-=======
-const hasValidEducation =
-  Array.isArray(formData?.education) &&
-  formData.education.length > 0 &&
-  formData.education.some(
-   (edu) =>
-  edu.school?.trim() &&
-  edu.degree?.trim()
-  );
->>>>>>> b6d6a945 (Updated CV builder validation (education mandatory, certification optional))
 
     console.log('CV Completion Check - hasValidEducation:', hasValidEducation); // Debug log
 
@@ -995,20 +962,8 @@ const hasValidEducation =
           formData?.location?.trim();
       case "work":
         return formData?.experience && formData.experience.length > 0;
-<<<<<<< HEAD
       case "education":
         return formData?.education && formData.education.length > 0;
-=======
-case "education":
-  return (
-    Array.isArray(formData?.education) &&
-    formData.education.some(
-      (edu) =>
-        edu.school?.trim() &&
-        edu.degree?.trim()
-    )
-  );
->>>>>>> b6d6a945 (Updated CV builder validation (education mandatory, certification optional))
       case "skills":
         return (formData?.skills?.technical?.length ?? 0) > 0 ||
           (formData?.skills?.soft?.length ?? 0) > 0;

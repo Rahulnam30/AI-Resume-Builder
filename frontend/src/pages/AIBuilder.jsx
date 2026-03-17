@@ -1,23 +1,12 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
-<<<<<<< HEAD
   Sparkles,
   Zap,
   Target,
   ArrowRight,
   TrendingUp,
   Shield,
-=======
-  ArrowRight,
-  CheckCircle,
-  Sparkles,
-  Zap,
-  Target,
-  TrendingUp,
-  Shield,
-  ArrowLeft,
->>>>>>> b6d6a945 (Updated CV builder validation (education mandatory, certification optional))
   CheckCircle2,
   BarChart3,
   Lightbulb,
@@ -80,11 +69,6 @@ const AIBuilderFeature = () => {
       <section
         ref={heroRef}
          className="relative px-4 sm:px-6 lg:px-8 pt-12 sm:pt-16 lg:pt-24 pb-10 sm:pb-14 overflow-hidden bg-white"
-<<<<<<< HEAD
-=======
-
-
->>>>>>> b6d6a945 (Updated CV builder validation (education mandatory, certification optional))
       >
         {/* Brand Theme Blurs */}
         <div className="absolute rounded-full -top-24 -left-24 w-72 h-72 bg-blue-50 blur-3xl opacity-60" />
@@ -96,10 +80,6 @@ const AIBuilderFeature = () => {
               }`}
           >
             
-<<<<<<< HEAD
-=======
-
->>>>>>> b6d6a945 (Updated CV builder validation (education mandatory, certification optional))
             <div className="inline-block px-3 sm:px-4 py-2 bg-blue-50 text-[#0077cc] rounded-full text-xs sm:text-sm font-bold mb-5 sm:mb-6">
               AI-Powered Resume Builder
             </div>
@@ -141,13 +121,7 @@ const AIBuilderFeature = () => {
                 alt="ATS Score Analysis"
                 className="block w-full h-auto mt-8 sm:mt-10 lg:mt-0 max-w-[340px] sm:max-w-md md:max-w-xl mx-auto object-contain drop-shadow-2xl"
               />
-<<<<<<< HEAD
             </div>
-=======
-
-            </div>
-
->>>>>>> b6d6a945 (Updated CV builder validation (education mandatory, certification optional))
         </div>
       </section>
 
@@ -347,10 +321,6 @@ const AIBuilderFeature = () => {
           </button>
         </div>
       </section>
-<<<<<<< HEAD
-=======
-
->>>>>>> b6d6a945 (Updated CV builder validation (education mandatory, certification optional))
       <Footer />
     </div>
   );

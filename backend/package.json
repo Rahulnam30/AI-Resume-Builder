@@ -7,10 +7,6 @@
     "dev": "nodemon index.js",
     "start": "nodemon index.js"
   },
-<<<<<<< HEAD
-=======
-    
->>>>>>> b6d6a945 (Updated CV builder validation (education mandatory, certification optional))
   "dependencies": {
     "axios": "^1.13.5",
     "bcryptjs": "^3.0.3",
@@ -26,19 +22,12 @@
     "mammoth": "^1.11.0",
     "mongoose": "^7.0.0",
     "multer": "^2.0.2",
-<<<<<<< HEAD
-=======
-    "nodemon": "^3.1.13",
->>>>>>> b6d6a945 (Updated CV builder validation (education mandatory, certification optional))
     "nspell": "^2.1.5",
     "pdf-parse": "^1.1.1",
     "puppeteer": "^24.37.5",
     "simple-spellchecker": "^1.0.2"
-<<<<<<< HEAD
   },
   "devDependencies": {
     "nodemon": "^3.1.14"
-=======
->>>>>>> b6d6a945 (Updated CV builder validation (education mandatory, certification optional))
   }
 }

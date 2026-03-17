@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import React, { useState } from "react";
 import {
   MapPin,
@@ -41,39 +40,10 @@ const CareersPage = () => {
     "Growth",
     "Support",
   ];
-=======
-import { useState } from 'react';
-import { 
-  MapPin, 
-  Briefcase, 
-  Clock, 
-  Sparkles, 
-  ArrowRight, 
-  Brain, 
-  Target, 
-  Code2, 
-  Cpu, 
-  Home, 
-  LineChart, 
-  GraduationCap, 
-  BatteryCharging, 
-  Focus, 
-  CheckCircle2
-} from 'lucide-react';
-import NavBar from '../components/NavBar';
-import Footer from "./Footer";
-import career from "../assets/careers.png";
-
-const CareersPage = () => {
-  const [activeFilter, setActiveFilter] = useState('All Roles');
-
-  const filters = ['All Roles', 'AI & Engineering', 'Product', 'Growth', 'Support'];
->>>>>>> b6d6a945 (Updated CV builder validation (education mandatory, certification optional))
 
   const values = [
     {
       icon: <Brain className="w-12 h-12" />,
-<<<<<<< HEAD
       title: "AI with Empathy",
       description:
         "We don't just build algorithms; we build tools that understand the human struggle of job hunting.",
@@ -177,76 +147,12 @@ const CareersPage = () => {
     activeFilter === "All Roles"
       ? jobs
       : jobs.filter((job) => job.department === activeFilter);
-=======
-      title: 'AI with Empathy',
-      description: "We don't just build algorithms; we build tools that understand the human struggle of job hunting.",
-      color: 'bg-blue-50 text-[#0077cc]'
-    },
-    {
-      icon: <Target className="w-12 h-12" />,
-      title: 'ATS Mastery',
-      description: 'We stay obsessed with how Applicant Tracking Systems work to ensure our users stay ahead.',
-      color: 'bg-orange-50 text-[#e65100]'
-    },
-    {
-      icon: <Code2 className="w-12 h-12" />,
-      title: 'Agile Innovation',
-      description: 'The AI landscape changes weekly. We move fast, experiment constantly, and ship daily.',
-      color: 'bg-blue-50 text-[#0077cc]'
-    }
-  ];
-
-  const perks = [
-    { 
-      icon: Cpu, 
-      title: 'AI Stipend', 
-      description: 'Monthly budget for ChatGPT, Claude, or any AI tool that helps you work smarter.' 
-    },
-    { 
-      icon: Home, 
-      title: 'Fully Remote', 
-      description: 'Our team is global because talent is everywhere. Work from wherever you are happiest.' 
-    },
-    { 
-      icon: LineChart, 
-      title: 'Growth Equity', 
-      description: 'Ownership in a fast-growing AI startup. We want you to win when we win.' 
-    },
-    { 
-      icon: GraduationCap, 
-      title: 'Career Coaching', 
-      description: 'Free access to professional resume reviews and career coaching for your own path.' 
-    },
-    { 
-      icon: BatteryCharging, 
-      title: 'Recharge Time', 
-      description: 'Unlimited PTO with a 2-week mandatory minimum. We prevent burnout proactively.' 
-    },
-    { 
-      icon: Focus, 
-      title: 'Deep Work Hours', 
-      description: 'No-meeting Wednesdays and Thursdays to allow for flow state and deep focus.' 
-    }
-  ];
-
-  const jobs = [
-    { id: 1, title: 'Senior AI Engineer (LLMs)', department: 'AI & Engineering', location: 'Remote', type: 'Full-time', description: 'Fine-tune models to generate recruiter-ready bullet points and optimize context retrieval.' },
-    { id: 2, title: 'Full Stack Developer', department: 'AI & Engineering', location: 'Remote', type: 'Full-time', description: 'Build intuitive, drag-and-drop resume editors and real-time ATS scoring dashboards.' },
-    { id: 3, title: 'Product Manager (Growth)', department: 'Product', location: 'Remote', type: 'Full-time', description: 'Own the conversion funnel from landing page to first resume download.' },
-    { id: 4, title: 'HRTech Content Strategist', department: 'Growth', location: 'Remote', type: 'Full-time', description: 'Create viral career advice and deep-dives into the AI hiring landscape.' }
-  ];
-
-  const filteredJobs = activeFilter === 'All Roles' 
-    ? jobs 
-    : jobs.filter(job => job.department === activeFilter);
->>>>>>> b6d6a945 (Updated CV builder validation (education mandatory, certification optional))
 
   return (
     <div className="page-enter min-h-screen bg-white font-['Outfit'] text-[#1a2e52] overflow-x-hidden select-none">
       <NavBar />
 
       {/* --- HERO SECTION --- */}
-<<<<<<< HEAD
       <motion.section
         variants={fadeUp}
         initial="hidden"
@@ -254,9 +160,6 @@ const CareersPage = () => {
         viewport={{ once: true }}
         className="relative px-8 pt-24 pb-14 overflow-hidden bg-white md:pt-10"
       >
-=======
-      <section className="relative px-8 pt-24 pb-14 overflow-hidden bg-white md:pt-10">
->>>>>>> b6d6a945 (Updated CV builder validation (education mandatory, certification optional))
         {/* Soft Background Decorative Blurs */}
         <div className="absolute top-0 right-0 w-1/3 h-1/2 bg-orange-50 rounded-full blur-[120px] -z-10 opacity-50" />
         <div className="absolute bottom-0 left-0 w-1/3 h-1/2 bg-blue-50 rounded-full blur-[120px] -z-10 opacity-50" />
@@ -325,17 +228,12 @@ const CareersPage = () => {
             </div>
           </div>
         </div>
-<<<<<<< HEAD
       </motion.section>
-=======
-      </section>
->>>>>>> b6d6a945 (Updated CV builder validation (education mandatory, certification optional))
 
       {/* --- VALUES SECTION --- */}
       <section className="px-6 py-10 mx-auto max-w-7xl">
         <div className="grid gap-8 md:grid-cols-3">
           {values.map((value, index) => (
-<<<<<<< HEAD
             <motion.div
               key={index}
               initial={{ opacity: 0, y: 60 }}
@@ -343,11 +241,6 @@ const CareersPage = () => {
               transition={{ duration: 0.6, delay: index * 0.15 }}
               viewport={{ once: true }}
               className="p-7 transition-all duration-300 bg-white border border-gray-100 rounded-[2.5rem] hover:shadow-xl group"
-=======
-            <div
-              key={index}
-                className="p-7 transition-all duration-300 bg-white border border-gray-100 rounded-[2.5rem] hover:shadow-xl group"
->>>>>>> b6d6a945 (Updated CV builder validation (education mandatory, certification optional))
             >
               <div
                 className={`inline-block p-5 ${value.color} rounded-2xl mb-6 group-hover:scale-110 transition-transform`}
@@ -360,11 +253,7 @@ const CareersPage = () => {
               <p className="text-sm font-medium leading-relaxed text-gray-400">
                 {value.description}
               </p>
-<<<<<<< HEAD
             </motion.div>
-=======
-            </div>
->>>>>>> b6d6a945 (Updated CV builder validation (education mandatory, certification optional))
           ))}
         </div>
       </section>
@@ -384,17 +273,12 @@ const CareersPage = () => {
 
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {perks.map((perk, index) => (
-<<<<<<< HEAD
               <motion.div
                 key={index}
                 initial={{ opacity: 0, y: 60 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: index * 0.12 }}
                 viewport={{ once: true }}
-=======
-              <div
-                key={index}
->>>>>>> b6d6a945 (Updated CV builder validation (education mandatory, certification optional))
                 className="group p-7 bg-white rounded-[2.5rem] border border-gray-100 transition-all duration-300 hover:border-[#0077cc]/30 hover:shadow-2xl hover:shadow-blue-500/5 hover:-translate-y-2"
               >
                 <div className="inline-block mb-6 transition-transform duration-300 group-hover:scale-110">
@@ -412,11 +296,7 @@ const CareersPage = () => {
                 <p className="text-sm font-medium leading-relaxed text-gray-400 transition-colors duration-300 group-hover:text-gray-600">
                   {perk.description}
                 </p>
-<<<<<<< HEAD
               </motion.div>
-=======
-              </div>
->>>>>>> b6d6a945 (Updated CV builder validation (education mandatory, certification optional))
             ))}
           </div>
         </div>
@@ -446,7 +326,6 @@ const CareersPage = () => {
         </div>
 
         <div className="space-y-4">
-<<<<<<< HEAD
           {filteredJobs.map((job, index) => (
             <motion.div
               key={job.id}
@@ -454,11 +333,6 @@ const CareersPage = () => {
               whileInView={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
               viewport={{ once: true }}
-=======
-          {filteredJobs.map((job) => (
-            <div
-              key={job.id}
->>>>>>> b6d6a945 (Updated CV builder validation (education mandatory, certification optional))
               className="p-7 bg-white border border-gray-100 shadow-sm rounded-[2.5rem] hover:shadow-2xl hover:translate-x-2 transition-all group"
             >
               <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
@@ -498,17 +372,12 @@ const CareersPage = () => {
                   Apply Now
                 </button>
               </div>
-<<<<<<< HEAD
             </motion.div>
-=======
-            </div>
->>>>>>> b6d6a945 (Updated CV builder validation (education mandatory, certification optional))
           ))}
         </div>
       </section>
 
       {/* --- FINAL CTA --- */}
-<<<<<<< HEAD
       <motion.section
         variants={fadeUp}
         initial="hidden"
@@ -516,9 +385,6 @@ const CareersPage = () => {
         viewport={{ once: true }}
         className="max-w-5xl px-6 py-14 mx-auto"
       >
-=======
-      <section className="max-w-5xl px-6 py-14 mx-auto">
->>>>>>> b6d6a945 (Updated CV builder validation (education mandatory, certification optional))
         <div className="relative p-9 overflow-hidden text-center bg-[#1a2e52] rounded-[3rem]">
           <div className="absolute top-0 right-0 w-64 h-64 bg-[#0077cc]/20 blur-3xl" />
           <div className="relative z-10">
@@ -545,19 +411,11 @@ const CareersPage = () => {
             </button>
           </div>
         </div>
-<<<<<<< HEAD
       </motion.section>
-=======
-      </section>
->>>>>>> b6d6a945 (Updated CV builder validation (education mandatory, certification optional))
 
       <Footer />
     </div>
   );
 };
 
-<<<<<<< HEAD
 export default CareersPage;
-=======
-export default CareersPage;
->>>>>>> b6d6a945 (Updated CV builder validation (education mandatory, certification optional))

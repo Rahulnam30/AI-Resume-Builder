@@ -106,11 +106,7 @@ const AIResumeChecker = () => {
       <NavBar />
       <div className="h-12" />
       {/* --- HERO SECTION: FULL WIDTH/HEIGHT --- */}
-<<<<<<< HEAD
       <section className="relative min-h-[70vh] flex items-start md:items-center px-6 md:px-8 py-10 md:py-16 overflow-hidden bg-white border-b border-gray-50">
-=======
-      <section className="relative min-h-[85vh] flex items-center px-8 py-16 overflow-hidden bg-white border-b border-gray-50">
->>>>>>> b6d6a945 (Updated CV builder validation (education mandatory, certification optional))
         {/* Soft Background Blurs */}
         <div className="absolute top-0 right-0 w-[40%] h-full -translate-y-1/4 translate-x-1/4 opacity-20 bg-gradient-to-bl from-blue-200 to-transparent blur-3xl"></div>
         <div className="absolute bottom-0 left-0 bg-blue-100 rounded-full w-72 h-72 -translate-x-1/3 opacity-10 blur-3xl"></div>
@@ -126,11 +122,7 @@ const AIResumeChecker = () => {
             {/* LEFT SIDE: THE CONTENT (Text & Matter) */}
             <motion.div
               variants={fadeUp}
-<<<<<<< HEAD
               className="flex flex-col items-center text-center lg:items-start lg:text-left"
-=======
-              className="flex flex-col items-start text-left"
->>>>>>> b6d6a945 (Updated CV builder validation (education mandatory, certification optional))
             >
               <span className="inline-flex items-center gap-2 px-4 py-2 mb-8 text-sm font-bold tracking-widest text-[#0077cc] uppercase bg-blue-50 rounded-full">
                 <Zap size={14} className="fill-[#0077cc]" /> AI Analysis 2.0
@@ -138,11 +130,7 @@ const AIResumeChecker = () => {
 
               <h1 className="mb-6 text-5xl font-black leading-[1.3] lg:text-7xl text-[#1a2e52]">
                 Is your resume
-<<<<<<< HEAD
                 <span className="block text-transparent bg-gradient-to-r from-[#0077cc] via-[#0077cc] to-[#0077cc] bg-clip-text mt-8">
-=======
-                <span className="block text-transparent bg-gradient-to-r from-[#0077cc] via-[#0056b3] to-[#e65100] bg-clip-text mt-8">
->>>>>>> b6d6a945 (Updated CV builder validation (education mandatory, certification optional))
                   ATS-Proof?
                 </span>
               </h1>
@@ -627,10 +615,6 @@ const AIResumeChecker = () => {
           </div>
         </motion.div>
       </section>
-<<<<<<< HEAD
-=======
-
->>>>>>> b6d6a945 (Updated CV builder validation (education mandatory, certification optional))
       <Footer />
     </div>
   );

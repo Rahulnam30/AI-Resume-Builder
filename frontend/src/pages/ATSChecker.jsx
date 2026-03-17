@@ -1,28 +1,16 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-<<<<<<< HEAD
 import Lady from "../assets/StepsLady.png";
-=======
-import Lady from "../assets/StepsLady.png"
->>>>>>> b6d6a945 (Updated CV builder validation (education mandatory, certification optional))
 import {
   ArrowRight,
   CheckCircle,
   FileSearch,
   Target,
   Shield,
-<<<<<<< HEAD
   Activity,
   UploadCloud,
   ChevronDown,
   AlertCircle,
-=======
-  TrendingUp,
-  Activity,
-  UploadCloud,
-  ChevronDown,
-  AlertCircle
->>>>>>> b6d6a945 (Updated CV builder validation (education mandatory, certification optional))
 } from "lucide-react";
 import { ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
 import NavBar from "../components/NavBar";
@@ -37,11 +25,7 @@ const useInView = (threshold = 0.15) => {
     if (!ref.current) return;
     const observer = new IntersectionObserver(
       ([entry]) => entry.isIntersecting && setIsVisible(true),
-<<<<<<< HEAD
       { threshold },
-=======
-      { threshold }
->>>>>>> b6d6a945 (Updated CV builder validation (education mandatory, certification optional))
     );
     observer.observe(ref.current);
     return () => observer.disconnect();
@@ -63,7 +47,6 @@ const ATS_COLORS = ["#0077cc", "#e65100", "#1a2e52"];
 const faqData = [
   {
     q: "How does the ATS Checker work?",
-<<<<<<< HEAD
     a: "Our checker parses your resume file (PDF/Word) using algorithms similar to real corporate ATS software. It evaluates keyword density, section headers, and formatting to generate a compatibility score.",
   },
   {
@@ -78,22 +61,6 @@ const faqData = [
     q: "Can I upload both PDF and Word files?",
     a: "Yes! We support both .pdf and .docx formats. PDF is generally recommended for consistent formatting, but we test parseability for both.",
   },
-=======
-    a: "Our checker parses your resume file (PDF/Word) using algorithms similar to real corporate ATS software. It evaluates keyword density, section headers, and formatting to generate a compatibility score."
-  },
-  {
-    q: "What is a good ATS score?",
-    a: "An ATS score above 80 is considered strong. A score between 60-79 is average and might need optimization. Anything below 60 implies your resume might be filtered out automatically."
-  },
-  {
-    q: "Is this free to use?",
-    a: "Yes, you can upload and scan your resume to get a preliminary score for free. Detailed fix recommendations may require an account."
-  },
-  {
-    q: "Can I upload both PDF and Word files?",
-    a: "Yes! We support both .pdf and .docx formats. PDF is generally recommended for consistent formatting, but we test parseability for both."
-  }
->>>>>>> b6d6a945 (Updated CV builder validation (education mandatory, certification optional))
 ];
 
 function ATSDonutCard({ score = 78 }) {
@@ -150,14 +117,10 @@ function ATSDonutCard({ score = 78 }) {
         {/* legend */}
         <div className="mt-1 space-y-2">
           {atsBreakdown.map((item, i) => (
-<<<<<<< HEAD
             <div
               key={item.name}
               className="flex items-center justify-between text-xs sm:text-sm"
             >
-=======
-            <div key={item.name} className="flex items-center justify-between text-xs sm:text-sm">
->>>>>>> b6d6a945 (Updated CV builder validation (education mandatory, certification optional))
               <div className="flex items-center gap-2">
                 <span
                   className="inline-block w-3 h-3 rounded-full"
@@ -239,7 +202,6 @@ const ATSCheckerFeature = () => {
               </h1>
 
               <p className="mb-8 sm:mb-10 text-base sm:text-lg md:text-xl leading-relaxed text-gray-500 max-w-xl break-words">
-<<<<<<< HEAD
                 Our free ATS Checker simulates corporate screening algorithms to
                 ensure your resume is robust, parseable, and keyword-optimized.
               </p>
@@ -253,37 +215,15 @@ const ATSCheckerFeature = () => {
                   size={20}
                   className="transition-transform group-hover:translate-x-1"
                 />
-=======
-                Our free ATS Checker simulates corporate screening algorithms to ensure your resume is robust, parseable, and keyword-optimized.
-              </p>
-
-              <button
-                onClick={() => {
-                  if (!isLoggedIn) {
-                    navigate("/login", { state: { from: "/user/ats-checker" } });
-                  } else {
-                    navigate("/user/ats-checker");
-                  }
-                }}
-                className="group relative inline-flex w-full sm:w-auto max-w-full justify-center items-center gap-3 px-6 sm:px-8 py-3.5 sm:py-4 bg-[#1a2e52] text-white rounded-xl font-bold text-base sm:text-lg transition-all duration-300 shadow-xl hover:bg-[#0077cc] hover:-translate-y-1"
-              >
-                <span>Run Free Scan</span>
-                <ArrowRight size={20} className="transition-transform group-hover:translate-x-1" />
->>>>>>> b6d6a945 (Updated CV builder validation (education mandatory, certification optional))
               </button>
 
               <div className="flex flex-wrap items-center gap-3 sm:gap-4 mt-6 sm:mt-8 text-sm font-medium text-gray-400">
                 <div className="flex -space-x-2">
-<<<<<<< HEAD
                   {[1, 2, 3].map((i) => (
                     <div
                       key={i}
                       className="w-8 h-8 rounded-full border-2 border-white bg-gray-200"
                     />
-=======
-                  {[1, 2, 3].map(i => (
-                    <div key={i} className="w-8 h-8 rounded-full border-2 border-white bg-gray-200" />
->>>>>>> b6d6a945 (Updated CV builder validation (education mandatory, certification optional))
                   ))}
                 </div>
                 <p>Trusted by 10k+ job seekers</p>
@@ -308,7 +248,6 @@ const ATSCheckerFeature = () => {
       </section>
 
       {/* 2) PROCESS ROW */}
-<<<<<<< HEAD
       <section
         ref={procRef}
         className="py-10 sm:py-12 bg-white border-y border-gray-50"
@@ -316,16 +255,11 @@ const ATSCheckerFeature = () => {
         <div
           className={`max-w-4xl mx-auto px-4 sm:px-6 transition-all duration-700 ${procVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}
         >
-=======
-      <section ref={procRef} className="py-10 sm:py-12 bg-white border-y border-gray-50">
-        <div className={`max-w-4xl mx-auto px-4 sm:px-6 transition-all duration-700 ${procVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}>
->>>>>>> b6d6a945 (Updated CV builder validation (education mandatory, certification optional))
           <div className="flex flex-col md:flex-row items-center justify-between gap-8 relative">
             <div className="absolute top-1/2 left-0 w-full h-0.5 bg-gray-100 -z-10 hidden md:block" />
             {[
               { step: "01", title: "Upload Resume", desc: "PDF or Word Doc" },
               { step: "02", title: "Smart Scan", desc: "AI Checks Keywords" },
-<<<<<<< HEAD
               {
                 step: "03",
                 title: "Improve Score",
@@ -342,15 +276,6 @@ const ATSCheckerFeature = () => {
                 <h4 className="text-base font-bold text-[#1a2e52]">
                   {s.title}
                 </h4>
-=======
-              { step: "03", title: "Improve Score", desc: "Get Actionable Fixes" },
-            ].map((s, i) => (
-              <div key={i} className="flex flex-col items-center text-center bg-white px-4">
-                <div className="w-12 h-12 rounded-full bg-[#f0f7ff] text-[#0077cc] flex items-center justify-center font-black text-lg mb-3 shadow-sm border border-blue-100">
-                  {s.step}
-                </div>
-                <h4 className="text-base font-bold text-[#1a2e52]">{s.title}</h4>
->>>>>>> b6d6a945 (Updated CV builder validation (education mandatory, certification optional))
                 <p className="text-xs text-gray-400 mt-1">{s.desc}</p>
               </div>
             ))}
@@ -359,7 +284,6 @@ const ATSCheckerFeature = () => {
       </section>
 
       {/* 3) SPLIT SECTION: UPLOAD & CHECKLIST */}
-<<<<<<< HEAD
       <section
         ref={uploadRef}
         className="px-4 sm:px-6 lg:px-8 py-14 sm:py-16 lg:py-24 bg-[#FAFAFA]"
@@ -370,14 +294,6 @@ const ATSCheckerFeature = () => {
             <div
               className={`lg:col-span-5 transition-all duration-700 ${uploadVisible ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-8"}`}
             >
-=======
-      <section ref={uploadRef} className="px-4 sm:px-6 lg:px-8 py-14 sm:py-16 lg:py-24 bg-[#FAFAFA]">
-        <div className="max-w-7xl mx-auto">
-          <div className="grid lg:grid-cols-12 gap-8 sm:gap-10 lg:gap-12 items-start">
-            
-            {/* LEFT: Upload Box */}
-            <div className={`lg:col-span-5 transition-all duration-700 ${uploadVisible ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-8"}`}>
->>>>>>> b6d6a945 (Updated CV builder validation (education mandatory, certification optional))
               <div
                 className="bg-white border-2 border-dashed border-gray-200 rounded-[2rem] p-6 sm:p-8 md:p-10 text-center cursor-pointer hover:border-[#0077cc] hover:bg-blue-50/30 transition-all group"
                 onClick={handleCTA}
@@ -385,13 +301,9 @@ const ATSCheckerFeature = () => {
                 <div className="w-20 h-20 rounded-full bg-blue-50 text-[#0077cc] flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform">
                   <UploadCloud size={32} />
                 </div>
-<<<<<<< HEAD
                 <h3 className="text-xl sm:text-2xl font-black text-[#1a2e52] mb-3">
                   Check your resume
                 </h3>
-=======
-                <h3 className="text-xl sm:text-2xl font-black text-[#1a2e52] mb-3">Check your resume</h3>
->>>>>>> b6d6a945 (Updated CV builder validation (education mandatory, certification optional))
                 <p className="text-sm sm:text-base text-gray-500 mb-6 sm:mb-8">
                   Drag and drop your file here, or click to browse. <br />
                   Supports PDF and Word.
@@ -404,19 +316,14 @@ const ATSCheckerFeature = () => {
             </div>
 
             {/* RIGHT: Checklist */}
-<<<<<<< HEAD
             <div
               className={`lg:col-span-7 transition-all duration-700 delay-100 ${uploadVisible ? "opacity-100 translate-x-0" : "opacity-0 translate-x-8"}`}
             >
-=======
-            <div className={`lg:col-span-7 transition-all duration-700 delay-100 ${uploadVisible ? "opacity-100 translate-x-0" : "opacity-0 translate-x-8"}`}>
->>>>>>> b6d6a945 (Updated CV builder validation (education mandatory, certification optional))
               <h2 className="text-2xl sm:text-3xl font-black text-[#1a2e52] mb-6 sm:mb-8">
                 Comprehensive <span className="text-[#0077cc]">Checklist</span>
               </h2>
               <div className="grid md:grid-cols-2 gap-6">
                 {[
-<<<<<<< HEAD
                   {
                     t: "Keyword Matching",
                     d: "Compares your skills vs. job description",
@@ -443,28 +350,14 @@ const ATSCheckerFeature = () => {
                     key={i}
                     className="flex items-start gap-4 p-5 bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow"
                   >
-=======
-                  { t: "Keyword Matching", d: "Compares your skills vs. job description" },
-                  { t: "Formatting Check", d: "Ensures fonts & margins are ATS-safe" },
-                  { t: "Contact Info", d: "Validates email & phone parseability" },
-                  { t: "Section Headers", d: "Checks for standard, readable headings" },
-                  { t: "Date Formats", d: "Verifies work history timeline clarity" },
-                  { t: "File Integrity", d: "Tests PDF/Docx structure code" },
-                ].map((item, i) => (
-                  <div key={i} className="flex items-start gap-4 p-5 bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
->>>>>>> b6d6a945 (Updated CV builder validation (education mandatory, certification optional))
                     <div className="mt-1 text-green-500">
                       <CheckCircle size={20} />
                     </div>
                     <div>
                       <h4 className="font-bold text-[#1a2e52]">{item.t}</h4>
-<<<<<<< HEAD
                       <p className="text-sm text-gray-500 leading-relaxed mt-1">
                         {item.d}
                       </p>
-=======
-                      <p className="text-sm text-gray-500 leading-relaxed mt-1">{item.d}</p>
->>>>>>> b6d6a945 (Updated CV builder validation (education mandatory, certification optional))
                     </div>
                   </div>
                 ))}
@@ -475,7 +368,6 @@ const ATSCheckerFeature = () => {
       </section>
 
       {/* 4) TOP ATS FIXES */}
-<<<<<<< HEAD
       <section
         ref={fixesRef}
         className="px-4 sm:px-6 lg:px-8 py-14 sm:py-16 lg:py-20 bg-white"
@@ -490,18 +382,10 @@ const ATSCheckerFeature = () => {
             <p className="mt-4 text-sm sm:text-base text-gray-500">
               Most common reasons resumes get rejected.
             </p>
-=======
-      <section ref={fixesRef} className="px-4 sm:px-6 lg:px-8 py-14 sm:py-16 lg:py-20 bg-white">
-        <div className={`max-w-6xl mx-auto transition-all duration-700 ${fixesVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}>
-          <div className="text-center mb-10 sm:mb-12 lg:mb-16">
-            <h2 className="text-3xl md:text-4xl font-black text-[#1a2e52]">Top ATS Fixes</h2>
-            <p className="mt-4 text-sm sm:text-base text-gray-500">Most common reasons resumes get rejected.</p>
->>>>>>> b6d6a945 (Updated CV builder validation (education mandatory, certification optional))
           </div>
 
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
             {[
-<<<<<<< HEAD
               {
                 icon: FileSearch,
                 title: "Missing Keywords",
@@ -536,19 +420,6 @@ const ATSCheckerFeature = () => {
                 <p className="text-sm text-gray-500 leading-relaxed">
                   {card.desc}
                 </p>
-=======
-              { icon: FileSearch, title: "Missing Keywords", desc: "Recruiters search for specific skills. If you don't list them, you don't appear." },
-              { icon: AlertCircle, title: "Graphics & Tables", desc: "Complex layouts confuse parsers. Keep it clean and linear." },
-              { icon: Target, title: "Generic Titles", desc: "Use standard job titles (e.g. 'Sales Manager' vs 'Revenue Ninja')." },
-              { icon: Activity, title: "Dateless Experience", desc: "ATS needs standardized dates to calculate years of experience." },
-            ].map((card, i) => (
-              <div key={i} className="p-6 sm:p-8 bg-slate-50 rounded-[2rem] hover:bg-[#f0f7ff] transition-colors group">
-                <div className="w-14 h-14 bg-white rounded-2xl flex items-center justify-center text-[#1a2e52] shadow-sm mb-6 group-hover:text-[#0077cc] group-hover:scale-110 transition-all">
-                  <card.icon size={28} />
-                </div>
-                <h3 className="text-lg sm:text-xl font-bold text-[#1a2e52] mb-3">{card.title}</h3>
-                <p className="text-sm text-gray-500 leading-relaxed">{card.desc}</p>
->>>>>>> b6d6a945 (Updated CV builder validation (education mandatory, certification optional))
               </div>
             ))}
           </div>
@@ -569,13 +440,9 @@ const ATSCheckerFeature = () => {
                 onClick={() => setOpenFaq(openFaq === i ? -1 : i)}
               >
                 <div className="p-4 sm:p-6 flex items-center justify-between gap-4">
-<<<<<<< HEAD
                   <h3
                     className={`font-bold text-base sm:text-lg ${openFaq === i ? "text-[#0077cc]" : "text-[#1a2e52]"}`}
                   >
-=======
-                  <h3 className={`font-bold text-base sm:text-lg ${openFaq === i ? "text-[#0077cc]" : "text-[#1a2e52]"}`}>
->>>>>>> b6d6a945 (Updated CV builder validation (education mandatory, certification optional))
                     {item.q}
                   </h3>
                   <ChevronDown
@@ -592,17 +459,9 @@ const ATSCheckerFeature = () => {
           </div>
         </div>
       </section>
-<<<<<<< HEAD
-=======
-
->>>>>>> b6d6a945 (Updated CV builder validation (education mandatory, certification optional))
       <Footer />
     </div>
   );
 };
 
-<<<<<<< HEAD
 export default ATSCheckerFeature;
-=======
-export default ATSCheckerFeature;
->>>>>>> b6d6a945 (Updated CV builder validation (education mandatory, certification optional))
