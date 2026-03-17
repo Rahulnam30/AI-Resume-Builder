@@ -171,13 +171,14 @@ const CoverLetterBuilder = () => {
     }
   });
 
-  const [selectedTemplate, setSelectedTemplate] = useState("professional");
+  const [selectedTemplate, setSelectedTemplate] = useState("software-engineer");
 
   const [activeSection, setActiveSection] = useState("sender");
 
   const [isExporting, setIsExporting] = useState(false);
 
   const [showMobilePreview, setShowMobilePreview] = useState(false);
+  const [activeTab, setActiveTab] = useState("builder");
 
   const [isAiMode, setIsAiMode] = useState(false);
 
@@ -1247,8 +1248,8 @@ ${
       </div>
 
       <CVBuilderTopBar
-        activeTab="builder"
-        setActiveTab={() => {}}
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
         onDownload={exportToPDF}
         onDownloadWord={exportToWord}
         isDownloading={isExporting}
@@ -1256,7 +1257,7 @@ ${
         onTitleChange={(_, val) => setDocumentTitle(val)}
         titlePlaceholder="Untitled Cover Letter"
         templatesLabel="Cover Letter Templates"
-        showTabs={false}
+        showTabs={true}
         showAiToggle={true}
         isAiMode={isAiMode}
         onToggleAiMode={() => setIsAiMode((v) => !v)}
@@ -1264,7 +1265,17 @@ ${
         showDesigner={false}
       />
 
-      <div className="px-2 py-4 sm:px-4 lg:px-4 w-screen max-w-full mx-0">
+      {activeTab === "templates" ? (
+        <CoverLetterTemplates
+          selectedTemplate={selectedTemplate}
+          onSelectTemplate={(tid) => {
+            setSelectedTemplate(tid);
+            setActiveTab("builder");
+          }}
+          formData={formData}
+        />
+      ) : (
+        <div className="px-2 py-4 sm:px-4 lg:px-4 w-screen max-w-full mx-0">
         {/* Dynamic status bar — mirrors Resume Builder */}
         {completion?.isComplete ? (
           <div className="flex gap-3 p-3 bg-emerald-50 border border-emerald-200 rounded-xl mb-4 shadow-sm px-2">
@@ -1521,6 +1532,7 @@ ${
           </div>
         </div>
       </div>
+      )}
 
       {/* Mobile Preview Overlay (already CV-like) */}
 
@@ -1618,11 +1630,11 @@ ${
                   onClick={() => {
                     setShowCompletionPopup(false);
                     // Navigate to templates or download
-                    // For cover letter, we can show a success message or navigate to download
+                    setActiveTab("templates");
                   }}
                   className="px-6 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
                 >
-                  Download
+                  View Templates
                 </button>
               </div>
             </div>
