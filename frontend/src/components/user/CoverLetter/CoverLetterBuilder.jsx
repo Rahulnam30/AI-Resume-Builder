@@ -133,6 +133,22 @@ const tabs = [
   { id: "closing", label: "Closing", icon: User },
 ];
 
+/* ─────────────────────────────────────────────────────────
+   HELPERS: decode the JWT to get the current user's ID
+   (same pattern the CV Builder uses when uploading a file)
+───────────────────────────────────────────────────────── */
+const getLoggedInUserId = () => {
+  try {
+    const token =
+      localStorage.getItem("token") || sessionStorage.getItem("token");
+    if (!token) return null;
+    const payload = JSON.parse(atob(token.split(".")[1]));
+    return payload.id || payload.userId || payload._id || null;
+  } catch {
+    return null;
+  }
+};
+
 const CoverLetterBuilder = () => {
   const headerRef = useRef(null);
 
@@ -164,9 +180,20 @@ const CoverLetterBuilder = () => {
     customSalutation: "",
   };
 
+  // Compute user-scoped localStorage keys once on mount.
+  // Using a ref so the value never changes after the first render.
+  const userIdRef = useRef(getLoggedInUserId());
+  const clFormKey = userIdRef.current
+    ? `coverLetterFormData_${userIdRef.current}`
+    : null;
+  const clTemplateKey = userIdRef.current
+    ? `coverLetterSelectedTemplate_${userIdRef.current}`
+    : null;
+
   const [formData, setFormData] = useState(() => {
+    if (!clFormKey) return defaultFormData;
     try {
-      const saved = localStorage.getItem("coverLetterFormData");
+      const saved = localStorage.getItem(clFormKey);
       return saved ? { ...defaultFormData, ...JSON.parse(saved) } : defaultFormData;
     } catch {
       return defaultFormData;
@@ -174,8 +201,9 @@ const CoverLetterBuilder = () => {
   });
 
   const [selectedTemplate, setSelectedTemplate] = useState(() => {
+    if (!clTemplateKey) return "professional";
     try {
-      const saved = localStorage.getItem("coverLetterSelectedTemplate");
+      const saved = localStorage.getItem(clTemplateKey);
       return saved || "professional";
     } catch {
       return "professional";
@@ -210,19 +238,21 @@ const CoverLetterBuilder = () => {
   }, [showMobilePreview]);
 
   // Auto-save to localStorage (debounced 400 ms, same as Resume Builder)
-  // Also persist selected template
+  // Also persist selected template — both keyed by user ID
   useEffect(() => {
+    if (!clFormKey) return;
     const timeout = setTimeout(() => {
-      localStorage.setItem("coverLetterFormData", JSON.stringify(formData));
+      localStorage.setItem(clFormKey, JSON.stringify(formData));
     }, 400);
     return () => clearTimeout(timeout);
-  }, [formData]);
+  }, [formData, clFormKey]);
 
   useEffect(() => {
+    if (!clTemplateKey) return;
     try {
-      localStorage.setItem("coverLetterSelectedTemplate", selectedTemplate);
+      localStorage.setItem(clTemplateKey, selectedTemplate);
     } catch {}
-  }, [selectedTemplate]);
+  }, [selectedTemplate, clTemplateKey]);
 
   useEffect(() => {
     const saveEditActivity = async () => {
