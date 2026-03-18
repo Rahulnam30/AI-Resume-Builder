@@ -34,9 +34,9 @@ const PersonalInfoForm = ({ formData, onInputChange, onUseSummary, highlightEmpt
     } catch (error) {
       console.error("Failed to generate summary:", error);
       console.error("Error details:", error.response?.data || error.message);
-      alert(
-        `Failed to generate summary: ${error.response?.data?.error || error.message}`,
-      );
+      // alert(
+      //   `Failed to generate summary: ${error.response?.data?.error || error.message}`,
+      // );
     } finally {
       setIsGenerating(false);
     }

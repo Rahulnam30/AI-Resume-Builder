@@ -13,6 +13,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useUserNotifications } from "../../../context/UserNotificationContext";
+import UserNavbar from "../UserNavBar/UserNavBar";
 
 const Notification = () => {
   const navigate = useNavigate();
@@ -103,7 +104,9 @@ const Notification = () => {
   const unreadCount = notifications.filter((n) => n.isUnread).length;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50/30 via-white to-purple-50/30">
+    <>
+    <UserNavbar/>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50/30 via-white to-purple-50/30 md:pt-0 pt-16">
       {/* Header */}
       <div className="sticky top-0 z-20 bg-white/80 backdrop-blur-2xl border-b border-gray-100/50 shadow-sm">
         <div className="max-w-7xl mx-auto px-6 py-6">
@@ -384,6 +387,7 @@ const Notification = () => {
         © {new Date().getFullYear()} ResumeAI Inc. All rights reserved.
       </footer>
     </div>
+    </>
   );
 };
 

@@ -1,6 +1,5 @@
-import React from "react";
-import { useState, useEffect, useRef } from "react";
-import { useNavigate, useLocation, Link } from "react-router-dom";
+import React, { useState, useEffect, useRef } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import featureImage1 from "../assets/rejection.png";
 import featureImage2 from "../assets/advice2.png";
 import featureImage3 from "../assets/solve.png";
@@ -20,7 +19,6 @@ import template6 from "../assets/template_thumnail/JessicaClaire6.png";
 import NavBar from "../components/NavBar";
 import Footer from "./Footer";
 import { motion } from "framer-motion";
-
 
 import {
   ArrowRight,
@@ -59,11 +57,33 @@ const staggerContainer = {
 function LandingPage() {
   const navigate = useNavigate();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  // templates scroll
   const [currentTemplateIndex, setCurrentTemplateIndex] = useState(0);
+  const [isUserScrolling, setIsUserScrolling] = useState(false);
+
+  const [isAtStart, setIsAtStart] = useState(true);
+  const [isAtEnd, setIsAtEnd] = useState(false);
+
   const scrollContainerRef = useRef(null);
   const isLoggedIn =
     typeof window !== "undefined" && !!localStorage.getItem("token");
+  const handleScroll = () => {
+    setIsUserScrolling(true);
 
+    const el = scrollContainerRef.current;
+    if (!el) return;
+
+    const scrollLeft = el.scrollLeft;
+    const maxScrollLeft = el.scrollWidth - el.clientWidth;
+
+    setIsAtStart(scrollLeft <= 0);
+    setIsAtEnd(scrollLeft >= maxScrollLeft - 5);
+
+    clearTimeout(window.scrollTimeout);
+    window.scrollTimeout = setTimeout(() => {
+      setIsUserScrolling(false);
+    }, 1000);
+  };
   const toggleMobileMenu = () => {
     setMobileMenuOpen(!mobileMenuOpen);
   };
@@ -168,28 +188,14 @@ function LandingPage() {
   };
 
   useEffect(() => {
-    const scrollInterval = setInterval(() => {
-      if (scrollContainerRef.current) {
-        const cardWidth = 300 + 24;
-        const maxScroll =
-          scrollContainerRef.current.scrollWidth -
-          scrollContainerRef.current.clientWidth;
-        const currentScroll = scrollContainerRef.current.scrollLeft;
+    if (isUserScrolling) return;
 
-        if (currentScroll >= maxScroll) {
-          scrollContainerRef.current.scrollTo({ left: 0, behavior: "smooth" });
-        } else {
-          scrollContainerRef.current.scrollBy({
-            left: cardWidth,
-            behavior: "smooth",
-          });
-        }
-      }
-    }, 3000);
+    const interval = setInterval(() => {
+      scroll("right");
+    }, 4000);
 
-    return () => clearInterval(scrollInterval);
-  }, []);
-
+    return () => clearInterval(interval);
+  }, [isUserScrolling]);
   // Scroll to the free templates section when URL hash is present (e.g. /#free-templates)
   const location = useLocation();
   useEffect(() => {
@@ -297,12 +303,13 @@ function LandingPage() {
   return (
     <div className="min-h-screen flex flex-col bg-white text-[#1a2e52] font-['Outfit']">
       <NavBar />
-      <div className="h-12" />
+      <div className="" />
       {/* OVERLAY */}
       <div
         onClick={toggleMobileMenu}
-        className={`w-full h-full absolute top-0 left-0 z-30 bg-black/20 ${mobileMenuOpen ? "" : "hidden"
-          }`}
+        className={`w-full h-full absolute top-0 left-0 z-30 bg-black/20 ${
+          mobileMenuOpen ? "" : "hidden"
+        }`}
       ></div>
 
       {/* HERO SECTION - padding added and mobile padding reudced */}
@@ -311,21 +318,17 @@ function LandingPage() {
         initial="hidden"
         whileInView="show"
         viewport={{ once: true, amount: 0.25 }}
-        className="relative 
-  px-4 md:px-8 
-  bg-white 
-  ml-2 md:ml-5 
-  lg:min-h-[calc(100vh-80px)]
-  flex items-center lg:items-start
-  pt-[100px] md:pt-[120px] lg:pt-6
-  -mt-12 lg:mt-0"
+        className="relative px-4 md:px-8 bg-white flex items-center pt-16 md:pt-20 lg:pt-23 "
       >
         <div className="absolute top-0 right-0 w-1/3 h-1/4 bg-orange-50 rounded-full blur-[120px] -z-10 opacity-50"></div>
         <div className="absolute bottom-0 left-0 w-1/3 h-1/4 bg-blue-50 rounded-full blur-[120px] -z-10 opacity-50"></div>
 
-        <div className="max-w-[1400px] mx-0 md:mx-auto grid lg:grid-cols-2 gap-8 md:gap-6 items-center">
-          <div className="flex flex-col gap-4 md:gap-6 text-center md:text-left items-center md:items-start max-w-md mx-0 md:max-w-none md:mx-0">
-            <motion.h1 variants={fadeUp} className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight select-none font-jakarta">
+        <div className="max-w-[1400px] w-full mx-auto grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-6 items-center">
+         <div className="flex flex-col gap-4 md:gap-6 text-center lg:text-left items-center lg:items-start w-full max-w-xl mx-auto lg:mx-0">
+              <motion.h1
+              variants={fadeUp}
+              className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight select-none font-jakarta"
+            >
               <span className="bg-gradient-to-r from-[#e65100] to-[#ff8f00] bg-clip-text text-transparent">
                 UptoSkills AI
               </span>{" "}
@@ -338,18 +341,26 @@ function LandingPage() {
               </span>
             </motion.h1>
 
-            <motion.h2 variants={fadeUp} className="text-2xl md:text-3xl font-bold text-[#0077cc]">
+            <motion.h2
+              variants={fadeUp}
+              className="text-2xl md:text-3xl font-bold text-[#0077cc]"
+            >
               AI Resume Builder
             </motion.h2>
 
-            <motion.p variants={fadeUp} className="text-lg md:text-xl font-normal leading-relaxed text-gray-600 max-w-sm md:max-w-none mx-auto md:mx-0">
+            <motion.p
+              variants={fadeUp}
+              className="text-lg md:text-xl font-normal leading-relaxed text-gray-600 max-w-sm md:max-w-none mx-auto md:mx-0"
+            >
               AI-Powered Content, Professional Templates, ATS-Friendly.
             </motion.p>
 
-            <motion.div variants={fadeUp} className="flex flex-row md:flex-col gap-3 mt-3 select-none justify-center md:items-start">
+            <motion.div
+              variants={fadeUp}
+             className="flex flex-col sm:flex-row gap-3 mt-3 select-none justify-center lg:justify-start"   >
               <button
                 onClick={() => navigate("/login")}
-                className="flex items-center justify-center gap-2 md:gap-3 px-4 md:px-10 py-3 md:py-5 text-sm md:text-lg font-bold text-white bg-gradient-to-r from-[#e65100] to-[#f4511e] rounded-xl whitespace-nowrap transition-all duration-300 hover:-translate-y-1 shadow-[0_10px_25px_rgba(230,81,0,0.3)] hover:shadow-[0_15px_35px_rgba(230,81,0,0.45)]"
+                className="flex w-full sm:w-auto items-center justify-center gap-2 md:gap-3 px-4 md:px-10 py-3 md:py-5 text-sm md:text-lg font-bold text-white bg-gradient-to-r from-[#e65100] to-[#f4511e] rounded-xl whitespace-nowrap transition-all duration-300 hover:-translate-y-1 shadow-[0_10px_25px_rgba(230,81,0,0.3)] hover:shadow-[0_15px_35px_rgba(230,81,0,0.45)]"
               >
                 <i className="fas fa-graduation-cap"></i>
                 Start Building for Free
@@ -369,24 +380,29 @@ function LandingPage() {
           </div>
 
           {/* Image carousel -  size reduced, Hidden on mobile, visible on md and up */}
-          <motion.div variants={fadeUp} className="hidden md:flex items-center justify-center">
-            <div className="w-full max-w-2xl lg:max-w-[90%] relative h-[400px] md:h-[600px] lg:h-[600px]">
+          <motion.div
+            variants={fadeUp}
+            className="hidden lg:flex items-center justify-center"
+          >
+            <div className="w-full max-w-xl lg:max-w-[90%] relative h-[260px] md:h-[420px] lg:h-[520px]">
               {templates.map((template, idx) => (
                 <div
                   key={idx}
-                  className={`absolute inset-0 transition-all duration-1000 ease-[cubic-bezier(0.22,1,0.36,1)] flex items-center justify-center select-none ${idx === currentTemplateIndex
-                    ? "opacity-100 scale-100"
-                    : "opacity-0 scale-95"
-                    }`}
+                  className={`absolute inset-0 transition-all duration-1000 ease-[cubic-bezier(0.22,1,0.36,1)] flex items-center justify-center select-none ${
+                    idx === currentTemplateIndex
+                      ? "opacity-100 scale-100"
+                      : "opacity-0 scale-95"
+                  }`}
                 >
                   <img
                     src={template.image}
                     alt={template.name}
-                    className={`object-contain ${template.name === "Tailored Summary" ||
+                    className={`object-contain ${
+                      template.name === "Tailored Summary" ||
                       template.name === "Tailor to Job"
-                      ? "w-[100%] h-[70%]"
-                      : "w-full h-full"
-                      }`}
+                        ? "w-[100%] h-[70%]"
+                        : "w-full h-full"
+                    }`}
                     onError={(e) => {
                       e.target.style.display = "none";
                     }}
@@ -404,25 +420,32 @@ function LandingPage() {
         initial="hidden"
         whileInView="show"
         viewport={{ once: true, amount: 0.2 }}
-        className="px-4 md:px-8 py-12 md:py-24 bg-gray-50"
+        className="px-4 md:px-8 py-12 md:py-16 lg:py-20 bg-gray-50"
       >
         <div className="max-w-[1200px] mx-auto">
           <div className="mb-10 md:mb-20 text-center">
-            <motion.h2 variants={fadeUp} className="mb-3 md:mb-4 text-3xl md:text-4xl lg:text-5xl font-black">
+            <motion.h2
+              variants={fadeUp}
+              className="mb-3 md:mb-4 text-3xl md:text-4xl lg:text-5xl font-black"
+            >
               How <span className="text-[#e65100]">It Works</span>
             </motion.h2>
-            <motion.p variants={fadeUp} className="text-base md:text-lg text-gray-500">
+            <motion.p
+              variants={fadeUp}
+              className="text-base md:text-lg text-gray-500"
+            >
               Your path to a professional resume in 5 simple steps.
             </motion.p>
           </div>
 
-          <div className="space-y-6 md:space-y-24">
+          <div className="space-y-8 md:space-y-16">
             {howItWorksSteps.map((step, index) => (
               <motion.div
                 key={index}
                 variants={fadeUp}
-                className={`flex flex-col md:flex-row items-center gap-6 md:gap-12 ${index % 2 !== 0 ? "md:flex-row-reverse" : ""
-                  }`}
+                className={`flex flex-col md:flex-row items-center gap-6 md:gap-12 w-full ${
+                  index % 2 !== 0 ? "md:flex-row-reverse" : ""
+                }`}
               >
                 {/* MOBILE BADGE - Hidden on Desktop */}
                 <div className="absolute top-4 left-4 md:hidden bg-[#0077cc] text-white text-xs font-bold px-3 py-1 rounded-full shadow-sm">
@@ -433,7 +456,7 @@ function LandingPage() {
                 <img
                   src={step.image}
                   alt={step.heading}
-                  className="w-full md:w-1/2 h-auto object-contain rounded-xl md:rounded-3xl transition-transform duration-500"
+                  className="w-full md:w-1/2 max-w-md md:max-w-none h-auto object-contain rounded-xl"
                 />
 
                 {/* TEXT CONTENT */}
@@ -456,7 +479,6 @@ function LandingPage() {
         </div>
       </motion.section>
 
-
       {/* TEMPLATE SHOWCASE - Reduced mobile padding */}
       <motion.section
         id="free-templates"
@@ -469,10 +491,16 @@ function LandingPage() {
         <div className="max-w-[1400px] mx-auto">
           {/* Header Section */}
           <div className="flex flex-col items-center mb-8 md:mb-12 text-center">
-            <motion.h2 variants={fadeUp} className="mb-3 md:mb-4 text-2xl md:text-3xl lg:text-4xl font-black leading-tight">
+            <motion.h2
+              variants={fadeUp}
+              className="mb-3 md:mb-4 text-2xl md:text-3xl lg:text-4xl font-black leading-tight"
+            >
               Access Free <span className="text-[#0077cc]">Templates</span>
             </motion.h2>
-            <motion.p variants={fadeUp} className="max-w-2xl px-4 text-sm md:text-base text-gray-500">
+            <motion.p
+              variants={fadeUp}
+              className="max-w-2xl px-4 text-sm md:text-base text-gray-500"
+            >
               All templates are ATS-compliant and fully customizable.
             </motion.p>
           </div>
@@ -481,14 +509,16 @@ function LandingPage() {
             {/* Scroll Buttons */}
             <button
               onClick={() => scroll("left")}
-              className="absolute left-0 top-1/2 -translate-y-1/2 z-10 w-10 h-10 bg-white shadow-xl rounded-full flex items-center justify-center text-[#0077cc] border border-gray-100 opacity-0 group-hover/main:opacity-100 transition-opacity duration-300 -translate-x-2 hover:bg-[#0077cc] hover:text-white"
+              className={`absolute left-0 top-1/2 -translate-y-1/2 z-10 w-10 h-10 bg-white shadow-xl rounded-full flex items-center justify-center text-[#0077cc] border border-gray-100 transition-opacity duration-300 -translate-x-2 hover:bg-[#0077cc] hover:text-white
+${isAtStart ? "opacity-0 pointer-events-none" : "opacity-0 group-hover/main:opacity-100"}`}
             >
               <ChevronLeft size={22} />
             </button>
 
             <div
               ref={scrollContainerRef}
-              className="flex gap-4 md:gap-8 px-2 md:px-4 py-6 md:py-10 overflow-x-auto snap-x snap-mandatory scroll-smooth scrollbar-hide"
+              onScroll={handleScroll}
+              className="flex gap-4 md:gap-8 px-2 md:px-4 py-6 md:py-10 overflow-x-auto snap-x snap-mandatory scrollbar-hide"
               style={{ perspective: "1000px" }}
             >
               {resumeTemplates.map((t, i) => (
@@ -529,7 +559,8 @@ function LandingPage() {
 
             <button
               onClick={() => scroll("right")}
-              className="absolute right-0 top-1/2 -translate-y-1/2 z-10 w-10 h-10 bg-white shadow-xl rounded-full flex items-center justify-center text-[#0077cc] border border-gray-100 opacity-0 group-hover/main:opacity-100 transition-opacity duration-300 translate-x-2 hover:bg-[#0077cc] hover:text-white"
+              className={`absolute right-0 top-1/2 -translate-y-1/2 z-10 w-10 h-10 bg-white shadow-xl rounded-full flex items-center justify-center text-[#0077cc] border border-gray-100 transition-opacity duration-300 translate-x-2 hover:bg-[#0077cc] hover:text-white
+${isAtEnd ? "opacity-0 pointer-events-none" : "opacity-0 group-hover/main:opacity-100"}`}
             >
               <ChevronRight size={20} />
             </button>
@@ -552,11 +583,20 @@ function LandingPage() {
         <div className="relative z-10 px-2 md:px-4 mx-auto max-w-7xl">
           {/* Header Section */}
           <div className="flex flex-col items-center mb-10 md:mb-16 text-center">
-            <motion.h2 variants={fadeUp} className="mb-2 md:mb-4 text-3xl md:text-4xl lg:text-5xl font-black text-[#1a2e52] leading-tight">
+            <motion.h2
+              variants={fadeUp}
+              className="mb-2 md:mb-4 text-3xl md:text-4xl lg:text-5xl font-black text-[#1a2e52] leading-tight"
+            >
               AI-Powered <span className="text-[#0077cc]">Innovation</span>
             </motion.h2>
-            <motion.div variants={fadeUp} className="h-1 w-16 md:h-1.5 md:w-20 bg-[#e65100] rounded-full mb-4 md:mb-6"></motion.div>
-            <motion.p variants={fadeUp} className="max-w-2xl px-2 text-sm md:text-lg text-gray-500 leading-relaxed">
+            <motion.div
+              variants={fadeUp}
+              className="h-1 w-16 md:h-1.5 md:w-20 bg-[#e65100] rounded-full mb-4 md:mb-6"
+            ></motion.div>
+            <motion.p
+              variants={fadeUp}
+              className="max-w-2xl px-2 text-sm md:text-lg text-gray-500 leading-relaxed"
+            >
               Advanced tools designed to bypass ATS filters and catch recruiter
               attention instantly.
             </motion.p>
@@ -577,8 +617,8 @@ function LandingPage() {
                 <div className="relative inline-flex items-center justify-center p-3 md:p-4 mb-4 md:mb-8 transition-all duration-500 rounded-2xl bg-blue-50 border border-blue-100 group-hover:scale-110 group-hover:bg-[#0077cc] group-hover:shadow-[0_10px_20px_rgba(0,119,204,0.3)] group-hover:rotate-6">
                   <div className="transition-colors duration-500 text-[#0077cc] group-hover:text-white">
                     {React.cloneElement(feature.icon, {
-                      className: "size-5 md:size-7 transition-colors duration-500",
-
+                      className:
+                        "size-5 md:size-7 transition-colors duration-500",
                     })}
                   </div>
                 </div>

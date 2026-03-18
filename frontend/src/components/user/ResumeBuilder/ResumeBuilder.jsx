@@ -30,7 +30,7 @@ import TemplatesPage from "../Templates/TemplatesDashboardPage";
 import { TEMPLATES } from "../Templates/TemplateRegistry";
 
 import { getCompletionStatus } from "./completion";
-import { dummyData } from "./dummyData";
+import { dummyData, emptyData } from "./dummyData";
 
 import UserNavbar from "../UserNavBar/UserNavBar";
 import CVBuilderTopBar from "../CV/Cvbuildernavbar";
@@ -106,9 +106,9 @@ const ResumeBuilder = ({ setActivePage = () => { } }) => {
   const [formData, setFormData] = useState(() => {
     try {
       const data = localStorage.getItem("resumeFormData");
-      return data ? JSON.parse(data) : dummyData;
+      return data ? JSON.parse(data) : emptyData;
     } catch {
-      return dummyData;
+      return emptyData;
     }
   });
 
@@ -592,7 +592,7 @@ const ResumeBuilder = ({ setActivePage = () => { } }) => {
             </div>
           </div>
         )}
-        <div className="flex gap-5 px-4 pb-20 pt-4 items-start">
+        <div className="flex gap-5 px-4 pb-11 pt-4 items-start">
           {/* Desktop floating form panel */}
           {!isPreviewExpanded && (
             <div
@@ -768,13 +768,13 @@ const ResumeBuilder = ({ setActivePage = () => { } }) => {
             </div>
           )}
         </div>
-        <div className="w-full h-4" />
+        {/* <div className="w-full h-4" /> */}
       </>
     );
   };
 
   return (
-    <div className="min-h-screen bg-[#f1f3f6] font-sans tracking-[0.01em]">
+    <div className="min-h-screen bg-[#f1f3f6] font-sans tracking-[0.01em] md:pt-0 pt-20">
       {/* Sticky navbar like CV */}
       {!isPreviewExpanded && (
         <div ref={headerRef} className="sticky top-0 z-30 bg-[#f1f3f6]">
@@ -803,6 +803,7 @@ const ResumeBuilder = ({ setActivePage = () => { } }) => {
         setActiveTab={setActiveTab}
         onDownload={handleDownload}
         onDownloadWord={handleDownloadWord}
+        showDownloadWord={false} // Only hide Word download on Resume page
         onUpload={handleResumeUpload}
         isDownloading={loading}
         downloadDisabled={false} // Allow downloads regardless of completion status

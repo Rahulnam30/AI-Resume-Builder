@@ -19,14 +19,8 @@ const ProjectsForm = ({ formData, setFormData, highlightEmpty }) => {
     if (highlightEmpty && !value?.trim()) return 'border-red-500 focus:border-red-500 focus:ring-4 focus:ring-red-500/10';
     return 'border-slate-200 focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10';
   };
-  useEffect(() => {
-    const { sectionValidationStatus } = getCompletionStatus(formData);
-    if (sectionValidationStatus.hasValidProject) {
-      setEditingId(null);
-    } else {
-      setEditingId((formData?.projects?.[0]?.id) ?? null);
-    }
-  }, [formData]);
+  // Removed intrusive useEffect that switched components mid-typing based on validation status.
+  // The user should manually click "Done" to collapse the form.
 
   const addProject = () => {
     const id = crypto.randomUUID();

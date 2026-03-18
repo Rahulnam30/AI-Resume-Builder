@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import MonthYearPicker from "../../MonthYearPicker";
 import { Check, EditIcon, GraduationCap, Plus, Trash2 } from "lucide-react";
 import { getCompletionStatus } from "../completion";
 
@@ -175,10 +176,9 @@ const EducationForm = ({ formData, setFormData, highlightEmpty }) => {
                     <label className="text-sm font-semibold text-slate-700">
                       Start Date <span className="text-red-500">*</span>
                     </label>
-                    <input
-                      type="month"
+                    <MonthYearPicker
                       className={`w-full px-3.5 py-2.5 border rounded-lg text-sm text-slate-900 focus:outline-none transition-all bg-white ${getBorderClass(edu.startDate)}`}
-                      value={edu.startDate || ""}
+                      value={edu.startDate}
                       onChange={(e) => {
                         const val = e.target.value;
                         const updated = (formData?.education ?? []).map((item) =>
@@ -192,10 +192,10 @@ const EducationForm = ({ formData, setFormData, highlightEmpty }) => {
                     <label className="text-sm font-semibold text-slate-700">
                       Graduation Date <span className="text-red-500">*</span>
                     </label>
-                    <input
-                      type="month"
+                    <MonthYearPicker
+                      alignRight={true}
                       className={`w-full px-3.5 py-2.5 border rounded-lg text-sm text-slate-900 focus:outline-none transition-all bg-white ${getBorderClass(edu.graduationDate)}`}
-                      value={edu.graduationDate || ""}
+                      value={edu.graduationDate}
                       onChange={(e) => {
                         const val = e.target.value;
                         const updated = (formData?.education ?? []).map((item) =>

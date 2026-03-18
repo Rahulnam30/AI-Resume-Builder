@@ -1,4 +1,5 @@
 import { useState } from "react";
+import MonthYearPicker from "../../MonthYearPicker";
 import { Trash2, EditIcon, Check, GraduationCap, Plus } from "lucide-react";
 
 const EducationForm = ({ formData, setFormData, highlightEmpty }) => {
@@ -173,8 +174,8 @@ const EducationForm = ({ formData, setFormData, highlightEmpty }) => {
                     <label className="text-sm font-semibold text-slate-700">
                       Graduation Date
                     </label>
-                    <input
-                      type="month"
+                    <MonthYearPicker
+                      alignRight={true}
                       className="w-full px-3.5 py-2.5 border border-slate-200 rounded-lg text-sm text-slate-900 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all bg-white"
                       value={edu.graduationDate}
                       onChange={(e) =>

@@ -52,7 +52,7 @@ const SortableFeatureItem = ({ id, feature, onChange, onRemove }) => {
         type="text"
         value={feature.text}
         onChange={(e) => onChange(e.target.value)}
-        className="flex-1 min-w-0 border rounded-lg px-3 py-2 text-sm focus:border-blue-500 focus:outline-none"
+        className="flex-1 px-2 py-1 text-sm border border-gray-300 rounded focus:border-blue-500 focus:outline-none"
         placeholder="Feature description"
       />
       <button
@@ -273,7 +273,7 @@ const AdminSubscription = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 p-4 sm:p-6">
+    <div className="min-h-screen bg-slate-50 p-4 sm:p-6 overflow-x-hidden">
       <Toaster position="top-right" />
       {/* Header */}
       <div className="mb-6 sm:mb-10">
@@ -286,7 +286,7 @@ const AdminSubscription = () => {
       </div>
 
       {/* Stats / Dashboard */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-6 mb-6 sm:mb-10">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6 mb-6 sm:mb-10">
         <div className="bg-white p-4 sm:p-6 rounded-xl shadow flex flex-col gap-2">
           <p className="text-xs sm:text-sm text-gray-500">Total Revenue</p>
           <p className="text-xl sm:text-2xl font-bold">
@@ -323,13 +323,13 @@ const AdminSubscription = () => {
           items={localPlans.map(p => p.id)}
           strategy={rectSortingStrategy}
         >
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6">
             {localPlans.map((plan) => (
               <SortablePlanCard key={plan.id} plan={plan}>
                 {({ attributes, listeners }) => (
                   <div
                     key={plan.id}
-                    className=" relative rounded-2xl border border-gray-200 bg-white p-4 sm:p-6 shadow h-full flex flex-col"
+                    className="relative rounded-2xl border border-gray-200 bg-white p-4 sm:p-6 shadow h-full flex flex-col min-w-0"
                   >
                     <div
                       {...attributes}
@@ -343,7 +343,7 @@ const AdminSubscription = () => {
                         type="text"
                         value={plan.name}
                         onChange={(e) => updatePlanField(plan.id, 'name', e.target.value)}
-                        className="text-lg sm:text-xl font-semibold text-gray-900 bg-transparent border border-dashed border-transparent hover:border-gray-300 focus:border-blue-500 focus:outline-none rounded w-2/3 px-1.5 -ml-1.5 py-0.5"
+                        className="text-lg sm:text-xl font-semibold text-gray-900 bg-transparent border border-dashed border-transparent hover:border-gray-300 focus:border-blue-500 focus:outline-none rounded w-full min-w-0 break-words px-1.5 py-0.5"
                       />
                       <div className="flex items-center gap-1">
                         <button onClick={() => togglePlan(plan.id)}>
@@ -362,19 +362,19 @@ const AdminSubscription = () => {
                         </button>
                       </div>
                     </div>
-                    <div className="flex gap-1 items-center justify-start mt-1">
-                      <h3 className="lg:text-xs whitespace-nowrap">Badge Tag :</h3>
+                    <div className="flex gap-2 items-center justify-start">
+                      <h3>Badge Tag :</h3>
                       <input
                         type="text"
                         value={plan.badge}
                         onChange={(e) => updatePlanField(plan.id, 'badge', e.target.value)}
-                        className="text-sm font-medium text-gray-800 bg-transparent border border-dashed  border-gray-300 rounded px-2 py-0.5 w-full  hover:border-gray-400 focus:border-blue-500 focus:outline-none"
+                        className="text-lg sm:text-xl font-medium text-gray-800 bg-transparent border border-dashed border-transparent hover:border-gray-300 focus:border-blue-500 focus:outline-none rounded w-2/3 px-1.5 -ml-1.5 py-0.5"
                       />
                     </div>
                     <textarea
                       value={plan.description}
                       onChange={(e) => updatePlanField(plan.id, 'description', e.target.value)}
-                      className="text-sm text-gray-500 bg-transparent border border-dashed border-transparent hover:border-gray-300 focus:border-blue-500 focus:outline-none rounded w-full resize-none px-1.5 -ml-1.5 py-1"
+                      className="text-sm text-gray-500 bg-transparent border border-dashed border-transparent hover:border-gray-300 focus:border-blue-500 focus:outline-none rounded w-full resize-none break-words px-1.5 py-1"
                       rows={2}
                     />
 
