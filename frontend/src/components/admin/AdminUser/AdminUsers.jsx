@@ -400,24 +400,23 @@ export default function AdminUsers({ head = "Manage Users" }) {
 
         <div className="hidden md:block bg-white border rounded-xl overflow-hidden shadow-sm">
 
-          <table className="w-full text-sm">
+          <table className="w-full text-sm table-fixed">
             <thead className="bg-gray-50 text-gray-500">
               <tr>
-                <th className="px-6 py-4 text-left">User Details</th>
-                <th className="px-6 py-4 text-center">Role</th>
-                <th className="px-6 py-4 text-center">Plan</th>
-                <th className="px-6 py-4 text-center">Status</th>
-                {/* <th className="px-6 py-4 text-center">User ID</th> */}
-                <th className="px-6 py-4 text-center">Created At</th>
-                <th className="px-6 py-4 text-center">Actions</th>
+                <th className="px-2 py-3 text-left text-xs font-semibold uppercase tracking-wider w-[24%]">User Details</th>
+                <th className="px-1 py-3 text-center text-xs font-semibold uppercase tracking-wider w-[13%]">Role</th>
+                <th className="px-1 py-3 text-center text-xs font-semibold uppercase tracking-wider w-[9%]">Plan</th>
+                <th className="px-1 py-3 text-center text-xs font-semibold uppercase tracking-wider w-[11%]">Status</th>
+                <th className="px-1 py-3 text-center text-xs font-semibold uppercase tracking-wider w-[13%]">Created At</th>
+                <th className="px-1 py-3 text-center text-xs font-semibold uppercase tracking-wider w-[18%]">Actions</th>
               </tr>
             </thead>
 
             <tbody className="divide-y">
               {filteredUsers.map((u) => (
                 <tr key={u._id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-indigo-100 text-indigo-700 flex items-center justify-center font-bold text-lg uppercase shrink-0">
+                  <td className="px-2 py-3 flex items-center gap-2">
+                    <div className="w-8 h-8 rounded-full bg-indigo-100 text-indigo-700 flex items-center justify-center font-bold text-sm uppercase shrink-0">
                       {u.username ? u.username.charAt(0) : "U"}
                     </div>
                     <div>
@@ -426,7 +425,7 @@ export default function AdminUsers({ head = "Manage Users" }) {
                     </div>
                   </td>
 
-                  <td className="px-6 py-4 text-center">
+                  <td className="px-1 py-3 text-center">
                     {u.username === "Super Admin" ? (
                       <span className="px-3 py-1 rounded-full text-xs font-semibold bg-purple-100 text-purple-700 border border-purple-200 whitespace-nowrap" style={{ display: 'inline-block', width: 'max-content' }}>
                         Super Admin
@@ -451,7 +450,7 @@ export default function AdminUsers({ head = "Manage Users" }) {
                     )}
                   </td>
 
-                  <td className="px-6 py-4 text-center">
+                  <td className="px-1 py-3 text-center">
                     <span
                       className={`px-3 py-1 rounded-full text-xs font-semibold border ${u.plan === "Pro"
                         ? "bg-amber-100 text-amber-800 border-amber-200"
@@ -462,7 +461,7 @@ export default function AdminUsers({ head = "Manage Users" }) {
                     </span>
                   </td>
 
-                  <td className="px-6 py-4 text-center">
+                  <td className="px-1 py-3 text-center">
                     {u.username === "Super Admin" ? (
                       <div className="flex flex-col items-center gap-1">
                         <span className="px-3 py-1 rounded-full text-xs font-semibold bg-indigo-100 text-indigo-700 border border-indigo-200">
@@ -486,11 +485,11 @@ export default function AdminUsers({ head = "Manage Users" }) {
                     )}
                   </td>
 
-                  <td className="px-6 py-4 text-center text-gray-500">
+                  <td className="px-1 py-3 text-center text-xs text-gray-500 whitespace-nowrap">
                     {u.createdAt ? new Date(u.createdAt).toLocaleDateString() : "N/A"}
                   </td>
 
-                  <td className="px-6 py-4">
+                  <td className="px-1 py-3 text-center align-middle">
                     <div className="flex justify-center gap-2">
                       {u.adminRequestStatus === 'pending' && (
                         <>
