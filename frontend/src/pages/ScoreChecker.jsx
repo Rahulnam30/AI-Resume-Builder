@@ -1,7 +1,28 @@
 import { useMemo, useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Activity, CheckCircle2, ArrowRight, Zap, PenTool, Sparkles, Award, BookOpen, Briefcase, User, TrendingUp, ChevronDown, Target, FileSearch, Eye } from "lucide-react";
-import { ResponsiveContainer, AreaChart, Area, Tooltip } from "recharts";
+import {
+  Activity,
+  CheckCircle2,
+  ArrowRight,
+  Zap,
+  PenTool,
+  Sparkles,
+  Award,
+  BookOpen,
+  Briefcase,
+  User,
+  TrendingUp,
+  ChevronDown,
+  Target,
+  FileSearch,
+  Eye
+} from "lucide-react";
+import {
+  ResponsiveContainer,
+  AreaChart,
+  Area,
+  Tooltip
+} from "recharts";
 import NavBar from "../components/NavBar";
 import Footer from "./Footer";
 import write from "../assets/Live.png";
@@ -712,7 +733,8 @@ const ScoreChecker = () => {
           </motion.div>
         </motion.div>
       </section>
-  {/* 6) FAQ (New Section) */}
+
+      {/* 6) FAQ (New Section) */}
       <section
         ref={faqRef}
         className={`px-6 py-20 bg-[#F8F9FC] transition-all duration-700 ${faqVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
@@ -769,7 +791,8 @@ const ScoreChecker = () => {
           </motion.div>
         </div>
       </section>
- {/* CTA (keeps your style) */}
+
+      {/* CTA (keeps your style) */}
       <section
         ref={ctaRef}
         className={`relative px-8 py-20 overflow-hidden bg-white text-center transition-all duration-700 ${ctaVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
@@ -801,4 +824,5 @@ const ScoreChecker = () => {
     </div>
   );
 };
+
 export default ScoreChecker;
