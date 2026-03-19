@@ -106,6 +106,7 @@ const ATSPdfPreview = ({ pdfUrl, onLoadSuccess }) => {
             <Page
               pageNumber={pageNumber}
               scale={scale}
+              width={containerRef.current?.clientWidth * 0.92}
               renderTextLayer={false}
               renderAnnotationLayer={false}
             />
