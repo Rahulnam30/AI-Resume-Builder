@@ -53,25 +53,25 @@ const CVBuilderTopBar = ({
     }
   }, [title]);
 
- const handleUploadClick = () => {
-  if (uploadInputRef.current) {
-    uploadInputRef.current.click();
-  }
-};
+  const handleUploadClick = () => {
+    if (uploadInputRef.current) {
+      uploadInputRef.current.click();
+    }
+  };
 
- const handleFileChange = (e) => {
-  const file = e.target.files[0];
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
 
-  console.log("Selected file:", file);
+    console.log("Selected file:", file);
 
-  if (!file) return;
+    if (!file) return;
 
-  if (onUpload) {
-    onUpload(file);
-  }
+    if (onUpload) {
+      onUpload(file);
+    }
 
-  e.target.value = "";
-};
+    e.target.value = "";
+  };
 
   const currentTitle = title !== undefined ? title : localTitle;
   const displayForWidth = currentTitle || titlePlaceholder;
@@ -81,12 +81,12 @@ const CVBuilderTopBar = ({
     <div className="w-full px-3 sm:px-4 py-3 flex flex-col md:flex-row gap-3 justify-between items-start md:items-center">
       {/* Hidden file input kept globally so both mobile & desktop upload buttons work */}
       <input
-  ref={uploadInputRef}
-  type="file"
-  accept=".pdf,.doc,.docx"
-  style={{ display: "none" }}
-  onChange={handleFileChange}
-/>
+        ref={uploadInputRef}
+        type="file"
+        accept=".pdf,.doc,.docx"
+        style={{ display: "none" }}
+        onChange={handleFileChange}
+      />
       {/* ── Left section ── */}
       <div className="flex flex-col sm:flex-row sm:items-center gap-2 md:gap-3 w-full md:w-auto">
         {/* Title Section - Editable */}
@@ -148,22 +148,12 @@ const CVBuilderTopBar = ({
             </button>
           </div>
         )}
-
-       
       </div>
 
       {/* ── Right section (desktop / tablet) ── */}
       <div className="hidden md:flex flex-wrap justify-center sm:justify-end items-center gap-2 w-full md:w-auto">
         {/* Extra Buttons */}
         {extraButtons}
-
-        {/* Designer */}
-        {showDesigner && (
-          <button className="hidden lg:flex items-center gap-2 px-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-800 font-medium shadow-sm hover:bg-black hover:text-white transition-all duration-200 whitespace-nowrap">
-            <PenTool size={18} />
-            CV Designer
-          </button>
-        )}
 
         {/* Upload */}
         {showUpload && (
