@@ -1,11 +1,17 @@
-import { useState } from "react";
-import { RefreshCw, Sparkles, User } from "lucide-react";
+import { useState, useRef } from "react";
+import { RefreshCw, Sparkles, User, PenTool, Plus, X } from "lucide-react";
 import axiosInstance from "../../../../api/axios";
 
 const PersonalInfoForm = ({ formData, onInputChange, highlightEmpty }) => {
   const [isGenerating, setIsGenerating] = useState(false);
   const [emailError, setEmailError] = useState(false);
   const [phoneError, setPhoneError] = useState(false);
+  const [urlErrors, setUrlErrors] = useState({});
+  const [platformErrors, setPlatformErrors] = useState({});
+  const labelRefs = useRef([]);
+
+  // Initialize extraLinks if not present
+  const extraLinks = formData?.extraLinks || [];
 
   // Helper to get border class for required fields
   const getBorderClass = (value, hasFormatError = false) => {
@@ -66,6 +72,70 @@ const PersonalInfoForm = ({ formData, onInputChange, highlightEmpty }) => {
     } else {
       setPhoneError(false);
     }
+  };
+
+  const addLink = () => {
+    const updatedExtraLinks = [...extraLinks, { label: "Enter Platform", url: "" }];
+    onInputChange("extraLinks", updatedExtraLinks);
+  };
+
+  const validateUrl = (url) => {
+    if (!url.trim()) return false; // Empty URL is invalid
+    try {
+      new URL(url);
+      return true;
+    } catch {
+      // Try adding https:// if missing
+      if (!url.startsWith('http://') && !url.startsWith('https://')) {
+        try {
+          new URL(`https://${url}`);
+          return true;
+        } catch {
+          return false;
+        }
+      }
+      return false;
+    }
+  };
+
+  const validatePlatformName = (name) => {
+    return name && name.trim() !== "" && name.trim() !== "Enter Platform";
+  };
+
+  const updateExtraLink = (index, field, value) => {
+    const updated = [...extraLinks];
+    updated[index][field] = value;
+    onInputChange("extraLinks", updated);
+
+    // Validate URL if field is 'url'
+    if (field === 'url') {
+      const isValid = validateUrl(value);
+      setUrlErrors(prev => ({
+        ...prev,
+        [index]: !isValid
+      }));
+    }
+    
+    // Validate platform name if field is 'label'
+    if (field === 'label') {
+      const isValid = validatePlatformName(value);
+      setPlatformErrors(prev => ({
+        ...prev,
+        [index]: !isValid
+      }));
+    }
+  };
+
+  const removeLink = (index) => {
+    const updated = extraLinks.filter((_, i) => i !== index);
+    onInputChange("extraLinks", updated);
+    // Clear errors for removed link
+    const newUrlErrors = { ...urlErrors };
+    const newPlatformErrors = { ...platformErrors };
+    delete newUrlErrors[index];
+    delete newPlatformErrors[index];
+    setUrlErrors(newUrlErrors);
+    setPlatformErrors(newPlatformErrors);
   };
 
   return (
@@ -175,6 +245,97 @@ const PersonalInfoForm = ({ formData, onInputChange, highlightEmpty }) => {
             placeholder="johndoe.com"
             onChange={(e) => onInputChange("website", e.target.value)}
           />
+        </div>
+
+        {/* Social Media Links */}
+        <div className="flex flex-col gap-1.5 md:col-span-2">
+          <label className="block text-sm font-semibold text-slate-700">
+            Social Media Links
+          </label>
+          
+          {extraLinks.map((link, index) => (
+            <div key={index} className="border border-slate-200 rounded-lg p-4 bg-white space-y-3">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                {/* Platform Name Field */}
+                <div className="flex flex-col gap-1.5">
+                  <label className="block text-xs font-medium text-slate-600">
+                    Platform Name <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="e.g., LinkedIn, Instagram, GitHub"
+                    value={link.label === "Enter Platform" ? "" : link.label}
+                    onChange={(e) =>
+                      updateExtraLink(index, "label", e.target.value)
+                    }
+                    className={`w-full px-3 py-2 border rounded-lg text-sm text-slate-900 focus:outline-none focus:ring-4 transition-all bg-white ${
+                      platformErrors[index] 
+                        ? 'border-red-500 focus:border-red-500 focus:ring-red-500/10' 
+                        : 'border-slate-200 focus:border-blue-600 focus:ring-blue-600/10'
+                    }`}
+                  />
+                  {platformErrors[index] && (
+                    <span className="text-xs text-red-500 font-medium">Platform name is required</span>
+                  )}
+                </div>
+
+                {/* URL Field */}
+                <div className="flex flex-col gap-1.5">
+                  <label className="block text-xs font-medium text-slate-600">
+                    Profile URL <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="e.g., https://linkedin.com/in/username"
+                    value={link.url}
+                    onChange={(e) =>
+                      updateExtraLink(index, "url", e.target.value)
+                    }
+                    className={`w-full px-3 py-2 border rounded-lg text-sm text-slate-900 focus:outline-none focus:ring-4 transition-all bg-white ${
+                      urlErrors[index] 
+                        ? 'border-red-500 focus:border-red-500 focus:ring-red-500/10' 
+                        : 'border-slate-200 focus:border-blue-600 focus:ring-blue-600/10'
+                    }`}
+                  />
+                  {urlErrors[index] && (
+                    <span className="text-xs text-red-500 font-medium">Please enter a valid URL</span>
+                  )}
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex gap-2 pt-2 border-t border-slate-100">
+                <button
+                  type="button"
+                  onClick={addLink}
+                  className="flex items-center gap-1 px-3 py-1.5 text-xs bg-slate-900 text-white rounded hover:bg-slate-800 transition-colors"
+                >
+                  <Plus size={12} />
+                  Add More
+                </button>
+                
+                <button
+                  type="button"
+                  onClick={() => removeLink(index)}
+                  className="flex items-center gap-1 px-3 py-1.5 text-xs bg-red-500 text-white rounded hover:bg-red-600 transition-colors"
+                >
+                  <X size={12} />
+                  Remove
+                </button>
+              </div>
+            </div>
+          ))}
+
+          {extraLinks.length === 0 && (
+            <button
+              type="button"
+              onClick={addLink}
+              className="flex items-center gap-2 px-4 py-3 text-sm bg-slate-900 text-white rounded-lg hover:bg-slate-800 transition-colors w-full justify-center border-2 border-dashed border-slate-300 hover:border-slate-900"
+            >
+              <Plus size={16} />
+              Add Social Media Link
+            </button>
+          )}
         </div>
       </div>
 

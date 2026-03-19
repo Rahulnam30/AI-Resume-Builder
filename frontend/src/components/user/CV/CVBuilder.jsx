@@ -56,6 +56,7 @@ const createEmptyResume = () => ({
   github: "",
   summary: "",
   resumeText: "",
+  extraLinks: [],
   experience: [
     {
       id: generateId(),

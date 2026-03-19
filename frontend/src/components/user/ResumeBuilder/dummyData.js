@@ -6,6 +6,7 @@ export const dummyData = {
     phone: "(555) 123-4567",
     summary: "Results-oriented Software Engineer with 5+ years of experience in full-stack development. Proven track record of delivering scalable web applications and optimizing system performance. Skilled in React, Node.js, and cloud technologies. Passionate about creating intuitive user experiences and writing clean, maintainable code.",
     website: "rahul.com",
+    extraLinks: [],
     education: [
         {
             id: 1,
@@ -22,7 +23,7 @@ export const dummyData = {
             id: 1,
             title: "Senior Software Engineer",
             company: "Tech Solutions Inc.",
-            description: "Led a team of 5 developers to rebuild the company's core e-commerce platform, resulting in a 40% improvement in page load times. Implemented CI/CD pipelines reducing deployment time by 60%. Mentored junior developers and conducted code reviews to ensure high-quality standards.",
+            description: "Led a team of 5 developers to rebuild company's core e-commerce platform, resulting in a 40% improvement in page load times. Implemented CI/CD pipelines reducing deployment time by 60%. Mentored junior developers and conducted code reviews to ensure high-quality standards.",
             startDate: "2022-01",
             endDate: "Present",
             location: "San Francisco, CA",
@@ -84,6 +85,7 @@ export const emptyData = {
     phone: "",
     summary: "",
     website: "",
+    extraLinks: [],
     education: [],
     experience: [],
     projects: [],
