@@ -96,7 +96,7 @@ const FloatingFormPanel = ({ children, topOffset, containerRef }) => {
   );
 };
 
-const ResumeBuilder = ({ setActivePage = () => { } }) => {
+const ResumeBuilder = ({ setActivePage = () => {} }) => {
   const headerRef = useRef(null);
   const leftColRef = useRef(null);
   const formContainerRef = useRef(null);
@@ -177,7 +177,7 @@ const ResumeBuilder = ({ setActivePage = () => { } }) => {
       const statusInfo = getCompletionStatus(formData);
       setcompletion(statusInfo || {});
     } catch (error) {
-      console.error('Error getting completion status:', error);
+      console.error("Error getting completion status:", error);
       setcompletion({ isComplete: false, missingSections: [] });
     }
   }, [formData]);
@@ -199,10 +199,16 @@ const ResumeBuilder = ({ setActivePage = () => { } }) => {
 
       case "work":
         // If no experience entries, allow skipping
-        if (!formData?.experience || formData.experience.length === 0) return true;
+        if (!formData?.experience || formData.experience.length === 0)
+          return true;
         // If entries exist, check that all required fields are filled
         return formData.experience.every(
-          (exp) => exp.title?.trim() && exp.company?.trim() && exp.startDate?.trim() && exp.endDate?.trim() && exp.description?.trim()
+          (exp) =>
+            exp.title?.trim() &&
+            exp.company?.trim() &&
+            exp.startDate?.trim() &&
+            exp.endDate?.trim() &&
+            exp.description?.trim(),
         );
 
       case "education":
@@ -216,15 +222,20 @@ const ResumeBuilder = ({ setActivePage = () => { } }) => {
         if (!formData?.projects || formData.projects.length === 0) return true;
         // If entries exist, check that all required fields are filled
         return formData.projects.every(
-          (proj) => proj.name?.trim() && proj.technologies?.trim() && proj.description?.trim()
+          (proj) =>
+            proj.name?.trim() &&
+            proj.technologies?.trim() &&
+            proj.description?.trim(),
         );
 
       case "certs":
         // If no certification entries, allow skipping
-        if (!formData?.certifications || formData.certifications.length === 0) return true;
+        if (!formData?.certifications || formData.certifications.length === 0)
+          return true;
         // If entries exist, check that all required fields are filled
         return formData.certifications.every(
-          (cert) => cert.name?.trim() && cert.issuer?.trim() && cert.date?.trim()
+          (cert) =>
+            cert.name?.trim() && cert.issuer?.trim() && cert.date?.trim(),
         );
 
       default:
@@ -245,7 +256,8 @@ const ResumeBuilder = ({ setActivePage = () => { } }) => {
       case "work":
         if (formData?.experience?.length > 0) {
           formData.experience.forEach((exp, i) => {
-            const label = formData.experience.length > 1 ? ` (Experience ${i + 1})` : "";
+            const label =
+              formData.experience.length > 1 ? ` (Experience ${i + 1})` : "";
             if (!exp.title?.trim()) empty.push(`Job Title${label}`);
             if (!exp.company?.trim()) empty.push(`Company${label}`);
             if (!exp.startDate?.trim()) empty.push(`Start Date${label}`);
@@ -267,7 +279,8 @@ const ResumeBuilder = ({ setActivePage = () => { } }) => {
       case "projects":
         if (formData?.projects?.length > 0) {
           formData.projects.forEach((proj, i) => {
-            const label = formData.projects.length > 1 ? ` (Project ${i + 1})` : "";
+            const label =
+              formData.projects.length > 1 ? ` (Project ${i + 1})` : "";
             if (!proj.name?.trim()) empty.push(`Project Name${label}`);
             if (!proj.technologies?.trim()) empty.push(`Technologies${label}`);
             if (!proj.description?.trim()) empty.push(`Description${label}`);
@@ -277,7 +290,10 @@ const ResumeBuilder = ({ setActivePage = () => { } }) => {
       case "certs":
         if (formData?.certifications?.length > 0) {
           formData.certifications.forEach((cert, i) => {
-            const label = formData.certifications.length > 1 ? ` (Certification ${i + 1})` : "";
+            const label =
+              formData.certifications.length > 1
+                ? ` (Certification ${i + 1})`
+                : "";
             if (!cert.name?.trim()) empty.push(`Certification Name${label}`);
             if (!cert.issuer?.trim()) empty.push(`Issuer${label}`);
             if (!cert.date?.trim()) empty.push(`Date${label}`);
@@ -534,16 +550,38 @@ const ResumeBuilder = ({ setActivePage = () => { } }) => {
           />
         );
       case "work":
-        return <ExperienceForm formData={formData} setFormData={setFormData} highlightEmpty={highlightEmpty} />;
+        return (
+          <ExperienceForm
+            formData={formData}
+            setFormData={setFormData}
+            highlightEmpty={highlightEmpty}
+          />
+        );
       case "education":
-        return <EducationForm formData={formData} setFormData={setFormData} highlightEmpty={highlightEmpty} />;
+        return (
+          <EducationForm
+            formData={formData}
+            setFormData={setFormData}
+            highlightEmpty={highlightEmpty}
+          />
+        );
       case "skills":
         return <SkillsForm formData={formData} setFormData={setFormData} />;
       case "projects":
-        return <ProjectsForm formData={formData} setFormData={setFormData} highlightEmpty={highlightEmpty} />;
+        return (
+          <ProjectsForm
+            formData={formData}
+            setFormData={setFormData}
+            highlightEmpty={highlightEmpty}
+          />
+        );
       case "certs":
         return (
-          <CertificationsForm formData={formData} setFormData={setFormData} highlightEmpty={highlightEmpty} />
+          <CertificationsForm
+            formData={formData}
+            setFormData={setFormData}
+            highlightEmpty={highlightEmpty}
+          />
         );
       default:
         return null;
@@ -634,7 +672,9 @@ const ResumeBuilder = ({ setActivePage = () => { } }) => {
                     {/* Validation warning */}
                     {warning && warningFields.length > 0 && (
                       <div className="text-sm text-red-700 bg-yellow-100 border border-yellow-300 px-4 py-2 mb-3 rounded-lg">
-                        <span className="font-semibold">The following fields are empty:</span>{" "}
+                        <span className="font-semibold">
+                          The following fields are empty:
+                        </span>{" "}
                         {warningFields.join(", ")}
                       </div>
                     )}
@@ -670,10 +710,15 @@ const ResumeBuilder = ({ setActivePage = () => { } }) => {
                           goRight();
                         }
                       }}
-                      disabled={!completion?.isComplete && currentIdx === tabs.length - 1}
+                      disabled={
+                        !completion?.isComplete &&
+                        currentIdx === tabs.length - 1
+                      }
                       className="flex gap-2 items-center text-sm font-medium bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-lg select-none disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-sm"
                     >
-                      <span className="hidden sm:inline">{currentIdx === tabs.length - 1 ? "Finish" : "Next"}</span>
+                      <span className="hidden sm:inline">
+                        {currentIdx === tabs.length - 1 ? "Finish" : "Next"}
+                      </span>
                       <ArrowRight size={16} />
                     </button>
                   </div>
@@ -696,7 +741,9 @@ const ResumeBuilder = ({ setActivePage = () => { } }) => {
               <div className="flex-1 min-h-[400px] overflow-y-auto p-4 pb-0">
                 {warning && warningFields.length > 0 && (
                   <div className="text-sm text-red-700 bg-yellow-100 border border-yellow-300 px-4 py-2 mb-3 rounded-lg">
-                    <span className="font-semibold">The following fields are empty:</span>{" "}
+                    <span className="font-semibold">
+                      The following fields are empty:
+                    </span>{" "}
                     {warningFields.join(", ")}
                   </div>
                 )}
@@ -734,10 +781,14 @@ const ResumeBuilder = ({ setActivePage = () => { } }) => {
                       goRight();
                     }
                   }}
-                  disabled={!completion?.isComplete && currentIdx === tabs.length - 1}
+                  disabled={
+                    !completion?.isComplete && currentIdx === tabs.length - 1
+                  }
                   className="flex gap-2 items-center text-sm font-medium bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg select-none disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-sm"
                 >
-                  <span>{currentIdx === tabs.length - 1 ? "Finish" : "Next"}</span>
+                  <span>
+                    {currentIdx === tabs.length - 1 ? "Finish" : "Next"}
+                  </span>
                   <ArrowRight size={16} />
                 </button>
               </div>
@@ -790,7 +841,7 @@ const ResumeBuilder = ({ setActivePage = () => { } }) => {
             formData={formData}
             currentTemplate={currentTemplate}
             isExpanded={true}
-            onExpand={() => { }}
+            onExpand={() => {}}
             onCollapse={() => setIsPreviewExpanded(false)}
             onMinimize={() => setIsPreviewHidden(true)}
           />
@@ -815,15 +866,6 @@ const ResumeBuilder = ({ setActivePage = () => { } }) => {
         showAiToggle={true}
         isAiMode={isAiMode}
         onToggleAiMode={() => setIsAiMode((v) => !v)}
-        extraButtons={
-          <button
-            onClick={() => navigate("/user/cover-letter")}
-            className="hidden lg:flex items-center gap-2 px-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-800 font-medium shadow-sm hover:bg-black hover:text-white transition-all duration-200 whitespace-nowrap select-none"
-          >
-            <FileText size={18} />
-            Create Cover Letter
-          </button>
-        }
       />
 
       <div className="p-2.5 overflow-hidden">
@@ -880,8 +922,8 @@ const ResumeBuilder = ({ setActivePage = () => { } }) => {
                   formData={formData}
                   currentTemplate={currentTemplate}
                   isExpanded={false}
-                  onExpand={() => { }}
-                  onCollapse={() => { }}
+                  onExpand={() => {}}
+                  onCollapse={() => {}}
                   onMinimize={() => setShowMobilePreview(false)}
                 />
               </div>
@@ -900,19 +942,34 @@ const ResumeBuilder = ({ setActivePage = () => { } }) => {
           to   { transform: translateY(0);    opacity: 1;   }
         }
       `}</style>
-      
+
       {/* Completion Popup */}
       {showCompletionPopup && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
           <div className="bg-white rounded-2xl p-8 max-w-md mx-4 shadow-2xl">
             <div className="text-center">
               <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                <svg
+                  className="w-8 h-8 text-green-600"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M5 13l4 4L19 7"
+                  />
                 </svg>
               </div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-2">Resume Complete!</h3>
-              <p className="text-gray-600 mb-6">Your resume has been successfully completed with all required information. You can now download or preview your resume.</p>
+              <h3 className="text-2xl font-bold text-gray-900 mb-2">
+                Resume Complete!
+              </h3>
+              <p className="text-gray-600 mb-6">
+                Your resume has been successfully completed with all required
+                information. You can now download or preview your resume.
+              </p>
               <div className="flex gap-3 justify-center">
                 <button
                   onClick={() => setShowCompletionPopup(false)}

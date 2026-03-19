@@ -157,14 +157,6 @@ const CVBuilderTopBar = ({
         {/* Extra Buttons */}
         {extraButtons}
 
-        {/* Designer */}
-        {showDesigner && (
-          <button className="hidden lg:flex items-center gap-2 px-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-800 font-medium shadow-sm hover:bg-black hover:text-white transition-all duration-200 whitespace-nowrap">
-            <PenTool size={18} />
-            CV Designer
-          </button>
-        )}
-
         {/* Upload */}
         {showUpload && (
           <button
