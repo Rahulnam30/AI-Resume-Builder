@@ -53,25 +53,25 @@ const CVBuilderTopBar = ({
     }
   }, [title]);
 
- const handleUploadClick = () => {
-  if (uploadInputRef.current) {
-    uploadInputRef.current.click();
-  }
-};
+  const handleUploadClick = () => {
+    if (uploadInputRef.current) {
+      uploadInputRef.current.click();
+    }
+  };
 
- const handleFileChange = (e) => {
-  const file = e.target.files[0];
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
 
-  console.log("Selected file:", file);
+    console.log("Selected file:", file);
 
-  if (!file) return;
+    if (!file) return;
 
-  if (onUpload) {
-    onUpload(file);
-  }
+    if (onUpload) {
+      onUpload(file);
+    }
 
-  e.target.value = "";
-};
+    e.target.value = "";
+  };
 
   const currentTitle = title !== undefined ? title : localTitle;
   const displayForWidth = currentTitle || titlePlaceholder;
@@ -81,12 +81,12 @@ const CVBuilderTopBar = ({
     <div className="w-full px-3 sm:px-4 py-3 flex flex-col md:flex-row gap-3 justify-between items-start md:items-center">
       {/* Hidden file input kept globally so both mobile & desktop upload buttons work */}
       <input
-  ref={uploadInputRef}
-  type="file"
-  accept=".pdf,.doc,.docx"
-  style={{ display: "none" }}
-  onChange={handleFileChange}
-/>
+        ref={uploadInputRef}
+        type="file"
+        accept=".pdf,.doc,.docx"
+        style={{ display: "none" }}
+        onChange={handleFileChange}
+      />
       {/* ── Left section ── */}
       <div className="flex flex-col sm:flex-row sm:items-center gap-2 md:gap-3 w-full md:w-auto">
         {/* Title Section - Editable */}
@@ -148,8 +148,6 @@ const CVBuilderTopBar = ({
             </button>
           </div>
         )}
-
-       
       </div>
 
       {/* ── Right section (desktop / tablet) ── */}
