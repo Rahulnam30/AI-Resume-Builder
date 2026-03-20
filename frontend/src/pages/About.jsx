@@ -41,45 +41,45 @@ const AboutUs = () => {
 
         {/* HERO */}
         <section className="relative max-w-6xl mx-auto px-4 sm:px-2 pt-24 md:pt-24 md:pb-12 grid md:grid-cols-2 gap-10 md:gap-12 items-center overflow-hidden">
-  
-  <motion.div 
-    initial="hidden"
-    animate="visible"
-    variants={fadeInUp}
-    className="relative z-10 text-center md:text-left"
-  >
-<h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl pt-10 pb-4 md:pb-6 font-extrabold leading-tight text-slate-900">
-  <span className="whitespace-nowrap">AI Resume Builder</span> by{" "}
-  <span className="text-blue-600">UptoSkills</span>
-</h1>
+
+          <motion.div
+            initial="hidden"
+            animate="visible"
+            variants={fadeInUp}
+            className="relative z-10 text-center md:text-left"
+          >
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl pt-10 pb-4 md:pb-6 font-extrabold leading-tight text-slate-900">
+              <span className="whitespace-nowrap">AI Resume Builder</span> by{" "}
+              <span className="text-blue-600">UptoSkills</span>
+            </h1>
 
 
-    <p className="mt-4 md:mt-6 text-base sm:text-lg md:text-xl text-slate-600 leading-relaxed max-w-lg mx-auto md:mx-0">
-      Built to help students and job seekers transform their skills into
-      professional, ATS-friendly resumes that align with real industry expectations.
-    </p>
-    <p className="text-base sm:text-lg md:text-xl text-slate-600 leading-relaxed max-w-lg mx-auto md:mx-0">Our AI-powered platform enhances your resume with impact-driven content, role-specific optimization, and recruiter-friendly formatting-helping students, graduates, and professionals stand out in today's competitive job market.</p>
-  </motion.div>
+            <p className="mt-4 md:mt-6 text-base sm:text-lg md:text-xl text-slate-600 leading-relaxed max-w-lg mx-auto md:mx-0">
+              Built to help students and job seekers transform their skills into
+              professional, ATS-friendly resumes that align with real industry expectations.
+            </p>
+            <p className="text-base sm:text-lg md:text-xl text-slate-600 leading-relaxed max-w-lg mx-auto md:mx-0">Our AI-powered platform enhances your resume with impact-driven content, role-specific optimization, and recruiter-friendly formatting-helping students, graduates, and professionals stand out in today's competitive job market.</p>
+          </motion.div>
 
-  <motion.div 
-    initial={{ opacity: 0, scale: 0.8 }}
-    animate={{ opacity: 1, scale: 1 }}
-    transition={{ duration: 0.8, delay: 0.2 }}
-    className="relative z-10 w-full h-64 sm:h-72 md:h-80 lg:h-96 flex items-center justify-center"
-  >
-    <img
-      src={AiBuilder}
-      alt="AI Resume Builder Preview"
-      className="w-full h-auto object-contain drop-shadow-xl"
-    />
-  </motion.div>
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+            className="relative z-10 w-full h-64 sm:h-72 md:h-80 lg:h-96 hidden md:flex items-center justify-center"
+          >
+            <img
+              src={AiBuilder}
+              alt="AI Resume Builder Preview"
+              className="w-full h-auto object-contain drop-shadow-xl"
+            />
+          </motion.div>
 
-</section>
+        </section>
 
 
         {/* ABOUT COMPANY */}
         <section className="bg-white py-12">
-          <motion.div 
+          <motion.div
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true }}
@@ -102,23 +102,23 @@ const AboutUs = () => {
                 Data Analytics, AI, and soft skills, UptoSkills supports learners
                 in building both technical expertise and professional confidence.
               </p>
-              
+
             </div>
-<motion.div 
-  initial={{ opacity: 0, y: 40 }}
-  animate={{ opacity: 1, y: 0 }}
-  transition={{ duration: 0.8, delay: 0.2 }}
-  className="relative z-10 flex items-center justify-center w-full px-6 py-10"
->
+            <motion.div
+              initial={{ opacity: 0, y: 40 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+              className="relative z-10 hidden md:flex items-center justify-center w-full px-6 py-10"
+            >
 
-  {/* Image */}
-<img
-  src={Company}
-  alt="UptoSkills Learning Ecosystem"
-  className="relative w-full max-w-none lg:w-[110%] xl:w-[120%] h-auto object-contain drop-shadow-2xl rounded-2xl backdrop-blur-sm"
-/>
+              {/* Image */}
+              <img
+                src={Company}
+                alt="UptoSkills Learning Ecosystem"
+                className="relative w-full max-w-none lg:w-[110%] xl:w-[120%] h-auto object-contain drop-shadow-2xl rounded-2xl backdrop-blur-sm"
+              />
 
-</motion.div>
+            </motion.div>
 
           </motion.div>
         </section>
@@ -128,14 +128,14 @@ const AboutUs = () => {
         <section className="py-12 bg-gradient-to-b from-white to-blue-50">
           <div className="max-w-6xl mx-auto px-4 sm:px-6 text-center">
             <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeInUp}>
-                <h2 className="text-3xl sm:text-4xl font-bold text-slate-900">Why Choose UptoSkills</h2>
-                <p className="mt-4 text-slate-600 max-w-2xl mx-auto text-sm sm:text-base">
+              <h2 className="text-3xl sm:text-4xl font-bold text-slate-900">Why Choose UptoSkills</h2>
+              <p className="mt-4 text-slate-600 max-w-2xl mx-auto text-sm sm:text-base">
                 We combine skill development expertise with AI-powered career tools to
                 help learners move from education to employment with confidence.
-                </p>
+              </p>
             </motion.div>
 
-            <motion.div 
+            <motion.div
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true, margin: "-100px" }}
@@ -143,51 +143,51 @@ const AboutUs = () => {
               className="mt-12 md:mt-16 grid sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 md:gap-10"
             >
               {[
-  {
-    title: "Industry-Aligned Learning",
-    desc: "Our training and tools are built around real industry requirements, not just theory.",
-    icon: <FiTrendingUp />
-  },
-  {
-    title: "AI-Powered Career Tools",
-    desc: "From resume building to career readiness, our AI solutions simplify your job preparation journey.",
-    icon: <FiCpu />
-  },
-  {
-    title: "Proven Impact at Scale",
-    desc: "Millions of learners trained and thousands of successful placements across India.",
-    icon: <FiUsers />
-  },
-  {
-    title: "Student-Centric Approach",
-    desc: "We design our platform keeping freshers and early professionals in mind.",
-    icon: <FiUserCheck />
-  },
-  {
-    title: "Career Readiness Focus",
-    desc: "Beyond skills, we prepare learners with soft skills, confidence, and interview support.",
-    icon: <FiBriefcase />
-  },
-  {
-    title: "Accessible Opportunities",
-    desc: "We strive to make career growth accessible for learners from diverse backgrounds.",
-    icon: <FiGlobe />
-  }
-]
-.map((item, i) => (
-                <motion.div
-                  key={i}
-                  variants={fadeInUp}
-                  whileHover={{ y: -10, boxShadow: "0 20px 25px -5px rgb(0 0 0 / 0.1)" }}
-                  className="bg-white p-6 sm:p-8 rounded-2xl shadow-sm transition-all duration-300 border border-transparent hover:border-blue-100"
-                >
-                  <div className="w-12 h-12 mb-4 mx-auto rounded-full bg-blue-100 flex items-center justify-center text-blue-600 text-xl group-hover:bg-blue-600 group-hover:text-white transition-colors">
-                    {item.icon}
-                  </div>
-                  <h3 className="text-lg sm:text-xl font-semibold text-slate-900">{item.title}</h3>
-                  <p className="mt-3 text-slate-600 text-sm leading-relaxed">{item.desc}</p>
-                </motion.div>
-              ))}
+                {
+                  title: "Industry-Aligned Learning",
+                  desc: "Our training and tools are built around real industry requirements, not just theory.",
+                  icon: <FiTrendingUp />
+                },
+                {
+                  title: "AI-Powered Career Tools",
+                  desc: "From resume building to career readiness, our AI solutions simplify your job preparation journey.",
+                  icon: <FiCpu />
+                },
+                {
+                  title: "Proven Impact at Scale",
+                  desc: "Millions of learners trained and thousands of successful placements across India.",
+                  icon: <FiUsers />
+                },
+                {
+                  title: "Student-Centric Approach",
+                  desc: "We design our platform keeping freshers and early professionals in mind.",
+                  icon: <FiUserCheck />
+                },
+                {
+                  title: "Career Readiness Focus",
+                  desc: "Beyond skills, we prepare learners with soft skills, confidence, and interview support.",
+                  icon: <FiBriefcase />
+                },
+                {
+                  title: "Accessible Opportunities",
+                  desc: "We strive to make career growth accessible for learners from diverse backgrounds.",
+                  icon: <FiGlobe />
+                }
+              ]
+                .map((item, i) => (
+                  <motion.div
+                    key={i}
+                    variants={fadeInUp}
+                    whileHover={{ y: -10, boxShadow: "0 20px 25px -5px rgb(0 0 0 / 0.1)" }}
+                    className="bg-white p-6 sm:p-8 rounded-2xl shadow-sm transition-all duration-300 border border-transparent hover:border-blue-100"
+                  >
+                    <div className="w-12 h-12 mb-4 mx-auto rounded-full bg-blue-100 flex items-center justify-center text-blue-600 text-xl group-hover:bg-blue-600 group-hover:text-white transition-colors">
+                      {item.icon}
+                    </div>
+                    <h3 className="text-lg sm:text-xl font-semibold text-slate-900">{item.title}</h3>
+                    <p className="mt-3 text-slate-600 text-sm leading-relaxed">{item.desc}</p>
+                  </motion.div>
+                ))}
             </motion.div>
           </div>
         </section>
@@ -195,7 +195,7 @@ const AboutUs = () => {
 
         {/*Vision */}
         <section className="py-12">
-          <motion.div 
+          <motion.div
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true }}
@@ -223,7 +223,7 @@ const AboutUs = () => {
             <div className="relative">
               <div className="absolute left-6 sm:left-10 top-0 bottom-0 border-l-2 border-dashed border-blue-200"></div>
 
-              <motion.div 
+              <motion.div
                 initial="hidden"
                 whileInView="visible"
                 viewport={{ once: true }}
@@ -268,8 +268,8 @@ const AboutUs = () => {
                     icon: "🤖",
                   },
                 ].map((item, i) => (
-                  <motion.div 
-                    key={i} 
+                  <motion.div
+                    key={i}
                     variants={fadeInUp}
                     className="relative flex items-start gap-5 sm:gap-8 group"
                   >
@@ -295,8 +295,8 @@ const AboutUs = () => {
         {/* WHAT WE DO */}
         <section className="bg-white py-12">
           <div className="max-w-6xl mx-auto px-4 sm:px-6 text-center">
-            <motion.h2 
-              initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} 
+            <motion.h2
+              initial={{ opacity: 0 }} whileInView={{ opacity: 1 }}
               className="text-2xl sm:text-3xl font-bold text-slate-900"
             >
               What Our AI Resume Builder Does
@@ -306,7 +306,7 @@ const AboutUs = () => {
               AI-powered tool simplifies resume creation for students and early professionals.
             </p>
 
-            <motion.div 
+            <motion.div
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true }}
@@ -331,8 +331,8 @@ const AboutUs = () => {
                   desc: "Perfect for students and freshers building resumes for the first time."
                 }
               ].map((item, i) => (
-                <motion.div 
-                  key={i} 
+                <motion.div
+                  key={i}
                   variants={fadeInUp}
                   whileHover={{ scale: 1.05 }}
                   className="bg-slate-50 p-5 sm:p-6 rounded-xl shadow-sm border-t-4 border-blue-500 hover:bg-white hover:shadow-md transition"
@@ -347,28 +347,28 @@ const AboutUs = () => {
 
         {/* IMPACT */}
         <section className="py-8 md:py-6">
-          <motion.div 
+          <motion.div
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true }}
             variants={fadeInUp}
             className="max-w-5xl mx-auto px-4 sm:px-6 grid md:grid-cols-2 gap-10 md:gap-12 items-center"
           >
-<motion.div 
-  initial={{ opacity: 0, y: 40 }}
-  animate={{ opacity: 1, y: 0 }}
-  transition={{ duration: 0.8, delay: 0.2 }}
-  className="relative z-10 flex items-center justify-center w-full px-6 py-10"
->
+            <motion.div
+              initial={{ opacity: 0, y: 40 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+              className="relative z-10 hidden md:flex items-center justify-center w-full px-6 py-10"
+            >
 
-  {/* Image */}
-<img
-  src={Success}
-  alt="Studet Success"
-  className="relative w-full max-w-none lg:w-[110%] xl:w-[120%] h-auto object-contain drop-shadow-2xl rounded-2xl backdrop-blur-sm"
-/>
+              {/* Image */}
+              <img
+                src={Success}
+                alt="Studet Success"
+                className="relative w-full max-w-none lg:w-[110%] xl:w-[120%] h-auto object-contain drop-shadow-2xl rounded-2xl backdrop-blur-sm"
+              />
 
-</motion.div>
+            </motion.div>
 
             <div className="text-center md:text-left">
               <h2 className="text-2xl sm:text-3xl font-bold text-slate-900">Why This Matters</h2>
@@ -387,7 +387,7 @@ const AboutUs = () => {
           <div className="max-w-6xl mx-auto px-4 sm:px-6 text-center">
             <h2 className="text-2xl sm:text-3xl font-bold text-slate-900">Our Core Values</h2>
 
-            <motion.div 
+            <motion.div
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true }}
@@ -400,8 +400,8 @@ const AboutUs = () => {
                 { title: "Accessibility", desc: "Opportunities for learners from all backgrounds." },
                 { title: "Growth Mindset", desc: "Continuous learning and career development." }
               ].map((value, i) => (
-                <motion.div 
-                  key={i} 
+                <motion.div
+                  key={i}
                   variants={fadeInUp}
                   whileHover={{ backgroundColor: "#eff6ff" }}
                   className="p-5 sm:p-6 bg-slate-50 rounded-xl transition-colors duration-300 cursor-default"
@@ -428,7 +428,7 @@ const AboutUs = () => {
             <p className="mb-8 text-blue-100 max-w-xl mx-auto text-sm sm:text-base">
               Build a professional AI-powered resume and take the next step toward your career goals.
             </p>
-            <motion.button 
+            <motion.button
               onClick={handleBuildResume}
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}

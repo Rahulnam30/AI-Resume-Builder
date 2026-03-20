@@ -82,7 +82,7 @@ const CoverLetterExamples = () => {
     <div className="min-h-screen bg-slate-50 font-['Outfit'] selection:bg-blue-100">
       <NavBar />
 
-      <section className="relative pt-16 pb-20 px-12 pr-16 overflow-hidden bg-white mt-12">
+      <section className="relative pt-16 lg:pt-32 pb-20 px-12 pr-16 overflow-hidden bg-white ">
         <div className="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-blue-50/50 to-transparent rounded-bl-[100px] pointer-events-none" />
         <div className="absolute bottom-0 left-0 w-1/3 h-1/2 bg-gradient-to-t from-orange-50/50 to-transparent rounded-tr-[100px] pointer-events-none" />
 
@@ -101,7 +101,7 @@ const CoverLetterExamples = () => {
                 Don't start from scratch. Browse our library of cover letter examples tailored for every industry and career level.
               </p>
             </motion.div>
-            <motion.div variants={fadeUp} initial="hidden" animate="show" className="flex justify-center lg:justify-end sm:flex">
+            <motion.div variants={fadeUp} initial="hidden" animate="show" className="hidden lg:flex justify-center lg:justify-end">
               <div className="relative w-full max-w-[450px] float-slow">
                 <img src={HeroImage} alt="Hero" className="w-full h-auto object-contain rounded-[1.6rem]" draggable={false} />
                 <div className="absolute -top-2 -right-2 w-7 h-7 rounded-full bg-orange-100 flex items-center justify-center shadow-sm animate-pulse">
