@@ -110,7 +110,7 @@ const Notification = () => {
       {/* Header */}
       <div className="sticky top-0 z-20 bg-white/80 backdrop-blur-2xl border-b border-gray-100/50 shadow-sm">
         <div className="max-w-7xl mx-auto px-6 py-6">
-          <div className="flex items-center justify-between mb-6">
+          <div className="flex sm:flex-row flex-col sm:items-center justify-between mb-6">
             <div className="flex items-center gap-4">
               <motion.button
                 onClick={() => navigate("/user/dashboard")}
@@ -124,7 +124,7 @@ const Notification = () => {
                 My Notifications
               </h1>
             </div>
-            <div className="flex flex-col sm:flex-row sm:items-center gap-2">
+            <div className="flex items-center sm:justify-normal justify-between gap-2 sm:pt-0 pt-2">
               <motion.button
                 onClick={markAllAsRead}
                 disabled={unreadCount === 0}

@@ -210,6 +210,7 @@ const CoverLetterPreview = ({
     bodyParagraph2 = "",
     closingParagraph = "",
     salutation = "Sincerely",
+    customSalutation=""
   } = formData;
 
   const isMobile = isNarrow;
