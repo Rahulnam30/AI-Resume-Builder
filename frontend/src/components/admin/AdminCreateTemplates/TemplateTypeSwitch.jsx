@@ -27,6 +27,18 @@ export default function TemplateTypeSwitch({ value, onChange }) {
         <ScrollText size={14} />
         CV
       </button>
+
+      <button
+        onClick={() => onChange("cover-letter")}
+        className={`flex items-center gap-2 px-4 py-1.5 rounded-md text-sm font-medium transition ${
+          value === "cover-letter"
+            ? "bg-white shadow text-blue-600"
+            : "text-slate-600 hover:text-slate-800"
+        }`}
+      >
+        <FileText size={14} />
+        Cover Letter
+      </button>
     </div>
   );
 }

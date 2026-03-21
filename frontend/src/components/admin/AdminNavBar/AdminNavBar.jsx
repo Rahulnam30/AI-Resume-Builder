@@ -66,7 +66,7 @@ export default function AdminNavbar({ isCollapsed, setIsCollapsed, isMobileOpen,
   }, []);
 
   // Use shared notification context
-  const { notifications, unreadCount, markAsRead } = useNotifications();
+  const { notifications, unreadCount, markAsRead, markAllAsRead } = useNotifications();
 
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth < 768);
@@ -131,7 +131,13 @@ export default function AdminNavbar({ isCollapsed, setIsCollapsed, isMobileOpen,
         <div className="flex items-center gap-2 md:gap-6 relative z-50">
           <div className="relative">
             <motion.button
-              onClick={() => setShowNotifications((p) => !p)}
+              onClick={() => {
+                const opening = !showNotifications;
+                setShowNotifications(opening);
+                if (opening && unreadCount > 0) {
+                  markAllAsRead();
+                }
+              }}
               className="relative p-2.5 text-gray-700 hover:text-gray-900 hover:bg-gradient-to-r hover:from-yellow-50 hover:to-amber-50 rounded-2xl transition-all duration-300 hover:shadow-xl hover:rotate-3 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:ring-offset-2"
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.95 }}

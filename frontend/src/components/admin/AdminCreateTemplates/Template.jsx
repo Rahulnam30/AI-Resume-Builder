@@ -8,6 +8,8 @@ import CVTemplates from "../../user/CV/Cvtemplates";
 import mergeWithSampleData from "../../../utils/Datahelpers";
 import axiosInstance from "../../../api/axios";
 import TemplateTypeSwitch from "./TemplateTypeSwitch";
+import { COVER_LETTER_TEMPLATES } from "../../user/CoverLetter/CoverLetterRegistry";
+import CoverLetterTemplatesMap from "../../user/CoverLetter/CoverLetterTemplatesMap";
 
 const CV_PLACEHOLDER = "https://via.placeholder.com/210x297.png?text=CV+Template";
 const CV_CANVAS_WIDTH = 794;
@@ -64,7 +66,14 @@ export default function AdminTemplates() {
       const statusRes = await axiosInstance.get('/api/template-visibility');
       setStatuses(statusRes.data || {});
 
-      const SOURCE = currentType === "resume" ? TEMPLATES : CV_LIST;
+      let SOURCE;
+      if (currentType === "resume") {
+        SOURCE = TEMPLATES;
+      } else if (currentType === "cv") {
+        SOURCE = CV_LIST;
+      } else if (currentType === "cover-letter") {
+        SOURCE = COVER_LETTER_TEMPLATES;
+      }
 
       const modern = SOURCE.filter((t) =>
         ["modern", "Modern", "Modern Templates", "Contemporary"].includes(t.category),
@@ -75,7 +84,7 @@ export default function AdminTemplates() {
       );
 
       const professional = SOURCE.filter((t) =>
-        ["professional", "Professional", "Professional Templates", "Traditional", "Academic"].includes(
+        ["professional", "Professional", "Professional Templates", "Traditional", "Academic", "Elegant", "Minimal"].includes(
           t.category,
         ),
       );
@@ -137,6 +146,8 @@ export default function AdminTemplates() {
   const PreviewComponent =
     type === "cv" && previewImage?.templateId
       ? CVTemplates?.[previewImage.templateId]
+      : type === "cover-letter" && previewImage?.templateId
+      ? CoverLetterTemplatesMap[previewImage.templateId]
       : null;
 
   const cvPreviewScale = React.useMemo(() => {
@@ -149,11 +160,12 @@ export default function AdminTemplates() {
   }, [type, cvPreviewViewportWidth]);
 
   const handleCreateClick = () => {
-    alert(
-      type === "resume"
-        ? "Create New Resume Template feature coming soon!"
-        : "Create New CV Template feature coming soon!"
-    );
+    let typeLabel = "Template";
+    if (type === "resume") typeLabel = "Resume Template";
+    else if (type === "cv") typeLabel = "CV Template";
+    else if (type === "cover-letter") typeLabel = "Cover Letter Template";
+
+    alert(`Create New ${typeLabel} feature coming soon!`);
   };
 
   return (
@@ -172,11 +184,11 @@ export default function AdminTemplates() {
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
 
           <div>
-            <h1 className="text-xl font-semibold text-slate-900">
-              {type === "resume" ? "Resume Templates" : "CV Templates"}
+            <h1 className="text-xl font-semibold text-slate-900 capitalize">
+              {type.replace("-", " ")} Templates
             </h1>
             <p className="text-sm text-slate-500">
-              Manage and organize all available {type} templates.
+              Manage and organize all available {type.replace("-", " ")} templates.
             </p>
           </div>
 
@@ -276,8 +288,8 @@ export default function AdminTemplates() {
                     <h2 className="text-base font-semibold text-slate-900">
                       {previewImage?.name || "Template Preview"}
                     </h2>
-                    <p className="text-sm text-slate-500">
-                      {type === "resume" ? "Resume" : "CV"} template preview
+                    <p className="text-sm text-slate-500 capitalize">
+                      {type.replace("-", " ")} template preview
                     </p>
                   </div>
                 </div>
@@ -425,12 +437,24 @@ const AdminTemplateCard = ({
         ) : (
           <div
             className="absolute inset-0 pointer-events-none bg-white origin-top-left"
-            style={{ transform: "scale(0.32)", width: 794 }}
+            style={{ 
+              transform: "scale(0.32)", 
+              width: 794,
+              height: 1123,
+              overflow: 'hidden'
+            }}
           >
-            {CVTemplates?.[tpl.templateId] &&
+            {type === "cv" ? (
+              CVTemplates?.[tpl.templateId] &&
               React.createElement(CVTemplates[tpl.templateId], {
                 formData: mergeWithSampleData({}),
-              })}
+              })
+            ) : (
+              CoverLetterTemplatesMap?.[tpl.templateId] &&
+              React.createElement(CoverLetterTemplatesMap[tpl.templateId], {
+                formData: mergeWithSampleData({}),
+              })
+            )}
           </div>
         )}
       </div>

@@ -5,6 +5,7 @@ import {
 } from "lucide-react";
 import { createPortal } from "react-dom";
 import CoverLetterTemplatesMap from "./CoverLetterTemplatesMap";
+import axiosInstance from "../../../api/axios";
 
 /* ----------------------------- Card ----------------------------- */
 const TemplateCard = ({ template, isSelected, displayData, onPreview, onUse }) => {
@@ -25,7 +26,7 @@ const TemplateCard = ({ template, isSelected, displayData, onPreview, onUse }) =
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-60 group-hover:opacity-40 transition-opacity z-10"></div>
 
         <div className="absolute bottom-0 left-0 right-0 pt-12 pb-3 px-3 flex flex-col justify-end pointer-events-none z-20">
-          <h3 className="text-base font-semibold text-white truncate drop-shadow-md">{template.title}</h3>
+          <h3 className="text-base font-semibold text-white truncate drop-shadow-md">{template.name}</h3>
           <p className="text-xs text-slate-200 truncate drop-shadow-sm">{template.category}</p>
         </div>
 
@@ -100,7 +101,7 @@ const PreviewModalComponent = ({ template, zoomLevel, displayData, onZoomChange,
             <span className="text-sm font-semibold text-gray-800">Template Preview</span>
           </div>
           <span className="text-gray-600 hidden sm:inline font-medium truncate max-w-[200px]">
-            {template.title}
+            {template.name}
           </span>
         </div>
 
@@ -189,6 +190,8 @@ const getLoggedInUserId = () => {
   }
 };
 
+import { COVER_LETTER_TEMPLATES } from "./CoverLetterRegistry";
+
 const CoverLetterTemplates = ({ selectedTemplate, onSelectTemplate, formData: propFormData }) => {
   const [previewTemplate, setPreviewTemplate] = useState(null);
   const [zoomLevel, setZoomLevel] = useState(100);
@@ -196,6 +199,22 @@ const CoverLetterTemplates = ({ selectedTemplate, onSelectTemplate, formData: pr
   const [activeCategory, setActiveCategory] = useState("All Examples");
   const [displayData, setDisplayData] = useState({});
   const [mounted, setMounted] = useState(false);
+  const [statuses, setStatuses] = useState({});
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchStatuses = async () => {
+      try {
+        const res = await axiosInstance.get('/api/template-visibility');
+        setStatuses(res.data || {});
+      } catch (error) {
+        console.error("Failed to fetch template statuses", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchStatuses();
+  }, []);
 
   useEffect(() => {
     setMounted(true);
@@ -225,26 +244,17 @@ const CoverLetterTemplates = ({ selectedTemplate, onSelectTemplate, formData: pr
 
   const categories = ['All Examples', 'Professional', 'Modern', 'Creative', 'Minimal', 'Elegant'];
 
-  const templates = [
-    { id: 'professional', title: 'Professional Template', category: 'Professional', level: 'Any Level' },
-    { id: 'corporate', title: 'Corporate Template', category: 'Professional', level: 'Executive' },
-    { id: 'modern', title: 'Modern Template', category: 'Modern', level: 'Mid Level' },
-    { id: 'tech', title: 'Tech Template', category: 'Modern', level: 'Tech Level' },
-    { id: 'creative', title: 'Creative Template', category: 'Creative', level: 'Creative Level' },
-    { id: 'vibrant', title: 'Vibrant Template', category: 'Creative', level: 'Artist Level' },
-    { id: 'minimal', title: 'Minimal Template', category: 'Minimal', level: 'Entry Level' },
-    { id: 'clean', title: 'Clean Template', category: 'Minimal', level: 'Clean Level' },
-    { id: 'elegant', title: 'Elegant Template', category: 'Elegant', level: 'Executive' },
-    { id: 'classic', title: 'Classic Template', category: 'Elegant', level: 'Formal' }
-  ];
-
   const filteredTemplates = useMemo(() => {
-    return templates.filter(tpl => {
+    return COVER_LETTER_TEMPLATES.filter(tpl => {
+      // 1. Filter by visibility status from admin (default active: true)
+      if (statuses[tpl.id] === false) return false;
+
+      // 2. Filter by category
       const matchesCategory = activeCategory === 'All Examples' || tpl.category === activeCategory;
-      const matchesSearch = tpl.title.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesSearch = tpl.name.toLowerCase().includes(searchQuery.toLowerCase());
       return matchesCategory && matchesSearch;
     });
-  }, [activeCategory, searchQuery]);
+  }, [activeCategory, searchQuery, statuses]);
 
   const handleUseTemplate = (templateId) => {
     if (onSelectTemplate) {
@@ -286,7 +296,15 @@ const CoverLetterTemplates = ({ selectedTemplate, onSelectTemplate, formData: pr
             </div>
           </div>
 
-          {filteredTemplates.length > 0 ? (
+          {loading ? (
+            <div className="text-center py-24 bg-white rounded-[4rem] border border-dashed border-slate-200 shadow-sm mx-4">
+              <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-slate-50 text-slate-300 mb-8 border border-slate-100 animate-pulse">
+                <Sparkles size={32} />
+              </div>
+              <h3 className="text-2xl font-black text-slate-900 mb-2">Refining your choices...</h3>
+              <p className="text-slate-400 font-medium italic">Loading premium templates</p>
+            </div>
+          ) : filteredTemplates.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 px-4 pb-12">
               {filteredTemplates.map(tpl => (
                 <TemplateCard
