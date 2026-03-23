@@ -108,7 +108,7 @@ export default function AdminNavbar({ isCollapsed, setIsCollapsed, isMobileOpen,
   };
 
   return (
-    <header className={`fixed top-0 right-0 h-16 bg-white border-b border-gray-200 transition-all duration-300 left-0 pl-14 md:pl-0 ${isCollapsed ? "md:left-20" : "md:left-64"} ${showNotifications ? 'z-[110]' : 'z-[100]'}`}>
+    <header className={`md:sticky fixed top-0 h-16 w-full bg-white/95 backdrop-blur-xl border-b border-slate-200 ${showNotifications ? 'z-[110]' : 'z-[100]'}`}>
       <div className="h-full flex items-center justify-between px-4">
 
         {/* LEFT SECTION - Toggle + Logo */}
@@ -122,7 +122,7 @@ export default function AdminNavbar({ isCollapsed, setIsCollapsed, isMobileOpen,
             <img
               src={UptoSkillsLogo}
               alt="UptoSkills"
-              className="w-44 h-11 object-contain transition-all duration-300"
+              className="w-44 h-11 object-contain transition-all duration-300 pl-6"
             />
           </div>
         </div>
