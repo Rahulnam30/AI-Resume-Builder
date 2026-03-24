@@ -1,25 +1,35 @@
 import { pool } from "../config/postgresdb.js";
 
+const isUUID = (str) => {
+  const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+  return uuidRegex.test(str);
+};
+
 const apiTracker = async (req, res, next) => {
   const start = Date.now();
   res.on("finish", async () => {
     const duration = Date.now() - start;
 
     try {
-    const appMetricsId = crypto.randomUUID();
+      const userId = req.userId || null;
+      let pgUserId = null;
+
+      if (userId && isUUID(userId)) {
+        pgUserId = userId;
+      }
+
       await pool.query(
         `
         INSERT INTO api_metrics
-        (id,endpoint, method, status_code, response_time, user_id, ip, created_at,updated_at)
-        VALUES ($1, $2, $3, $4, $5, $6,$7, NOW(),NOW())
+        (endpoint, method, status_code, response_time, user_id, ip, created_at, updated_at)
+        VALUES ($1, $2, $3, $4, $5, $6, NOW(), NOW())
         `,
         [
-          appMetricsId,  
           req.originalUrl || req.url,
           req.method,
           res.statusCode,
           duration,
-          req.userId || null,
+          pgUserId,
           req.ip,
         ]
       );

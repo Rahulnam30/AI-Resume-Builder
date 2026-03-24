@@ -6,6 +6,7 @@ import ApiMetric from "../Models/ApiMetric.js";
 import Plan from "../Models/Plan.js";
 import Notification from "../Models/notification.js"
 import Download from "../Models/Download.js";
+import { pool } from "../config/postgresdb.js";
 /* ================== ADMIN DASHBOARD ================== */
 
 export const getAdminDashboardStats = async (req, res) => {
@@ -14,68 +15,10 @@ export const getAdminDashboardStats = async (req, res) => {
     lastMonthStart.setMonth(lastMonthStart.getMonth() - 1);
     lastMonthStart.setDate(1);
 
-    // ---------- CORE STATS ----------
-    // USERS
-    const [
-      totalUsers,
-      lastMonthUsers,
-      totalResumes,
-      lastMonthResumes,
-      totalActiveSubs,
-      lastMonthActiveSubs,
-      totalRevenueAgg,
-      lastMonthRevenueAgg,
-    ] = await Promise.all([
-
-      User.countDocuments(),
-      User.countDocuments({ createdAt: { $lt: lastMonthStart } }),
-
-      Resume.countDocuments(),
-      Resume.countDocuments({ createdAt: { $lt: lastMonthStart } }),
-
-      Subscription.countDocuments({ status: "active" }),
-      Subscription.countDocuments({
-        status: "active",
-        createdAt: { $lt: lastMonthStart }
-      }),
-
-      await Payment.aggregate([
-        { $match: { status: "success" } },
-        { $group: { _id: null, total: { $sum: "$amount" } } },
-      ]),
-      await Payment.aggregate([
-        {
-          $match: {
-            status: "success",
-            createdAt: { $lt: lastMonthStart },
-          },
-        },
-        { $group: { _id: null, total: { $sum: "$amount" } } },
-      ]),
-
-    ]);
-
-    const userChange = lastMonthUsers === 0 ? 0 : ((totalUsers - lastMonthUsers) / lastMonthUsers) * 100;
-
-    // RESUMES
-    const resumeChange = lastMonthResumes === 0 ? 0 : ((totalResumes - lastMonthResumes) / lastMonthResumes) * 100;
-
-    // SUBSCRIPTIONS
-
-    const subsChange = lastMonthActiveSubs === 0 ? 0 : ((totalActiveSubs - lastMonthActiveSubs) / lastMonthActiveSubs) * 100;
-
-    // REVENUE
-    const totalRevenue = totalRevenueAgg[0]?.total || 0;
-
-    const lastMonthRevenue = lastMonthRevenueAgg[0]?.total || 0;
-    const revenueChange = lastMonthRevenue === 0 ? 0 : ((totalRevenue - lastMonthRevenue) / lastMonthRevenue) * 100;
-
-    // ---------- CHARTS & DISTRIBUTIONS ----------
-   
     const lastSixMonths = new Date();
     lastSixMonths.setMonth(lastSixMonths.getMonth() - 6);
     lastSixMonths.setDate(1);
-    lastSixMonths.setHours(0, 0, 0);
+    lastSixMonths.setHours(0, 0, 0, 0);
 
     const last7Days = new Date();
     last7Days.setDate(last7Days.getDate() - 7);
@@ -84,106 +27,135 @@ export const getAdminDashboardStats = async (req, res) => {
     last30Days.setDate(last30Days.getDate() - 30);
 
     const [
-      resumeGraph,
-      userGrowthAgg,
-      revenueByMonth,
-      dailyActiveUsersAgg,
-      apiStats,
-      subscriptionCounts
+      totalUsersResult,
+      lastMonthUsersResult,
+      totalResumesResult,
+      lastMonthResumesResult,
+      totalActiveSubsResult,
+      lastMonthActiveSubsResult,
+      totalRevenueResult,
+      lastMonthRevenueResult,
+      resumeGraphResult,
+      userGrowthResult,
+      dailyActiveUsersResult,
+      apiStatsResult,
+      freeUserCountResult,
+      paidUserCountResult,
     ] = await Promise.all([
-      // resume counts for chart
-      Resume.aggregate([
-        { $match: { createdAt: { $gte: lastSixMonths } } },
-        {
-          $group: {
-            _id: { year: { $year: "$createdAt" }, month: { $month: "$createdAt" } },
-            total: { $sum: 1 }
-          }
-        }
-      ]),
-
-      // user growth
-      User.aggregate([
-        { $match: { createdAt: { $gte: lastSixMonths } } },
-        {
-          $group: {
-            _id: { year: { $year: "$createdAt" }, month: { $month: "$createdAt" } },
-            total: { $sum: 1 }
-          }
-        }
-      ]),
-
-      // revenue by month
-      Payment.aggregate([
-        { $match: { status: "success" } },
-        {
-          $group: {
-            _id: { year: { $year: "$createdAt" }, month: { $month: "$createdAt" } },
-            revenue: { $sum: "$amount" }
-          }
-        }
-      ]),
-
-      // daily active users
-      User.aggregate([
-        { $match: { lastLogin: { $gte: last7Days } } },
-        {
-          $group: {
-            _id: { date: { $dateToString: { format: "%Y-%m-%d", date: "$lastLogin" } } },
-            users: { $sum: 1 }
-          }
-        }
-      ]),
-
-      // api summary for past month
-      ApiMetric.aggregate([
-        { $match: { createdAt: { $gte: last30Days } } },
-        {
-          $group: {
-            _id: { $cond: [{ $lt: ["$statusCode", 400] }, "success", "failure"] },
-            count: { $sum: 1 }
-          }
-        }
-      ]),
-
-      // subscription distribution
-      Promise.all([
-        User.countDocuments({ plan: "Free", isActive: true, isAdmin: false }),
-        Subscription.aggregate([
-          { $match: { status: "active" } },
-          { $group: { _id: { $ifNull: ["$plan", "Unknown"] }, count: { $sum: 1 } } }
-        ])
-      ])
+      pool.query("SELECT COUNT(*)::int AS count FROM users"),
+      pool.query("SELECT COUNT(*)::int AS count FROM users WHERE created_at < $1", [lastMonthStart]),
+      pool.query("SELECT COUNT(*)::int AS count FROM resumes"),
+      pool.query("SELECT COUNT(*)::int AS count FROM resumes WHERE created_at < $1", [lastMonthStart]),
+      pool.query("SELECT COUNT(*)::int AS count FROM subscriptions WHERE status = 'active'"),
+      pool.query(
+        "SELECT COUNT(*)::int AS count FROM subscriptions WHERE status = 'active' AND created_at < $1",
+        [lastMonthStart]
+      ),
+      pool.query("SELECT COALESCE(SUM(amount), 0)::float AS total FROM payments WHERE status = 'success'"),
+      pool.query(
+        "SELECT COALESCE(SUM(amount), 0)::float AS total FROM payments WHERE status = 'success' AND created_at < $1",
+        [lastMonthStart]
+      ),
+      pool.query(
+        `
+        SELECT
+          EXTRACT(YEAR FROM created_at)::int AS year,
+          EXTRACT(MONTH FROM created_at)::int AS month,
+          COUNT(*)::int AS total
+        FROM resumes
+        WHERE created_at >= $1
+        GROUP BY 1, 2
+        `,
+        [lastSixMonths]
+      ),
+      pool.query(
+        `
+        SELECT
+          EXTRACT(YEAR FROM created_at)::int AS year,
+          EXTRACT(MONTH FROM created_at)::int AS month,
+          COUNT(*)::int AS total
+        FROM users
+        WHERE created_at >= $1
+        GROUP BY 1, 2
+        `,
+        [lastSixMonths]
+      ),
+      pool.query(
+        `
+        SELECT
+          TO_CHAR(last_login::date, 'YYYY-MM-DD') AS day,
+          COUNT(*)::int AS users
+        FROM users
+        WHERE last_login >= $1
+        GROUP BY 1
+        `,
+        [last7Days]
+      ),
+      pool.query(
+        `
+        SELECT
+          CASE WHEN status_code < 400 THEN 'success' ELSE 'failure' END AS metric,
+          COUNT(*)::int AS count
+        FROM api_metrics
+        WHERE created_at >= $1
+        GROUP BY 1
+        `,
+        [last30Days]
+      ),
+      pool.query("SELECT COUNT(*)::int AS count FROM users WHERE plan = 'Free' AND is_active = true AND is_admin = false"),
+      pool.query(
+        `
+        SELECT COALESCE(plan, 'Unknown') AS plan, COUNT(*)::int AS count
+        FROM subscriptions
+        WHERE status = 'active'
+        GROUP BY 1
+        `
+      ),
     ]);
 
-    // resume chart maping  
-    const resumeChartMap = new Map(resumeGraph.map((item) => [item._id.month, item.total]));
+    const totalUsers = totalUsersResult.rows[0]?.count || 0;
+    const lastMonthUsers = lastMonthUsersResult.rows[0]?.count || 0;
+    const totalResumes = totalResumesResult.rows[0]?.count || 0;
+    const lastMonthResumes = lastMonthResumesResult.rows[0]?.count || 0;
+    const totalActiveSubs = totalActiveSubsResult.rows[0]?.count || 0;
+    const lastMonthActiveSubs = lastMonthActiveSubsResult.rows[0]?.count || 0;
+    const totalRevenue = Number(totalRevenueResult.rows[0]?.total || 0);
+    const lastMonthRevenue = Number(lastMonthRevenueResult.rows[0]?.total || 0);
+
+    const userChange = lastMonthUsers === 0 ? 0 : ((totalUsers - lastMonthUsers) / lastMonthUsers) * 100;
+    const resumeChange = lastMonthResumes === 0 ? 0 : ((totalResumes - lastMonthResumes) / lastMonthResumes) * 100;
+    const subsChange = lastMonthActiveSubs === 0 ? 0 : ((totalActiveSubs - lastMonthActiveSubs) / lastMonthActiveSubs) * 100;
+    const revenueChange = lastMonthRevenue === 0 ? 0 : ((totalRevenue - lastMonthRevenue) / lastMonthRevenue) * 100;
+
+    const resumeChartMap = new Map(
+      resumeGraphResult.rows.map((item) => [`${Number(item.year)}-${Number(item.month)}`, Number(item.total || 0)])
+    );
     const resumeChart = Array.from({ length: 6 }, (_, i) => {
       const date = new Date();
       date.setMonth(date.getMonth() - (5 - i));
+      const year = date.getFullYear();
       const monthNumber = date.getMonth() + 1;
       return {
         month: date.toLocaleString("default", { month: "short" }),
-        resumes: resumeChartMap.get(monthNumber) || 0,
+        resumes: resumeChartMap.get(`${year}-${monthNumber}`) || 0,
       };
     });
     
-    // user growth mapping
-
-    const userGrowthMap = new Map(userGrowthAgg.map((item) => [item._id.month, item.total]));
+    const userGrowthMap = new Map(
+      userGrowthResult.rows.map((item) => [`${Number(item.year)}-${Number(item.month)}`, Number(item.total || 0)])
+    );
     const userGrowth = Array.from({ length: 6 }, (_, i) => {
       const date = new Date();
       date.setMonth(date.getMonth() - (5 - i));
+      const year = date.getFullYear();
       const monthNumber = date.getMonth() + 1;
       return {
         month: date.toLocaleString("default", { month: "short" }),
-        users: userGrowthMap.get(monthNumber) || 0,
+        users: userGrowthMap.get(`${year}-${monthNumber}`) || 0,
       };
     });
 
-   // daily active user mapping
-   
-    const dailyMap = new Map(dailyActiveUsersAgg.map((item) => [item._id.date, item.users]));
+    const dailyMap = new Map(dailyActiveUsersResult.rows.map((item) => [item.day, Number(item.users || 0)]));
     const daysMap = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
     const dailyActiveUsers = [];
     for (let i = 6; i >= 0; i--) {
@@ -193,20 +165,27 @@ export const getAdminDashboardStats = async (req, res) => {
       dailyActiveUsers.push({ day: daysMap[d.getDay()], users: dailyMap.get(key) || 0 });
     }
 
-    // api response rate
     let successCalls = 0;
     let failureCalls = 0;
-    apiStats.forEach((s) => {
-      if (s._id === "success") successCalls = s.count;
-      else failureCalls = s.count;
+    apiStatsResult.rows.forEach((s) => {
+      if (s.metric === "success") successCalls = Number(s.count || 0);
+      else failureCalls = Number(s.count || 0);
     });
     const totalCalls = successCalls + failureCalls;
-    const apiSuccessRate = totalCalls > 0 ? ((successCalls / totalCalls) * 100).toFixed(1) : 100;
+    const apiSuccessRate = totalCalls > 0 ? ((successCalls / totalCalls) * 100).toFixed(1) : "100.0";
 
-    // subscription split maping
-    const [freeUserCount, paidUserCount] = subscriptionCounts;
-    const total = freeUserCount + paidUserCount.reduce((sum, item) => sum + item.count, 0);
-    const paidMap = new Map(paidUserCount.map((p) => [p._id, p.count]));
+    const freeUserCount = freeUserCountResult.rows[0]?.count || 0;
+    const paidMap = new Map();
+    paidUserCountResult.rows.forEach((row) => {
+      const key = String(row.plan || "Unknown").trim().toLowerCase();
+      if (["lifetime", "life time"].includes(key)) {
+        paidMap.set("Lifetime", (paidMap.get("Lifetime") || 0) + Number(row.count || 0));
+      } else if (key === "pro") {
+        paidMap.set("Pro", (paidMap.get("Pro") || 0) + Number(row.count || 0));
+      }
+    });
+
+    const total = freeUserCount + Array.from(paidMap.values()).reduce((sum, item) => sum + item, 0);
     const subscriptionSplit = [
       { name: "Free", value: total === 0 ? 0 : Number(((freeUserCount / total) * 100).toFixed(2)) },
       { name: "Pro", value: total === 0 ? 0 : Number(((paidMap.get("Pro") || 0) / total * 100).toFixed(2)) },

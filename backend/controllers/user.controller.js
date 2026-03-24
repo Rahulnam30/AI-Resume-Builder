@@ -120,9 +120,22 @@ export const getProfile = async (req, res) => {
 
     const result = await pool.query(
       `
-      SELECT id, username, email, is_admin, is_active, created_at
-      FROM users
-      WHERE id = $1
+      SELECT
+        u.id,
+        u.username,
+        u.email,
+        u.is_admin,
+        u.is_active,
+        u.created_at,
+        up.full_name,
+        up.phone,
+        up.location,
+        up.bio,
+        up.github,
+        up.linkedin
+      FROM users u
+      LEFT JOIN user_profiles up ON up.user_id = u.id
+      WHERE u.id = $1
       `,
       [userId]
     );
@@ -132,7 +145,21 @@ export const getProfile = async (req, res) => {
     }
 
     res.status(200).json({
-      user: result.rows[0],
+      user: {
+        id: result.rows[0].id,
+        username: result.rows[0].username || "",
+        email: result.rows[0].email || "",
+        isAdmin: Boolean(result.rows[0].is_admin),
+        isActive: Boolean(result.rows[0].is_active),
+        createdAt: result.rows[0].created_at,
+        fullName: result.rows[0].full_name || "",
+        phone: result.rows[0].phone || "",
+        location: result.rows[0].location || "",
+        bio: result.rows[0].bio || "",
+        github: result.rows[0].github || "",
+        linkedin: result.rows[0].linkedin || "",
+        extraLinks: [],
+      },
     });
 
   } catch (error) {
@@ -142,9 +169,9 @@ export const getProfile = async (req, res) => {
 };
 
 export const updateProfile = async (req, res) => {
+  const client = await pool.connect();
   try {
     const userId = req.userId;
-    console.log("USER ID:", req.userId);
     const {
       fullName,
       username,
@@ -156,8 +183,7 @@ export const updateProfile = async (req, res) => {
       linkedin,
     } = req.body;
 
-    // 1️⃣ Check if user exists
-    const userResult = await pool.query(
+    const userResult = await client.query(
       `SELECT * FROM users WHERE id = $1`,
       [userId]
     );
@@ -168,11 +194,11 @@ export const updateProfile = async (req, res) => {
 
     const user = userResult.rows[0];
 
-    // 2️⃣ Email uniqueness check (if changing email)
+    // Email uniqueness check (if changing email)
     if (email && email !== user.email) {
-      const emailCheck = await pool.query(
-        `SELECT id FROM users WHERE email = $1`,
-        [email]
+      const emailCheck = await client.query(
+        `SELECT id FROM users WHERE email = $1 AND id <> $2`,
+        [email, userId]
       );
 
       if (emailCheck.rowCount > 0) {
@@ -180,44 +206,110 @@ export const updateProfile = async (req, res) => {
       }
     }
 
-    // 3️⃣ Update user
-    const updatedResult = await pool.query(
+    await client.query("BEGIN");
+
+    const updatedUserResult = await client.query(
       `
       UPDATE users
       SET
-        full_name = COALESCE($1, full_name),
-        username = COALESCE($2, username),
-        email = COALESCE($3, email),
-        phone = COALESCE($4, phone),
-        location = COALESCE($5, location),
-        bio = COALESCE($6, bio),
-        github = COALESCE($7, github),
-        linkedin = COALESCE($8, linkedin),
+        username = COALESCE($1, username),
+        email = COALESCE($2, email),
         updated_at = NOW()
-      WHERE id = $9
-      RETURNING id, full_name, username, email, phone, location, bio, github, linkedin
+      WHERE id = $3
+      RETURNING id, username, email, created_at, is_admin, is_active
       `,
       [
-        fullName,
         username,
         email,
-        phone,
-        location,
-        bio,
-        github,
-        linkedin,
         userId,
       ]
     );
 
+    const existingProfileResult = await client.query(
+      `SELECT id FROM user_profiles WHERE user_id = $1 LIMIT 1`,
+      [userId]
+    );
+
+    if (existingProfileResult.rowCount > 0) {
+      await client.query(
+        `
+        UPDATE user_profiles
+        SET
+          full_name = COALESCE($1, full_name),
+          phone = COALESCE($2, phone),
+          location = COALESCE($3, location),
+          bio = COALESCE($4, bio),
+          github = COALESCE($5, github),
+          linkedin = COALESCE($6, linkedin)
+        WHERE user_id = $7
+        `,
+        [fullName, phone, location, bio, github, linkedin, userId]
+      );
+    } else {
+      await client.query(
+        `
+        INSERT INTO user_profiles (id, user_id, full_name, phone, location, bio, github, linkedin)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+        `,
+        [crypto.randomUUID(), userId, fullName || "", phone || "", location || "", bio || "", github || "", linkedin || ""]
+      );
+    }
+
+    const mergedProfileResult = await client.query(
+      `
+      SELECT
+        u.id,
+        u.username,
+        u.email,
+        u.created_at,
+        u.is_admin,
+        u.is_active,
+        up.full_name,
+        up.phone,
+        up.location,
+        up.bio,
+        up.github,
+        up.linkedin
+      FROM users u
+      LEFT JOIN user_profiles up ON up.user_id = u.id
+      WHERE u.id = $1
+      `,
+      [userId]
+    );
+
+    await client.query("COMMIT");
+
+    const row = mergedProfileResult.rows[0] || updatedUserResult.rows[0];
+
     res.status(200).json({
       message: "Profile updated",
-      user: updatedResult.rows[0],
+      user: {
+        id: row.id,
+        username: row.username || "",
+        email: row.email || "",
+        isAdmin: Boolean(row.is_admin),
+        isActive: Boolean(row.is_active),
+        createdAt: row.created_at,
+        fullName: row.full_name || "",
+        phone: row.phone || "",
+        location: row.location || "",
+        bio: row.bio || "",
+        github: row.github || "",
+        linkedin: row.linkedin || "",
+        extraLinks: [],
+      },
     });
 
   } catch (error) {
+    try {
+      await client.query("ROLLBACK");
+    } catch (_) {
+      // ignore rollback errors
+    }
     console.error("Update profile error:", error);
     res.status(500).json({ message: "Failed to update profile" });
+  } finally {
+    client.release();
   }
 };
 
