@@ -193,7 +193,7 @@ const VertexSidebarCV = ({ formData }) => {
         <aside className="w-[35%] border-l p-14">
 
           {/* DETAILS */}
-          {(email || phone || location || website || linkedin || github) && (
+          {(email || phone || location || website || linkedin || github || formData?.extraLinks?.length > 0) && (
             <section className="mb-10">
               <h2 className="text-lg font-semibold mb-3 border-b pb-1">
                 Details
@@ -203,9 +203,35 @@ const VertexSidebarCV = ({ formData }) => {
                 {email && <div>{email}</div>}
                 {phone && <div>{phone}</div>}
                 {location && <div>{location}</div>}
-                {website && <div>{website}</div>}
-                {linkedin && <div>{linkedin}</div>}
-                {github && <div>{github}</div>}
+                {website && (
+                  <div>
+                    <a href={website.startsWith("http") ? website : `https://${website}`} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">
+                      {website}
+                    </a>
+                  </div>
+                )}
+                {linkedin && (
+                  <div>
+                    <a href={linkedin.startsWith("http") ? linkedin : `https://${linkedin}`} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">
+                      {linkedin}
+                    </a>
+                  </div>
+                )}
+                {github && (
+                  <div>
+                    <a href={github.startsWith("http") ? github : `https://${github}`} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">
+                      {github}
+                    </a>
+                  </div>
+                )}
+                {/* Extra Links */}
+                {formData?.extraLinks?.map((link, index) => (
+                  <div key={index}>
+                    <a href={link.url.startsWith("http") ? link.url : `https://${link.url}`} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">
+                      {link.label}
+                    </a>
+                  </div>
+                ))}
               </div>
             </section>
           )}

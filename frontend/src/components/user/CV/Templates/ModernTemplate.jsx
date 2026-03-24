@@ -59,9 +59,20 @@ const ModernTemplate = ({ formData }) => {
           {website && (
             <div className="flex items-center gap-2">
               <span className="font-semibold">Website:</span>
-              <span>{website}</span>
+              <a href={website.startsWith("http") ? website : `https://${website}`} target="_blank" rel="noopener noreferrer" className="text-blue-300 underline">
+                {website}
+              </a>
             </div>
           )}
+          {/* Extra Links */}
+          {formData?.extraLinks?.map((link, index) => (
+            <div key={index} className="flex items-center gap-2">
+              <span className="font-semibold">{link.label}:</span>
+              <a href={link.url.startsWith("http") ? link.url : `https://${link.url}`} target="_blank" rel="noopener noreferrer" className="text-blue-300 underline">
+                {link.url}
+              </a>
+            </div>
+          ))}
         </div>
       </div>
 

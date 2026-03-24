@@ -1,4 +1,5 @@
 import React from "react";
+import SocialLinks from "../components/SocialLinks";
 
 const CreativeTemplate = ({ formData }) => {
   const {
@@ -33,6 +34,19 @@ const CreativeTemplate = ({ formData }) => {
           {linkedin && <span>💼 {linkedin}</span>}
           {github && <span>💻 {github}</span>}
           {website && <span>🌐 {website}</span>}
+          {/* Extra Links */}
+          {formData?.extraLinks?.map((link, index) => (
+            <span key={index}>
+              <a 
+                href={link.url.startsWith("http") ? link.url : `https://${link.url}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:underline"
+              >
+                🔗 {link.label}
+              </a>
+            </span>
+          ))}
         </div>
       </div>
 
