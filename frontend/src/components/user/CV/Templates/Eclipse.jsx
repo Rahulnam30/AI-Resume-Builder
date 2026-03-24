@@ -1,4 +1,5 @@
 import React from "react";
+import SocialLinks from "../components/SocialLinks";
 
 const Eclipse = ({ formData }) => {
   if (!formData) return null;
@@ -35,15 +36,38 @@ const Eclipse = ({ formData }) => {
 
             {/* DETAILS */}
             <SectionTitle title="DETAILS" />
-            {location && (
-              <InfoBlock label="ADDRESS" value={location} />
+            {formData.linkedin && (
+              <InfoBlock 
+                label="LINKEDIN" 
+                value={
+                  <a href={formData.linkedin.startsWith("http") ? formData.linkedin : `https://${formData.linkedin}`} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">
+                    {formData.linkedin}
+                  </a>
+                } 
+              />
             )}
-            {phone && (
-              <InfoBlock label="PHONE" value={phone} />
+            {formData.website && (
+              <InfoBlock 
+                label="WEBSITE" 
+                value={
+                  <a href={formData.website.startsWith("http") ? formData.website : `https://${formData.website}`} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">
+                    {formData.website}
+                  </a>
+                } 
+              />
             )}
-            {email && (
-              <InfoBlock label="EMAIL" value={email} />
-            )}
+            {/* Extra Links */}
+            {formData?.extraLinks?.map((link, index) => (
+              <InfoBlock 
+                key={index}
+                label={link.label.toUpperCase()} 
+                value={
+                  <a href={link.url.startsWith("http") ? link.url : `https://${link.url}`} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">
+                    {link.url}
+                  </a>
+                } 
+              />
+            ))}
 
             {/* SKILLS */}
             {skills && (

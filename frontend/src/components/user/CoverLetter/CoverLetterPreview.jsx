@@ -195,24 +195,6 @@ const CoverLetterPreview = ({
 
   const {
     fullName = "",
-    email = "",
-    phone = "",
-    address = "",
-    linkedin = "",
-    recipientName = "Hiring Manager",
-    recipientTitle = "",
-    companyName = "",
-    companyAddress = "",
-    jobTitle = "",
-    jobReference = "",
-    jobSummary = "",
-    jobDescription = "",
-    openingParagraph = "",
-    bodyParagraph1 = "",
-    bodyParagraph2 = "",
-    closingParagraph = "",
-    salutation = "Sincerely",
-    customSalutation=""
   } = formData;
 
   const isMobile = isNarrow;

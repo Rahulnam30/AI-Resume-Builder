@@ -1390,7 +1390,7 @@ const CVBuilder = () => {
               <CVPreview
                 {...previewProps}
                 isMaximized={false}
-                onToggleMaximize={() => { }}
+                onToggleMaximize={() => setIsPreviewMaximized(true)}
               />
             </div>
           </div>

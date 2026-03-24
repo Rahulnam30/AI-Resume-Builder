@@ -30,7 +30,7 @@ import TemplatesPage from "../Templates/TemplatesDashboardPage";
 import { TEMPLATES } from "../Templates/TemplateRegistry";
 
 import { getCompletionStatus } from "./completion";
-import { dummyData, emptyData } from "./dummyData";
+import { emptyData } from "./dummyData";
 
 import UserNavbar from "../UserNavBar/UserNavBar";
 import CVBuilderTopBar from "../CV/Cvbuildernavbar";
@@ -96,7 +96,7 @@ const FloatingFormPanel = ({ children, topOffset, containerRef }) => {
   );
 };
 
-const ResumeBuilder = ({ setActivePage = () => {} }) => {
+const ResumeBuilder = () => {
   const headerRef = useRef(null);
   const leftColRef = useRef(null);
   const formContainerRef = useRef(null);

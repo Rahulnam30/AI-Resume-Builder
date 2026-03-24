@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import { createPortal } from "react-dom";
 import {
   Bell, X, Menu, FileCheck, Repeat, Star, DollarSign,
   UserPlus, Shield, AlertTriangle, Download, Upload, AlertCircle, Clock,
@@ -155,6 +156,76 @@ export default function AdminNavbar({ isCollapsed, setIsCollapsed, isMobileOpen,
               )}
             </motion.button>
 
+          </div>
+
+          {/* Profile Dropdown */}
+          <div className="relative" ref={profileRef}>
+            <motion.button
+              onClick={() => setShowProfile(!showProfile)}
+              className="group flex items-center gap-2 p-1.5 md:p-2 rounded-2xl hover:bg-slate-50 transition-all duration-300 focus:outline-none"
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+            >
+              <div className="w-9 h-9 md:w-10 md:h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center text-white shadow-md group-hover:shadow-lg transition-all font-bold">
+                {userData.initials}
+              </div>
+              <div className="hidden md:flex flex-col items-start" style={{ minWidth: 'max-content' }}>
+                <span className="text-sm font-bold text-slate-800 leading-none whitespace-nowrap" style={{ display: 'inline-block', width: 'max-content' }}>{userData.name}</span>
+                <span className="text-[10px] font-medium text-slate-500 whitespace-nowrap" style={{ display: 'inline-block', width: 'max-content' }}>{userData.role}</span>
+              </div>
+              <ChevronDown
+                size={16}
+                className={`text-slate-400 transition-transform duration-300 ${showProfile ? 'rotate-180' : ''}`}
+              />
+            </motion.button>
+
+            <AnimatePresence>
+              {showProfile && (
+                <motion.div
+                  initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                  transition={{ duration: 0.2, ease: "easeOut" }}
+                  className="absolute right-0 mt-3 w-[280px] bg-white rounded-2xl shadow-2xl border border-slate-100 overflow-hidden z-[120]"
+                >
+                  {/* Header */}
+                  <div className="px-4 py-3 flex gap-3 items-center border-b">
+                    <div className="w-10 h-10 rounded-full bg-indigo-500 flex items-center justify-center text-white font-bold text-lg">
+                      {userData.initials}
+                    </div>
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2">
+                        <p className="font-semibold text-slate-900 whitespace-nowrap" style={{ display: 'inline-block', width: 'max-content' }}>{userData.name}</p>
+                        <span className="text-[10px] bg-indigo-50 text-indigo-600 px-2 py-0.5 rounded-full font-bold whitespace-nowrap border border-indigo-100" style={{ display: 'inline-block', width: 'max-content' }}>
+                          {userData.role}
+                        </span>
+                      </div>
+                      <p className="text-sm text-slate-500 truncate">{userData.email}</p>
+                    </div>
+                  </div>
+
+                  {/* Menu */}
+                  <div className="px-2 pb-2 space-y-0.5">
+                    <DropdownItem icon={User} label="Edit Profile" onClick={() => { setShowProfile(false); navigate('/admin/profile'); }} />
+                    <DropdownItem icon={Key} label="Change Password" onClick={() => { setShowProfile(false); navigate('/admin/change-password'); }} />
+
+                    <div className="bg-slate-50 rounded-xl mt-1">
+                      <DropdownItem icon={Repeat} label="Switch to User Dashboard" onClick={() => { setShowProfile(false); navigate('/user/dashboard'); }} />
+                    </div>
+                  </div>
+
+                  {/* Logout */}
+                  <div className="border-t px-2 py-2">
+                    <DropdownItem icon={LogOut} label="Logout" variant="danger" onClick={() => { setShowProfile(false); handleLogout(); }} />
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+        </div>
+
+        {typeof document !== "undefined" &&
+          createPortal(
             <AnimatePresence>
               {showNotifications && (
                 <>
@@ -257,74 +328,9 @@ export default function AdminNavbar({ isCollapsed, setIsCollapsed, isMobileOpen,
                   </motion.div>
                 </>
               )}
-            </AnimatePresence>
-          </div>
-
-          {/* Profile Dropdown */}
-          <div className="relative" ref={profileRef}>
-            <motion.button
-              onClick={() => setShowProfile(!showProfile)}
-              className="group flex items-center gap-2 p-1.5 md:p-2 rounded-2xl hover:bg-slate-50 transition-all duration-300 focus:outline-none"
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-            >
-              <div className="w-9 h-9 md:w-10 md:h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center text-white shadow-md group-hover:shadow-lg transition-all font-bold">
-                {userData.initials}
-              </div>
-              <div className="hidden md:flex flex-col items-start" style={{ minWidth: 'max-content' }}>
-                <span className="text-sm font-bold text-slate-800 leading-none whitespace-nowrap" style={{ display: 'inline-block', width: 'max-content' }}>{userData.name}</span>
-                <span className="text-[10px] font-medium text-slate-500 whitespace-nowrap" style={{ display: 'inline-block', width: 'max-content' }}>{userData.role}</span>
-              </div>
-              <ChevronDown
-                size={16}
-                className={`text-slate-400 transition-transform duration-300 ${showProfile ? 'rotate-180' : ''}`}
-              />
-            </motion.button>
-
-            <AnimatePresence>
-              {showProfile && (
-                <motion.div
-                  initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                  transition={{ duration: 0.2, ease: "easeOut" }}
-                  className="absolute right-0 mt-3 w-[280px] bg-white rounded-2xl shadow-2xl border border-slate-100 overflow-hidden z-[120]"
-                >
-                  {/* Header */}
-                  <div className="px-4 py-3 flex gap-3 items-center border-b">
-                    <div className="w-10 h-10 rounded-full bg-indigo-500 flex items-center justify-center text-white font-bold text-lg">
-                      {userData.initials}
-                    </div>
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2">
-                        <p className="font-semibold text-slate-900 whitespace-nowrap" style={{ display: 'inline-block', width: 'max-content' }}>{userData.name}</p>
-                        <span className="text-[10px] bg-indigo-50 text-indigo-600 px-2 py-0.5 rounded-full font-bold whitespace-nowrap border border-indigo-100" style={{ display: 'inline-block', width: 'max-content' }}>
-                          {userData.role}
-                        </span>
-                      </div>
-                      <p className="text-sm text-slate-500 truncate">{userData.email}</p>
-                    </div>
-                  </div>
-
-                  {/* Menu */}
-                  <div className="px-2 pb-2 space-y-0.5">
-                    <DropdownItem icon={User} label="Edit Profile" onClick={() => { setShowProfile(false); navigate('/admin/profile'); }} />
-                    <DropdownItem icon={Key} label="Change Password" onClick={() => { setShowProfile(false); navigate('/admin/change-password'); }} />
-
-                    <div className="bg-slate-50 rounded-xl mt-1">
-                      <DropdownItem icon={Repeat} label="Switch to User Dashboard" onClick={() => { setShowProfile(false); navigate('/user/dashboard'); }} />
-                    </div>
-                  </div>
-
-                  {/* Logout */}
-                  <div className="border-t px-2 py-2">
-                    <DropdownItem icon={LogOut} label="Logout" variant="danger" onClick={() => { setShowProfile(false); handleLogout(); }} />
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
-        </div>
+            </AnimatePresence>,
+            document.body
+          )}
       </div>
     </header>
   );

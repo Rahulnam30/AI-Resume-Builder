@@ -9,6 +9,10 @@ const getSampleData = () => ({
   linkedin: "linkedin.com/in/jessicaclaire",
   github: "github.com/jessicaclaire",
   website: "jessicaclaire.com",
+  extraLinks: [
+    { label: "Portfolio", url: "portfolio.jessicaclaire.com" },
+    { label: "Twitter", url: "twitter.com/jessicaclaire" }
+  ],
   summary:
     "Results-driven software engineer with 8+ years of experience in full-stack development. Specialized in building scalable web applications using modern technologies. Proven track record of leading cross-functional teams and delivering high-impact projects.",
 
@@ -102,8 +106,6 @@ const getSampleData = () => ({
   ],
 });
 
-
-
 /* ================= HELPERS ================= */
 
 const hasContent = (value) =>
@@ -124,8 +126,6 @@ const hasArrayItemData = (item) => {
   });
 };
 
-
-
 /* ================= FIXED ARRAY MERGER ================= */
 
 const mergeArrayData = (userData = [], sampleData = []) => {
@@ -141,8 +141,6 @@ const mergeArrayData = (userData = [], sampleData = []) => {
   // Otherwise show template sample data
   return sampleData;
 };
-
-
 
 /* ================= MAIN MERGE FUNCTION ================= */
 
@@ -181,6 +179,10 @@ export const mergeWithSampleData = (userData) => {
       ? userData.website
       : sample.website,
 
+    extraLinks: userData.extraLinks?.length > 0
+      ? userData.extraLinks
+      : sample.extraLinks,
+
     summary: hasContent(userData.summary)
       ? userData.summary
       : sample.summary,
@@ -215,8 +217,6 @@ export const mergeWithSampleData = (userData) => {
   };
 };
 
-
-
 /* ================= USER DATA CHECK ================= */
 
 export const hasAnyUserData = (formData) => {
@@ -238,7 +238,6 @@ export const hasAnyUserData = (formData) => {
 
   return false;
 };
-
 
 /* ================= FILTERED DISPLAY DATA ================= */
 // Same as mergeWithSampleData but strips sample data for sections
@@ -280,7 +279,10 @@ export const getFilteredDisplayData = (formData) => {
     merged.certifications = [];
   }
 
-  return merged;
+  return {
+    ...merged,
+    extraLinks: formData?.extraLinks || [],
+  };
 };
 
 export default mergeWithSampleData;
