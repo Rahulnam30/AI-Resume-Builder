@@ -26,13 +26,20 @@ const HeritageClassicTemplate = ({ formData }) => {
         <h1 className="text-[30px] uppercase tracking-[0.18em] font-bold">
           {fullName || "Jessica Claire"}
         </h1>
-        <p className="mt-2 text-[10px] text-slate-700 flex flex-wrap justify-center gap-x-2">
+        <p className="mt-2 text-[10px] text-slate-600 flex flex-wrap gap-x-3 gap-y-1">
           {location && <span>{location}</span>}
-          {email && <span>• {email}</span>}
-          {phone && <span>• {phone}</span>}
-          {linkedin && <span>• {linkedin}</span>}
-          {github && <span>• {github}</span>}
-          {website && <span>• {website}</span>}
+          {email && <span>{email}</span>}
+          {phone && <span>{phone}</span>}
+          {linkedin && <span>{linkedin}</span>}
+          {github && <span>{github}</span>}
+          {website && <span>{website}</span>}
+          {formData?.extraLinks?.map((link, index) => (
+            <span key={index}>
+              <a href={link.url.startsWith("http") ? link.url : `https://${link.url}`} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">
+                {link.label}
+              </a>
+            </span>
+          ))}
         </p>
       </header>
 

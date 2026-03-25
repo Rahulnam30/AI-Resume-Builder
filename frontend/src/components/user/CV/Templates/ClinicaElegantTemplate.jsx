@@ -1,5 +1,5 @@
 import React from "react";
-
+import SocialLinks from "../components/SocialLinks";
 const ClinicaElegantTemplate = ({ formData }) => {
   const {
     fullName,
@@ -42,6 +42,14 @@ const ClinicaElegantTemplate = ({ formData }) => {
               {address && <p>{address}</p>}
               {phone && <p>{phone}</p>}
               {email && <p>{email}</p>}
+              {/* Extra Links */}
+              {formData?.extraLinks?.map((link, index) => (
+                <p key={index}>
+                  <a href={link.url.startsWith("http") ? link.url : `https://${link.url}`} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">
+                    {link.label}
+                  </a>
+                </p>
+              ))}
             </div>
           </section>
 

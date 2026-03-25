@@ -48,6 +48,14 @@ const MinimalTemplate = ({ formData }) => {
               {website && (
                 <span className="flex items-center gap-1">🌐 {website}</span>
               )}
+              {/* Extra Links */}
+              {formData?.extraLinks?.map((link, index) => (
+                <span key={index} className="flex items-center gap-1">
+                  <a href={link.url.startsWith("http") ? link.url : `https://${link.url}`} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">
+                    {link.label}
+                  </a>
+                </span>
+              ))}
             </div>
           </div>
         </div>

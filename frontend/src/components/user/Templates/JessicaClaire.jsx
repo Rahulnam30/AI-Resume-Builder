@@ -1,6 +1,6 @@
-
 import React from 'react';
 import './JessicaClaire.css';
+import SocialLinks from "../CV/components/SocialLinks";
 
 const JessicaClaire = ({ data }) => {
     const {
@@ -11,214 +11,92 @@ const JessicaClaire = ({ data }) => {
         location = "San Francisco, CA",
         linkedin = "",
         website = "",
-        experience = [],
         education = [],
-        skills = { technical: [], soft: [] },
-        projects = [],
-        certifications = []
+        experience = [],
+        skills = [],
+        languages = [],
+        awards = []
     } = data;
 
-    // Helper to get initials
-    const initials = fullName
-        ? fullName.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase()
-        : "JC";
-
     return (
-        <div className="jessica-claire-template">
-            {/* Header Section */}
-            <div className="firstsection">
-                <div className="monogram">
-                    <svg width="40px" height="40px">
-                        <rect x="0" y="0" width="40" height="40" stroke="#ffffff" fill="none" strokeWidth="1"></rect>
-                        <text textAnchor="middle" x="20" y="26" fill="#ffffff" fontSize="19" fontFamily="Georgia, serif">{initials}</text>
-                    </svg>
+        <div className="jessica-claire">
+            <header className="header">
+                <h1 className="name">{fullName}</h1>
+                <div className="contact-info">
+                    <span>{email}</span>
+                    <span>{phone}</span>
+                    <span>{location}</span>
                 </div>
-                <div className="name">
-                    {fullName}
-                </div>
-            </div>
+                <SocialLinks 
+                    linkedin={linkedin}
+                    website={website}
+                />
+            </header>
+            
+            <section className="summary">
+                <h2>Professional Summary</h2>
+                <p>{summary}</p>
+            </section>
 
-            <div className="parentContainer">
-                {/* LEFT COLUMN */}
-                <div className="left-box">
-                    {/* Summary */}
-                    {summary && (
-                        <div className="section">
-                            <div className="heading">
-                                <div className="sectiontitle">Professional Summary</div>
-                            </div>
-                            <div className="paragraph">
-                                <p>{summary}</p>
-                            </div>
+            {experience.length > 0 && (
+                <section className="experience">
+                    <h2>Experience</h2>
+                    {experience.map((exp, index) => (
+                        <div key={index} className="experience-item">
+                            <h3>{exp.position}</h3>
+                            <h4>{exp.company}</h4>
+                            <p className="date">{exp.startDate} - {exp.endDate}</p>
+                            <p>{exp.description}</p>
                         </div>
-                    )}
+                    ))}
+                </section>
+            )}
 
-                    {/* Work History */}
-                    {experience.length > 0 && (
-                        <div className="section">
-                            <div className="heading">
-                                <div className="sectiontitle">Work History</div>
-                            </div>
-                            {experience.map((job) => (
-                                <div key={job.id} className="paragraph" style={{ marginBottom: '15px' }}>
-                                    <span className="paddedline">
-                                        <span className="txtBold">{job.company}</span>
-                                        {job.company && job.title && <span> - </span>}
-                                        <span className="txtBold">{job.title}</span>
-                                    </span>
-                                    <span className="paddedline">
-                                        <span>{job.location}</span>
-                                    </span>
-                                    <span className="paddedline txtItl">
-                                        <span>{job.startDate}</span>
-                                        {(job.startDate || job.endDate) && <span> - </span>}
-                                        <span>{job.endDate || "Current"}</span>
-                                    </span>
-                                    <div className="jobline">
-                                        <p>{job.description}</p>
-                                    </div>
-                                </div>
-                            ))}
+            {education.length > 0 && (
+                <section className="education">
+                    <h2>Education</h2>
+                    {education.map((edu, index) => (
+                        <div key={index} className="education-item">
+                            <h3>{edu.degree}</h3>
+                            <h4>{edu.school}</h4>
+                            <p className="date">{edu.year}</p>
                         </div>
-                    )}
+                    ))}
+                </section>
+            )}
 
-                    {/* Projects */}
-                    {projects.length > 0 && (
-                        <div className="section">
-                            <div className="heading">
-                                <div className="sectiontitle">Projects</div>
-                            </div>
-                            {projects.map((proj) => (
-                                <div key={proj.id} className="paragraph" style={{ marginBottom: '15px' }}>
-                                    <span className="paddedline">
-                                        <span className="txtBold">{proj.name}</span>
-                                    </span>
-                                    {proj.technologies && (
-                                        <span className="paddedline txtItl" style={{ fontSize: '9px' }}>
-                                            Tech: {proj.technologies}
-                                        </span>
-                                    )}
-                                    <div className="jobline">
-                                        <p>{proj.description}</p>
-                                    </div>
-                                    {/* Links */}
-                                    <div style={{ marginTop: '4px', fontSize: '9px' }}>
-                                        {proj.link?.liveLink && (
-                                            <div className="paddedline">
-                                                <span className="txtBold">Live: </span>
-                                                <a href={proj.link.liveLink} target="_blank" rel="noopener noreferrer">{proj.link.liveLink}</a>
-                                            </div>
-                                        )}
-                                        {proj.link?.github && (
-                                            <div className="paddedline">
-                                                <span className="txtBold">GitHub: </span>
-                                                <a href={proj.link.github} target="_blank" rel="noopener noreferrer">{proj.link.github}</a>
-                                            </div>
-                                        )}
-                                        {proj.link?.other && (
-                                            <div className="paddedline">
-                                                <span className="txtBold">Other: </span>
-                                                <a href={proj.link.other} target="_blank" rel="noopener noreferrer">{proj.link.other}</a>
-                                            </div>
-                                        )}
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    )}
+            {skills.length > 0 && (
+                <section className="skills">
+                    <h2>Skills</h2>
+                    <ul>
+                        {skills.map((skill, index) => (
+                            <li key={index}>{skill}</li>
+                        ))}
+                    </ul>
+                </section>
+            )}
 
-                    {/* Certifications */}
-                    {certifications.length > 0 && (
-                        <div className="section">
-                            <div className="heading">
-                                <div className="sectiontitle">Certifications</div>
-                            </div>
-                            {certifications.map((cert) => (
-                                <div key={cert.id} className="paragraph" style={{ marginBottom: '15px' }}>
-                                    <span className="paddedline">
-                                        <span className="txtBold">{cert.name}</span>
-                                    </span>
-                                    <span className="paddedline">
-                                        <span>{cert.issuer}</span>
-                                    </span>
-                                    <span className="paddedline txtItl">
-                                        <span>{cert.date}</span>
-                                    </span>
-                                    {cert.link && (
-                                        <span className="paddedline" style={{ fontSize: '9px' }}>
-                                            <a href={cert.link} target="_blank" rel="noopener noreferrer">Credential Link</a>
-                                        </span>
-                                    )}
-                                </div>
-                            ))}
-                        </div>
-                    )}
+            {languages.length > 0 && (
+                <section className="languages">
+                    <h2>Languages</h2>
+                    <ul>
+                        {languages.map((lang, index) => (
+                            <li key={index}>{lang}</li>
+                        ))}
+                    </ul>
+                </section>
+            )}
 
-                </div>
-
-                {/* RIGHT COLUMN */}
-                <div className="right-box">
-                    {/* Contact */}
-                    <div className="section" style={{ borderTop: 'none', paddingTop: 0 }}>
-                        <div className="address">
-                            <span className="paddedline">{email}</span>
-                            <span className="paddedline">{phone}</span>
-                            <span className="paddedline">{location}</span>
-                            {linkedin && <span className="paddedline">{linkedin}</span>}
-                            {website && <span className="paddedline">{website}</span>}
-                        </div>
-                    </div>
-
-                    {/* Skills */}
-                    {(skills.technical?.length > 0 || skills.soft?.length > 0) && (
-                        <div className="section">
-                            <div className="heading">
-                                <div className="sectiontitle">Skills</div>
-                            </div>
-                            <div className="paragraph">
-                                <ul>
-                                    {skills.technical?.map((skill, index) => (
-                                        <li key={`tech-${index}`}>{skill}</li>
-                                    ))}
-                                    {skills.soft?.map((skill, index) => (
-                                        <li key={`soft-${index}`}>{skill}</li>
-                                    ))}
-                                </ul>
-                            </div>
-                        </div>
-                    )}
-
-                    {/* Education */}
-                    {education.length > 0 && (
-                        <div className="section">
-                            <div className="heading">
-                                <div className="sectiontitle">Education</div>
-                            </div>
-                            {education.map((edu) => (
-                                <div key={edu.id} className="paragraph" style={{ marginBottom: '10px' }}>
-                                    <span className="paddedline txtBold">{edu.school}</span>
-                                    <span className="paddedline">{edu.location}</span>
-                                    <span className="paddedline">
-                                        <span className="txtBold">{edu.degree}</span>
-                                    </span>
-
-                                    <span className="paddedline txtItl">
-                                        <span>{edu.startDate}</span>
-                                        {(edu.startDate || edu.graduationDate) && <span> - </span>}
-                                        <span>{edu.graduationDate}</span>
-                                    </span>
-
-                                    {edu.gpa && (
-                                        <span className="paddedline">
-                                            <span>GPA: {edu.gpa}</span>
-                                        </span>
-                                    )}
-                                </div>
-                            ))}
-                        </div>
-                    )}
-                </div>
-            </div>
+            {awards.length > 0 && (
+                <section className="awards">
+                    <h2>Awards</h2>
+                    <ul>
+                        {awards.map((award, index) => (
+                            <li key={index}>{award}</li>
+                        ))}
+                    </ul>
+                </section>
+            )}
         </div>
     );
 };

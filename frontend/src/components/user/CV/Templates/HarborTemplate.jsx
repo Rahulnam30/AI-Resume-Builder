@@ -119,6 +119,14 @@ const HarborTemplate = ({ formData }) => {
             {address && <p>{address}</p>}
             {phone && <p>{phone}</p>}
             {email && <p>{email}</p>}
+            {/* Extra Links */}
+            {formData?.extraLinks?.map((link, index) => (
+              <p key={index}>
+                <a href={link.url.startsWith("http") ? link.url : `https://${link.url}`} target="_blank" rel="noopener noreferrer" className="text-blue-300 underline">
+                  {link.label}
+                </a>
+              </p>
+            ))}
           </div>
 
           {/* SKILLS */}

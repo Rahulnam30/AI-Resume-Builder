@@ -1,4 +1,5 @@
 import React from "react";
+import SocialLinks from "../components/SocialLinks";
 
 const AcademicSidebarTemplate = ({ formData }) => {
   return (
@@ -22,6 +23,14 @@ const AcademicSidebarTemplate = ({ formData }) => {
           {formData.location && <div>{formData.location}</div>}
           {formData.linkedin && <div>{formData.linkedin}</div>}
           {formData.website && <div>{formData.website}</div>}
+          {/* Extra Links */}
+          {formData?.extraLinks?.map((link, index) => (
+            <div key={index}>
+              <a href={link.url.startsWith("http") ? link.url : `https://${link.url}`} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">
+                {link.label}
+              </a>
+            </div>
+          ))}
         </div>
 
         {formData.skills?.technical?.length > 0 && (

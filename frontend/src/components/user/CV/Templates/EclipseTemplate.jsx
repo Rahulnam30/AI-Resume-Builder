@@ -36,6 +36,14 @@ const EclipseTemplate = ({ formData }) => {
             {location && <span>{location}</span>}
             {email && <span>{email}</span>}
             {phone && <span>{phone}</span>}
+            {/* Extra Links */}
+            {formData?.extraLinks?.map((link, index) => (
+              <span key={index}>
+                <a href={link.url.startsWith("http") ? link.url : `https://${link.url}`} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">
+                  {link.label}
+                </a>
+              </span>
+            ))}
           </div>
         </header>
 

@@ -63,6 +63,17 @@ const ExecutiveTemplate = ({ formData }) => {
                 <p className="break-words">{website}</p>
               </div>
             )}
+            {/* Extra Links */}
+            {formData?.extraLinks?.map((link, index) => (
+              <div key={index}>
+                <p className="font-semibold text-gray-400">{link.label}</p>
+                <p className="break-words">
+                  <a href={link.url.startsWith("http") ? link.url : `https://${link.url}`} target="_blank" rel="noopener noreferrer" className="text-blue-400 underline">
+                    {link.url}
+                  </a>
+                </p>
+              </div>
+            ))}
           </div>
         </div>
 
