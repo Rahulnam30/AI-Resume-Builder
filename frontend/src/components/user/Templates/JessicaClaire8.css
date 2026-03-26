@@ -1,0 +1,179 @@
+/* Jessica Claire 8 Template Styles */
+@import url('https://fonts.googleapis.com/css2?family=Fira+Sans:wght@300;500;700&display=swap');
+
+.jessica-claire-8 {
+    font-family: 'Fira Sans', sans-serif;
+    background-color: white;
+    width: 100%;
+    max-width: 794px;
+    min-height: 1123px;
+    margin: 0 auto;
+    padding: 0 35px 35px 35px;
+    /* hmargins */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    color: #000;
+    line-height: 15px;
+    font-size: 10px;
+    font-weight: 300;
+}
+
+.jessica-claire-8 * {
+    box-sizing: border-box;
+}
+
+.jessica-claire-8 ul,
+.jessica-claire-8 li {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.jessica-claire-8 ul li {
+    position: relative;
+    margin: 0;
+    padding-left: 10px;
+}
+
+.jessica-claire-8 ul li:before {
+    content: '\2022';
+    position: absolute;
+    left: 0;
+    top: 0;
+}
+
+.jessica-claire-8 .txtBold {
+    font-weight: 700;
+}
+
+.jessica-claire-8 .dispBlk {
+    display: block;
+}
+
+.jessica-claire-8 .dispInBlk {
+    display: inline-block;
+}
+
+/* Top Section (Header) */
+.jessica-claire-8 .topsection {
+    position: relative;
+    padding-top: 45px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #2a5978;
+}
+
+.jessica-claire-8 .topsection:before {
+    content: '';
+    background: #2a5978;
+    position: absolute;
+    height: 35px;
+    width: calc(100% + 70px);
+    /* Extend to edges */
+    left: -35px;
+    top: 0;
+    opacity: .15;
+}
+
+.jessica-claire-8 .name {
+    color: #2a5978;
+    font-size: 36px;
+    line-height: 34px;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+/* 2-Column Layout below header */
+.jessica-claire-8 .parentContainer {
+    display: flex;
+    width: 100%;
+}
+
+.jessica-claire-8 .left-box {
+    width: 63%;
+    /* approx 331px / 525px content width */
+    padding: 25px 17px 25px 0;
+    border-right: 1px solid #2a5978;
+    /* Wait, is there a border between columns? 
+  Looking at HTML, .left-box .section has border-bottom.
+  .right-box .section has border-bottom.
+  Wait, I don't see a vertical border in the CSS provided.
+  Re-reading CSS: .left-box { display:table-cell } .right-box { display:table-cell }.
+  No border-right mentioned.
+  */
+}
+
+.jessica-claire-8 .right-box {
+    width: 37%;
+    padding: 25px 0 25px 17px;
+}
+
+.jessica-claire-8 .section {
+    margin-bottom: 25px;
+    padding-bottom: 5px;
+    border-bottom: 1px solid #2a5978;
+}
+
+.jessica-claire-8 .section:last-child {
+    border-bottom: none;
+}
+
+.jessica-claire-8 .heading {
+    margin-bottom: 4px;
+    font-weight: 700;
+    font-size: 14px;
+    line-height: 16px;
+    overflow: hidden;
+    color: #2a5978;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+}
+
+.jessica-claire-8 .sectiontitle {
+    display: inline-block;
+}
+
+/* No lines after heading in this specific CSS interpretation?
+   Wait: #document.skn-mli2 .sectiontitle:after { content:''; display:inline-block; width:100%; height:11px; margin-right:-100%; margin-left:5px; background:#2a5978; opacity:.15 }
+   Yes, there is a line.
+*/
+.jessica-claire-8 .heading-inner {
+    display: flex;
+    align-items: center;
+}
+
+.jessica-claire-8 .heading-line {
+    flex-grow: 1;
+    height: 11px;
+    background: #2a5978;
+    opacity: 0.15;
+    margin-left: 10px;
+}
+
+
+/* Contact Section (Right Box) */
+.jessica-claire-8 .address {
+    font-size: 10px;
+    line-height: 12px;
+}
+
+.jessica-claire-8 .adrsDetails {
+    margin-bottom: 5px;
+    display: block;
+}
+
+/* Content Styles */
+.jessica-claire-8 .paragraph {
+    margin-top: 15px;
+}
+
+.jessica-claire-8 .jobtitle {
+    font-weight: 700;
+}
+
+.jessica-claire-8 .companyname {
+    font-weight: 700;
+}
+
+.jessica-claire-8 a {
+    color: inherit;
+    text-decoration: none;
+}

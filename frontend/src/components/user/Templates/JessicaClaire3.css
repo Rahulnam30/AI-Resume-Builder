@@ -1,0 +1,238 @@
+/* Jessica Claire 3 Template Styles */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700&family=Source+Sans+Pro:wght@400;700&display=swap');
+
+.jessica-claire-3 {
+    font-family: 'Source Sans Pro', sans-serif;
+    background-color: white;
+    width: 100%;
+    max-width: 794px;
+    /* A4 */
+    min-height: 1123px;
+    margin: 0 auto;
+    padding: 18px;
+    /* vmargins hmargins from dynamic */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    color: #404040;
+    line-height: 12px;
+    font-size: 10px;
+}
+
+.jessica-claire-3 * {
+    box-sizing: border-box;
+}
+
+.jessica-claire-3 table {
+    border-collapse: collapse;
+    border-spacing: 0;
+    width: 100%;
+}
+
+.jessica-claire-3 ul,
+.jessica-claire-3 li {
+    list-style: none;
+    margin: 0 0 0 8px;
+    padding: 0;
+}
+
+.jessica-claire-3 ul li {
+    position: relative;
+    margin: 2px 0 0 0;
+}
+
+.jessica-claire-3 ul li:before {
+    content: '\25CF\0020';
+    font-size: .6em;
+    position: absolute;
+    left: -7px;
+    top: 0;
+}
+
+/* Address & Links */
+.jessica-claire-3 .address ul,
+.jessica-claire-3 .adnlLnks ul {
+    margin: 0;
+}
+
+.jessica-claire-3 .address li,
+.jessica-claire-3 .adnlLnks li {
+    display: inline-block;
+    padding: 0 15px;
+    margin: 0;
+}
+
+.jessica-claire-3 .address li:before,
+.jessica-claire-3 .adnlLnks li:before {
+    left: -4px;
+}
+
+.jessica-claire-3 .address li:first-child:before,
+.jessica-claire-3 .adnlLnks li:first-child:before {
+    content: "";
+}
+
+/* Helpers */
+.jessica-claire-3 .txtBold {
+    font-weight: bold;
+}
+
+.jessica-claire-3 .txtItl {
+    font-style: italic;
+}
+
+.jessica-claire-3 .dispBlk {
+    display: block;
+}
+
+/* Structure */
+.jessica-claire-3 .parentContainer {
+    display: table;
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+}
+
+/* Name Section */
+.jessica-claire-3 .nameSec {
+    position: relative;
+    padding-left: 108px;
+    padding-bottom: 30px;
+    min-height: 82px;
+    margin-bottom: 5px;
+}
+
+.jessica-claire-3 .nameSec:before {
+    background: #103f84;
+    content: "";
+    display: block;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    left: 0;
+    top: 0;
+    opacity: .15;
+}
+
+.jessica-claire-3 .name {
+    font-family: 'Montserrat', sans-serif;
+    letter-spacing: 1px;
+    color: #404040;
+    font-weight: bold;
+    text-transform: uppercase;
+    margin-left: 77px;
+    padding-top: 40px;
+    font-size: 20px;
+    line-height: 24px;
+}
+
+.jessica-claire-3 .monogram {
+    width: 57px;
+    height: 83px;
+    float: left;
+    top: 0;
+    background: #103f84;
+    position: absolute;
+    /* Changed to absolute for easier positioning in React */
+    left: 10px;
+}
+
+.jessica-claire-3 .svgTxt {
+    color: #fff;
+    opacity: .6;
+    position: absolute;
+    bottom: 26px;
+    left: 0;
+    right: 0;
+    height: 12px;
+    width: 57px;
+    line-height: normal;
+    text-align: center;
+    margin: 0 auto;
+    font-family: 'Montserrat', sans-serif;
+    font-size: .99em;
+    text-transform: uppercase;
+}
+
+.jessica-claire-3 .svgTxt span {
+    display: inline-block;
+    width: 11px;
+    text-align: center;
+    padding: 0 5px;
+    font-weight: 700;
+}
+
+/* Contact Section */
+.jessica-claire-3 .cntcSec {
+    background: #404040;
+    color: #fff;
+    text-align: center;
+    padding: 5px 10px;
+    word-wrap: break-word;
+}
+
+.jessica-claire-3 .address {
+    font-size: 10px;
+    line-height: 12px;
+}
+
+/* Section Titles */
+.jessica-claire-3 .sectiontitle {
+    font-family: 'Montserrat', sans-serif;
+    letter-spacing: 1px;
+    font-weight: bold;
+    text-transform: uppercase;
+    border-top: 1px solid #404040;
+    padding-top: 15px;
+    padding-bottom: 6px;
+    word-wrap: break-word;
+    padding-right: 20px;
+    font-size: 14px;
+    line-height: 17px;
+    color: #404040;
+}
+
+/* Layout Boxes */
+.jessica-claire-3 .left-box {
+    padding-right: 20px;
+    padding-top: 15px !important;
+    display: table-cell;
+    border-right: 1px solid #404040;
+    width: 35%;
+    /* Approx based on visual */
+    vertical-align: top;
+}
+
+.jessica-claire-3 .right-box {
+    padding-left: 20px;
+    padding-top: 15px !important;
+    display: table-cell;
+    vertical-align: top;
+    width: 65%;
+}
+
+.jessica-claire-3 .left-box .sectiontitle {
+    margin-right: -20px;
+}
+
+.jessica-claire-3 .right-box .sectiontitle {
+    margin-left: -20px;
+    padding-left: 20px;
+}
+
+.jessica-claire-3 .left-box>.section:first-child .sectiontitle,
+.jessica-claire-3 .right-box>.section:first-child .sectiontitle {
+    border-top: none;
+    padding-top: 0;
+}
+
+.jessica-claire-3 .paragraph {
+    margin-top: 10px;
+}
+
+.jessica-claire-3 .singlecolumn {
+    width: 100%;
+}
+
+.jessica-claire-3 a {
+    color: inherit;
+    text-decoration: none;
+}

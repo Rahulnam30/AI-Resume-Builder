@@ -1,0 +1,156 @@
+/* ===============================
+   SIDEBAR BASE
+================================ */
+.sidebar {
+  position: fixed;
+  top: 64px;
+  left: 0;
+  width: 256px;
+  height: calc(100vh - 64px);
+  background: #ffffff;
+  border-right: 1px solid #e5e7eb;
+  display: flex;
+  flex-direction: column;
+  z-index: 50;
+}
+
+/* ===============================
+   NAV ITEM
+================================ */
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 26px;
+  height: 52px;
+  padding: 0 18px;
+  border-radius: 14px;
+  font-size: 15px;
+  font-weight: 500;
+  color: #475569;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.nav-item:hover {
+  background: #f1f5f9;
+  color: #0f172a;
+}
+
+.nav-item.active {
+  background: #eef5ff;
+  color: #2563eb;
+  font-weight: 600;
+}
+
+.nav-item.collapsed {
+  justify-content: center;
+  padding: 0;
+}
+
+.nav-item svg {
+  width: 24px;
+  height: 24px;
+}
+
+.nav-label {
+  white-space: nowrap;
+}
+
+/* ===============================
+   TOOLTIP
+================================ */
+.tooltip {
+  position: absolute;
+  left: 50%;
+  top: calc(100% + 8px);
+  transform: translateX(-50%);
+  background: #eff6ff;
+  color: #2563eb;
+  font-size: 14px;
+  font-weight: 500;
+  padding: 8px 14px;
+  border-radius: 8px;
+  white-space: nowrap;
+  z-index: 100;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.15), 0 0 0 1px rgba(37, 99, 235, 0.1);
+  pointer-events: none;
+}
+
+/* Optional: Add a small arrow pointing up to the icon */
+.tooltip::before {
+  content: '';
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 6px solid transparent;
+  border-bottom-color: #eff6ff;
+  filter: drop-shadow(0 -1px 1px rgba(37, 99, 235, 0.1));
+}
+
+/* ===============================
+   SIDEBAR FOOTER
+================================ */
+.sidebar-footer {
+  padding: 12px;
+  border-top: 1px solid #e5e7eb;
+  margin-top: auto;
+}
+
+.nav-item.logout {
+  color: #dc2626;
+}
+
+.nav-item.logout:hover {
+  background: #fee2e2;
+}
+
+.nav-item-wrapper+.nav-item-wrapper {
+  margin-top: 28px;
+  /* adjust as needed */
+}
+
+/* ===============================
+   TOGGLE BUTTON
+================================ */
+.nav-item.toggle {
+  display: flex;
+  justify-content: flex-start;
+  /* same as nav items */
+  align-items: center;
+  /* vertically center */
+  height: 52px;
+  /* same as nav-item */
+  width: 100%;
+  /* full width like nav items */
+  cursor: pointer;
+  background: transparent;
+  padding-left: 18px;
+  /* same left padding as nav items */
+  padding-right: 18px;
+  gap: 10px;
+  /* optional spacing if needed */
+}
+
+/* Three lines container */
+.nav-item.toggle .lines {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px;
+  /* spacing between lines */
+}
+
+.nav-item.toggle .line {
+  display: block;
+  width: 20px;
+  /* same as icon width */
+  height: 2px;
+  /* thickness */
+  background-color: #475569;
+  /* match icon color */
+  border-radius: 1px;
+  transition: all 0.3s ease;
+}

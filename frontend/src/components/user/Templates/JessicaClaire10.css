@@ -1,0 +1,150 @@
+/* Jessica Claire 10 Template Styles */
+@import url('https://fonts.googleapis.com/css2?family=Saira:wght@300;400;500;600;700&display=swap');
+
+.jessica-claire-10 {
+    font-family: 'Saira', sans-serif;
+    background-color: white;
+    width: 100%;
+    max-width: 794px;
+    min-height: 1123px;
+    margin: 0 auto;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    color: #020303;
+    line-height: 14px;
+    font-size: 10px;
+    padding-bottom: 30px;
+}
+
+.jessica-claire-10 * {
+    box-sizing: border-box;
+}
+
+.jessica-claire-10 ul,
+.jessica-claire-10 li {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.jessica-claire-10 ul li {
+    position: relative;
+    margin: 0;
+    padding-left: 9px;
+}
+
+.jessica-claire-10 ul li:before {
+    content: '\2022';
+    position: absolute;
+    left: 0;
+    top: 0;
+}
+
+.jessica-claire-10 .txtBold {
+    font-weight: 700;
+}
+
+.jessica-claire-10 .dispBlk {
+    display: block;
+}
+
+/* Header */
+.jessica-claire-10 .header-section {
+    background-color: #009bcc;
+    color: #fff;
+    padding: 40px 30px 20px 30px;
+    text-align: center;
+}
+
+.jessica-claire-10 .name {
+    font-size: 40px;
+    line-height: 40px;
+    font-weight: 700;
+    text-transform: uppercase;
+    margin-bottom: 5px;
+}
+
+.jessica-claire-10 .contact-info {
+    font-size: 10px;
+    margin-top: 10px;
+}
+
+.jessica-claire-10 .contact-info span {
+    margin: 0 5px;
+}
+
+.jessica-claire-10 .contact-info a {
+    color: #fff;
+    text-decoration: none;
+}
+
+/* Content Body */
+.jessica-claire-10 .content-body {
+    padding: 0 30px;
+}
+
+.jessica-claire-10 .section {
+    margin-top: 25px;
+    border-top: 2px solid #009bcc;
+    padding-top: 10px;
+}
+
+.jessica-claire-10 .heading {
+    color: #009bcc;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 12px;
+    margin-bottom: 10px;
+    letter-spacing: 0.12px;
+    width: 150px;
+    /* Force split layout if possible */
+    float: left;
+    /* Old school float layout per HTML analysis?
+       HTML: .heading { float:left; width:125px }
+       .paragraph { margin-left: 133px }
+       Let's stick to flex to be safer/modern.
+    */
+}
+
+/* Modern Flex equivalents */
+.jessica-claire-10 .section-flex {
+    display: flex;
+}
+
+.jessica-claire-10 .section-title-box {
+    width: 140px;
+    flex-shrink: 0;
+}
+
+.jessica-claire-10 .section-content-box {
+    flex-grow: 1;
+}
+
+
+.jessica-claire-10 .jobtitle {
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.jessica-claire-10 .companyname {
+    font-weight: 600;
+}
+
+.jessica-claire-10 .jobdates {
+    font-weight: 600;
+}
+
+.jessica-claire-10 .paragraph {
+    margin-bottom: 15px;
+}
+
+.jessica-claire-10 a {
+    color: inherit;
+    text-decoration: none;
+}
+
+/* Skills Grid */
+.jessica-claire-10 .skills-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}

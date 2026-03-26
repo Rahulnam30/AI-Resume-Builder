@@ -1,0 +1,156 @@
+/* Jessica Claire 6 - Teal Three Tone Template Styles */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Roboto:wght@300;400;500&display=swap');
+
+.jessica-claire-6 {
+    font-family: 'Roboto', sans-serif;
+    background-color: white;
+    width: 100%;
+    /* Standard A4 aspect ratio helper */
+    aspect-ratio: 210/297;
+    max-width: 800px;
+    margin: 0 auto;
+    color: #333;
+    line-height: 1.6;
+    font-size: 14px;
+    /* Base font size */
+    overflow: hidden;
+    /* Ensure no spillover */
+}
+
+/* --- Top Section (Header) --- */
+.jessica-claire-6 .topSection {
+    background-color: #f0f8f8;
+    /* Lightest Teal Tone */
+    padding: 40px;
+    border-bottom: 5px solid #008080;
+    /* Medium Teal Tone */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.jessica-claire-6 .name-sec {
+    flex: 1;
+}
+
+.jessica-claire-6 .name {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 32px;
+    font-weight: 300;
+    color: #004d4d;
+    /* Darkest Teal Tone */
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    line-height: 1.2;
+}
+
+.jessica-claire-6 .name span {
+    display: block;
+}
+
+.jessica-claire-6 .name .last-name {
+    font-weight: 700;
+    color: #008080;
+    /* Medium Teal Tone */
+}
+
+.jessica-claire-6 .cntc-sec {
+    flex: 1;
+    text-align: right;
+    font-size: 13px;
+}
+
+.jessica-claire-6 .address-box,
+.jessica-claire-6 .phone-box,
+.jessica-claire-6 .email-box {
+    margin-bottom: 5px;
+    color: #555;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 8px;
+}
+
+.jessica-claire-6 a {
+    color: #008080;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+/* --- Main Content --- */
+.jessica-claire-6 .parent-container {
+    padding: 30px 40px;
+}
+
+/* --- Sections --- */
+.jessica-claire-6 .section {
+    margin-bottom: 25px;
+}
+
+.jessica-claire-6 .heading {
+    border-bottom: 1px solid #e0e0e0;
+    padding-bottom: 5px;
+    margin-bottom: 15px;
+}
+
+.jessica-claire-6 .sectiontitle {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: #004d4d;
+    /* Darkest Teal Tone */
+    border-left: 4px solid #008080;
+    /* Teal Accent */
+    padding-left: 10px;
+}
+
+/* --- Content Blocks --- */
+.jessica-claire-6 .singlecolumn p {
+    margin: 0;
+    margin-bottom: 10px;
+    text-align: justify;
+}
+
+.jessica-claire-6 .paragraph {
+    margin-bottom: 15px;
+}
+
+.jessica-claire-6 .job-entry,
+.jessica-claire-6 .project-entry {
+    page-break-inside: avoid;
+}
+
+.jessica-claire-6 .dispBlk {
+    display: block;
+}
+
+.jessica-claire-6 .txt-bold {
+    font-weight: 700;
+    color: #222;
+}
+
+.jessica-claire-6 .txt-caps {
+    text-transform: uppercase;
+}
+
+/* --- Lists (Skills) --- */
+.jessica-claire-6 ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.jessica-claire-6 li {
+    position: relative;
+    padding-left: 15px;
+    margin-bottom: 4px;
+}
+
+.jessica-claire-6 li::before {
+    content: "•";
+    color: #008080;
+    position: absolute;
+    left: 0;
+    font-weight: bold;
+}

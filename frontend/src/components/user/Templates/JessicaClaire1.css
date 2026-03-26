@@ -1,0 +1,153 @@
+/* Jessica Claire 1 Template Styles */
+.jessica-claire-1 {
+    font-family: "Palatino Linotype", serif;
+    background-color: white;
+
+    width: 100%;
+    max-width: 794px; /* A4 width */
+    min-height: 1123px;
+
+    margin: 0 auto;
+    padding: 30px;
+
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    color: #000;
+    line-height: 20px;
+    font-size: 12px;
+}
+
+.jessica-claire-1 * {
+    box-sizing: border-box;
+}
+
+.jessica-claire-1 table {
+    border-collapse: collapse;
+    width: 100%;
+    font-size: inherit;
+}
+
+.jessica-claire-1 ul,
+.jessica-claire-1 li {
+    list-style-type: disc;
+    margin: 0 0 0 10px;
+    padding: 0;
+}
+
+.jessica-claire-1 ul li {
+    margin-left: 13px;
+}
+
+/* Contact Info */
+.jessica-claire-1 .address ul,
+.jessica-claire-1 .address li {
+    display: inline;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.jessica-claire-1 .address li:before {
+    content: "\2022";
+    margin: 0 6px;
+}
+
+.jessica-claire-1 .address li:first-child:before {
+    content: "";
+}
+
+/* Typography */
+.jessica-claire-1 .paddedline {
+    display: block;
+}
+
+.jessica-claire-1 .jobtitle,
+.jessica-claire-1 .companyname,
+.jessica-claire-1 .degree {
+    font-weight: bold;
+}
+
+.jessica-claire-1 .name {
+    font-size: 24px;
+    line-height: 36px;
+    font-weight: bold;
+    text-align: center;
+    border-bottom: 1px solid #000;
+    padding-bottom: 6px;
+}
+
+.jessica-claire-1 .sectiontitle {
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.jessica-claire-1 .heading {
+    margin-bottom: 8px;
+}
+
+.jessica-claire-1 .paragraph {
+    margin-top: 18px;
+}
+
+.jessica-claire-1 .address {
+    margin-top: 10px;
+    text-align: center;
+    font-size: 11px;
+    line-height: 18px;
+    word-break: break-word;
+}
+
+/* Skills Table */
+.jessica-claire-1 table.twocol td {
+    width: 50%;
+    vertical-align: top;
+}
+
+.jessica-claire-1 .section {
+    margin-top: 12px;
+}
+
+.jessica-claire-1 .firstsection {
+    margin-top: 0 !important;
+}
+
+.jessica-claire-1 a {
+    color: inherit;
+    text-decoration: none;
+    word-break: break-word;
+}
+
+@media (max-width: 768px) {
+    .jessica-claire-1 {
+        max-width: 100%;
+        min-height: auto;
+        padding: 16px;
+        font-size: 11px;
+        line-height: 18px;
+        box-shadow: none;
+    }
+
+    .jessica-claire-1 .name {
+        font-size: 20px;
+        line-height: 28px;
+    }
+
+    .jessica-claire-1 .sectiontitle {
+        font-size: 13px;
+    }
+
+    .jessica-claire-1 .paragraph {
+        margin-top: 12px;
+    }
+
+    /* Stack skills columns */
+    .jessica-claire-1 table.twocol,
+    .jessica-claire-1 table.twocol tbody,
+    .jessica-claire-1 table.twocol tr,
+    .jessica-claire-1 table.twocol td {
+        width: 100%;
+    }
+
+    .jessica-claire-1 table.twocol td {
+        margin-bottom: 6px;
+    }
+}

@@ -1,0 +1,178 @@
+/* Removed external Google Fonts import to avoid blocked third-party requests (ERR_BLOCKED_BY_CLIENT).
+  To preserve typography, host fonts locally and add @font-face rules, or whitelist fonts.googleapis.com. */
+
+:root {
+  --primary-dark: #0a1628;
+  --primary-navy: #0f1f3d;
+  --primary-blue: #1a2e52;
+  --accent-orange: #ff6b3d;
+  --accent-cyan: #00d9ff;
+  --accent-blue: #4c7fff;
+  --text-white: #ffffff;
+  --text-gray: #a0aec0;
+  --text-light: #cbd5e0;
+
+  --primary-bg: #f8fafc; /* Page background */
+  --card-bg: #ffffff; /* Cards */
+  --card-border: #e5e7eb;
+
+  --primary-blue: #2563eb;
+  --accent-cyan: #06b6d4;
+  --accent-green: #16a34a;
+  --accent-red: #dc2626;
+  --accent-purple: #7c3aed;
+
+  --text-dark: #0f172a;
+  --text-gray: #475569;
+  --text-light: #64748b;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Outfit", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background: linear-gradient(
+    135deg,
+    var(--primary-dark) 0%,
+    var(--primary-navy) 50%,
+    var(--primary-blue) 100%
+  );
+  color: var(--text-white);
+  min-height: 100vh;
+}
+
+.app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* PAGE TRANSITIONS */
+.page {
+  display: none;
+  min-height: 100vh;
+  padding: 4rem 2rem;
+}
+
+.page.active {
+  display: block;
+  animation: fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* TEMPLATES PAGE */
+.templates-section {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.templates-container {
+  text-align: center;
+}
+
+.templates-container h1 {
+  font-size: 3rem;
+  font-weight: 800;
+  margin-bottom: 2rem;
+  color: var(--text-white);
+}
+
+/* ABOUT PAGE */
+.about-section {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.about-container {
+  text-align: center;
+}
+
+.about-header {
+  margin-bottom: 4rem;
+}
+
+.about-header h1 {
+  font-size: 3rem;
+  font-weight: 800;
+  margin-bottom: 1rem;
+  color: var(--text-white);
+}
+
+.about-header p {
+  font-size: 1.2rem;
+  color: var(--text-gray);
+}
+
+.about-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+}
+
+.about-card {
+  background: var(--card-bg);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--card-border);
+  border-radius: 16px;
+  padding: 3rem;
+  transition: all 0.3s ease;
+}
+
+.about-card:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: var(--accent-cyan);
+  transform: translateY(-5px);
+}
+
+.about-card h3 {
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  color: var(--text-white);
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.about-card i {
+  color: var(--accent-cyan);
+}
+
+.about-card p {
+  font-size: 1.1rem;
+  color: var(--text-gray);
+  line-height: 1.6;
+}
+
+/* RESPONSIVE DESIGN */
+@media (max-width: 768px) {
+  .page {
+    padding: 2rem 1rem;
+  }
+
+  .templates-container h1,
+  .about-header h1 {
+    font-size: 2rem;
+  }
+
+  .about-grid {
+    grid-template-columns: 1fr;
+  }
+}
