@@ -1,4 +1,5 @@
 import dotenv from "dotenv";
+import { pool } from "./config/postgresdb.js";
 dotenv.config();
 
 import express from "express";
@@ -26,6 +27,7 @@ import analyticsRouter from "./routes/analytics.routes.js";
 import chatbotRouter from "./routers/chatbot.router.js";
 
 import adminRouter from "./routers/admin.router.js";
+
 
 // Config
 import connectDB from "./config/db.js";
@@ -82,7 +84,7 @@ app.use("/api", analyticsRouter);
 // Serve uploads directory (for images/resumes)
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
-app.use("/api/downloads", downloadsRouter);
+app.use("/api/downloads", downloadsRouter);  
 
 // Error handling middleware (add before listen)
 app.use((err, req, res, next) => {
@@ -124,6 +126,9 @@ const startServer = async () => {
   try {
     await connectDB(); // Wait for DB connection
     await bootstrapAdmin(); // Ensure admin exists
+    pool.query("SELECT 1")
+  .then(() => console.log("✅ PostgreSQL ready"))
+  .catch(err => console.error("❌ DB Error:", err.message));
     app.listen(port, () => {
       console.log(`✅ Server Running at http://localhost:${port}`);
       console.log(`✅ Database Connected`);
