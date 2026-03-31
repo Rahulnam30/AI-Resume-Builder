@@ -5,113 +5,131 @@ import axiosInstance from "../../../api/axios";
 import AdminTopPagesAnalytics from "../AdminTopPagesAnalytics";
 
 export default function AdminAnalytics() {
-  const [userGrowth, setUserGrowth] = useState({ count: 0, note: "" });
-  const [conversions, setConversions] = useState({ count: 0, note: "" });
-  const [activeUsers, setActiveUsers] = useState({ count: 0, note: "" });
-  const [deletedUsers, setDeletedUsers] = useState({ count: 0, note: "" });
-  const [mostUsedResumeTemplates, setMostUsedResumeTemplates] = useState([]);
-  const [mostUsedCvTemplates, setMostUsedCvTemplates] = useState([]);
+  const [analyticsData, setAnalyticsData] = useState({
+    userGrowth: { count: 0, note: "" },
+    conversions: { count: 0, note: "" },
+    activeUsers: { count: 0, note: "" },
+    deletedUsers: { count: 0, note: "" },
+    mostUsedResumeTemplates: [],
+    mostUsedCvTemplates: [],
+    chartData: [],
+    subscriptionBreakdown: [],
+    summary: {
+      apiSuccessRate: "0%",
+      apiFailureRate: "0%",
+      avgResponseTime: "0ms",
+      totalApiCalls: 0,
+      systemUptime: "99.98%"
+    }
+  });
+
   const [templateView, setTemplateView] = useState("resume");
   const [refreshingTemplates, setRefreshingTemplates] = useState(false);
-  const [chartData, setChartData] = useState([]);
-  const [subscriptionBreakdown, setSubscriptionBreakdown] = useState([]);
-  const [summary, setSummary] = useState({
-    apiSuccessRate: "0%",
-    apiFailureRate: "0%",
-    avgResponseTime: "0ms",
-    totalApiCalls: 0,
-    systemUptime: "99.98%"
-  });
   const [loading, setLoading] = useState(true);
+  const [lastUpdated, setLastUpdated] = useState(null);
 
-  const displaySubscriptionBreakdown = useMemo(() => {
-    return [...subscriptionBreakdown].sort((a, b) => b.count - a.count);
-  }, [subscriptionBreakdown]);
-
-  const totalSubscriptionUsers = useMemo(() => {
-    return displaySubscriptionBreakdown.reduce((acc, curr) => acc + curr.count, 0);
-  }, [displaySubscriptionBreakdown]);
-
-  const fetchAnalyticsData = useCallback(async (showLoader = false) => {
+  const fetchAnalyticsData = useCallback(async (showLoader = false, signal = null) => {
     if (showLoader) setLoading(true);
     try {
-      const response = await axiosInstance.get("/api/admin/analytics-stat");
-      setUserGrowth(response.data.userGrowth);
-      setConversions(response.data.conversions);
-      setActiveUsers(response.data.activeUsers);
-      setDeletedUsers(response.data.deletedUsers || { count: 0, note: "" });
-      setMostUsedResumeTemplates(
-        response.data.mostUsedResumeTemplates || response.data.mostUsedTemplates || []
-      );
-      setMostUsedCvTemplates(response.data.mostUsedCvTemplates || []);
-      setChartData(response.data.chartData || []);
-      setSubscriptionBreakdown(response.data.subscriptionBreakdown || []);
-      setSummary(response.data.summary || {
-        apiSuccessRate: "0%",
-        apiFailureRate: "0%",
-        avgResponseTime: "0ms",
-        totalApiCalls: 0,
-        systemUptime: "99.98%"
-      });
+      const response = await axiosInstance.get("/api/admin/analytics-stat", { signal });
+      const data = response.data;
+
+      setAnalyticsData(prev => ({
+        ...prev,
+        userGrowth: data.userGrowth || prev.userGrowth,
+        conversions: data.conversions || prev.conversions,
+        activeUsers: data.activeUsers || prev.activeUsers,
+        deletedUsers: data.deletedUsers || prev.deletedUsers || { count: 0, note: "" },
+        mostUsedResumeTemplates: data.mostUsedResumeTemplates || data.mostUsedTemplates || [],
+        mostUsedCvTemplates: data.mostUsedCvTemplates || [],
+        chartData: data.chartData || [],
+        subscriptionBreakdown: data.subscriptionBreakdown || [],
+        summary: data.summary || prev.summary
+      }));
+      setLastUpdated(new Date().toLocaleTimeString());
     } catch (error) {
-      console.error("Error fetching analytics:", error);
+      if (error.name !== 'CanceledError') {
+        console.error("Error fetching analytics:", error);
+      }
     } finally {
-      setLoading(false);
+      if (showLoader) setLoading(false);
       setRefreshingTemplates(false);
     }
   }, []);
 
   useEffect(() => {
-    fetchAnalyticsData(true);
-    const fetchInterval = setInterval(() => fetchAnalyticsData(false), 5000);
-    return () => clearInterval(fetchInterval); 
+    const controller = new AbortController();
+    fetchAnalyticsData(true, controller.signal);
+    
+    // Polling every 30 seconds instead of 5s
+    const fetchInterval = setInterval(() => fetchAnalyticsData(false, controller.signal), 30000);
+    
+    return () => {
+      controller.abort();
+      clearInterval(fetchInterval);
+    };
   }, [fetchAnalyticsData]);
 
  
 
-  const stats = [
+  const displaySubscriptionBreakdown = useMemo(() => {
+    return [...analyticsData.subscriptionBreakdown].sort((a, b) => b.count - a.count);
+  }, [analyticsData.subscriptionBreakdown]);
+
+  const totalSubscriptionUsers = useMemo(() => {
+    return displaySubscriptionBreakdown.reduce((acc, curr) => acc + curr.count, 0);
+  }, [displaySubscriptionBreakdown]);
+
+  const stats = useMemo(() => [
     {
       title: "User Growth",
-      value: loading ? "..." : `${userGrowth.count} Users`,
-      note: userGrowth.note,
+      value: loading ? "..." : `${analyticsData.userGrowth.count} Users`,
+      note: analyticsData.userGrowth.note,
       icon: <TrendingUp className="text-green-600" />,
       iconBg: "bg-green-50",
       valueColor: "text-slate-900",
     },
     {
       title: "Paid Conversions",
-      value: loading ? "..." : `${conversions.count} Users`,
-      note: conversions.note,
+      value: loading ? "..." : `${analyticsData.conversions.count} Users`,
+      note: analyticsData.conversions.note,
       icon: <Users className="text-blue-600" />,
       iconBg: "bg-blue-50",
       valueColor: "text-slate-900",
     },
     {
       title: "Active Users",
-      value: loading ? "..." : `${activeUsers.count} Users`,
-      note: activeUsers.note,
+      value: loading ? "..." : `${analyticsData.activeUsers.count} Users`,
+      note: analyticsData.activeUsers.note,
       icon: <UserCheck className="text-purple-600" />,
       iconBg: "bg-purple-50",
       valueColor: "text-slate-900",
     },
     {
       title: "Deleted Users",
-      value: loading ? "..." : `${deletedUsers.count} Users`,
-      note: deletedUsers.note,
+      value: loading ? "..." : `${analyticsData.deletedUsers.count} Users`,
+      note: analyticsData.deletedUsers.note,
       icon: <UserMinus className="text-red-600" />,
       iconBg: "bg-red-50",
       valueColor: "text-slate-900",
     },
-  ];
+  ], [loading, analyticsData.userGrowth, analyticsData.conversions, analyticsData.activeUsers, analyticsData.deletedUsers]);
 
   return (
     <div className="min-h-screen flex-1 p-4 sm:p-6 bg-slate-50 text-slate-900">
       {/* Header */}
-      <div className="mb-6 sm:mb-8">
-        <h1 className="text-2xl sm:text-3xl font-bold">System Analytics</h1>
-        <p className="text-sm sm:text-base text-slate-600 mt-1 sm:mt-2">
-          Deep dive into platform performance & user engagement.
-        </p>
+      <div className="mb-6 sm:mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-2xl sm:text-3xl font-bold">System Analytics</h1>
+          <p className="text-sm sm:text-base text-slate-600 mt-1 sm:mt-2">
+            Deep dive into platform performance & user engagement.
+          </p>
+        </div>
+        {lastUpdated && (
+          <div className="text-xs text-slate-400 bg-white px-3 py-1.5 rounded-full border border-slate-200 w-fit">
+            Last updated: <span className="font-medium">{lastUpdated}</span>
+          </div>
+        )}
       </div>
 
       {/* Stats Cards */}
@@ -149,15 +167,15 @@ export default function AdminAnalytics() {
           </div>
           <div className="flex items-baseline gap-2">
             <span className="text-4xl font-bold text-green-600">
-              {loading ? "..." : summary.apiSuccessRate.replace("%", "")}
+              {loading ? "..." : analyticsData.summary.apiSuccessRate.replace("%", "")}
             </span>
             <span className="text-slate-500">/100</span>
           </div>
           <p className="text-sm text-slate-500 mt-2">
-            {parseFloat(summary.apiSuccessRate) > 95 ? "System running smoothly" : "Monitoring performance"}
+            {parseFloat(analyticsData.summary.apiSuccessRate) > 95 ? "System running smoothly" : "Monitoring performance"}
           </p>
           <div className="mt-4 bg-slate-100 rounded-full h-2">
-            <div className="bg-green-600 h-2 rounded-full" style={{ width: summary.apiSuccessRate }}></div>
+            <div className="bg-green-600 h-2 rounded-full" style={{ width: analyticsData.summary.apiSuccessRate }}></div>
           </div>
         </div>
 
@@ -170,8 +188,8 @@ export default function AdminAnalytics() {
             </div>
           </div>
           {(() => {
-            const total = (activeUsers.count || 0) + (deletedUsers.count || 0);
-            const rate = total > 0 ? Math.round((activeUsers.count / total) * 100) : 0;
+            const total = (analyticsData.activeUsers.count || 0) + (analyticsData.deletedUsers.count || 0);
+            const rate = total > 0 ? Math.round((analyticsData.activeUsers.count / total) * 100) : 0;
             const color = rate >= 80 ? "text-indigo-600" : rate >= 60 ? "text-amber-500" : "text-red-500";
             const barColor = rate >= 80 ? "bg-indigo-600" : rate >= 60 ? "bg-amber-500" : "bg-red-500";
             const label = rate >= 80 ? "Healthy retention" : rate >= 60 ? "Moderate retention" : "Needs attention";
@@ -187,7 +205,7 @@ export default function AdminAnalytics() {
                   <div className={`h-2 rounded-full ${barColor}`} style={{ width: `${rate}%` }}></div>
                 </div>
                 <p className="text-xs text-slate-400 mt-2">
-                  {loading ? "" : `${activeUsers.count} active · ${deletedUsers.count} churned`}
+                  {loading ? "" : `${analyticsData.activeUsers.count} active · ${analyticsData.deletedUsers.count} churned`}
                 </p>
               </>
             );
@@ -204,7 +222,7 @@ export default function AdminAnalytics() {
           </div>
           <div className="flex items-baseline gap-2">
             <span className="text-4xl font-bold text-blue-600">
-              {loading ? "..." : summary.avgResponseTime.replace("ms", "")}
+              {loading ? "..." : analyticsData.summary.avgResponseTime.replace("ms", "")}
             </span>
             <span className="text-slate-500">ms</span>
           </div>
@@ -223,7 +241,7 @@ export default function AdminAnalytics() {
             </div>
           </div>
           <p className="text-2xl font-bold text-slate-900">
-            {loading ? "..." : summary.systemUptime}
+            {loading ? "..." : analyticsData.summary.systemUptime}
           </p>
           <p className="text-xs text-slate-500 mt-1">Last 30 days</p>
         </div>
@@ -237,7 +255,7 @@ export default function AdminAnalytics() {
             </div>
           </div>
           <p className="text-2xl font-bold text-slate-900">
-            {loading ? "..." : summary.totalApiCalls}
+            {loading ? "..." : analyticsData.summary.totalApiCalls}
           </p>
           <p className="text-xs text-slate-500 mt-1">Last 30 days</p>
         </div>
@@ -251,7 +269,7 @@ export default function AdminAnalytics() {
             </div>
           </div>
           <p className="text-2xl font-bold text-slate-900">
-            {loading ? "..." : summary.apiSuccessRate}
+            {loading ? "..." : analyticsData.summary.apiSuccessRate}
           </p>
           <p className="text-xs text-green-600 mt-1">Real-time health</p>
         </div>
@@ -265,7 +283,7 @@ export default function AdminAnalytics() {
             </div>
           </div>
           <p className="text-2xl font-bold text-slate-900">
-            {loading ? "..." : summary.apiFailureRate}
+            {loading ? "..." : analyticsData.summary.apiFailureRate}
           </p>
           <p className="text-xs text-red-600 mt-1">Real-time error monitoring</p>
         </div>
@@ -282,9 +300,9 @@ export default function AdminAnalytics() {
             <div className="h-64 flex items-center justify-center text-slate-400">
               Loading chart data...
             </div>
-          ) : chartData.length > 0 ? (
+          ) : analyticsData.chartData.length > 0 ? (
             <ResponsiveContainer width="100%" height={300}>
-              <LineChart data={chartData}>
+              <LineChart data={analyticsData.chartData}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
                 <XAxis
                   dataKey="month"
@@ -380,9 +398,9 @@ export default function AdminAnalytics() {
           {loading ? (
             <div className="text-center text-slate-400 py-8">Loading...</div>
           ) : templateView === "resume" ? (
-            mostUsedResumeTemplates.length > 0 ? (
+            analyticsData.mostUsedResumeTemplates.length > 0 ? (
               <div className="space-y-3 text-sm">
-                {mostUsedResumeTemplates.map((template, index) => {
+                {analyticsData.mostUsedResumeTemplates.map((template, index) => {
                   const colors = ["text-blue-600", "text-purple-600", "text-emerald-600", "text-orange-600", "text-slate-500"];
                   const bgs = ["bg-blue-50", "bg-purple-50", "bg-emerald-50", "bg-orange-50", "bg-slate-50"];
                   return (
@@ -403,9 +421,9 @@ export default function AdminAnalytics() {
               </div>
             )
           ) : (
-            mostUsedCvTemplates.length > 0 ? (
+            analyticsData.mostUsedCvTemplates.length > 0 ? (
               <div className="space-y-3 text-sm">
-                {mostUsedCvTemplates.map((template, index) => {
+                {analyticsData.mostUsedCvTemplates.map((template, index) => {
                   const colors = ["text-indigo-600", "text-cyan-600", "text-teal-600", "text-amber-600", "text-slate-500"];
                   const bgs = ["bg-indigo-50", "bg-cyan-50", "bg-teal-50", "bg-amber-50", "bg-slate-50"];
                   return (
