@@ -1,7 +1,18 @@
 import { pool } from "../config/postgresdb.js";
+
+const DASHBOARD_STATS_TTL_MS = 60 * 1000;
+let dashboardStatsCache = {
+  expiresAt: 0,
+  payload: null,
+};
 /* ================== ADMIN DASHBOARD ================== */
 export const getAdminDashboardStats = async (req, res) => {
   try {
+    const now = Date.now();
+    if (dashboardStatsCache.payload && dashboardStatsCache.expiresAt > now) {
+      return res.status(200).json(dashboardStatsCache.payload);
+    }
+
     const lastMonthStart = new Date();
     lastMonthStart.setMonth(lastMonthStart.getMonth() - 1);
     lastMonthStart.setDate(1);
@@ -29,16 +40,18 @@ export const getAdminDashboardStats = async (req, res) => {
       // USERS
       pool.query(`
         SELECT
-          (SELECT COUNT(*) FROM users) AS total_users,
-          (SELECT COUNT(*) FROM users WHERE created_at < $1) AS last_month_users,
-          (SELECT COUNT(*) FROM users WHERE plan = 'Free' AND is_active = true AND is_admin = false) AS free_users
+          COUNT(*)::bigint AS total_users,
+          COUNT(*) FILTER (WHERE created_at < $1)::bigint AS last_month_users,
+          COUNT(*) FILTER (WHERE plan = 'Free' AND is_active = true AND is_admin = false)::bigint AS free_users
+        FROM users
       `, [lastMonthStart]),
 
       // RESUMES
       pool.query(`
         SELECT
-          (SELECT COUNT(*) FROM resumes) AS total_resumes,
-          (SELECT COUNT(*) FROM resumes WHERE created_at < $1) AS last_month_resumes
+          COUNT(*)::bigint AS total_resumes,
+          COUNT(*) FILTER (WHERE created_at < $1)::bigint AS last_month_resumes
+        FROM resumes
       `, [lastMonthStart]),
 
       // SUBSCRIPTIONS
@@ -58,8 +71,9 @@ export const getAdminDashboardStats = async (req, res) => {
       // REVENUE
       pool.query(`
         SELECT
-          (SELECT COALESCE(SUM(amount), 0) FROM payments WHERE status = 'success') AS total_revenue,
-          (SELECT COALESCE(SUM(amount), 0) FROM payments WHERE status = 'success' AND created_at < $1) AS last_month_revenue
+          COALESCE(SUM(amount) FILTER (WHERE status = 'success'), 0) AS total_revenue,
+          COALESCE(SUM(amount) FILTER (WHERE status = 'success' AND created_at < $1), 0) AS last_month_revenue
+        FROM payments
       `, [lastMonthStart]),
 
       // CHARTS
@@ -207,7 +221,7 @@ export const getAdminDashboardStats = async (req, res) => {
     ];
 
     // ✅ RESPONSE
-    res.status(200).json({
+    const responsePayload = {
       users: { total: totalUsers, change: Number(userChange.toFixed(1)) },
       resumes: { total: totalResumes, change: Number(resumeChange.toFixed(1)) },
       subscriptions: { total: totalActiveSubs, change: Number(subsChange.toFixed(1)) },
@@ -218,7 +232,14 @@ export const getAdminDashboardStats = async (req, res) => {
       userGrowth,
       dailyActiveUsers,
       subscriptionSplit
-    });
+    };
+
+    dashboardStatsCache = {
+      expiresAt: now + DASHBOARD_STATS_TTL_MS,
+      payload: responsePayload,
+    };
+
+    res.status(200).json(responsePayload);
 
   } catch (error) {
     console.error("Dashboard stats error:", error);
