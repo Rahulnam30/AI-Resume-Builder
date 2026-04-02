@@ -433,6 +433,29 @@ const EditProfile = () => {
 
                   </div>
 
+                  <div className="form-section">
+                    <h3>Bio</h3>
+                    <div className="field-row">
+                      <div className="field-group full-width">
+                        <textarea
+                          name="bio"
+                          value={formData.bio}
+                          onChange={handleChange}
+                          placeholder="Tell us about yourself..."
+                          style={{
+                            width: '100%',
+                            padding: '0.75rem',
+                            borderRadius: '10px',
+                            border: '1px solid #d1d5db',
+                            fontSize: '0.9rem',
+                            minHeight: '100px',
+                            resize: 'vertical'
+                          }}
+                        />
+                      </div>
+                    </div>
+                  </div>
+
                   <div className="form-actions">
 
                     <button
