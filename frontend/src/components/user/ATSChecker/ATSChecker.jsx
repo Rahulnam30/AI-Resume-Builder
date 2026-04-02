@@ -22,7 +22,7 @@ import "../../../styles/react-pdf/AnnotationLayer.css";
 
 import mammoth from "mammoth";
 import ATSDocPreview from "./ATSDocPreview";
-import { saveFile, getFile } from "../../../utils/fileDb";
+import { saveFile, getFile } from "../../../utils/fileDB";
 
 pdfjs.GlobalWorkerOptions.workerSrc = new URL(
   "pdfjs-dist/build/pdf.worker.min.mjs",
@@ -80,10 +80,9 @@ function UploadZone({ onFileChange }) {
           onDrop={handleDrop}
           onClick={() => fileInputRef.current.click()}
           className={`relative cursor-pointer rounded-2xl border-2 border-dashed transition-all duration-300 p-12 text-center group
-            ${
-              isDragging
-                ? "border-blue-500 bg-blue-50 scale-[1.02] shadow-lg shadow-blue-100"
-                : "border-slate-200 bg-slate-50/50 hover:border-blue-400 hover:bg-blue-50/30 hover:shadow-md"
+            ${isDragging
+              ? "border-blue-500 bg-blue-50 scale-[1.02] shadow-lg shadow-blue-100"
+              : "border-slate-200 bg-slate-50/50 hover:border-blue-400 hover:bg-blue-50/30 hover:shadow-md"
             }`}
         >
           <input
@@ -324,7 +323,7 @@ function ErrorTable({ errors, type, onSelect }) {
       </div>
     </div>
   );
-}function CircularLoader() {
+} function CircularLoader() {
   return (
     <div className="flex flex-col items-center justify-center">
       <div className="relative w-16 h-16">
@@ -424,22 +423,22 @@ const ATSChecker = ({ onSidebarToggle }) => {
   /* ── Resume Validation Assistant ── */
   const validateResume = (extractedText, fileName) => {
     const textLower = extractedText.toLowerCase();
-    
+
     // Check for the exact resume-related keywords specified
     const resumeKeywords = [
       "experience",
-      "education", 
+      "education",
       "skills",
       "projects",
       "summary",
       "work history"
     ];
-    
+
     const foundKeywords = resumeKeywords.filter(keyword => textLower.includes(keyword));
-    
+
     // Strict validation: require at least one of the specified keywords
     const isValid = foundKeywords.length >= 1;
-    
+
     if (!isValid) {
       return {
         status: "invalid",
@@ -447,11 +446,11 @@ const ATSChecker = ({ onSidebarToggle }) => {
         preview: ""
       };
     }
-    
+
     // Generate clean preview (500-800 characters)
     let preview = extractedText.replace(/\s+/g, ' ').trim();
     const maxLength = 650; // Middle of 500-800 range
-    
+
     if (preview.length > maxLength) {
       // Try to cut at sentence boundary to avoid cutting words abruptly
       const truncated = preview.substring(0, maxLength);
@@ -460,14 +459,14 @@ const ATSChecker = ({ onSidebarToggle }) => {
         truncated.lastIndexOf('!'),
         truncated.lastIndexOf('?')
       );
-      
+
       if (lastSentenceEnd > maxLength * 0.7) {
         preview = truncated.substring(0, lastSentenceEnd + 1);
       } else {
         preview = truncated + '...';
       }
     }
-    
+
     return {
       status: "valid",
       message: "Valid resume detected.",
@@ -476,61 +475,61 @@ const ATSChecker = ({ onSidebarToggle }) => {
   };
 
   /* ── Saves state after refresh/* ── */
- useEffect(() => {
-  const loadStoredFile = async () => {
-    const fileId = sessionStorage.getItem(SESSION_KEY);
-    const savedAnalysis = sessionStorage.getItem("ats_analysis_result");
-    const fileType = sessionStorage.getItem("ats_file_type");
+  useEffect(() => {
+    const loadStoredFile = async () => {
+      const fileId = sessionStorage.getItem(SESSION_KEY);
+      const savedAnalysis = sessionStorage.getItem("ats_analysis_result");
+      const fileType = sessionStorage.getItem("ats_file_type");
 
-    // ✅ Restore file preview
-    if (fileId) {
-      const storedFile = await getFile(fileId);
+      // ✅ Restore file preview
+      if (fileId) {
+        const storedFile = await getFile(fileId);
 
-      if (storedFile) {
-        if (fileType === "pdf") {
-          const url = URL.createObjectURL(storedFile);
-          setPreviewUrl(url);
-          setPreviewType("pdf");
-        } else if (fileType === "docx") {
-          setPreviewType("doc");
+        if (storedFile) {
+          if (fileType === "pdf") {
+            const url = URL.createObjectURL(storedFile);
+            setPreviewUrl(url);
+            setPreviewType("pdf");
+          } else if (fileType === "docx") {
+            setPreviewType("doc");
 
-          try {
-            const arrayBuffer = await storedFile.arrayBuffer();
-            const result = await mammoth.extractRawText({ arrayBuffer });
-            setResumeText(result.value);
-          } catch (err) {
-            console.error("DOCX restore failed:", err);
+            try {
+              const arrayBuffer = await storedFile.arrayBuffer();
+              const result = await mammoth.extractRawText({ arrayBuffer });
+              setResumeText(result.value);
+            } catch (err) {
+              console.error("DOCX restore failed:", err);
+            }
           }
         }
       }
-    }
 
-    // ✅ Restore analysis
-    if (savedAnalysis) {
-      const parsed = JSON.parse(savedAnalysis);
+      // ✅ Restore analysis
+      if (savedAnalysis) {
+        const parsed = JSON.parse(savedAnalysis);
 
-      setAnalysisResult(parsed);
-      setAnimatedScore(parsed.overallScore || 0); // 🔥 important
+        setAnalysisResult(parsed);
+        setAnimatedScore(parsed.overallScore || 0); // 🔥 important
 
-      if (parsed.pronounAnalysis?.detected) {
-        setPronounErrors(parsed.pronounAnalysis.detected);
+        if (parsed.pronounAnalysis?.detected) {
+          setPronounErrors(parsed.pronounAnalysis.detected);
+        }
+
+        setResumeText(parsed?.text || "");
       }
+    };
 
-      setResumeText(parsed?.text || "");
-    }
-  };
-
-  loadStoredFile();
-}, []);
+    loadStoredFile();
+  }, []);
 
   /* ── Preview alive after refresh ── */
   useEffect(() => {
-  return () => {
-    if (previewUrl?.startsWith("blob:")) {
-      URL.revokeObjectURL(previewUrl);
-    }
-  };
-}, [previewUrl]);
+    return () => {
+      if (previewUrl?.startsWith("blob:")) {
+        URL.revokeObjectURL(previewUrl);
+      }
+    };
+  }, [previewUrl]);
 
   /* ── Spell locator ── */
   useEffect(() => {
@@ -589,73 +588,102 @@ const ATSChecker = ({ onSidebarToggle }) => {
   }, [activeError]);
 
   /* ── File change ── */
-const handleFileChange = async (e) => {
-  const file = e.target.files[0];
-  if (!file) return;
-  
-  const fileExtension = file.name.split('.').pop()?.toLowerCase();
-  const isValidFormat = ['pdf', 'doc', 'docx'].includes(fileExtension) || 
-                        file.type === "application/pdf" || 
-                        file.type === "application/msword" || 
-                        file.type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
-  
-  if (!isValidFormat) {
-    alert("Please upload a PDF, DOC, or DOCX file.");
-    return;
-  }
-  
-   setAnalysisResult(null);
-  setAnimatedScore(0);
-  setSpellingErrors([]);
-  setPronounErrors([]);
-  setActiveError(null);
-  setResumeText("");
-  
-  setUploadedFile(file);
-  setIsAnalyzing(true);
-  analysisStartTimeRef.current = Date.now();
+  const handleFileChange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
 
-  // For PDF files, we need to extract text first for validation
-  if (file.type === "application/pdf" || fileExtension === "pdf") {
-    try {
-      // Create a temporary URL to read the PDF
-      const tempUrl = URL.createObjectURL(file);
-      const pdfjsLib = await import('pdfjs-dist/build/pdf.min.mjs');
-      
-      // Set worker source for the imported pdfjs
-      pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
-        'pdfjs-dist/build/pdf.worker.min.mjs',
-        import.meta.url
-      ).toString();
-      
-      const loadingTask = pdfjsLib.getDocument(tempUrl);
-      const pdf = await loadingTask.promise;
-      
-      let fullText = "";
-      // Check first 3 pages max, but if no text found, try more pages
-      const pagesToCheck = Math.min(pdf.numPages, 5);
-      
-      for (let i = 1; i <= pagesToCheck; i++) {
-        try {
-          const page = await pdf.getPage(i);
-          const textContent = await page.getTextContent();
-          const pageText = textContent.items.map(item => item.str).join(' ');
-          fullText += pageText + ' ';
-          
-          // If we have substantial text, we can stop
-          if (fullText.length > 500) break;
-        } catch (pageError) {
-          console.warn(`Failed to read page ${i}:`, pageError);
-          continue;
+    const fileExtension = file.name.split('.').pop()?.toLowerCase();
+    const isValidFormat = ['pdf', 'doc', 'docx'].includes(fileExtension) ||
+      file.type === "application/pdf" ||
+      file.type === "application/msword" ||
+      file.type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+
+    if (!isValidFormat) {
+      alert("Please upload a PDF, DOC, or DOCX file.");
+      return;
+    }
+
+    setAnalysisResult(null);
+    setAnimatedScore(0);
+    setSpellingErrors([]);
+    setPronounErrors([]);
+    setActiveError(null);
+    setResumeText("");
+
+    setUploadedFile(file);
+    setIsAnalyzing(true);
+    analysisStartTimeRef.current = Date.now();
+
+    // For PDF files, we need to extract text first for validation
+    if (file.type === "application/pdf" || fileExtension === "pdf") {
+      try {
+        // Create a temporary URL to read the PDF
+        const tempUrl = URL.createObjectURL(file);
+        const pdfjsLib = await import('pdfjs-dist/build/pdf.min.mjs');
+
+        // Set worker source for the imported pdfjs
+        pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
+          'pdfjs-dist/build/pdf.worker.min.mjs',
+          import.meta.url
+        ).toString();
+
+        const loadingTask = pdfjsLib.getDocument(tempUrl);
+        const pdf = await loadingTask.promise;
+
+        let fullText = "";
+        // Check first 3 pages max, but if no text found, try more pages
+        const pagesToCheck = Math.min(pdf.numPages, 5);
+
+        for (let i = 1; i <= pagesToCheck; i++) {
+          try {
+            const page = await pdf.getPage(i);
+            const textContent = await page.getTextContent();
+            const pageText = textContent.items.map(item => item.str).join(' ');
+            fullText += pageText + ' ';
+
+            // If we have substantial text, we can stop
+            if (fullText.length > 500) break;
+          } catch (pageError) {
+            console.warn(`Failed to read page ${i}:`, pageError);
+            continue;
+          }
         }
-      }
-      
-      URL.revokeObjectURL(tempUrl);
-      
-      // If no text extracted, accept the file (might be image-based PDF)
-      if (!fullText || fullText.trim().length < 50) {
-        console.log("No text extracted from PDF, accepting based on file type");
-        // Proceed with normal processing for image-based PDFs
+
+        URL.revokeObjectURL(tempUrl);
+
+        // If no text extracted, accept the file (might be image-based PDF)
+        if (!fullText || fullText.trim().length < 50) {
+          console.log("No text extracted from PDF, accepting based on file type");
+          // Proceed with normal processing for image-based PDFs
+          const fileId = "resume_pdf";
+          await saveFile(fileId, file);
+          const storedFile = await getFile(fileId);
+          const url = URL.createObjectURL(storedFile);
+
+          setPreviewUrl(url);
+          setPreviewType("pdf");
+
+          sessionStorage.setItem(SESSION_KEY, fileId);
+          sessionStorage.setItem("ats_file_type", fileExtension.toLowerCase());
+          return; // Skip validation for image PDFs
+        }
+
+        console.log("Extracted text length:", fullText.length);
+
+        // Validate the extracted text
+        const validation = validateResume(fullText, file.name);
+
+        if (validation.status === "invalid") {
+          setIsAnalyzing(false);
+          alert(validation.message);
+          // Reset file input
+          if (fileInputRef.current) {
+            fileInputRef.current.value = '';
+          }
+          return;
+        }
+
+        // If valid, proceed with normal processing
         const fileId = "resume_pdf";
         await saveFile(fileId, file);
         const storedFile = await getFile(fileId);
@@ -666,155 +694,126 @@ const handleFileChange = async (e) => {
 
         sessionStorage.setItem(SESSION_KEY, fileId);
         sessionStorage.setItem("ats_file_type", fileExtension.toLowerCase());
-        return; // Skip validation for image PDFs
-      }
-      
-      console.log("Extracted text length:", fullText.length);
-      
-      // Validate the extracted text
-      const validation = validateResume(fullText, file.name);
-      
-      if (validation.status === "invalid") {
+
+      } catch (error) {
+        console.error("PDF text extraction failed:", error);
         setIsAnalyzing(false);
-        alert(validation.message);
-        // Reset file input
+        alert("Failed to read PDF content. Please try another file.");
         if (fileInputRef.current) {
           fileInputRef.current.value = '';
         }
         return;
       }
-      
-      // If valid, proceed with normal processing
-      const fileId = "resume_pdf";
-      await saveFile(fileId, file);
-      const storedFile = await getFile(fileId);
-      const url = URL.createObjectURL(storedFile);
+    }
+    else if (fileExtension === "docx") {
+      const fileId = "resume_docx";
 
-      setPreviewUrl(url);
-      setPreviewType("pdf");
+      await saveFile(fileId, file); // ✅ SAVE DOCX
 
-      sessionStorage.setItem(SESSION_KEY, fileId);
-      sessionStorage.setItem("ats_file_type", fileExtension.toLowerCase());
-      
-    } catch (error) {
-      console.error("PDF text extraction failed:", error);
-      setIsAnalyzing(false);
-      alert("Failed to read PDF content. Please try another file.");
-      if (fileInputRef.current) {
-        fileInputRef.current.value = '';
+      sessionStorage.setItem(SESSION_KEY, fileId); // ✅ store ID
+      sessionStorage.setItem("ats_file_type", "docx"); // ✅ store type
+
+      setPreviewType("doc");
+      setPreviewUrl(null);
+
+      try {
+        const arrayBuffer = await file.arrayBuffer();
+        const result = await mammoth.extractRawText({ arrayBuffer });
+        let extractedText = result.value;
+
+        // Validate resume content
+        const validation = validateResume(extractedText, file.name);
+
+        // Only proceed if resume is valid
+        if (validation.status === "invalid") {
+          setIsAnalyzing(false);
+          alert(validation.message);
+          return;
+        }
+
+        // Limit text for very large documents to prevent performance issues
+        const wordCount = extractedText.split(/\s+/).length;
+        if (wordCount > 2000) {
+          // Use validated preview instead of truncating
+          extractedText = validation.preview;
+        } else {
+          extractedText = validation.preview; // Always use validated preview
+        }
+
+        setResumeText(extractedText);
+      } catch (err) {
+        console.error("DOCX parsing failed:", err);
+        setResumeText("Failed to preview DOCX file.");
       }
-      return;
     }
-  }
- else if (fileExtension === "docx") {
-  const fileId = "resume_docx";
+    else if (fileExtension === "doc") {
+      setPreviewType("doc");
+      setPreviewUrl(null);
 
-  await saveFile(fileId, file); // ✅ SAVE DOCX
-
-  sessionStorage.setItem(SESSION_KEY, fileId); // ✅ store ID
-  sessionStorage.setItem("ats_file_type", "docx"); // ✅ store type
-
-  setPreviewType("doc");
-  setPreviewUrl(null);
-
-  try {
-    const arrayBuffer = await file.arrayBuffer();
-    const result = await mammoth.extractRawText({ arrayBuffer });
-    let extractedText = result.value;
-    
-    // Validate resume content
-    const validation = validateResume(extractedText, file.name);
-    
-    // Only proceed if resume is valid
-    if (validation.status === "invalid") {
-      setIsAnalyzing(false);
-      alert(validation.message);
-      return;
-    }
-    
-    // Limit text for very large documents to prevent performance issues
-    const wordCount = extractedText.split(/\s+/).length;
-    if (wordCount > 2000) {
-      // Use validated preview instead of truncating
-      extractedText = validation.preview;
-    } else {
-      extractedText = validation.preview; // Always use validated preview
+      setResumeText(
+        "⚠️ .doc format not supported. Please upload DOCX or PDF."
+      );
     }
 
-    setResumeText(extractedText);
-  } catch (err) {
-    console.error("DOCX parsing failed:", err);
-    setResumeText("Failed to preview DOCX file.");
-  }
-}
- else if (fileExtension === "doc") {
-  setPreviewType("doc");
-  setPreviewUrl(null);
-
-  setResumeText(
-    "⚠️ .doc format not supported. Please upload DOCX or PDF."
-  );
-}
-
-  const formData = new FormData();
-  formData.append("resume", file);
-  formData.append("jobTitle", "Placeholder title");
+    const formData = new FormData();
+    formData.append("resume", file);
+    formData.append("jobTitle", "Placeholder title");
 
 
-  try {
-    const token = localStorage.getItem("token") || sessionStorage.getItem("token");
-    const res = await fetch("http://localhost:5000/api/resume/upload", {
-      method: "POST",
-      body: formData,
-      headers: token ? { Authorization: `Bearer ${token}` } : {},
-    });
-
-    const rawText = await res.text();
-
-    if (!res.ok) {
-      console.error(`Server error [${res.status}]:`, rawText.slice(0, 500));
-      return;
-    }
-
-    let data;
     try {
-      data = JSON.parse(rawText);
-    } catch {
-      console.error("Expected JSON but got:", rawText.slice(0, 300));
-      return;
-    }
+      const token = localStorage.getItem("token") || sessionStorage.getItem("token");
+      const res = await fetch("http://localhost:5000/api/resume/upload", {
+        method: "POST",
+        body: formData,
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      });
 
-    if (data.success) {
-      const updatedData = { ...data.data };
-      
-      if (updatedData.pronounAnalysis?.detected)
-        setPronounErrors(updatedData.pronounAnalysis.detected);
-      if (fileExtension !== "docx") {
-        setResumeText(updatedData?.text || "");
+      const rawText = await res.text();
+
+      if (!res.ok) {
+        console.error(`Server error [${res.status}]:`, rawText.slice(0, 500));
+        return;
       }
-      sessionStorage.setItem("ats_analysis_result", JSON.stringify(updatedData));
-      setAnalysisResult(updatedData);
-    } else {
-      console.error("API returned success: false →", data?.message || data);
+
+      let data;
+      try {
+        data = JSON.parse(rawText);
+      } catch {
+        console.error("Expected JSON but got:", rawText.slice(0, 300));
+        return;
+      }
+
+      if (data.success) {
+        const updatedData = { ...data.data };
+
+        if (updatedData.pronounAnalysis?.detected)
+          setPronounErrors(updatedData.pronounAnalysis.detected);
+        if (fileExtension !== "docx") {
+          setResumeText(updatedData?.text || "");
+        }
+        sessionStorage.setItem("ats_analysis_result", JSON.stringify(updatedData));
+        setAnalysisResult(updatedData);
+      } else {
+        console.error("API returned success: false →", data?.message || data);
+      }
+    } catch (err) {
+      console.error("ATS fetch failed — is the backend running on port 5000?", err);
+    } finally {
+      // Enforce minimum 5.5 second loading animation
+      const elapsed = Date.now() - analysisStartTimeRef.current;
+      const minDuration = 5500; // 5.5 seconds
+
+      if (elapsed < minDuration) {
+        setTimeout(() => {
+          setIsAnalyzing(false);
+          analysisStartTimeRef.current = null;
+        }, minDuration - elapsed);
+      } else {
+        setIsAnalyzing(false);
+        analysisStartTimeRef.current = null;
+      }
     }
-  } catch (err) {
-  console.error("ATS fetch failed — is the backend running on port 5000?", err);
-} finally {
-  // Enforce minimum 5.5 second loading animation
-  const elapsed = Date.now() - analysisStartTimeRef.current;
-  const minDuration = 5500; // 5.5 seconds
-  
-  if (elapsed < minDuration) {
-    setTimeout(() => {
-      setIsAnalyzing(false);
-      analysisStartTimeRef.current = null;
-    }, minDuration - elapsed);
-  } else {
-    setIsAnalyzing(false);
-    analysisStartTimeRef.current = null;
-  }
-}
-};
+  };
   const buildErrorLocationsFromPdf = async (pdf, wrongWords) => {
     if (!pdf || !wrongWords?.length) return [];
     const errors = [];
@@ -867,7 +866,7 @@ const handleFileChange = async (e) => {
 
   return (
     <div className="ats-checker-page user-page min-h-screen bg-[#f8f9fc] md:mt-0 mt-20">
-      <UserNavBar onMenuClick={onSidebarToggle || (() => {})} />
+      <UserNavBar onMenuClick={onSidebarToggle || (() => { })} />
 
       {/* ── Page Header ── */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-6 pb-2">
@@ -934,155 +933,155 @@ const handleFileChange = async (e) => {
               </div>
             </div>
 
-      <div className="p-5 flex-1 flex flex-col relative">
-  {/* 📦 Content Container - Blurred when analyzing */}
-  <div className={`transition-all duration-300 ${isAnalyzing && uploadedFile ? 'blur-sm opacity-50 pointer-events-none' : ''}`}>
-    
-    {/* Score Ring */}
-    {analysisResult ? (
-      <motion.div 
-        initial={{ opacity: 0, scale: 0.95 }} 
-        animate={{ opacity: 1, scale: 1 }} 
-        transition={{ duration: 1.4 }} 
-        key={`score-${uploadedFile?.name}`}
-      >
-        <ScoreRing score={analysisResult} animated={animatedScore} />
-      </motion.div>
-    ) : (
-      /* Empty State */
-      <div className="flex-1 flex items-center justify-center min-h-[300px]">
-        <div className="rounded-2xl border-2 border-dashed border-slate-100 p-8 text-center w-full">
-          <div className="w-14 h-14 rounded-2xl bg-slate-50 flex items-center justify-center mx-auto mb-3">
-            <Target size={28} className="text-slate-200" />
-          </div>
-          <p className="text-sm font-semibold text-slate-400 mb-1">No resume uploaded yet</p>
-          <p className="text-xs text-slate-300">Upload a resume on the right to see your ATS score here</p>
-        </div>
-      </div>
-    )}
+            <div className="p-5 flex-1 flex flex-col relative">
+              {/* 📦 Content Container - Blurred when analyzing */}
+              <div className={`transition-all duration-300 ${isAnalyzing && uploadedFile ? 'blur-sm opacity-50 pointer-events-none' : ''}`}>
 
-    {/* Section Scores */}
-    {analysisResult?.sectionScores?.length > 0 && (
-      <motion.div 
-        initial={{ opacity: 0 }} 
-        animate={{ opacity: 1 }} 
-        transition={{ delay: 0.3 }} 
-        className="mt-5"
-      >
-        <p className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-3">Section Breakdown</p>
-        {analysisResult.sectionScores.map((s, i) => (
-          <SectionCard key={`${s.sectionName}-${i}-${uploadedFile?.name}`} section={s} />
-        ))}
-      </motion.div>
-    )}
+                {/* Score Ring */}
+                {analysisResult ? (
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 1.4 }}
+                    key={`score-${uploadedFile?.name}`}
+                  >
+                    <ScoreRing score={analysisResult} animated={animatedScore} />
+                  </motion.div>
+                ) : (
+                  /* Empty State */
+                  <div className="flex-1 flex items-center justify-center min-h-[300px]">
+                    <div className="rounded-2xl border-2 border-dashed border-slate-100 p-8 text-center w-full">
+                      <div className="w-14 h-14 rounded-2xl bg-slate-50 flex items-center justify-center mx-auto mb-3">
+                        <Target size={28} className="text-slate-200" />
+                      </div>
+                      <p className="text-sm font-semibold text-slate-400 mb-1">No resume uploaded yet</p>
+                      <p className="text-xs text-slate-300">Upload a resume on the right to see your ATS score here</p>
+                    </div>
+                  </div>
+                )}
 
-    {/* Error Tables */}
-    <AnimatePresence>
-      {spellingErrors.length > 0 && (
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
-          <ErrorTable errors={spellingErrors} type="spell" onSelect={setActiveError} />
-        </motion.div>
-      )}
-      {pronounErrors.length > 0 && (
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
-          <ErrorTable errors={pronounErrors} type="pronoun" onSelect={setActiveError} />
-        </motion.div>
-      )}
-    </AnimatePresence>
+                {/* Section Scores */}
+                {analysisResult?.sectionScores?.length > 0 && (
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.3 }}
+                    className="mt-5"
+                  >
+                    <p className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-3">Section Breakdown</p>
+                    {analysisResult.sectionScores.map((s, i) => (
+                      <SectionCard key={`${s.sectionName}-${i}-${uploadedFile?.name}`} section={s} />
+                    ))}
+                  </motion.div>
+                )}
 
-    {/* Job Recommendations Section */}
-    <JobRecommendations 
-      extractedData={analysisResult?.extractedData} 
-      isAnalyzing={isAnalyzing} 
-    />
-  </div>
+                {/* Error Tables */}
+                <AnimatePresence>
+                  {spellingErrors.length > 0 && (
+                    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
+                      <ErrorTable errors={spellingErrors} type="spell" onSelect={setActiveError} />
+                    </motion.div>
+                  )}
+                  {pronounErrors.length > 0 && (
+                    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
+                      <ErrorTable errors={pronounErrors} type="pronoun" onSelect={setActiveError} />
+                    </motion.div>
+                  )}
+                </AnimatePresence>
 
-  {/* 🌀 BLUR OVERLAY - Shows during analysis */}
-  <AnimatePresence>
-    {isAnalyzing && uploadedFile && (
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        transition={{ duration: 0.2 }}
-        className="absolute inset-0 flex flex-col items-center justify-center bg-white/80 backdrop-blur-sm z-10 rounded-xl"
-      >
-        {/* Animated Loader */}
-        <div className="relative">
-          {/* Outer ring */}
-          <motion.div
-            className="w-16 h-16 rounded-full border-4 border-slate-200"
-            animate={{ rotate: 360 }}
-            transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-            style={{ borderTopColor: '#3b82f6', borderRightColor: '#8b5cf6' }}
-          />
-          {/* Inner pulse */}
-          <motion.div
-            className="absolute inset-3 rounded-full bg-gradient-to-br from-blue-500 to-purple-500"
-            animate={{ scale: [1, 1.2, 1] }}
-            transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
-          />
-          {/* Sparkle icon */}
-          <Sparkles className="absolute inset-0 m-auto text-white" size={20} />
-        </div>
+                {/* Job Recommendations Section */}
+                <JobRecommendations
+                  extractedData={analysisResult?.extractedData}
+                  isAnalyzing={isAnalyzing}
+                />
+              </div>
 
-        {/* Status Text */}
-        <div className="mt-6 text-center">
-          <motion.p 
-            className="text-base font-semibold text-slate-800"
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-          >
-            Analyzing Resume
-          </motion.p>
-          
-          {/* Animated dots */}
-          <div className="flex items-center justify-center gap-1 mt-1">
-            {[0, 1, 2].map((i) => (
-              <motion.span
-                key={i}
-                className="w-2 h-2 rounded-full bg-blue-500"
-                initial={{ opacity: 0.4, scale: 0.8 }}
-                animate={{ 
-                  opacity: [0.4, 1, 0.4],
-                  scale: [0.8, 1.2, 0.8]
-                }}
-                transition={{ 
-                  duration: 1.2, 
-                  repeat: Infinity, 
-                  delay: i * 0.2,
-                  ease: "easeInOut"
-                }}
-              />
-            ))}
-          </div>
-          
-          <motion.p 
-            className="text-xs text-slate-500 mt-3 max-w-[200px]"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.3 }}
-          >
-            Checking keywords, formatting & ATS compatibility
-          </motion.p>
-        </div>
+              {/* 🌀 BLUR OVERLAY - Shows during analysis */}
+              <AnimatePresence>
+                {isAnalyzing && uploadedFile && (
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.2 }}
+                    className="absolute inset-0 flex flex-col items-center justify-center bg-white/80 backdrop-blur-sm z-10 rounded-xl"
+                  >
+                    {/* Animated Loader */}
+                    <div className="relative">
+                      {/* Outer ring */}
+                      <motion.div
+                        className="w-16 h-16 rounded-full border-4 border-slate-200"
+                        animate={{ rotate: 360 }}
+                        transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+                        style={{ borderTopColor: '#3b82f6', borderRightColor: '#8b5cf6' }}
+                      />
+                      {/* Inner pulse */}
+                      <motion.div
+                        className="absolute inset-3 rounded-full bg-gradient-to-br from-blue-500 to-purple-500"
+                        animate={{ scale: [1, 1.2, 1] }}
+                        transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+                      />
+                      {/* Sparkle icon */}
+                      <Sparkles className="absolute inset-0 m-auto text-white" size={20} />
+                    </div>
 
-        {/* Progress hint */}
-        <motion.div 
-          className="mt-4 flex items-center gap-2 text-xs text-slate-400"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.6 }}
-        >
-          <Shield size={12} className="text-emerald-500" />
-          <span>AI-powered analysis in progress</span>
-        </motion.div>
-      </motion.div>
-    )}
-  </AnimatePresence>
+                    {/* Status Text */}
+                    <div className="mt-6 text-center">
+                      <motion.p
+                        className="text-base font-semibold text-slate-800"
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                      >
+                        Analyzing Resume
+                      </motion.p>
 
-  {/* CSS for animations */}
-  <style>{`
+                      {/* Animated dots */}
+                      <div className="flex items-center justify-center gap-1 mt-1">
+                        {[0, 1, 2].map((i) => (
+                          <motion.span
+                            key={i}
+                            className="w-2 h-2 rounded-full bg-blue-500"
+                            initial={{ opacity: 0.4, scale: 0.8 }}
+                            animate={{
+                              opacity: [0.4, 1, 0.4],
+                              scale: [0.8, 1.2, 0.8]
+                            }}
+                            transition={{
+                              duration: 1.2,
+                              repeat: Infinity,
+                              delay: i * 0.2,
+                              ease: "easeInOut"
+                            }}
+                          />
+                        ))}
+                      </div>
+
+                      <motion.p
+                        className="text-xs text-slate-500 mt-3 max-w-[200px]"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ delay: 0.3 }}
+                      >
+                        Checking keywords, formatting & ATS compatibility
+                      </motion.p>
+                    </div>
+
+                    {/* Progress hint */}
+                    <motion.div
+                      className="mt-4 flex items-center gap-2 text-xs text-slate-400"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ delay: 0.6 }}
+                    >
+                      <Shield size={12} className="text-emerald-500" />
+                      <span>AI-powered analysis in progress</span>
+                    </motion.div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
+              {/* CSS for animations */}
+              <style>{`
     @keyframes spin {
       0% { transform: rotate(0deg); }
       100% { transform: rotate(360deg); }
@@ -1092,7 +1091,7 @@ const handleFileChange = async (e) => {
       50% { opacity: 1; }
     }
   `}</style>
-</div>
+            </div>
           </div>
         </div>
 
@@ -1122,29 +1121,29 @@ const handleFileChange = async (e) => {
                 transition={{ duration: 0.3 }}
                 className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden flex flex-col w-full"
               >
-  {previewType === "pdf" && previewUrl ? (
-  <div className="w-full h-full flex-1">
-    <ATSPdfPreview
-      pdfUrl={previewUrl}
-      onLoadSuccess={(pdf) => {
-        setNumPages(pdf.numPages);
-        setPdfInstance(pdf);
-      }}
-    />
-  </div>
-) : previewType === "doc" ? (
-  resumeText ? (
-    <div className="w-full h-full flex-1">
-      <ATSDocPreview text={resumeText} />
-    </div>
-  ) : (
-    <div className="flex items-center justify-center h-full text-sm text-gray-500">
-      Extracting DOCX preview...
-    </div>
-  )
-) : (
-  <UploadZone onFileChange={handleFileChange} />
-)}
+                {previewType === "pdf" && previewUrl ? (
+                  <div className="w-full h-full flex-1">
+                    <ATSPdfPreview
+                      pdfUrl={previewUrl}
+                      onLoadSuccess={(pdf) => {
+                        setNumPages(pdf.numPages);
+                        setPdfInstance(pdf);
+                      }}
+                    />
+                  </div>
+                ) : previewType === "doc" ? (
+                  resumeText ? (
+                    <div className="w-full h-full flex-1">
+                      <ATSDocPreview text={resumeText} />
+                    </div>
+                  ) : (
+                    <div className="flex items-center justify-center h-full text-sm text-gray-500">
+                      Extracting DOCX preview...
+                    </div>
+                  )
+                ) : (
+                  <UploadZone onFileChange={handleFileChange} />
+                )}
               </motion.div>
             )}
           </AnimatePresence>
