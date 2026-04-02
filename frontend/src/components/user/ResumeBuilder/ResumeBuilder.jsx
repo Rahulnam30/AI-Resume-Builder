@@ -203,13 +203,17 @@ const ResumeBuilder = () => {
   const [showCompletionPopup, setShowCompletionPopup] = useState(false);
   const isSectionValid = () => {
     switch (activeSection) {
-      case "personal":
+      case "personal": {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        const isEmailValid = formData?.email?.trim() && emailRegex.test(formData.email);
+        const isPhoneValid = formData?.phone && formData.phone.replace(/[^0-9]/g, '').length >= 10;
         return (
           formData?.fullName?.trim() &&
-          formData?.email?.trim() &&
-          formData?.phone?.trim() &&
+          isEmailValid &&
+          isPhoneValid &&
           formData?.location?.trim()
         );
+      }
 
       case "work":
         // If no experience entries, allow skipping
@@ -261,12 +265,22 @@ const ResumeBuilder = () => {
   const getEmptyFieldNames = () => {
     const empty = [];
     switch (activeSection) {
-      case "personal":
+      case "personal": {
         if (!formData?.fullName?.trim()) empty.push("Full Name");
-        if (!formData?.email?.trim()) empty.push("Email");
-        if (!formData?.phone?.trim()) empty.push("Phone");
+        if (!formData?.email?.trim()) {
+          empty.push("Email");
+        } else {
+          const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+          if (!emailRegex.test(formData.email)) empty.push("Valid Email");
+        }
+        if (!formData?.phone?.trim()) {
+          empty.push("Phone");
+        } else {
+          if (formData.phone.replace(/[^0-9]/g, '').length < 10) empty.push("Valid Phone Number");
+        }
         if (!formData?.location?.trim()) empty.push("Location");
         break;
+      }
       case "work":
         if (formData?.experience?.length > 0) {
           formData.experience.forEach((exp, i) => {
@@ -690,7 +704,7 @@ const ResumeBuilder = () => {
                     {warning && warningFields.length > 0 && (
                       <div className="text-sm text-red-700 bg-yellow-100 border border-yellow-300 px-4 py-2 mb-3 rounded-lg">
                         <span className="font-semibold">
-                          The following fields are empty:
+                          The following fields are empty or invalid:
                         </span>{" "}
                         {warningFields.join(", ")}
                       </div>
@@ -759,7 +773,7 @@ const ResumeBuilder = () => {
                 {warning && warningFields.length > 0 && (
                   <div className="text-sm text-red-700 bg-yellow-100 border border-yellow-300 px-4 py-2 mb-3 rounded-lg">
                     <span className="font-semibold">
-                      The following fields are empty:
+                      The following fields are empty or invalid:
                     </span>{" "}
                     {warningFields.join(", ")}
                   </div>
