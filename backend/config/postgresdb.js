@@ -1,18 +1,35 @@
-import { Pool } from 'pg';
-import dotenv from 'dotenv';
-import dns from 'dns';
+import pg from "pg";
+import dotenv from "dotenv";
+import dns from "dns";
 
-// Force Node.js to prioritize IPv4 lookups. 
-// This fixes the 'ETIMEDOUT 64:ff9b...' error when connecting to Supabase via IPv6.
-dns.setDefaultResultOrder('ipv4first');
-
+dns.setDefaultResultOrder("ipv4first");
 dotenv.config();
 
+const { Pool } = pg;
+
+
 export const pool = new Pool({
-    connectionString : process.env.POSTGRESQL_URI,
-    max: 10, // Limit active connections to prevent Supabase MaxClientsInSessionMode error
-    idleTimeoutMillis: 30000, // Close idle connections after 30 seconds
-    connectionTimeoutMillis: 5000,
+  connectionString: process.env.POSTGRESQL_URI,
+  max: 3,                         
+  idleTimeoutMillis: 30000,
+  connectionTimeoutMillis: 5000,
+  ssl: { rejectUnauthorized: false }, 
 });
 
 
+export const connectDB = async () => {
+  try {
+    if (!process.env.POSTGRESQL_URI) {
+      console.error("❌ PostgreSQL URI is missing in .env file");
+      return;
+    }
+    const client = await pool.connect();
+    console.log("✅ PostgreSQL connected");
+    client.release();
+  } catch (error) {
+    console.error("❌ PostgreSQL connection failed:", error.message);
+    console.log("⚠️ Server will continue without database connection");
+  }
+};
+
+export default connectDB;

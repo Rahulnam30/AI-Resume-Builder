@@ -30,7 +30,7 @@ import adminRouter from "./routers/admin.router.js";
 
 
 // Config
-import connectDB from "./config/db.js";
+import connectDB from "./config/postgresdb.js";
 import bcrypt from "bcryptjs";
 
 import apiTracker from "./middlewares/apiTracker.js";
