@@ -2,7 +2,7 @@ import React from "react";
 
 const MinimalTemplate = ({ formData }) => {
   const {
-    fullName, email, phone, address, linkedin,
+    fullName, email, phone, address, linkedin, website, github, extraLinks,
     recipientName, recipientTitle, companyName, companyAddress,
     jobTitle, jobReference, jobSummary, jobDescription,
     openingParagraph, bodyParagraph1, bodyParagraph2, closingParagraph,
@@ -24,7 +24,10 @@ const MinimalTemplate = ({ formData }) => {
         <div className="flex flex-wrap gap-x-6 gap-y-1 text-xs text-slate-400 font-medium">
           <span>{email}</span>
           <span>{phone}</span>
-          <span className="truncate max-w-[150px]">{linkedin && <a href={linkedin.startsWith('http') ? linkedin : `https://${linkedin}`} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">{linkedin}</a>}</span>
+          {linkedin && <span className="truncate max-w-[150px]"><a href={linkedin.startsWith('http') ? linkedin : `https://${linkedin}`} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">LinkedIn</a></span>}
+          {website && <span className="truncate max-w-[150px]"><a href={website.startsWith('http') ? website : `https://${website}`} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">Website</a></span>}
+          {github && <span className="truncate max-w-[150px]"><a href={github.startsWith('http') ? github : `https://${github}`} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">GitHub</a></span>}
+          {extraLinks?.map((link, index) => (link.label && link.url && <span key={index} className="truncate max-w-[150px]"><a href={link.url.startsWith('http') ? link.url : `https://${link.url}`} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">{link.label}</a></span>))}
           <span className="truncate max-w-[150px] italic">{address}</span>
         </div>
       </div>

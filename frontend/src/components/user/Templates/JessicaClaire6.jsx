@@ -12,6 +12,7 @@ const JessicaClaire6 = ({ data }) => {
         linkedin = "",
         website = "",
         github = "",
+        extraLinks = [],
         experience = [],
         education = [],
         skills = { technical: [], soft: [] },
@@ -51,8 +52,12 @@ const JessicaClaire6 = ({ data }) => {
                         </div>
                         <div className="email-box">
                             <span>{email}</span>
-                            {linkedin && <div style={{ marginTop: '2px' }}><a href={linkedin} target="_blank" rel="noopener noreferrer">LinkedIn</a></div>}
-                            {website && <div style={{ marginTop: '2px' }}><a href={website} target="_blank" rel="noopener noreferrer">Website</a></div>}
+                            {linkedin && <div style={{ marginTop: '2px' }}><a href={linkedin.startsWith('http') ? linkedin : `https://${linkedin}`} target="_blank" rel="noopener noreferrer">LinkedIn</a></div>}
+                            {website && <div style={{ marginTop: '2px' }}><a href={website.startsWith('http') ? website : `https://${website}`} target="_blank" rel="noopener noreferrer">Website</a></div>}
+                            {github && <div style={{ marginTop: '2px' }}><a href={github.startsWith('http') ? github : `https://${github}`} target="_blank" rel="noopener noreferrer">GitHub</a></div>}
+                            {extraLinks?.map((link, index) => (
+                                link.label && link.url && <div key={index} style={{ marginTop: '2px' }}><a href={link.url.startsWith('http') ? link.url : `https://${link.url}`} target="_blank" rel="noopener noreferrer">{link.label}</a></div>
+                            ))}
                         </div>
                     </div>
                 </div>

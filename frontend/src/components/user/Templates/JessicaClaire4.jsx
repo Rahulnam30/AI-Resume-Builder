@@ -12,6 +12,7 @@ const JessicaClaire4 = ({ data }) => {
         linkedin = "",
         website = "",
         github = "",
+        extraLinks = [],
         experience = [],
         education = [],
         skills = { technical: [], soft: [] },
@@ -99,8 +100,12 @@ const JessicaClaire4 = ({ data }) => {
                             {location && <div>{location}</div>}
                             {phone && <div>{phone}</div>}
                             {email && <div>{email}</div>}
-                            {linkedin && <div>{linkedin}</div>}
-                            {website && <div>{website}</div>}
+                            {linkedin && <div><a href={linkedin.startsWith('http') ? linkedin : `https://${linkedin}`} target="_blank" rel="noopener noreferrer">{linkedin}</a></div>}
+                            {website && <div><a href={website.startsWith('http') ? website : `https://${website}`} target="_blank" rel="noopener noreferrer">{website}</a></div>}
+                            {github && <div><a href={github.startsWith('http') ? github : `https://${github}`} target="_blank" rel="noopener noreferrer">{github}</a></div>}
+                            {extraLinks?.map((link, index) => (
+                                link.label && link.url && <div key={index}><a href={link.url.startsWith('http') ? link.url : `https://${link.url}`} target="_blank" rel="noopener noreferrer">{link.label}</a></div>
+                            ))}
                         </div>
                     </div>
 

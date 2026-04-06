@@ -12,6 +12,7 @@ const JessicaClaire8 = ({ data }) => {
         linkedin = "",
         website = "",
         github = "",
+        extraLinks = [],
         experience = [],
         education = [],
         skills = { technical: [], soft: [] },
@@ -139,14 +140,26 @@ const JessicaClaire8 = ({ data }) => {
                             </span>
                             {linkedin && (
                                 <span className="adrsDetails">
-                                    <span className="txtBold">LinkedIn:</span> <a href={linkedin} target="_blank" rel="noopener noreferrer">Link</a>
+                                    <span className="txtBold">LinkedIn:</span> <a href={linkedin.startsWith('http') ? linkedin : `https://${linkedin}`} target="_blank" rel="noopener noreferrer">Link</a>
                                 </span>
                             )}
                             {website && (
                                 <span className="adrsDetails">
-                                    <span className="txtBold">Website:</span> <a href={website} target="_blank" rel="noopener noreferrer">Link</a>
+                                    <span className="txtBold">Website:</span> <a href={website.startsWith('http') ? website : `https://${website}`} target="_blank" rel="noopener noreferrer">Link</a>
                                 </span>
                             )}
+                            {github && (
+                                <span className="adrsDetails">
+                                    <span className="txtBold">GitHub:</span> <a href={github.startsWith('http') ? github : `https://${github}`} target="_blank" rel="noopener noreferrer">Link</a>
+                                </span>
+                            )}
+                            {extraLinks?.map((link, index) => (
+                                link.label && link.url && (
+                                    <span key={index} className="adrsDetails">
+                                        <span className="txtBold">{link.label}:</span> <a href={link.url.startsWith('http') ? link.url : `https://${link.url}`} target="_blank" rel="noopener noreferrer">Link</a>
+                                    </span>
+                                )
+                            ))}
                         </div>
                     </div>
 

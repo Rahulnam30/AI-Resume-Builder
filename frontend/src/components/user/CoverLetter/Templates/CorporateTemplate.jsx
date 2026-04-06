@@ -2,7 +2,7 @@ import React from "react";
 
 const CorporateTemplate = ({ formData }) => {
   const {
-    fullName, email, phone, address, linkedin,
+    fullName, email, phone, address, linkedin, website, github, extraLinks,
     recipientName, recipientTitle, companyName, companyAddress,
     jobTitle, jobReference, jobSummary, jobDescription,
     openingParagraph, bodyParagraph1, bodyParagraph2, closingParagraph,
@@ -25,7 +25,7 @@ const CorporateTemplate = ({ formData }) => {
         <div className="text-right text-xs space-y-1 font-medium text-gray-500">
           <p>{email}</p>
           <p>{phone}</p>
-          <p className="truncate max-w-[200px]">{linkedin && <a href={linkedin.startsWith('http') ? linkedin : `https://${linkedin}`} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">{linkedin}</a>}</p>
+          <p className="truncate max-w-[200px]">{linkedin && <a href={linkedin.startsWith('http') ? linkedin : `https://${linkedin}`} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">LinkedIn</a>}{website && <span> | <a href={website.startsWith('http') ? website : `https://${website}`} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">Website</a></span>}{github && <span> | <a href={github.startsWith('http') ? github : `https://${github}`} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">GitHub</a></span>}{extraLinks?.map((link, index) => (link.label && link.url && <span key={index}> | <a href={link.url.startsWith('http') ? link.url : `https://${link.url}`} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">{link.label}</a></span>))}</p>
           <p className="whitespace-pre-line underline decoration-blue-100">{address}</p>
         </div>
       </div>
