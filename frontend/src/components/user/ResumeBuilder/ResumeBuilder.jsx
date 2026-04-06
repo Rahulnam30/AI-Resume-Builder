@@ -356,13 +356,13 @@ const ResumeBuilder = () => {
     return () => ro.disconnect();
   }, [activeTab]);
 
-  /* Lock body scroll when mobile preview sheet is open (mobile only) */
+  /* Lock body scroll when preview is open */
   useEffect(() => {
-    document.body.style.overflow = showMobilePreview ? "hidden" : "";
+    document.body.style.overflow = (showMobilePreview || isPreviewExpanded) ? "hidden" : "";
     return () => {
       document.body.style.overflow = "";
     };
-  }, [showMobilePreview]);
+  }, [showMobilePreview, isPreviewExpanded]);
 
   const GenerateResumePDF = async (resumeHtml) => {
     try {
@@ -830,9 +830,10 @@ const ResumeBuilder = () => {
           {!isPreviewHidden && !isPreviewExpanded && (
             <div className="hidden lg:flex flex-1 flex-col min-w-0">
               <div
-                className="rounded-2xl overflow-hidden border border-slate-100 bg-white"
+                className="rounded-2xl overflow-hidden border border-slate-100 bg-white sticky"
                 style={{
-                  minHeight: "calc(100vh - 80px)",
+                  top: "100px",
+                  height: "calc(100vh - 120px)",
                   boxShadow:
                     "0 4px 24px rgba(0,0,0,0.07), 0 1px 4px rgba(0,0,0,0.04)",
                 }}
@@ -866,7 +867,7 @@ const ResumeBuilder = () => {
 
       {/* Full-screen preview overlay (existing behavior) */}
       {isPreviewExpanded && (
-        <div className="fixed inset-0 z-[99999] bg-white overflow-auto">
+        <div className="fixed inset-0 z-[99999] bg-white overflow-hidden">
           <LivePreview
             ref={previewRef}
             formData={formData}

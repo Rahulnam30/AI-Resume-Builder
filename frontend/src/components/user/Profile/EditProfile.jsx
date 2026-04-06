@@ -15,6 +15,7 @@ import "./EditProfile.css";
 import UserNavBar from "../UserNavBar/UserNavBar";
 import axios from "../../../api/axios";
 import toast from "react-hot-toast";
+import ReactGoogleAutocomplete from "react-google-autocomplete";
 
 const EditProfile = () => {
 
@@ -124,6 +125,16 @@ const EditProfile = () => {
   };
 
   const handleSave = async () => {
+
+    if (formData.fullName && !/^[a-zA-Z\s]+$/.test(formData.fullName)) {
+      toast.error("Full name must contain only alphabets and spaces.");
+      return;
+    }
+    
+    if (formData.location && formData.location.trim().length === 0) {
+      toast.error("Location cannot be just empty spaces.");
+      return;
+    }
 
     try {
 
@@ -420,11 +431,23 @@ const EditProfile = () => {
                           <MapPin size={16}/> Location
                         </label>
 
-                        <input
-                          type="text"
-                          name="location"
-                          value={formData.location}
+                        <ReactGoogleAutocomplete
+                          apiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY || ""}
+                          onPlaceSelected={(place) => {
+                            setFormData((prev) => ({ ...prev, location: place.formatted_address || place.name || prev.location }));
+                          }}
+                          defaultValue={formData.location}
                           onChange={handleChange}
+                          name="location"
+                          style={{
+                            width: '100%',
+                            padding: '0.75rem',
+                            borderRadius: '10px',
+                            border: '1px solid #d1d5db',
+                            fontSize: '0.9rem',
+                            outline: 'none',
+                            color: '#1e293b'
+                          }}
                         />
 
                       </div>
