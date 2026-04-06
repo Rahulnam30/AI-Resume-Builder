@@ -24,7 +24,7 @@ import {
   resumeTemplates,
   howItWorksSteps,
   features,
-} from "./homeData";
+} from "./HomeData";
 
 const imageMap = {
   featureImage1,
