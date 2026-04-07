@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
     Bell,
     CheckCircle2,
@@ -104,23 +104,25 @@ const AdminNotification = () => {
         });
     };
 
-    // Filter and search
-    const filteredNotifications = notifications
-        .filter(n => {
-            if (filter === 'unread') return n.isUnread;
-            if (filter === 'important') return n.priority === 'urgent' || n.priority === 'high';
-            return true;
-        })
-        .filter(n => {
-            if (!searchQuery) return true;
-            const query = searchQuery.toLowerCase();
-            return n.title.toLowerCase().includes(query) ||
-                n.description.toLowerCase().includes(query) ||
-                (n.user && n.user.toLowerCase().includes(query));
-        });
+    // Filter and search - memoized to prevent recalculation on every render
+    const filteredNotifications = useMemo(() => {
+        return notifications
+            .filter(n => {
+                if (filter === 'unread') return n.isUnread;
+                if (filter === 'important') return n.priority === 'urgent' || n.priority === 'high';
+                return true;
+            })
+            .filter(n => {
+                if (!searchQuery) return true;
+                const query = searchQuery.toLowerCase();
+                return n.title.toLowerCase().includes(query) ||
+                    n.description.toLowerCase().includes(query) ||
+                    (n.user && n.user.toLowerCase().includes(query));
+            });
+    }, [notifications, filter, searchQuery]);
 
-    const todayNotifications = filteredNotifications.filter(n => n.category === 'today');
-    const olderNotifications = filteredNotifications.filter(n => n.category === 'older');
+    const todayNotifications = useMemo(() => filteredNotifications.filter(n => n.category === 'today'), [filteredNotifications]);
+    const olderNotifications = useMemo(() => filteredNotifications.filter(n => n.category === 'older'), [filteredNotifications]);
 
     return (
         <div className="min-h-screen bg-slate-50 p-4 sm:p-6 lg:p-8">
@@ -191,7 +193,7 @@ const AdminNotification = () => {
 
                         <div className="w-full lg:w-auto bg-slate-100 p-1 rounded-xl flex flex-wrap sm:flex-nowrap gap-1">
 
-                            {[
+                            {useMemo(() => [
                                 { key: 'all', label: 'All', count: notifications.length },
                                 { key: 'unread', label: 'Unread', count: unreadCount },
                                 {
@@ -201,7 +203,7 @@ const AdminNotification = () => {
                                         n => n.priority === 'urgent' || n.priority === 'high'
                                     ).length
                                 }
-                            ].map(tab => (
+                            ], [notifications, unreadCount]).map(tab => (
 
                                 <button
                                     key={tab.key}

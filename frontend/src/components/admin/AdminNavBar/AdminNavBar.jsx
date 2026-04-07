@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import { createPortal } from "react-dom";
 import {
   Bell, X, Menu, FileCheck, Repeat, Star, DollarSign,
@@ -38,7 +38,15 @@ export default function AdminNavbar({ isCollapsed, setIsCollapsed, isMobileOpen,
   });
   const profileRef = useRef(null);
 
+  // Use shared notification context
+  const { notifications, unreadCount, markAsRead, markAllAsRead } = useNotifications();
+
+  // Memoize displayed notifications (show top 5)
+  const displayedNotifications = useMemo(() => notifications.slice(0, 5), [notifications]);
+
+  // Consolidate effects: profile fetch, mobile check, and click-outside listener
   useEffect(() => {
+    // Profile fetch
     const fetchProfile = async () => {
       try {
         const response = await axiosInstance.get("/api/user/profile");
@@ -64,27 +72,24 @@ export default function AdminNavbar({ isCollapsed, setIsCollapsed, isMobileOpen,
     };
 
     fetchProfile();
-  }, []);
 
-  // Use shared notification context
-  const { notifications, unreadCount, markAsRead, markAllAsRead } = useNotifications();
-
-  useEffect(() => {
+    // Mobile check and resize listener
     const checkMobile = () => setIsMobile(window.innerWidth < 768);
     checkMobile();
     window.addEventListener("resize", checkMobile);
-    return () => window.removeEventListener("resize", checkMobile);
-  }, []);
 
-  // Handle click outside for profile dropdown
-  useEffect(() => {
+    // Click outside listener for profile dropdown
     const handleClickOutside = (event) => {
       if (profileRef.current && !profileRef.current.contains(event.target)) {
         setShowProfile(false);
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      window.removeEventListener("resize", checkMobile);
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
   }, []);
 
   const handleLogout = () => {
@@ -93,20 +98,17 @@ export default function AdminNavbar({ isCollapsed, setIsCollapsed, isMobileOpen,
     navigate("/login");
   };
 
-  const handleMarkRead = (id) => {
+  const handleMarkRead = useCallback((id) => {
     markAsRead(id);
-  };
+  }, [markAsRead]);
 
-  // Limit notifications to prevent scrolling (show top 5)
-  const displayedNotifications = notifications.slice(0, 5);
-
-  const handleToggle = () => {
+  const handleToggle = useCallback(() => {
     if (isMobile) {
       setIsMobileOpen(!isMobileOpen);
     } else {
       setIsCollapsed(!isCollapsed);
     }
-  };
+  }, [isMobile, isMobileOpen, isCollapsed, setIsMobileOpen, setIsCollapsed]);
 
   return (
     <header className={`md:sticky fixed top-0 h-16 w-full bg-white/95 backdrop-blur-xl border-b border-slate-200 ${showNotifications ? 'z-[110]' : 'z-[100]'}`}>

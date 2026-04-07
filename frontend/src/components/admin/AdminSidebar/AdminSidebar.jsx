@@ -36,8 +36,8 @@ export default function AdminSidebar({ isCollapsed, setIsCollapsed, isMobileOpen
     return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
-  // ← ADDED unreadCount calculation
-  const unreadCount = notifications.filter(n => n.unread).length;
+  // Memoize unreadCount to avoid recalculation on every render
+  const unreadCount = useMemo(() => notifications.filter(n => n.unread).length, [notifications]);
 
   const menuItems = useMemo(
     () => [
@@ -93,15 +93,21 @@ export default function AdminSidebar({ isCollapsed, setIsCollapsed, isMobileOpen
     [navigate]
   );
 
-  // Check if path is active
+  // Memoize active items to prevent unnecessary recalculations
+  const activeItems = useMemo(() => {
+    return menuItems.reduce((acc, item) => {
+      const active = item.path === "/admin" 
+        ? location.pathname === "/admin"
+        : location.pathname.startsWith(item.path);
+      acc[item.id] = active;
+      return acc;
+    }, {});
+  }, [location.pathname, menuItems]);
+
+  // Simplified isActive function using memoized activeItems
   const isActive = useCallback(
-    (itemPath) => {
-      if (itemPath === "/admin") {
-        return location.pathname === "/admin";
-      }
-      return location.pathname.startsWith(itemPath);
-    },
-    [location.pathname]
+    (itemPath, itemId) => activeItems[itemId] || false,
+    [activeItems]
   );
 
   return (
@@ -160,13 +166,13 @@ export default function AdminSidebar({ isCollapsed, setIsCollapsed, isMobileOpen
                 <button
                   onClick={() => handleNavigate(item.path)}
                   className={`w-full flex items-center rounded-xl transition-all
-                    ${isCollapsed && !isMobile ? "" : "gap-3"} py-3 px-4
-                    ${active
+                    ${isCollapsed && !isMobile ? "justify-center px-0" : "gap-3 px-4"} py-3
+                    ${activeItems[item.id]
                       ? "bg-blue-50 text-blue-600 font-semibold"
                       : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
                     }
                     ${item.id === 'notifications' && unreadCount > 0 ? 'relative' : ''}`}
-                  aria-current={active ? "page" : undefined}
+                  aria-current={activeItems[item.id] ? "page" : undefined}
                 >
                   <div className="w-6 flex justify-center">
                     <Icon size={22} aria-hidden="true" />
@@ -186,7 +192,7 @@ export default function AdminSidebar({ isCollapsed, setIsCollapsed, isMobileOpen
                     )}
                   </AnimatePresence>
 
-                  {/* ← ADDED Notification Badge */}
+                  {/* Notification Badge */}
                   {item.id === 'notifications' && unreadCount > 0 && (
                     <motion.div
                       className={`ml-auto w-6 h-6 bg-red-500 text-white text-xs rounded-full flex items-center justify-center font-bold shadow-lg absolute -top-2 -right-2 transform translate-x-1/2 -translate-y-1/2 ${isCollapsed && !isMobile ? 'right-1 top-1' : ''}`}
@@ -232,7 +238,7 @@ export default function AdminSidebar({ isCollapsed, setIsCollapsed, isMobileOpen
             <button
               onClick={() => navigate("/")}
               className={`w-full flex items-center rounded-xl transition-all text-red-500 hover:bg-red-50
-                ${isCollapsed && !isMobile ? "" : "gap-3 "} py-3 px-4`}
+                ${isCollapsed && !isMobile ? "justify-center px-0" : "gap-3 px-4"} py-3`}
               aria-label="Logout"
             >
               <div className="w-6 flex justify-center">
