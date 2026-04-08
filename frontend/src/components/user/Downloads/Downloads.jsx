@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useReducer, useRef, useState } from "react";
 import axiosInstance from "../../../api/axios";
 import {
   FiDownload,
@@ -22,27 +22,190 @@ import { Maximize2, Minimize2, ZoomIn, ZoomOut, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import UserNavBar from "../UserNavBar/UserNavBar";
 
+// ═══════════════════════════════════════════════════════════
+// CONSTANTS & CONFIGURATION
+// ═══════════════════════════════════════════════════════════
+const API_CONFIG = {
+  DOWNLOADS_ENDPOINT: "/api/downloads",
+  DOWNLOADS_LIMIT: 50,
+  INITIAL_PAGE: 1,
+};
+
+const ITEMS_PER_PAGE = 9;
+const A4_WIDTH_PX = 900;
+const A4_HEIGHT_MM = 297;
+const A4_WIDTH_MM = 210;
+
+const ZOOM_CONFIG = {
+  MIN: 50,
+  MAX: 200,
+  DEFAULT: 100,
+  STEP: 10,
+};
+
+const TYPE_META = {
+  resume: { icon: "#2563eb", bg: "#eff6ff", label: "Resume" },
+  "cover-letter": { icon: "#7c3aed", bg: "#f5f3ff", label: "Cover Letter" },
+  cv: { icon: "#059669", bg: "#ecfdf5", label: "CV" },
+  document: { icon: "#d97706", bg: "#fffbeb", label: "Document" },
+};
+
+const STAT_ITEMS = [
+  { key: "All", label: "Total Files", icon: "FiFolder", color: "#2563eb", bg: "#eff6ff" },
+  { key: "resume", label: "Resumes", icon: "FiFileText", color: "#059669", bg: "#ecfdf5" },
+  { key: "cover-letter", label: "Cover Letters", icon: "FiEdit", color: "#7c3aed", bg: "#f5f3ff" },
+  { key: "cv", label: "CVs", icon: "FiFile", color: "#d97706", bg: "#fffbeb" },
+];
+
+// ═══════════════════════════════════════════════════════════
+// UTILITY FUNCTIONS
+// ═══════════════════════════════════════════════════════════
+
+/**
+ * Format relative time (e.g., "2m ago", "3d ago")
+ */
+const formatDate = (dateString) => {
+  const date = new Date(dateString);
+  const diff = Date.now() - date;
+  const m = Math.floor(diff / 60000);
+  const h = Math.floor(diff / 3600000);
+  const d = Math.floor(diff / 86400000);
+  if (m < 60) return `${m}m ago`;
+  if (h < 24) return `${h}h ago`;
+  if (d < 7) return `${d}d ago`;
+  return date.toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
+};
+
+/**
+ * Transform API response to component format
+ */
+const transformDownloadData = (apiDownloads) => {
+  return apiDownloads.map((d) => ({
+    id: d._id?.toString?.() || d.id,
+    name: d.name,
+    type: d.type,
+    format: (d.format || (d.type === "cover-letter" ? "DOCX" : "PDF")).toUpperCase(),
+    size: d.size || (d.type === "cover-letter" ? "150 KB" : "250 KB"),
+    views: d.views || 0,
+    downloadDate: d.downloadDate,
+    template: d.template,
+  }));
+};
+
+/**
+ * Get type metadata with fallback
+ */
+const getTypeMeta = (type) => TYPE_META[type] || { icon: "#6b7280", bg: "#f9fafb", label: type };
+
+/**
+ * Calculate statistics from downloads array
+ */
+const calculateStats = (downloads) => ({
+  total: downloads.length,
+  resumes: downloads.filter((d) => d.type === "resume").length,
+  coverLetters: downloads.filter((d) => d.type === "cover-letter").length,
+  cvs: downloads.filter((d) => d.type === "cv").length,
+});
+
+/**
+ * Filter downloads based on criteria
+ */
+const filterDownloads = (downloads, { searchTerm, activeFormat, activeType, sortBy }) => {
+  let filtered = [...downloads];
+
+  if (activeFormat !== "All") {
+    filtered = filtered.filter((d) => d.format === activeFormat);
+  }
+
+  if (activeType !== "All") {
+    filtered = filtered.filter((d) => d.type === activeType);
+  }
+
+  if (searchTerm) {
+    filtered = filtered.filter(
+      (d) =>
+        d.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (d.template && d.template.toLowerCase().includes(searchTerm.toLowerCase()))
+    );
+  }
+
+  if (sortBy === "recent") {
+    filtered.sort((a, b) => new Date(b.downloadDate) - new Date(a.downloadDate));
+  } else if (sortBy === "name") {
+    filtered.sort((a, b) => a.name.localeCompare(b.name));
+  }
+
+  return filtered;
+};
+
+/**
+ * Get paginated items from filtered array
+ */
+const getPaginatedItems = (filteredDownloads, currentPage, itemsPerPage) => {
+  const start = (currentPage - 1) * itemsPerPage;
+  return filteredDownloads.slice(start, start + itemsPerPage);
+};
+
+// ═══════════════════════════════════════════════════════════
+// STATE REDUCER FOR FILTER/SEARCH
+// ═══════════════════════════════════════════════════════════
+
+const filterReducer = (state, action) => {
+  switch (action.type) {
+    case "SET_SEARCH":
+      return { ...state, searchTerm: action.payload, currentPage: 1 };
+    case "SET_SORT":
+      return { ...state, sortBy: action.payload };
+    case "SET_FORMAT":
+      return { ...state, activeFormat: action.payload, currentPage: 1 };
+    case "SET_TYPE":
+      return { ...state, activeType: action.payload, currentPage: 1 };
+    case "SET_PAGE":
+      return { ...state, currentPage: action.payload };
+    case "RESET_FILTERS":
+      return {
+        searchTerm: "",
+        activeFormat: "All",
+        activeType: "All",
+        sortBy: "recent",
+        currentPage: 1,
+      };
+    default:
+      return state;
+  }
+};
+
+const INITIAL_FILTER_STATE = {
+  searchTerm: "",
+  activeFormat: "All",
+  activeType: "All",
+  sortBy: "recent",
+  currentPage: 1,
+};
+
 const Downloads = () => {
-  const [zoomLevel, setZoomLevel] = useState(100);
+  // Preview & Zoom states
+  const [zoomLevel, setZoomLevel] = useState(ZOOM_CONFIG.DEFAULT);
+  const [previewDocument, setPreviewDocument] = useState(null);
+  const [previewLoading, setPreviewLoading] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const previewViewportRef = useRef(null);
+  const [previewViewportWidth, setPreviewViewportWidth] = useState(0);
+
+  // Data & UI states
   const [downloads, setDownloads] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [sortBy, setSortBy] = useState("recent");
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [openMenuId, setOpenMenuId] = useState(null);
   const [deletingId, setDeletingId] = useState(null);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage] = useState(9);
-  const [totalPages, setTotalPages] = useState(0);
-  const [previewDocument, setPreviewDocument] = useState(null);
-  const [activeFormat, setActiveFormat] = useState("All");
-  const [activeType, setActiveType] = useState("All");
-  const [previewLoading, setPreviewLoading] = useState(false);
 
-  const previewViewportRef = useRef(null);
-  const [previewViewportWidth, setPreviewViewportWidth] = useState(0);
-  const A4_WIDTH_PX = 900;
+  // Filter state (consolidated with reducer)
+  const [filterState, dispatch] = useReducer(filterReducer, INITIAL_FILTER_STATE);
+  const { searchTerm, activeFormat, activeType, sortBy, currentPage } = filterState;
 
   useEffect(() => {
     if (!previewDocument) return;
@@ -57,49 +220,23 @@ const Downloads = () => {
     return () => ro.disconnect();
   }, [previewDocument]);
 
-  const fitScale = useMemo(() => {
-    if (previewViewportWidth < 520) return 1;
-    const gutter = 0;
-    const available = Math.max(0, previewViewportWidth - gutter);
-    if (!available) return 1;
-    return Math.min(1, available / A4_WIDTH_PX);
-  }, [previewViewportWidth]);
-
-  const effectiveScale = useMemo(() => {
-    return (zoomLevel / 100) * fitScale;
-  }, [zoomLevel, fitScale]);
-
+  // Consolidate keyboard & click handlers
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (!previewDocument) return;
 
-      // Zoom in/out with Ctrl/Cmd + +/-
       if ((e.ctrlKey || e.metaKey) && (e.key === "+" || e.key === "-")) {
         e.preventDefault();
-        if (e.key === "+") setZoomLevel(Math.min(200, zoomLevel + 10));
-        if (e.key === "-") setZoomLevel(Math.max(50, zoomLevel - 10));
+        if (e.key === "+") setZoomLevel((z) => Math.min(ZOOM_CONFIG.MAX, z + ZOOM_CONFIG.STEP));
+        if (e.key === "-") setZoomLevel((z) => Math.max(ZOOM_CONFIG.MIN, z - ZOOM_CONFIG.STEP));
       }
 
-      // Reset zoom with Ctrl/Cmd + 0
       if ((e.ctrlKey || e.metaKey) && e.key === "0") {
         e.preventDefault();
-        setZoomLevel(100);
-      }
-
-      // Page navigation with arrow keys
-      if (e.key === "ArrowLeft" && currentPage > 1) {
-        setCurrentPage(currentPage - 1);
-      }
-      if (e.key === "ArrowRight" && currentPage < totalPages) {
-        setCurrentPage(currentPage + 1);
+        setZoomLevel(ZOOM_CONFIG.DEFAULT);
       }
     };
 
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [previewDocument, zoomLevel, currentPage, totalPages]);
-
-  useEffect(() => {
     const handleClickOutside = (e) => {
       if (
         openMenuId &&
@@ -109,35 +246,30 @@ const Downloads = () => {
         setOpenMenuId(null);
       }
     };
+
+    window.addEventListener("keydown", handleKeyDown);
     document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [openMenuId]);
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [previewDocument, openMenuId]);
 
   useEffect(() => {
     fetchDownloads();
   }, []);
 
-  const fetchDownloads = async () => {
+  // Optimized fetch with transformDownloadData
+  const fetchDownloads = useCallback(async () => {
     try {
       setIsRefreshing(true);
       setLoading(true);
       const response = await axiosInstance.get(
-        "/api/downloads?limit=50&page=1",
+        `${API_CONFIG.DOWNLOADS_ENDPOINT}?limit=${API_CONFIG.DOWNLOADS_LIMIT}&page=${API_CONFIG.INITIAL_PAGE}`
       );
       const { downloads: bd } = response.data;
-      const mapped = bd.map((d) => ({
-        id: d._id?.toString?.() || d.id,
-        name: d.name,
-        type: d.type,
-        format: (
-          d.format || (d.type === "cover-letter" ? "DOCX" : "PDF")
-        ).toUpperCase(),
-        size: d.size || (d.type === "cover-letter" ? "150 KB" : "250 KB"),
-        views: d.views || 0,
-        downloadDate: d.downloadDate,
-        template: d.template,
-      }));
-      setDownloads(mapped);
+      setDownloads(transformDownloadData(bd));
     } catch (err) {
       console.error(err);
       setDownloads([]);
@@ -145,42 +277,32 @@ const Downloads = () => {
       setLoading(false);
       setIsRefreshing(false);
     }
-  };
+  }, []);
 
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [searchTerm, sortBy, activeFormat, activeType]);
-  useEffect(() => {
-    setTotalPages(Math.ceil(getFilteredDownloads().length / itemsPerPage));
-  }, [searchTerm, sortBy, downloads, activeFormat, activeType]);
+  // Optimized handlers with useCallback
+  const handleView = useCallback(
+    async (download) => {
+      try {
+        setPreviewLoading(true);
+        setOpenMenuId(null);
+        const response = await axiosInstance.get(`${API_CONFIG.DOWNLOADS_ENDPOINT}/${download.id}`);
+        setPreviewDocument({ ...download, html: response.data.html });
+      } catch (err) {
+        console.error("Preview error:", err);
+        setPreviewDocument(download);
+      } finally {
+        setPreviewLoading(false);
+      }
+    },
+    []
+  );
 
-  const handleView = async (download) => {
-    try {
-      setPreviewLoading(true);
-      setOpenMenuId(null);
-
-      // ✅ Use your EXISTING endpoint that returns HTML
-      const response = await axiosInstance.get(`/api/downloads/${download.id}`);
-
-      setPreviewDocument({
-        ...download,
-        html: response.data.html, // ✅ HTML is already in the response!
-      });
-    } catch (err) {
-      console.error("Preview error:", err);
-      // Fallback: just show the document metadata
-      setPreviewDocument(download);
-    } finally {
-      setPreviewLoading(false);
-    }
-  };
-
-  const handleDownload = async (download) => {
+  const handleDownload = useCallback(async (download) => {
     try {
       const url =
         download.format === "DOCX"
-          ? `/api/downloads/${download.id}/word`
-          : `/api/downloads/${download.id}/pdf`;
+          ? `${API_CONFIG.DOWNLOADS_ENDPOINT}/${download.id}/word`
+          : `${API_CONFIG.DOWNLOADS_ENDPOINT}/${download.id}/pdf`;
       const res = await axiosInstance.get(url, { responseType: "blob" });
       const blob = new Blob([res.data], {
         type:
@@ -194,83 +316,58 @@ const Downloads = () => {
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
+      window.URL.revokeObjectURL(link.href);
     } catch {
       alert("Download failed. Please try again.");
     }
-  };
+  }, []);
 
-  const handleDelete = async (id) => {
-    setDeletingId(id);
-    try {
-      await axiosInstance.delete(`/api/downloads/${id}`);
-      setDownloads((prev) => prev.filter((d) => d.id !== id));
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setDeletingId(null);
-      setOpenMenuId(null);
-    }
-  };
+  const handleDelete = useCallback(
+    async (id) => {
+      setDeletingId(id);
+      try {
+        await axiosInstance.delete(`${API_CONFIG.DOWNLOADS_ENDPOINT}/${id}`);
+        setDownloads((prev) => prev.filter((d) => d.id !== id));
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setDeletingId(null);
+        setOpenMenuId(null);
+      }
+    },
+    []
+  );
 
-  const formatDate = (ds) => {
-    const date = new Date(ds);
-    const diff = Date.now() - date;
-    const m = Math.floor(diff / 60000);
-    const h = Math.floor(diff / 3600000);
-    const d = Math.floor(diff / 86400000);
-    if (m < 60) return `${m}m ago`;
-    if (h < 24) return `${h}h ago`;
-    if (d < 7) return `${d}d ago`;
-    return date.toLocaleDateString("en-US", {
-      month: "short",
-      day: "numeric",
-      year: "numeric",
-    });
-  };
+  // Memoized calculations
+  const stats = useMemo(() => calculateStats(downloads), [downloads]);
 
-  const getFilteredDownloads = () => {
-    let f = [...downloads];
-    if (activeFormat !== "All") f = f.filter((d) => d.format === activeFormat);
-    if (activeType !== "All") f = f.filter((d) => d.type === activeType);
-    if (searchTerm)
-      f = f.filter(
-        (d) =>
-          d.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          (d.template &&
-            d.template.toLowerCase().includes(searchTerm.toLowerCase())),
-      );
-    if (sortBy === "recent")
-      f.sort((a, b) => new Date(b.downloadDate) - new Date(a.downloadDate));
-    else if (sortBy === "name") f.sort((a, b) => a.name.localeCompare(b.name));
-    return f;
-  };
+  const filteredDownloads = useMemo(
+    () =>
+      filterDownloads(downloads, {
+        searchTerm,
+        activeFormat,
+        activeType,
+        sortBy,
+      }),
+    [downloads, searchTerm, activeFormat, activeType, sortBy]
+  );
 
-  const getCurrentPageItems = () => {
-    const f = getFilteredDownloads();
-    return f.slice(
-      (currentPage - 1) * itemsPerPage,
-      currentPage * itemsPerPage,
-    );
-  };
+  const currentPageItems = useMemo(
+    () => getPaginatedItems(filteredDownloads, currentPage, ITEMS_PER_PAGE),
+    [filteredDownloads, currentPage]
+  );
 
-  const stats = {
-    total: downloads.length,
-    resumes: downloads.filter((d) => d.type === "resume").length,
-    coverLetters: downloads.filter((d) => d.type === "cover-letter").length,
-    cvs: downloads.filter((d) => d.type === "cv").length,
-  };
+  const totalPages = Math.ceil(filteredDownloads.length / ITEMS_PER_PAGE);
 
-  const filteredDownloads = getCurrentPageItems();
-  const filteredTotal = getFilteredDownloads().length;
+  const fitScale = useMemo(() => {
+    if (previewViewportWidth < 520) return 1;
+    const available = Math.max(0, previewViewportWidth);
+    return available ? Math.min(1, available / A4_WIDTH_PX) : 1;
+  }, [previewViewportWidth]);
 
-  const TYPE_META = {
-    resume: { icon: "#2563eb", bg: "#eff6ff", label: "Resume" },
-    "cover-letter": { icon: "#7c3aed", bg: "#f5f3ff", label: "Cover Letter" },
-    cv: { icon: "#059669", bg: "#ecfdf5", label: "CV" },
-    document: { icon: "#d97706", bg: "#fffbeb", label: "Document" },
-  };
-  const getTypeMeta = (type) =>
-    TYPE_META[type] || { icon: "#6b7280", bg: "#f9fafb", label: type };
+  const effectiveScale = useMemo(() => {
+    return (zoomLevel / 100) * fitScale;
+  }, [zoomLevel, fitScale]);
 
   const TypeIcon = ({ type, size = 15 }) => {
     const map = { resume: FiFileText, "cover-letter": FiEdit, cv: FiFile };
@@ -336,7 +433,7 @@ const Downloads = () => {
             <motion.button
               key={key}
               onClick={() =>
-                setActiveType(active && key !== "All" ? "All" : key)
+                dispatch({ type: "SET_TYPE", payload: active && key !== "All" ? "All" : key })
               }
               whileHover={{ y: -1 }}
               whileTap={{ scale: 0.98 }}
@@ -564,12 +661,12 @@ const Downloads = () => {
                 type="text"
                 placeholder="Search documents..."
                 value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
+                onChange={(e) => dispatch({ type: "SET_SEARCH", payload: e.target.value })}
                 className="w-full pl-9 pr-8 py-2 bg-gray-50 border border-gray-100 rounded-xl text-xs text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-100 focus:border-blue-200"
               />
               {searchTerm && (
                 <button
-                  onClick={() => setSearchTerm("")}
+                  onClick={() => dispatch({ type: "SET_SEARCH", payload: "" })}
                   className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
                 >
                   <FiX size={12} />
@@ -580,7 +677,7 @@ const Downloads = () => {
               {["All", "PDF", "DOCX"].map((fmt) => (
                 <button
                   key={fmt}
-                  onClick={() => setActiveFormat(fmt)}
+                  onClick={() => dispatch({ type: "SET_FORMAT", payload: fmt })}
                   className={`px-3 py-1.5 text-[11px] font-bold rounded-lg transition-all ${
                     activeFormat === fmt
                       ? "bg-white text-gray-900 shadow-sm border border-gray-100"
@@ -593,7 +690,7 @@ const Downloads = () => {
             </div>
             <select
               value={sortBy}
-              onChange={(e) => setSortBy(e.target.value)}
+              onChange={(e) => dispatch({ type: "SET_SORT", payload: e.target.value })}
               className="px-3 py-2 bg-gray-50 border border-gray-100 rounded-xl text-xs text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-100 cursor-pointer self-start sm:self-auto"
             >
               <option value="recent">Latest first</option>
@@ -608,7 +705,7 @@ const Downloads = () => {
               {activeType !== "All" && (
                 <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-blue-50 text-blue-700 text-[11px] font-semibold rounded-full border border-blue-100">
                   {getTypeMeta(activeType).label}
-                  <button onClick={() => setActiveType("All")}>
+                  <button onClick={() => dispatch({ type: "SET_TYPE", payload: "All" })}>
                     <FiX size={9} />
                   </button>
                 </span>
@@ -616,7 +713,7 @@ const Downloads = () => {
               {activeFormat !== "All" && (
                 <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-gray-100 text-gray-700 text-[11px] font-semibold rounded-full">
                   {activeFormat}
-                  <button onClick={() => setActiveFormat("All")}>
+                  <button onClick={() => dispatch({ type: "SET_FORMAT", payload: "All" })}>
                     <FiX size={9} />
                   </button>
                 </span>
@@ -624,17 +721,13 @@ const Downloads = () => {
               {searchTerm && (
                 <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-gray-100 text-gray-700 text-[11px] font-semibold rounded-full">
                   "{searchTerm}"
-                  <button onClick={() => setSearchTerm("")}>
+                  <button onClick={() => dispatch({ type: "SET_SEARCH", payload: "" })}>
                     <FiX size={9} />
                   </button>
                 </span>
               )}
               <button
-                onClick={() => {
-                  setActiveType("All");
-                  setActiveFormat("All");
-                  setSearchTerm("");
-                }}
+                onClick={() => dispatch({ type: "RESET_FILTERS" })}
                 className="text-[11px] text-gray-400 hover:text-gray-700 underline underline-offset-2 ml-1"
               >
                 Clear all
@@ -675,7 +768,7 @@ const Downloads = () => {
             </motion.div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {filteredDownloads.map((download, i) => (
+              {currentPageItems.map((download, i) => (
                 <motion.div
                   key={download.id}
                   initial={{ opacity: 0 }}
@@ -692,7 +785,7 @@ const Downloads = () => {
           {totalPages > 1 && (
             <div className="flex items-center justify-center gap-1.5 mt-8">
               <button
-                onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                onClick={() => dispatch({ type: "SET_PAGE", payload: Math.max(1, currentPage - 1) })}
                 disabled={currentPage === 1}
                 className="w-8 h-8 flex items-center justify-center rounded-xl border border-gray-100 bg-white text-gray-400 hover:bg-gray-50 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
               >
@@ -707,7 +800,7 @@ const Downloads = () => {
                 return (
                   <button
                     key={p}
-                    onClick={() => setCurrentPage(p)}
+                    onClick={() => dispatch({ type: "SET_PAGE", payload: p })}
                     className={`w-8 h-8 flex items-center justify-center rounded-xl text-xs font-bold transition-all ${
                       currentPage === p
                         ? "bg-gray-900 text-white"
@@ -720,7 +813,7 @@ const Downloads = () => {
               })}
               <button
                 onClick={() =>
-                  setCurrentPage((p) => Math.min(totalPages, p + 1))
+                  dispatch({ type: "SET_PAGE", payload: Math.min(totalPages, currentPage + 1) })
                 }
                 disabled={currentPage === totalPages}
                 className="w-8 h-8 flex items-center justify-center rounded-xl border border-gray-100 bg-white text-gray-400 hover:bg-gray-50 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
@@ -748,8 +841,8 @@ const Downloads = () => {
             onClick={() => {
               setPreviewDocument(null);
               setIsFullscreen(false);
-              setZoomLevel(100);
-              setCurrentPage(1);
+              setZoomLevel(ZOOM_CONFIG.DEFAULT);
+              dispatch({ type: "SET_PAGE", payload: 1 });
             }}
             role="dialog"
             aria-modal="true"
@@ -829,7 +922,7 @@ const Downloads = () => {
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
-                        if (currentPage > 1) setCurrentPage(currentPage - 1);
+                        if (currentPage > 1) dispatch({ type: "SET_PAGE", payload: currentPage - 1 });
                       }}
                       className="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded transition-colors"
                     >
@@ -848,7 +941,7 @@ const Downloads = () => {
                       onClick={(e) => {
                         e.stopPropagation();
                         if (currentPage < (totalPages || 1))
-                          setCurrentPage(currentPage + 1);
+                          dispatch({ type: "SET_PAGE", payload: currentPage + 1 });
                       }}
                       className="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded transition-colors"
                     >
@@ -864,8 +957,8 @@ const Downloads = () => {
                     {/* Zoom Out */}
                     <button
                       onClick={(e) => {
-                        e.stopPropagation(); // ✅ Prevent modal close
-                        setZoomLevel(Math.max(50, zoomLevel - 10)); // ✅ Zoom out
+                        e.stopPropagation();
+                        setZoomLevel((z) => Math.max(ZOOM_CONFIG.MIN, z - ZOOM_CONFIG.STEP));
                       }}
                       className="p-1.5 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
                     >
@@ -876,14 +969,14 @@ const Downloads = () => {
                     <div className="hidden sm:flex items-center gap-2 px-2">
                       <input
                         type="range"
-                        min="50"
-                        max="200"
+                        min={ZOOM_CONFIG.MIN}
+                        max={ZOOM_CONFIG.MAX}
                         value={zoomLevel}
                         onChange={(e) => {
-                          e.stopPropagation(); // ✅ Prevent modal close
+                          e.stopPropagation();
                           setZoomLevel(Number(e.target.value));
                         }}
-                        onClick={(e) => e.stopPropagation()} // ✅ Prevent modal close
+                        onClick={(e) => e.stopPropagation()}
                         className="w-24 h-1 cursor-pointer"
                         style={{
                           accentColor: "#3b82f6",
@@ -895,13 +988,12 @@ const Downloads = () => {
                     {/* Zoom In */}
                     <button
                       onClick={(e) => {
-                        e.stopPropagation(); // ✅ Prevent modal close
-                        setZoomLevel(Math.min(200, zoomLevel + 10)); // ✅ Zoom in
+                        e.stopPropagation();
+                        setZoomLevel((z) => Math.min(ZOOM_CONFIG.MAX, z + ZOOM_CONFIG.STEP));
                       }}
                       className="p-1.5 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
                     >
-                      <ZoomIn size={14} />{" "}
-                      {/* ✅ Use react-icons instead of inline SVG */}
+                      <ZoomIn size={14} />
                     </button>
 
                     {/* Zoom Percentage */}
@@ -912,8 +1004,8 @@ const Downloads = () => {
                     {/* Reset Zoom */}
                     <button
                       onClick={(e) => {
-                        e.stopPropagation(); // ✅ Prevent modal close
-                        setZoomLevel(100); // ✅ Reset to 100%
+                        e.stopPropagation();
+                        setZoomLevel(ZOOM_CONFIG.DEFAULT);
                       }}
                       className="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
                     >
@@ -940,8 +1032,8 @@ const Downloads = () => {
                       e.stopPropagation();
                       setPreviewDocument(null);
                       setIsFullscreen(false);
-                      setZoomLevel(100);
-                      setCurrentPage(1);
+                      setZoomLevel(ZOOM_CONFIG.DEFAULT);
+                      dispatch({ type: "SET_PAGE", payload: 1 });
                     }}
                     className="p-2 hover:bg-gray-100 text-gray-600 rounded-lg transition-colors"
                     title="Close"
@@ -1041,8 +1133,8 @@ const Downloads = () => {
                 onClose={() => {
                   setPreviewDocument(null);
                   setIsFullscreen(false);
-                  setZoomLevel(100);
-                  setCurrentPage(1);
+                  setZoomLevel(ZOOM_CONFIG.DEFAULT);
+                  dispatch({ type: "SET_PAGE", payload: 1 });
                 }}
               />
             </motion.div>
