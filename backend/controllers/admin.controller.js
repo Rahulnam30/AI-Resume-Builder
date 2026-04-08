@@ -111,6 +111,7 @@ export const getAdminDashboardStats = async (req, res) => {
               FROM users
               WHERE last_login >= $2
               GROUP BY 1
+              ORDER BY 1
             ) d
           ) AS daily_active,
 

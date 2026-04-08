@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useMemo } from "react";
 import { Users, FileText, CreditCard, IndianRupee, Loader2 } from "lucide-react";
 import {
   BarChart,
@@ -33,6 +33,9 @@ const sampleData = (data, threshold = 30) => {
   return data.filter((_, index) => index % step === 0);
 };
 
+const CHART_MARGIN = { top: 5, right: 0, left: -20, bottom: 0 };
+const AXIS_PROPS = { fontSize: 10, tickLine: false, axisLine: false };
+
 const StatCard = React.memo(({ item }) => {
   const Icon = item.icon;
   return (
@@ -52,11 +55,7 @@ const StatCard = React.memo(({ item }) => {
 });
 
 export default function AdminDashboard() {
-  const [isMounted, setIsMounted] = useState(false);
-
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
+  const isMounted = typeof window !== "undefined";
 
   const {
     data: dashboardData = INITIAL_DASHBOARD_STATS,
@@ -87,6 +86,13 @@ export default function AdminDashboard() {
   const sampledDailyActiveUsers = useMemo(() => sampleData(dashboardData.dailyActiveUsers), [dashboardData.dailyActiveUsers]);
 
   const colors = useMemo(() => ["#6366F1", "#22C55E", "#F59E0B", "#EC4899"], []);
+
+  const renderChart = (chart) =>
+    isMounted ? (
+      <ResponsiveContainer width="100%" height={300}>
+        {chart}
+      </ResponsiveContainer>
+    ) : null;
 
   const stats = useMemo(() => [
     {
@@ -169,19 +175,17 @@ export default function AdminDashboard() {
               Resume Generation
             </h3>
             <div className="flex-1 w-full min-h-[250px] sm:min-h-[300px]">
-              {isMounted && (
-                <ResponsiveContainer width="100%" height={300}>
-                  <BarChart data={sampledResumeChart} margin={{ top: 5, right: 0, left: -20, bottom: 0 }}>
-                    <XAxis dataKey="month" fontSize={10} tickLine={false} axisLine={false} interval="preserveStartEnd" />
-                    <YAxis fontSize={10} tickLine={false} axisLine={false} />
-                    <Tooltip />
-                    <Bar dataKey="resumes" radius={[4, 4, 0, 0]}>
-                      {sampledResumeChart.map((_, i) => (
-                        <Cell key={i} fill={colors[i % colors.length]} />
-                      ))}
-                    </Bar>
-                  </BarChart>
-                </ResponsiveContainer>
+              {renderChart(
+                <BarChart data={sampledResumeChart} margin={CHART_MARGIN}>
+                  <XAxis dataKey="month" {...AXIS_PROPS} interval="preserveStartEnd" />
+                  <YAxis {...AXIS_PROPS} />
+                  <Tooltip />
+                  <Bar dataKey="resumes" radius={[4, 4, 0, 0]}>
+                    {sampledResumeChart.map((_, i) => (
+                      <Cell key={i} fill={colors[i % colors.length]} />
+                    ))}
+                  </Bar>
+                </BarChart>
               )}
             </div>
           </div>
@@ -189,22 +193,20 @@ export default function AdminDashboard() {
           <div className="bg-white border rounded-2xl p-3 sm:p-6 shadow-sm min-h-[300px] sm:min-h-[400px] xl:col-span-2 min-w-0 flex flex-col">
             <h3 className="text-xs sm:text-base font-semibold mb-4 text-center sm:text-left">User Growth</h3>
             <div className="flex-1 w-full min-h-[250px] sm:min-h-[300px]">
-              {isMounted && (
-                <ResponsiveContainer width="100%" height={300}>
-                  <LineChart data={sampledUserGrowth} margin={{ top: 5, right: 0, left: -20, bottom: 0 }}>
-                    <XAxis dataKey="month" fontSize={10} tickLine={false} axisLine={false} interval="preserveStartEnd" />
-                    <YAxis fontSize={10} tickLine={false} axisLine={false} />
-                    <Tooltip />
-                    <Line
-                      type="monotone"
-                      dataKey="users"
-                      stroke="#22C55E"
-                      strokeWidth={2}
-                      dot={{ r: 2 }}
-                      activeDot={{ r: 4 }}
-                    />
-                  </LineChart>
-                </ResponsiveContainer>
+              {renderChart(
+                <LineChart data={sampledUserGrowth} margin={CHART_MARGIN}>
+                  <XAxis dataKey="month" {...AXIS_PROPS} interval="preserveStartEnd" />
+                  <YAxis {...AXIS_PROPS} />
+                  <Tooltip />
+                  <Line
+                    type="monotone"
+                    dataKey="users"
+                    stroke="#22C55E"
+                    strokeWidth={2}
+                    dot={{ r: 2 }}
+                    activeDot={{ r: 4 }}
+                  />
+                </LineChart>
               )}
             </div>
           </div>
@@ -258,15 +260,13 @@ export default function AdminDashboard() {
           <div className="bg-white border rounded-2xl p-3 sm:p-6 shadow-sm min-h-[300px] sm:min-h-[400px] min-w-0 flex flex-col">
             <h3 className="text-xs sm:text-base font-semibold mb-4 text-center sm:text-left">Active Users</h3>
             <div className="flex-1 w-full min-h-[250px] sm:min-h-[300px]">
-              {isMounted && (
-                <ResponsiveContainer width="100%" height={300}>
-                  <BarChart data={sampledDailyActiveUsers} margin={{ top: 5, right: 0, left: -20, bottom: 0 }}>
-                    <XAxis dataKey="day" fontSize={10} tickLine={false} axisLine={false} />
-                    <YAxis fontSize={10} tickLine={false} axisLine={false} />
-                    <Tooltip />
-                    <Bar dataKey="users" fill="#6366F1" radius={[4, 4, 0, 0]} />
-                  </BarChart>
-                </ResponsiveContainer>
+              {renderChart(
+                <BarChart data={sampledDailyActiveUsers} margin={CHART_MARGIN}>
+                  <XAxis dataKey="day" {...AXIS_PROPS} />
+                  <YAxis {...AXIS_PROPS} />
+                  <Tooltip />
+                  <Bar dataKey="users" fill="#6366F1" radius={[4, 4, 0, 0]} />
+                </BarChart>
               )}
             </div>
           </div>
