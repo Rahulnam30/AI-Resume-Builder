@@ -14,14 +14,13 @@ import {
   Shield,
   Zap,
 } from "lucide-react";
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect, useCallback, memo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { pdfjs } from "react-pdf";
 import "../../../styles/react-pdf/TextLayer.css";
 import "../../../styles/react-pdf/AnnotationLayer.css";
 
 import DocumentParser from "../../../services/DocumentParser.service.js";
-import useDocumentParser from "../../../hooks/useDocumentParser.js";
 import ATSDocPreview from "./ATSDocPreview";
 import { saveFile, getFile } from "../../../utils/fileDB";
 
@@ -31,9 +30,149 @@ pdfjs.GlobalWorkerOptions.workerSrc = new URL(
 ).toString();
 
 const SESSION_KEY = "ats_preview_pdf";
+const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+const MAX_FILE_SIZE_MB = 5;
+const MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024;
+const RESUME_KEYWORDS = ["experience", "education", "skills", "projects", "summary", "work history"];
+
+/* ─── Pure Utility Functions (outside component to avoid recreation) ─── */
+
+const getScoreColor = (s) => (s >= 70 ? "#10b981" : s >= 50 ? "#f59e0b" : "#ef4444");
+const getScoreLabel = (s) => (s >= 70 ? "ATS Friendly" : s >= 50 ? "Needs Work" : "Poor Match");
+const getScoreBadgeClass = (s) =>
+  s >= 70
+    ? "text-emerald-600 bg-emerald-50"
+    : s >= 50
+      ? "text-amber-600 bg-amber-50"
+      : "text-red-600 bg-red-50";
+
+/** Validate file format and size */
+function validateFileInput(file) {
+  if (!file) return { valid: false, error: "No file selected." };
+  const ext = file.name.split(".").pop()?.toLowerCase();
+  const isValidFormat =
+    ["pdf", "doc", "docx"].includes(ext) ||
+    file.type === "application/pdf" ||
+    file.type === "application/msword" ||
+    file.type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+
+  if (!isValidFormat) return { valid: false, error: "Unsupported format. Please upload a PDF, DOC, or DOCX file." };
+  if (file.size > MAX_FILE_SIZE_BYTES) return { valid: false, error: `File too large (${(file.size / 1024 / 1024).toFixed(1)}MB). Max ${MAX_FILE_SIZE_MB}MB.` };
+  return { valid: true };
+}
+
+/** Validate extracted text as a resume */
+function validateResume(extractedText) {
+  const textLower = extractedText.toLowerCase();
+  const foundKeywords = RESUME_KEYWORDS.filter((kw) => textLower.includes(kw));
+  if (foundKeywords.length < 1) {
+    return { status: "invalid", message: "The uploaded file does not appear to be a valid resume. Please upload a proper resume.", preview: "" };
+  }
+  let preview = extractedText.replace(/\s+/g, " ").trim();
+  const maxLength = 650;
+  if (preview.length > maxLength) {
+    const truncated = preview.substring(0, maxLength);
+    const lastSentenceEnd = Math.max(truncated.lastIndexOf("."), truncated.lastIndexOf("!"), truncated.lastIndexOf("?"));
+    preview = lastSentenceEnd > maxLength * 0.7 ? truncated.substring(0, lastSentenceEnd + 1) : truncated + "...";
+  }
+  return { status: "valid", message: "Valid resume detected.", preview };
+}
+
+/** Locate misspelled words in PDF pages */
+async function buildErrorLocationsFromPdf(pdf, wrongWords) {
+  if (!pdf || !wrongWords?.length) return [];
+  const errors = [];
+  const wordCount = {};
+  for (let p = 1; p <= pdf.numPages; p++) {
+    const page = await pdf.getPage(p);
+    const content = await page.getTextContent();
+    const text = content.items.map((i) => i.str).join(" ");
+    const lines = text.split(/\s{2,}|\n/);
+    lines.forEach((line, li) => {
+      line.split(/\s+/).forEach((token) => {
+        const clean = token.toLowerCase().replace(/[^a-z]/g, "");
+        if (wrongWords.includes(clean)) {
+          wordCount[clean] = (wordCount[clean] || 0) + 1;
+          errors.push({ word: clean, page: p, line: li + 1, index: wordCount[clean] - 1 });
+        }
+      });
+    });
+  }
+  return errors;
+}
+
+/** Locate misspelled words in plain text (DOCX) */
+function buildErrorLocationsFromText(text, wrongWords) {
+  if (!text || !wrongWords?.length) return [];
+  const errors = [];
+  const wordCount = {};
+  const lines = text.split(/\n/);
+  lines.forEach((line, li) => {
+    line.split(/\s+/).forEach((token) => {
+      const clean = token.toLowerCase().replace(/[^a-z]/g, "");
+      if (wrongWords.includes(clean)) {
+        wordCount[clean] = (wordCount[clean] || 0) + 1;
+        errors.push({ word: clean, page: 1, line: li + 1, index: wordCount[clean] - 1 });
+      }
+    });
+  });
+  return errors;
+}
+
+/** Highlight active error in PDF text layer */
+function applyHighlights(activeError) {
+  const spans = document.querySelectorAll(".react-pdf__Page__textContent span");
+  spans.forEach((span) => {
+    span.style.background = "";
+    span.style.borderBottom = "";
+  });
+  if (!activeError) return;
+  const matching = Array.from(spans).filter((span) => {
+    const clean = span.textContent?.toLowerCase().replace(/[^a-z]/g, "");
+    const pg = span.closest(".react-pdf__Page")?.getAttribute("data-page-number");
+    return clean === activeError.word && Number(pg) === activeError.page;
+  });
+  const target = matching[activeError.index || 0];
+  if (!target) return;
+  const isPronouns = ["i", "we", "us", "our", "my"].includes(activeError.word);
+  target.style.background = isPronouns ? "#fff3cd" : "yellow";
+  target.style.borderBottom = `3px solid ${isPronouns ? "#f59e0b" : "red"}`;
+  target.scrollIntoView({ behavior: "smooth", block: "center" });
+}
+
+/* ─── Toast Error Component ─── */
+function ToastError({ message, onDismiss }) {
+  useEffect(() => {
+    const timer = setTimeout(onDismiss, 6000);
+    return () => clearTimeout(timer);
+  }, [message, onDismiss]);
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: -20, scale: 0.95 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      exit={{ opacity: 0, y: -20, scale: 0.95 }}
+      transition={{ duration: 0.3 }}
+      className="fixed top-6 left-1/2 -translate-x-1/2 z-[100] max-w-md w-[90vw]"
+    >
+      <div className="flex items-start gap-3 px-4 py-3.5 bg-white rounded-xl border border-red-100 shadow-lg shadow-red-100/40">
+        <div className="w-8 h-8 rounded-lg bg-red-50 flex items-center justify-center flex-shrink-0 mt-0.5">
+          <AlertTriangle size={16} className="text-red-500" />
+        </div>
+        <div className="flex-1 min-w-0">
+          <p className="text-sm font-semibold text-slate-800 mb-0.5">Upload Error</p>
+          <p className="text-xs text-slate-500 leading-relaxed">{message}</p>
+        </div>
+        <button onClick={onDismiss} className="flex-shrink-0 p-1 rounded-lg hover:bg-slate-100 transition-colors">
+          <XCircle size={16} className="text-slate-300" />
+        </button>
+      </div>
+    </motion.div>
+  );
+}
 
 /* ─── Drag-and-Drop Upload Zone ─── */
-function UploadZone({ onFileChange }) {
+const UploadZone = memo(function UploadZone({ onFileChange }) {
   const fileInputRef = useRef(null);
   const [isDragging, setIsDragging] = useState(false);
 
@@ -54,7 +193,7 @@ function UploadZone({ onFileChange }) {
       <motion.div
         initial={{ opacity: 0, y: 24 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 10.5, ease: "easeOut" }}
+        transition={{ duration: 0.5, ease: "easeOut" }}
         className="w-full max-w-lg"
       >
         {/* Header text */}
@@ -63,10 +202,7 @@ function UploadZone({ onFileChange }) {
             <Sparkles size={12} />
             AI-Powered Analysis
           </div>
-          <h2
-            className="text-3xl font-bold text-slate-900 mb-2"
-            style={{ fontFamily: "'Outfit', sans-serif" }}
-          >
+          <h2 className="text-3xl font-bold text-slate-900 mb-2" style={{ fontFamily: "'Outfit', sans-serif" }}>
             Check Your ATS Score
           </h2>
           <p className="text-slate-500 text-sm">
@@ -86,15 +222,7 @@ function UploadZone({ onFileChange }) {
               : "border-slate-200 bg-slate-50/50 hover:border-blue-400 hover:bg-blue-50/30 hover:shadow-md"
             }`}
         >
-          <input
-            type="file"
-            ref={fileInputRef}
-            hidden
-            accept=".pdf,.doc,.docx"
-            onChange={onFileChange}
-          />
-
-          {/* Animated upload icon */}
+          <input type="file" ref={fileInputRef} hidden accept=".pdf,.doc,.docx" onChange={onFileChange} />
           <motion.div
             animate={isDragging ? { scale: 1.15, y: -4 } : { scale: 1, y: 0 }}
             transition={{ type: "spring", stiffness: 300 }}
@@ -103,23 +231,15 @@ function UploadZone({ onFileChange }) {
           >
             <Upload size={28} />
           </motion.div>
-
           <p className="text-base font-semibold text-slate-700 mb-1">
             {isDragging ? "Drop it here!" : "Drag & drop your resume"}
           </p>
           <p className="text-sm text-slate-400 mb-5">
-            or{" "}
-            <span className="text-blue-500 font-medium">
-              click to browse files
-            </span>
+            or <span className="text-blue-500 font-medium">click to browse files</span>
           </p>
-
           <div className="flex justify-center gap-2">
             {["PDF", "DOC", "DOCX"].map((fmt) => (
-              <span
-                key={fmt}
-                className="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider rounded-lg bg-white border border-slate-200 text-slate-400"
-              >
+              <span key={fmt} className="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider rounded-lg bg-white border border-slate-200 text-slate-400">
                 {fmt}
               </span>
             ))}
@@ -129,26 +249,11 @@ function UploadZone({ onFileChange }) {
         {/* Feature pills */}
         <div className="mt-6 grid grid-cols-3 gap-3">
           {[
-            {
-              icon: <Target size={14} />,
-              label: "ATS Scoring",
-              color: "text-blue-600 bg-blue-50",
-            },
-            {
-              icon: <Shield size={14} />,
-              label: "Spell Check",
-              color: "text-emerald-600 bg-emerald-50",
-            },
-            {
-              icon: <Zap size={14} />,
-              label: "Instant Results",
-              color: "text-amber-600 bg-amber-50",
-            },
+            { icon: <Target size={14} />, label: "ATS Scoring", color: "text-blue-600 bg-blue-50" },
+            { icon: <Shield size={14} />, label: "Spell Check", color: "text-emerald-600 bg-emerald-50" },
+            { icon: <Zap size={14} />, label: "Instant Results", color: "text-amber-600 bg-amber-50" },
           ].map((f) => (
-            <div
-              key={f.label}
-              className={`flex flex-col items-center gap-1.5 p-3 rounded-xl ${f.color} text-xs font-semibold`}
-            >
+            <div key={f.label} className={`flex flex-col items-center gap-1.5 p-3 rounded-xl ${f.color} text-xs font-semibold`}>
               {f.icon}
               {f.label}
             </div>
@@ -157,84 +262,46 @@ function UploadZone({ onFileChange }) {
       </motion.div>
     </div>
   );
-}
+});
 
 /* ─── Score Ring ─── */
-function ScoreRing({ score, animated }) {
-  const color =
-    animated >= 70 ? "#10b981" : animated >= 50 ? "#f59e0b" : "#ef4444";
-  const label =
-    animated >= 70
-      ? "ATS Friendly"
-      : animated >= 50
-        ? "Needs Work"
-        : "Poor Match";
-  const labelColor =
-    animated >= 70
-      ? "text-emerald-600 bg-emerald-50"
-      : animated >= 50
-        ? "text-amber-600 bg-amber-50"
-        : "text-red-600 bg-red-50";
+const ScoreRing = memo(function ScoreRing({ score, animated }) {
+  const color = getScoreColor(animated);
+  const label = getScoreLabel(animated);
+  const labelColor = getScoreBadgeClass(animated);
 
   return (
     <div className="flex items-center gap-5 p-5 rounded-2xl bg-gradient-to-br from-slate-50 to-white border border-slate-100">
       <div className="relative w-24 h-24 flex-shrink-0">
         <svg className="w-full h-full -rotate-90" viewBox="0 0 36 36">
-          <path
-            d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-            fill="none"
-            stroke="#f1f5f9"
-            strokeWidth="3"
-          />
-          <path
-            d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-            fill="none"
-            stroke={color}
-            strokeWidth="3"
-            strokeDasharray="100"
-            strokeDashoffset={100 - animated}
-            strokeLinecap="round"
-            style={{
-              transition: "stroke-dashoffset 1s ease, stroke 0.5s ease",
-            }}
-          />
+          <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="#f1f5f9" strokeWidth="3" />
+          <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke={color} strokeWidth="3" strokeDasharray="100" strokeDashoffset={100 - animated} strokeLinecap="round" style={{ transition: "stroke-dashoffset 1s ease, stroke 0.5s ease" }} />
         </svg>
         <div className="absolute inset-0 flex items-center justify-center">
-          <span className="text-2xl font-extrabold text-slate-800">
-            {score ? animated : "–"}
-          </span>
+          <span className="text-2xl font-extrabold text-slate-800">{score ? animated : "–"}</span>
         </div>
       </div>
       <div>
-        <p className="text-xs uppercase tracking-widest text-slate-400 font-semibold mb-1">
-          ATS Score
-        </p>
+        <p className="text-xs uppercase tracking-widest text-slate-400 font-semibold mb-1">ATS Score</p>
         <p className="text-3xl font-extrabold text-slate-900">
           {score ? animated : "–"}
           <span className="text-lg text-slate-300 font-normal">/100</span>
         </p>
         {score && (
-          <span
-            className={`mt-1.5 inline-block px-2 py-0.5 rounded-full text-xs font-bold ${labelColor}`}
-          >
-            {label}
-          </span>
+          <span className={`mt-1.5 inline-block px-2 py-0.5 rounded-full text-xs font-bold ${labelColor}`}>{label}</span>
         )}
       </div>
     </div>
   );
-}
+});
 
 /* ─── Section Score Card ─── */
-function SectionCard({ section }) {
+const SectionCard = memo(function SectionCard({ section }) {
   const isOk = section.status === "ok";
   const isWarn = section.status === "warn";
 
   return (
-    <div
-      className={`rounded-xl border p-3.5 mb-2 transition-all
-      ${isOk ? "border-emerald-100 bg-emerald-50/60" : isWarn ? "border-amber-100 bg-amber-50/60" : "border-red-100 bg-red-50/60"}`}
-    >
+    <div className={`rounded-xl border p-3.5 mb-2 transition-all ${isOk ? "border-emerald-100 bg-emerald-50/60" : isWarn ? "border-amber-100 bg-amber-50/60" : "border-red-100 bg-red-50/60"}`}>
       <div className="flex items-center gap-2 mb-1">
         {isOk ? (
           <CheckCircle2 size={14} className="text-emerald-500 flex-shrink-0" />
@@ -243,78 +310,45 @@ function SectionCard({ section }) {
         ) : (
           <XCircle size={14} className="text-red-500 flex-shrink-0" />
         )}
-        <span className="text-sm font-semibold text-slate-800">
-          {section.sectionName}
-        </span>
-        <span
-          className={`ml-auto text-xs font-bold px-2 py-0.5 rounded-full
-          ${isOk ? "bg-emerald-100 text-emerald-700" : isWarn ? "bg-amber-100 text-amber-700" : "bg-red-100 text-red-700"}`}
-        >
+        <span className="text-sm font-semibold text-slate-800">{section.sectionName}</span>
+        <span className={`ml-auto text-xs font-bold px-2 py-0.5 rounded-full ${isOk ? "bg-emerald-100 text-emerald-700" : isWarn ? "bg-amber-100 text-amber-700" : "bg-red-100 text-red-700"}`}>
           {section.score}/{section.maxScore}
         </span>
       </div>
       {section.suggestions?.length > 0 && (
         <ul className="mt-2 space-y-1 pl-5">
           {section.suggestions.map((s, i) => (
-            <li key={i} className="text-xs text-slate-600 list-disc">
-              {s}
-            </li>
+            <li key={i} className="text-xs text-slate-600 list-disc">{s}</li>
           ))}
         </ul>
       )}
     </div>
   );
-}
+});
 
 /* ─── Error Table ─── */
-function ErrorTable({ errors, type, onSelect }) {
+const ErrorTable = memo(function ErrorTable({ errors, type, onSelect }) {
   const isSpell = type === "spell";
   return (
-    <div
-      className={`mt-4 rounded-xl border overflow-hidden
-      ${isSpell ? "border-red-100" : "border-amber-100"}`}
-    >
-      <div
-        className={`px-4 py-3 flex items-center gap-2 text-sm font-semibold
-        ${isSpell ? "bg-red-50 text-red-700" : "bg-amber-50 text-amber-700"}`}
-      >
+    <div className={`mt-4 rounded-xl border overflow-hidden ${isSpell ? "border-red-100" : "border-amber-100"}`}>
+      <div className={`px-4 py-3 flex items-center gap-2 text-sm font-semibold ${isSpell ? "bg-red-50 text-red-700" : "bg-amber-50 text-amber-700"}`}>
         {isSpell ? <XCircle size={15} /> : <AlertTriangle size={15} />}
         {isSpell ? "Spelling Errors" : "Personal Pronouns Detected"}
-        <span
-          className={`ml-auto text-xs px-2 py-0.5 rounded-full font-bold
-          ${isSpell ? "bg-red-100" : "bg-amber-100"}`}
-        >
-          {errors.length}
-        </span>
+        <span className={`ml-auto text-xs px-2 py-0.5 rounded-full font-bold ${isSpell ? "bg-red-100" : "bg-amber-100"}`}>{errors.length}</span>
       </div>
       <div className="overflow-auto max-h-48">
         <table className="w-full text-xs">
           <thead>
             <tr className="border-b border-slate-100 bg-white">
-              <th className="py-2 px-4 text-left font-semibold text-slate-500">
-                Word
-              </th>
-              <th className="py-2 px-3 text-left font-semibold text-slate-500">
-                Page
-              </th>
-              <th className="py-2 px-3 text-left font-semibold text-slate-500">
-                Line
-              </th>
+              <th className="py-2 px-4 text-left font-semibold text-slate-500">Word</th>
+              <th className="py-2 px-3 text-left font-semibold text-slate-500">Page</th>
+              <th className="py-2 px-3 text-left font-semibold text-slate-500">Line</th>
             </tr>
           </thead>
           <tbody className="bg-white">
             {errors.map((e, i) => (
-              <tr
-                key={i}
-                onClick={() => onSelect(e)}
-                className={`border-b border-slate-50 cursor-pointer transition-colors
-                  ${isSpell ? "hover:bg-red-50" : "hover:bg-amber-50"}`}
-              >
-                <td
-                  className={`py-2 px-4 font-semibold ${isSpell ? "text-red-600" : "text-amber-600"}`}
-                >
-                  {e.word}
-                </td>
+              <tr key={i} onClick={() => onSelect(e)} className={`border-b border-slate-50 cursor-pointer transition-colors ${isSpell ? "hover:bg-red-50" : "hover:bg-amber-50"}`}>
+                <td className={`py-2 px-4 font-semibold ${isSpell ? "text-red-600" : "text-amber-600"}`}>{e.word}</td>
                 <td className="py-2 px-3 text-slate-500">{e.page}</td>
                 <td className="py-2 px-3 text-slate-500">{e.line}</td>
               </tr>
@@ -324,53 +358,72 @@ function ErrorTable({ errors, type, onSelect }) {
       </div>
     </div>
   );
-} function CircularLoader() {
+});
+
+/* ─── Analysis Overlay ─── */
+const AnalysisOverlay = memo(function AnalysisOverlay({ isVisible }) {
+  if (!isVisible) return null;
   return (
-    <div className="flex flex-col items-center justify-center">
-      <div className="relative w-16 h-16">
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.2 }}
+      className="absolute inset-0 flex flex-col items-center justify-center bg-white/80 backdrop-blur-sm z-10 rounded-xl"
+    >
+      <div className="relative">
         <motion.div
-          className="absolute inset-0 rounded-full border-4 border-transparent"
-          style={{
-            borderTopColor: "#3b82f6",
-            borderRightColor: "#8b5cf6",
-            borderBottomColor: "#a78bfa",
-          }}
+          className="w-16 h-16 rounded-full border-4 border-slate-200"
           animate={{ rotate: 360 }}
-          transition={{ duration: 125.2, repeat: Infinity, ease: "linear" }}
+          transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+          style={{ borderTopColor: "#3b82f6", borderRightColor: "#8b5cf6" }}
         />
+        <motion.div
+          className="absolute inset-3 rounded-full bg-gradient-to-br from-blue-500 to-purple-500"
+          animate={{ scale: [1, 1.2, 1] }}
+          transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+        />
+        <Sparkles className="absolute inset-0 m-auto text-white" size={20} />
       </div>
-      <motion.p
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        className="mt-4 text-sm font-semibold text-slate-700"
-      >
-        Analyzing Resume
-      </motion.p>
-      <motion.p
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 720.2 }}
-        className="text-xs text-slate-400 mt-1"
-      >
-        Checking ATS compatibility...
-      </motion.p>
-    </div>
+      <div className="mt-6 text-center">
+        <motion.p className="text-base font-semibold text-slate-800" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
+          Analyzing Resume
+        </motion.p>
+        <div className="flex items-center justify-center gap-1 mt-1">
+          {[0, 1, 2].map((i) => (
+            <motion.span
+              key={i}
+              className="w-2 h-2 rounded-full bg-blue-500"
+              initial={{ opacity: 0.4, scale: 0.8 }}
+              animate={{ opacity: [0.4, 1, 0.4], scale: [0.8, 1.2, 0.8] }}
+              transition={{ duration: 1.2, repeat: Infinity, delay: i * 0.2, ease: "easeInOut" }}
+            />
+          ))}
+        </div>
+        <motion.p className="text-xs text-slate-500 mt-3 max-w-[200px]" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }}>
+          Checking keywords, formatting & ATS compatibility
+        </motion.p>
+      </div>
+      <motion.div className="mt-4 flex items-center gap-2 text-xs text-slate-400" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.6 }}>
+        <Shield size={12} className="text-emerald-500" />
+        <span>AI-powered analysis in progress</span>
+      </motion.div>
+    </motion.div>
   );
-}
+});
 
 /* ═══════════════════ MAIN COMPONENT ═══════════════════ */
 const PANEL_HEIGHT = "calc(100vh - 180px)";
-const PREVIEW_HEIGHT = "1122px";
 
 const ATSChecker = ({ onSidebarToggle }) => {
   const fileInputRef = useRef(null);
-  const { parseDocument, loading: parseLoading, error: parseError } = useDocumentParser();
+  const analysisStartTimeRef = useRef(null);
+
   const [isMobilePreviewExpanded, setIsMobilePreviewExpanded] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [uploadedFile, setUploadedFile] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(null);
   const [analysisResult, setAnalysisResult] = useState(null);
-  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const [resumeText, setResumeText] = useState("");
   const [spellingErrors, setSpellingErrors] = useState([]);
   const [pronounErrors, setPronounErrors] = useState([]);
@@ -379,35 +432,24 @@ const ATSChecker = ({ onSidebarToggle }) => {
   const [pdfInstance, setPdfInstance] = useState(null);
   const [animatedScore, setAnimatedScore] = useState(0);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
-  const [previewType, setPreviewType] = useState('pdf');
-  const analysisStartTimeRef = useRef(null);
+  const [previewType, setPreviewType] = useState("pdf");
+  const [toastError, setToastError] = useState(null);
 
   /* ── Score animation ── */
   useEffect(() => {
-    if (analysisResult?.overallScore >= 0) {
-      let start = 0;
-      const end = Number(analysisResult.overallScore);
-      const step = end / (1000 / 15);
-      const counter = setInterval(() => {
-        start += step;
-        if (start >= end) {
-          start = end;
-          clearInterval(counter);
-        }
-        setAnimatedScore(Math.floor(start));
-      }, 15);
-      return () => clearInterval(counter);
-    }
+    if (!analysisResult?.overallScore) return;
+    let start = 0;
+    const end = Number(analysisResult.overallScore);
+    const step = end / (1000 / 15);
+    const counter = setInterval(() => {
+      start += step;
+      if (start >= end) { start = end; clearInterval(counter); }
+      setAnimatedScore(Math.floor(start));
+    }, 15);
+    return () => clearInterval(counter);
   }, [analysisResult]);
 
-  /* ── Revoke blob on unmount ── */
-  useEffect(() => {
-    return () => {
-      if (previewUrl?.startsWith("blob:")) URL.revokeObjectURL(previewUrl);
-    };
-  }, []);
-
-  /* ── Mobile detection ── */
+  /* ── Mobile detection (single listener) ── */
   useEffect(() => {
     const check = () => setIsMobile(window.innerWidth < 768);
     check();
@@ -415,473 +457,245 @@ const ATSChecker = ({ onSidebarToggle }) => {
     return () => window.removeEventListener("resize", check);
   }, []);
 
-  /* ── Resize ── */
-  useEffect(() => {
-    const h = () => setWindowWidth(window.innerWidth);
-    window.addEventListener("resize", h);
-    return () => window.removeEventListener("resize", h);
-  }, []);
-
-  /* ── Resume Validation Assistant ── */
-  const validateResume = (extractedText, fileName) => {
-    const textLower = extractedText.toLowerCase();
-
-    // Check for the exact resume-related keywords specified
-    const resumeKeywords = [
-      "experience",
-      "education",
-      "skills",
-      "projects",
-      "summary",
-      "work history"
-    ];
-
-    const foundKeywords = resumeKeywords.filter(keyword => textLower.includes(keyword));
-
-    // Strict validation: require at least one of the specified keywords
-    const isValid = foundKeywords.length >= 1;
-
-    if (!isValid) {
-      return {
-        status: "invalid",
-        message: "The uploaded file does not appear to be a valid resume. Please upload a proper resume.",
-        preview: ""
-      };
-    }
-
-    // Generate clean preview (500-800 characters)
-    let preview = extractedText.replace(/\s+/g, ' ').trim();
-    const maxLength = 650; // Middle of 500-800 range
-
-    if (preview.length > maxLength) {
-      // Try to cut at sentence boundary to avoid cutting words abruptly
-      const truncated = preview.substring(0, maxLength);
-      const lastSentenceEnd = Math.max(
-        truncated.lastIndexOf('.'),
-        truncated.lastIndexOf('!'),
-        truncated.lastIndexOf('?')
-      );
-
-      if (lastSentenceEnd > maxLength * 0.7) {
-        preview = truncated.substring(0, lastSentenceEnd + 1);
-      } else {
-        preview = truncated + '...';
-      }
-    }
-
-    return {
-      status: "valid",
-      message: "Valid resume detected.",
-      preview: preview
-    };
-  };
-
-  /* ── Saves state after refresh/* ── */
+  /* ── Restore session on mount ── */
   useEffect(() => {
     const loadStoredFile = async () => {
       const fileId = sessionStorage.getItem(SESSION_KEY);
       const savedAnalysis = sessionStorage.getItem("ats_analysis_result");
       const fileType = sessionStorage.getItem("ats_file_type");
 
-      // ✅ Restore file preview
       if (fileId) {
         const storedFile = await getFile(fileId);
-
         if (storedFile) {
           if (fileType === "pdf") {
-            const url = URL.createObjectURL(storedFile);
-            setPreviewUrl(url);
+            setPreviewUrl(URL.createObjectURL(storedFile));
             setPreviewType("pdf");
           } else if (fileType === "docx") {
             setPreviewType("doc");
-
             try {
               const arrayBuffer = await storedFile.arrayBuffer();
               const text = await DocumentParser.extractTextFromDocument(null, arrayBuffer);
               setResumeText(text);
-            } catch (err) {
-              console.error("DOCX restore failed:", err);
-            }
+            } catch { /* silently fail */ }
           }
         }
       }
 
-      // ✅ Restore analysis
       if (savedAnalysis) {
-        const parsed = JSON.parse(savedAnalysis);
-
-        setAnalysisResult(parsed);
-        setAnimatedScore(parsed.overallScore || 0); // 🔥 important
-
-        if (parsed.pronounAnalysis?.detected) {
-          setPronounErrors(parsed.pronounAnalysis.detected);
-        }
-
-        setResumeText(parsed?.text || "");
+        try {
+          const parsed = JSON.parse(savedAnalysis);
+          setAnalysisResult(parsed);
+          setAnimatedScore(parsed.overallScore || 0);
+          if (parsed.pronounAnalysis?.detected) setPronounErrors(parsed.pronounAnalysis.detected);
+          setResumeText(parsed?.text || "");
+        } catch { /* corrupted data */ }
       }
     };
-
     loadStoredFile();
   }, []);
 
-  /* ── Preview alive after refresh ── */
+  /* ── Revoke blob on previewUrl change/unmount ── */
   useEffect(() => {
     return () => {
-      if (previewUrl?.startsWith("blob:")) {
-        URL.revokeObjectURL(previewUrl);
-      }
+      if (previewUrl?.startsWith("blob:")) URL.revokeObjectURL(previewUrl);
     };
   }, [previewUrl]);
 
-  /* ── Spell locator ── */
+  /* ── Locate spelling errors ── */
   useEffect(() => {
     const run = async () => {
       if (pdfInstance && analysisResult?.misspelledWords?.length) {
-        // PDF path — unchanged
-        const located = await buildErrorLocationsFromPdf(
-          pdfInstance,
-          analysisResult.misspelledWords,
-        );
-        setSpellingErrors(located);
-      } else if (
-        previewType === "doc" &&
-        resumeText &&
-        analysisResult?.misspelledWords?.length
-      ) {
-        // DOCX path — locate errors from plain text
-        const located = buildErrorLocationsFromText(
-          resumeText,
-          analysisResult.misspelledWords,
-        );
-        setSpellingErrors(located);
+        setSpellingErrors(await buildErrorLocationsFromPdf(pdfInstance, analysisResult.misspelledWords));
+      } else if (previewType === "doc" && resumeText && analysisResult?.misspelledWords?.length) {
+        setSpellingErrors(buildErrorLocationsFromText(resumeText, analysisResult.misspelledWords));
       }
     };
     run();
   }, [pdfInstance, analysisResult, resumeText, previewType]);
 
   /* ── Highlight active error ── */
-  const applyHighlights = () => {
-    const spans = document.querySelectorAll(
-      ".react-pdf__Page__textContent span",
-    );
-    spans.forEach((span) => {
-      span.style.background = "";
-      span.style.borderBottom = "";
-    });
-    if (!activeError) return;
-    const matching = Array.from(spans).filter((span) => {
-      const clean = span.textContent?.toLowerCase().replace(/[^a-z]/g, "");
-      const pg = span
-        .closest(".react-pdf__Page")
-        ?.getAttribute("data-page-number");
-      return clean === activeError.word && Number(pg) === activeError.page;
-    });
-    const target = matching[activeError.index || 0];
-    if (!target) return;
-    const isPronouns = ["i", "we", "us", "our", "my"].includes(
-      activeError.word,
-    );
-    target.style.background = isPronouns ? "#fff3cd" : "yellow";
-    target.style.borderBottom = `3px solid ${isPronouns ? "#f59e0b" : "red"}`;
-    target.scrollIntoView({ behavior: "smooth", block: "center" });
-  };
-  useEffect(() => {
-    applyHighlights();
-  }, [activeError]);
+  useEffect(() => { applyHighlights(activeError); }, [activeError]);
 
-  /* ── File change ── */
-  const handleFileChange = async (e) => {
-    const file = e.target.files[0];
+  /* ── Auto-dismiss toast ── */
+  useEffect(() => {
+    if (!toastError) return;
+    const timer = setTimeout(() => setToastError(null), 6000);
+    return () => clearTimeout(timer);
+  }, [toastError]);
+
+  /* ── File change handler (memoized) ── */
+  const handleFileChange = useCallback(async (e) => {
+    const file = e.target.files?.[0];
     if (!file) return;
 
-    const fileExtension = file.name.split('.').pop()?.toLowerCase();
-    const isValidFormat = ['pdf', 'doc', 'docx'].includes(fileExtension) ||
-      file.type === "application/pdf" ||
-      file.type === "application/msword" ||
-      file.type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
-
-    if (!isValidFormat) {
-      alert("Please upload a PDF, DOC, or DOCX file.");
+    // Validate format & size
+    const fileValidation = validateFileInput(file);
+    if (!fileValidation.valid) {
+      setToastError(fileValidation.error);
       return;
     }
 
+    const fileExtension = file.name.split(".").pop()?.toLowerCase();
+
+    // Reset state
     setAnalysisResult(null);
     setAnimatedScore(0);
     setSpellingErrors([]);
     setPronounErrors([]);
     setActiveError(null);
     setResumeText("");
-
+    setToastError(null);
     setUploadedFile(file);
     setIsAnalyzing(true);
     analysisStartTimeRef.current = Date.now();
 
-    // For PDF files, we need to extract text first for validation
+    // ── PDF ──
     if (file.type === "application/pdf" || fileExtension === "pdf") {
       try {
-        // Create a temporary URL to read the PDF
         const tempUrl = URL.createObjectURL(file);
-        const pdfjsLib = await import('pdfjs-dist/build/pdf.min.mjs');
-
-        // Set worker source for the imported pdfjs
-        pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
-          'pdfjs-dist/build/pdf.worker.min.mjs',
-          import.meta.url
-        ).toString();
-
-        const loadingTask = pdfjsLib.getDocument(tempUrl);
-        const pdf = await loadingTask.promise;
+        const pdfjsLib = await import("pdfjs-dist/build/pdf.min.mjs");
+        pdfjsLib.GlobalWorkerOptions.workerSrc = new URL("pdfjs-dist/build/pdf.worker.min.mjs", import.meta.url).toString();
+        const pdf = await pdfjsLib.getDocument(tempUrl).promise;
 
         let fullText = "";
-        // Check first 3 pages max, but if no text found, try more pages
         const pagesToCheck = Math.min(pdf.numPages, 5);
-
         for (let i = 1; i <= pagesToCheck; i++) {
           try {
             const page = await pdf.getPage(i);
             const textContent = await page.getTextContent();
-            const pageText = textContent.items.map(item => item.str).join(' ');
-            fullText += pageText + ' ';
-
-            // If we have substantial text, we can stop
+            fullText += textContent.items.map((item) => item.str).join(" ") + " ";
             if (fullText.length > 500) break;
-          } catch (pageError) {
-            console.warn(`Failed to read page ${i}:`, pageError);
-            continue;
-          }
+          } catch { continue; }
         }
-
         URL.revokeObjectURL(tempUrl);
 
-        // If no text extracted, accept the file (might be image-based PDF)
+        // Image-based PDF — accept as-is
         if (!fullText || fullText.trim().length < 50) {
-          console.log("No text extracted from PDF, accepting based on file type");
-          // Proceed with normal processing for image-based PDFs
           const fileId = "resume_pdf";
           await saveFile(fileId, file);
           const storedFile = await getFile(fileId);
-          const url = URL.createObjectURL(storedFile);
-
-          setPreviewUrl(url);
+          setPreviewUrl(URL.createObjectURL(storedFile));
           setPreviewType("pdf");
-
+          sessionStorage.setItem(SESSION_KEY, fileId);
+          sessionStorage.setItem("ats_file_type", "pdf");
+        } else {
+          const validation = validateResume(fullText);
+          if (validation.status === "invalid") {
+            setIsAnalyzing(false);
+            setToastError(validation.message);
+            if (fileInputRef.current) fileInputRef.current.value = "";
+            return;
+          }
+          const fileId = "resume_pdf";
+          await saveFile(fileId, file);
+          const storedFile = await getFile(fileId);
+          setPreviewUrl(URL.createObjectURL(storedFile));
+          setPreviewType("pdf");
           sessionStorage.setItem(SESSION_KEY, fileId);
           sessionStorage.setItem("ats_file_type", fileExtension.toLowerCase());
-          return; // Skip validation for image PDFs
         }
-
-        console.log("Extracted text length:", fullText.length);
-
-        // Validate the extracted text
-        const validation = validateResume(fullText, file.name);
-
-        if (validation.status === "invalid") {
-          setIsAnalyzing(false);
-          alert(validation.message);
-          // Reset file input
-          if (fileInputRef.current) {
-            fileInputRef.current.value = '';
-          }
-          return;
-        }
-
-        // If valid, proceed with normal processing
-        const fileId = "resume_pdf";
-        await saveFile(fileId, file);
-        const storedFile = await getFile(fileId);
-        const url = URL.createObjectURL(storedFile);
-
-        setPreviewUrl(url);
-        setPreviewType("pdf");
-
-        sessionStorage.setItem(SESSION_KEY, fileId);
-        sessionStorage.setItem("ats_file_type", fileExtension.toLowerCase());
-
-      } catch (error) {
-        console.error("PDF text extraction failed:", error);
+      } catch {
         setIsAnalyzing(false);
-        alert("Failed to read PDF content. Please try another file.");
-        if (fileInputRef.current) {
-          fileInputRef.current.value = '';
-        }
+        setToastError("Failed to read PDF content. Please try another file.");
+        if (fileInputRef.current) fileInputRef.current.value = "";
         return;
       }
     }
+    // ── DOCX ──
     else if (fileExtension === "docx") {
       const fileId = "resume_docx";
-
-      await saveFile(fileId, file); // ✅ SAVE DOCX
-
-      sessionStorage.setItem(SESSION_KEY, fileId); // ✅ store ID
-      sessionStorage.setItem("ats_file_type", "docx"); // ✅ store type
-
+      await saveFile(fileId, file);
+      sessionStorage.setItem(SESSION_KEY, fileId);
+      sessionStorage.setItem("ats_file_type", "docx");
       setPreviewType("doc");
       setPreviewUrl(null);
 
       try {
         const arrayBuffer = await file.arrayBuffer();
-        let extractedText = await DocumentParser.extractTextFromDocument(null, arrayBuffer);
-
-        // Validate resume content
-        const validation = validateResume(extractedText, file.name);
-
-        // Only proceed if resume is valid
+        const extractedText = await DocumentParser.extractTextFromDocument(null, arrayBuffer);
+        const validation = validateResume(extractedText);
         if (validation.status === "invalid") {
           setIsAnalyzing(false);
-          alert(validation.message);
+          setToastError(validation.message);
           return;
         }
-
-        // Limit text for very large documents to prevent performance issues
-        const wordCount = extractedText.split(/\s+/).length;
-        if (wordCount > 2000) {
-          // Use validated preview instead of truncating
-          extractedText = validation.preview;
-        } else {
-          extractedText = validation.preview; // Always use validated preview
-        }
-
-        setResumeText(extractedText);
-      } catch (err) {
-        console.error("DOCX parsing failed:", err);
+        setResumeText(validation.preview);
+      } catch {
         setResumeText("Failed to preview DOCX file.");
       }
     }
+    // ── Legacy .doc ──
     else if (fileExtension === "doc") {
       setPreviewType("doc");
       setPreviewUrl(null);
-
-      setResumeText(
-        "⚠️ .doc format not supported. Please upload DOCX or PDF."
-      );
+      setResumeText("⚠️ .doc format not supported. Please upload DOCX or PDF.");
     }
 
+    // ── Send to API ──
     const formData = new FormData();
     formData.append("resume", file);
     formData.append("jobTitle", "Placeholder title");
 
-
     try {
       const token = localStorage.getItem("token") || sessionStorage.getItem("token");
-      const res = await fetch("http://localhost:5000/api/resume/upload", {
+      const res = await fetch(`${API_BASE_URL}/api/resume/upload`, {
         method: "POST",
         body: formData,
         headers: token ? { Authorization: `Bearer ${token}` } : {},
       });
 
       const rawText = await res.text();
-
       if (!res.ok) {
-        console.error(`Server error [${res.status}]:`, rawText.slice(0, 500));
+        setToastError(`Server error (${res.status}). Please try again.`);
         return;
       }
 
       let data;
-      try {
-        data = JSON.parse(rawText);
-      } catch {
-        console.error("Expected JSON but got:", rawText.slice(0, 300));
+      try { data = JSON.parse(rawText); } catch {
+        setToastError("Unexpected server response. Please try again.");
         return;
       }
 
       if (data.success) {
         const updatedData = { ...data.data };
-
-        if (updatedData.pronounAnalysis?.detected)
-          setPronounErrors(updatedData.pronounAnalysis.detected);
-        if (fileExtension !== "docx") {
-          setResumeText(updatedData?.text || "");
-        }
+        if (updatedData.pronounAnalysis?.detected) setPronounErrors(updatedData.pronounAnalysis.detected);
+        if (fileExtension !== "docx") setResumeText(updatedData?.text || "");
         sessionStorage.setItem("ats_analysis_result", JSON.stringify(updatedData));
         setAnalysisResult(updatedData);
       } else {
-        console.error("API returned success: false →", data?.message || data);
+        setToastError(data?.message || "Analysis failed. Please try again.");
       }
-    } catch (err) {
-      console.error("ATS fetch failed — is the backend running on port 5000?", err);
+    } catch {
+      setToastError("Unable to connect to server. Is the backend running?");
     } finally {
-      // Enforce minimum 5.5 second loading animation
       const elapsed = Date.now() - analysisStartTimeRef.current;
-      const minDuration = 5500; // 5.5 seconds
-
+      const minDuration = 5500;
       if (elapsed < minDuration) {
-        setTimeout(() => {
-          setIsAnalyzing(false);
-          analysisStartTimeRef.current = null;
-        }, minDuration - elapsed);
+        setTimeout(() => { setIsAnalyzing(false); analysisStartTimeRef.current = null; }, minDuration - elapsed);
       } else {
         setIsAnalyzing(false);
         analysisStartTimeRef.current = null;
       }
     }
-  };
-  const buildErrorLocationsFromPdf = async (pdf, wrongWords) => {
-    if (!pdf || !wrongWords?.length) return [];
-    const errors = [];
-    const wordCount = {};
-    for (let p = 1; p <= pdf.numPages; p++) {
-      const page = await pdf.getPage(p);
-      const content = await page.getTextContent();
-      const text = content.items.map((i) => i.str).join(" ");
-      const lines = text.split(/\s{2,}|\n/);
-      lines.forEach((line, li) => {
-        line.split(/\s+/).forEach((token) => {
-          const clean = token.toLowerCase().replace(/[^a-z]/g, "");
-          if (wrongWords.includes(clean)) {
-            wordCount[clean] = (wordCount[clean] || 0) + 1;
-            errors.push({
-              word: clean,
-              page: p,
-              line: li + 1,
-              index: wordCount[clean] - 1,
-            });
-          }
-        });
-      });
-    }
-    return errors;
-  };
-
-  /* ── Text-based error locator for DOCX ── */
-  const buildErrorLocationsFromText = (text, wrongWords) => {
-    if (!text || !wrongWords?.length) return [];
-    const errors = [];
-    const wordCount = {};
-    const lines = text.split(/\n/);
-    lines.forEach((line, li) => {
-      line.split(/\s+/).forEach((token) => {
-        const clean = token.toLowerCase().replace(/[^a-z]/g, "");
-        if (wrongWords.includes(clean)) {
-          wordCount[clean] = (wordCount[clean] || 0) + 1;
-          errors.push({
-            word: clean,
-            page: 1,
-            line: li + 1,
-            index: wordCount[clean] - 1,
-          });
-        }
-      });
-    });
-    return errors;
-  };
+  }, []);
 
   return (
     <div className="ats-checker-page user-page min-h-screen bg-[#f8f9fc] md:mt-0 mt-20">
-      <UserNavBar onMenuClick={onSidebarToggle || (() => { })} />
+      <UserNavBar onMenuClick={onSidebarToggle || (() => {})} />
+
+      {/* Toast error */}
+      <AnimatePresence>
+        {toastError && <ToastError message={toastError} onDismiss={() => setToastError(null)} />}
+      </AnimatePresence>
 
       {/* ── Page Header ── */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-6 pb-2">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <h1
-              className="text-2xl font-extrabold text-slate-900"
-              style={{ fontFamily: "'Outfit', sans-serif" }}
-            >
+            <h1 className="text-2xl font-extrabold text-slate-900" style={{ fontFamily: "'Outfit', sans-serif" }}>
               ATS Resume Checker
             </h1>
-            <p className="text-slate-500 text-sm mt-0.5">
-              Instant AI-powered resume analysis & optimization
-            </p>
+            <p className="text-slate-500 text-sm mt-0.5">Instant AI-powered resume analysis & optimization</p>
           </div>
           <button
             onClick={() => fileInputRef.current.click()}
@@ -890,44 +704,21 @@ const ATSChecker = ({ onSidebarToggle }) => {
             <Upload size={16} />
             Upload Resume
           </button>
-          <input
-            type="file"
-            ref={fileInputRef}
-            hidden
-            accept=".pdf,.doc,.docx"
-            onChange={handleFileChange}
-          />
+          <input type="file" ref={fileInputRef} hidden accept=".pdf,.doc,.docx" onChange={handleFileChange} />
         </div>
       </div>
 
       {/* ── Two-column layout ── */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex flex-col md:flex-row gap-5 items-stretch">
         {/* ── LEFT PANEL: Analysis ── */}
-        <div
-          className="w-full md:w-[340px] flex-shrink-0 flex flex-col gap-4 order-2 md:order-1"
-          style={{ minHeight: PANEL_HEIGHT }}
-        >
-          <div
-            className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden flex flex-col"
-            style={{ minHeight: PANEL_HEIGHT }}
-          >
-            {/* Panel header */}
+        <div className="w-full md:w-[340px] flex-shrink-0 flex flex-col gap-4 order-2 md:order-1" style={{ minHeight: PANEL_HEIGHT }}>
+          <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden flex flex-col" style={{ minHeight: PANEL_HEIGHT }}>
             <div className="px-5 pt-5 pb-4 border-b border-slate-100 flex-shrink-0">
               <div className="flex items-center justify-between">
-                <h2 className="font-bold text-slate-900 text-base">
-                  Analysis Results
-                </h2>
+                <h2 className="font-bold text-slate-900 text-base">Analysis Results</h2>
                 {isAnalyzing && (
                   <span className="flex items-center gap-1.5 text-xs font-semibold text-blue-600 bg-blue-50 px-2.5 py-1 rounded-full">
-                    <motion.span
-                      animate={{ rotate: 360 }}
-                      transition={{
-                        duration: 1,
-                        repeat: Infinity,
-                        ease: "linear",
-                      }}
-                      className="inline-block w-3 h-3 border-2 border-blue-400 border-t-transparent rounded-full"
-                    />
+                    <motion.span animate={{ rotate: 360 }} transition={{ duration: 1, repeat: Infinity, ease: "linear" }} className="inline-block w-3 h-3 border-2 border-blue-400 border-t-transparent rounded-full" />
                     Analyzing…
                   </span>
                 )}
@@ -935,21 +726,13 @@ const ATSChecker = ({ onSidebarToggle }) => {
             </div>
 
             <div className="p-5 flex-1 flex flex-col relative">
-              {/* 📦 Content Container - Blurred when analyzing */}
-              <div className={`transition-all duration-300 ${isAnalyzing && uploadedFile ? 'blur-sm opacity-50 pointer-events-none' : ''}`}>
-
+              <div className={`transition-all duration-300 ${isAnalyzing && uploadedFile ? "blur-sm opacity-50 pointer-events-none" : ""}`}>
                 {/* Score Ring */}
                 {analysisResult ? (
-                  <motion.div
-                    initial={{ opacity: 0, scale: 0.95 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ duration: 1.4 }}
-                    key={`score-${uploadedFile?.name}`}
-                  >
+                  <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.4 }} key={`score-${uploadedFile?.name}`}>
                     <ScoreRing score={analysisResult} animated={animatedScore} />
                   </motion.div>
                 ) : (
-                  /* Empty State */
                   <div className="flex-1 flex items-center justify-center min-h-[300px]">
                     <div className="rounded-2xl border-2 border-dashed border-slate-100 p-8 text-center w-full">
                       <div className="w-14 h-14 rounded-2xl bg-slate-50 flex items-center justify-center mx-auto mb-3">
@@ -963,12 +746,7 @@ const ATSChecker = ({ onSidebarToggle }) => {
 
                 {/* Section Scores */}
                 {analysisResult?.sectionScores?.length > 0 && (
-                  <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: 0.3 }}
-                    className="mt-5"
-                  >
+                  <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }} className="mt-5">
                     <p className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-3">Section Breakdown</p>
                     {analysisResult.sectionScores.map((s, i) => (
                       <SectionCard key={`${s.sectionName}-${i}-${uploadedFile?.name}`} section={s} />
@@ -990,127 +768,24 @@ const ATSChecker = ({ onSidebarToggle }) => {
                   )}
                 </AnimatePresence>
 
-                {/* Job Recommendations Section */}
-                <JobRecommendations
-                  extractedData={analysisResult?.extractedData}
-                  isAnalyzing={isAnalyzing}
-                />
+                <JobRecommendations extractedData={analysisResult?.extractedData} isAnalyzing={isAnalyzing} />
               </div>
 
-              {/* 🌀 BLUR OVERLAY - Shows during analysis */}
               <AnimatePresence>
-                {isAnalyzing && uploadedFile && (
-                  <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    transition={{ duration: 0.2 }}
-                    className="absolute inset-0 flex flex-col items-center justify-center bg-white/80 backdrop-blur-sm z-10 rounded-xl"
-                  >
-                    {/* Animated Loader */}
-                    <div className="relative">
-                      {/* Outer ring */}
-                      <motion.div
-                        className="w-16 h-16 rounded-full border-4 border-slate-200"
-                        animate={{ rotate: 360 }}
-                        transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-                        style={{ borderTopColor: '#3b82f6', borderRightColor: '#8b5cf6' }}
-                      />
-                      {/* Inner pulse */}
-                      <motion.div
-                        className="absolute inset-3 rounded-full bg-gradient-to-br from-blue-500 to-purple-500"
-                        animate={{ scale: [1, 1.2, 1] }}
-                        transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
-                      />
-                      {/* Sparkle icon */}
-                      <Sparkles className="absolute inset-0 m-auto text-white" size={20} />
-                    </div>
-
-                    {/* Status Text */}
-                    <div className="mt-6 text-center">
-                      <motion.p
-                        className="text-base font-semibold text-slate-800"
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                      >
-                        Analyzing Resume
-                      </motion.p>
-
-                      {/* Animated dots */}
-                      <div className="flex items-center justify-center gap-1 mt-1">
-                        {[0, 1, 2].map((i) => (
-                          <motion.span
-                            key={i}
-                            className="w-2 h-2 rounded-full bg-blue-500"
-                            initial={{ opacity: 0.4, scale: 0.8 }}
-                            animate={{
-                              opacity: [0.4, 1, 0.4],
-                              scale: [0.8, 1.2, 0.8]
-                            }}
-                            transition={{
-                              duration: 1.2,
-                              repeat: Infinity,
-                              delay: i * 0.2,
-                              ease: "easeInOut"
-                            }}
-                          />
-                        ))}
-                      </div>
-
-                      <motion.p
-                        className="text-xs text-slate-500 mt-3 max-w-[200px]"
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        transition={{ delay: 0.3 }}
-                      >
-                        Checking keywords, formatting & ATS compatibility
-                      </motion.p>
-                    </div>
-
-                    {/* Progress hint */}
-                    <motion.div
-                      className="mt-4 flex items-center gap-2 text-xs text-slate-400"
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      transition={{ delay: 0.6 }}
-                    >
-                      <Shield size={12} className="text-emerald-500" />
-                      <span>AI-powered analysis in progress</span>
-                    </motion.div>
-                  </motion.div>
-                )}
+                <AnalysisOverlay isVisible={isAnalyzing && !!uploadedFile} />
               </AnimatePresence>
-
-              {/* CSS for animations */}
-              <style>{`
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-    @keyframes pulse {
-      0%, 100% { opacity: 0.6; }
-      50% { opacity: 1; }
-    }
-  `}</style>
             </div>
           </div>
         </div>
 
         {/* ── RIGHT PANEL: Preview ── */}
         <div className="flex-1 flex flex-col gap-4 order-1 md:order-2">
-          {/* Mobile toggle */}
-          <button
-            className="md:hidden flex items-center justify-between px-4 py-3.5 bg-white border border-slate-100 rounded-xl shadow-sm"
-            onClick={() => setIsMobilePreviewExpanded((v) => !v)}
-          >
+          <button className="md:hidden flex items-center justify-between px-4 py-3.5 bg-white border border-slate-100 rounded-xl shadow-sm" onClick={() => setIsMobilePreviewExpanded((v) => !v)}>
             <div className="flex items-center gap-2.5 text-sm font-semibold text-slate-700">
               <FileText size={18} className="text-blue-500" />
               Document Preview
             </div>
-            <ChevronDown
-              size={16}
-              className={`text-slate-400 transition-transform ${isMobilePreviewExpanded ? "rotate-180" : ""}`}
-            />
+            <ChevronDown size={16} className={`text-slate-400 transition-transform ${isMobilePreviewExpanded ? "rotate-180" : ""}`} />
           </button>
 
           <AnimatePresence initial={false}>
@@ -1124,13 +799,7 @@ const ATSChecker = ({ onSidebarToggle }) => {
               >
                 {previewType === "pdf" && previewUrl ? (
                   <div className="w-full h-full flex-1">
-                    <ATSPdfPreview
-                      pdfUrl={previewUrl}
-                      onLoadSuccess={(pdf) => {
-                        setNumPages(pdf.numPages);
-                        setPdfInstance(pdf);
-                      }}
-                    />
+                    <ATSPdfPreview pdfUrl={previewUrl} onLoadSuccess={(pdf) => { setNumPages(pdf.numPages); setPdfInstance(pdf); }} />
                   </div>
                 ) : previewType === "doc" ? (
                   resumeText ? (
@@ -1138,9 +807,7 @@ const ATSChecker = ({ onSidebarToggle }) => {
                       <ATSDocPreview text={resumeText} />
                     </div>
                   ) : (
-                    <div className="flex items-center justify-center h-full text-sm text-gray-500">
-                      Extracting DOCX preview...
-                    </div>
+                    <div className="flex items-center justify-center h-full text-sm text-gray-500">Extracting DOCX preview...</div>
                   )
                 ) : (
                   <UploadZone onFileChange={handleFileChange} />

@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect, memo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Briefcase, Target, Sparkles, ChevronRight } from "lucide-react";
+import { Briefcase, Target, Sparkles } from "lucide-react";
 
-export default function JobRecommendations({ extractedData, isAnalyzing }) {
+const JobRecommendations = memo(function JobRecommendations({ extractedData, isAnalyzing }) {
   const [recommendations, setRecommendations] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -171,4 +171,6 @@ export default function JobRecommendations({ extractedData, isAnalyzing }) {
       </div>
     </div>
   );
-}
+});
+
+export default JobRecommendations;

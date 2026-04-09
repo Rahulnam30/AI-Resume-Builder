@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback, memo } from "react";
 import { Document, Page, pdfjs } from "react-pdf";
 import {
   ZoomIn,
@@ -49,16 +49,16 @@ const ATSPdfPreview = ({ pdfUrl, onLoadSuccess }) => {
   /* The conceptual zoom multiplier perfectly tied to container size */
   const scale = clamp(zoom, ZOOM_MIN, ZOOM_MAX);
 
-  const zoomIn = () => setZoom((z) => clamp(z + ZOOM_STEP, ZOOM_MIN, ZOOM_MAX));
-  const zoomOut = () => setZoom((z) => clamp(z - ZOOM_STEP, ZOOM_MIN, ZOOM_MAX));
-  const resetZoom = () => setZoom(1);
+  const zoomIn = useCallback(() => setZoom((z) => clamp(z + ZOOM_STEP, ZOOM_MIN, ZOOM_MAX)), []);
+  const zoomOut = useCallback(() => setZoom((z) => clamp(z - ZOOM_STEP, ZOOM_MIN, ZOOM_MAX)), []);
+  const resetZoom = useCallback(() => setZoom(1), []);
 
-  const onDocumentLoadSuccess = ({ numPages }) => {
+  const onDocumentLoadSuccess = useCallback(({ numPages }) => {
     setNumPages(numPages);
     setPageNumber(1);
-    setIsLargeDocument(numPages > 3); // Documents with more than 3 pages are considered large
+    setIsLargeDocument(numPages > 3);
     setDocumentLoaded(true);
-  };
+  }, []);
 
   const content = (
     <>
@@ -174,4 +174,4 @@ const ATSPdfPreview = ({ pdfUrl, onLoadSuccess }) => {
   );
 };
 
-export default ATSPdfPreview;
+export default memo(ATSPdfPreview);

@@ -1,7 +1,6 @@
-// Create a new file: ATSDocPreview.jsx
-import { useEffect, useState } from "react";
+// ATSDocPreview.jsx — DOCX text preview with zoom/page controls
+import { useEffect, useState, useCallback, memo } from "react";
 import { motion } from "framer-motion";
-import { Document, Page, pdfjs } from "react-pdf";
 import {
   ZoomIn,
   ZoomOut,
@@ -21,18 +20,15 @@ const ATSDocPreview = ({ text }) => {
   const [scale, setScale] = useState(1.0);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [isLargeDocument, setIsLargeDocument] = useState(false);
-  const handleZoomIn = () => setScale((prev) => Math.min(prev + 0.25, 2.5));
-  const handleZoomOut = () => setScale((prev) => Math.max(prev - 0.25, 0.5));
-  const handleRefresh = () => {
+  const handleZoomIn = useCallback(() => setScale((prev) => Math.min(prev + 0.25, 2.5)), []);
+  const handleZoomOut = useCallback(() => setScale((prev) => Math.max(prev - 0.25, 0.5)), []);
+  const handleRefresh = useCallback(() => {
     setPageNumber(1);
     setScale(1.0);
-  };
-  const handleFullscreen = () => {
-    setIsFullscreen(!isFullscreen);
-  };
-  const goToPreviousPage = () => setPageNumber((prev) => Math.max(prev - 1, 1));
-  const goToNextPage = () =>
-    setPageNumber((prev) => Math.min(prev + 1, numPages));
+  }, []);
+  const handleFullscreen = useCallback(() => setIsFullscreen((prev) => !prev), []);
+  const goToPreviousPage = useCallback(() => setPageNumber((prev) => Math.max(prev - 1, 1)), []);
+  const goToNextPage = useCallback(() => setPageNumber((prev) => Math.min(prev + 1, numPages)), [numPages]);
 
   useEffect(() => {
     if (text) {
@@ -170,4 +166,4 @@ const ATSDocPreview = ({ text }) => {
   );
 };
 
-export default ATSDocPreview;
+export default memo(ATSDocPreview);
