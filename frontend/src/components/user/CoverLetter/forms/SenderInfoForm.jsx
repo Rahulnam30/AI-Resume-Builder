@@ -1,39 +1,51 @@
-import { useState } from "react";
+import { useState, useCallback, memo } from "react";
 import { User } from "lucide-react";
 
-const SenderInfoForm = ({ formData, onInputChange, highlightEmpty }) => {
+// Move regex and constants outside to prevent recreation and allow freezing
+const EMAIL_REGEX = Object.freeze(/^[^\s@]+@[^\s@]+\.[^\s@]+$/);
+const PHONE_CLEAN_REGEX = Object.freeze(/[^0-9+]/g);
+const PHONE_DIGIT_REGEX = Object.freeze(/[^0-9]/g);
+
+const SenderInfoForm = memo(({ formData, onInputChange, highlightEmpty }) => {
   const [emailError, setEmailError] = useState(false);
   const [phoneError, setPhoneError] = useState(false);
 
   // Helper to get border class for required fields
-  const getBorderClass = (value, hasFormatError = false) => {
-    if (hasFormatError) return 'border-red-500 focus:border-red-500 focus:ring-4 focus:ring-red-500/10';
-    if (highlightEmpty && !value?.trim()) return 'border-red-500 focus:border-red-500 focus:ring-4 focus:ring-red-500/10';
-    return 'border-slate-200 focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10';
-  };
+  const getBorderClass = useCallback((value, hasFormatError = false) => {
+    const errorClass = 'border-red-500 focus:border-red-500 focus:ring-4 focus:ring-red-500/10';
+    const defaultClass = 'border-slate-200 focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10';
+    
+    if (hasFormatError) return errorClass;
+    if (highlightEmpty && !value?.trim()) return errorClass;
+    return defaultClass;
+  }, [highlightEmpty]);
 
-  const handleEmailChange = (e) => {
+  const handleEmailChange = useCallback((e) => {
     const val = e.target.value;
     onInputChange("email", val);
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (val && !emailRegex.test(val)) {
+    
+    if (val && !EMAIL_REGEX.test(val)) {
       setEmailError(true);
     } else {
       setEmailError(false);
     }
-  };
+  }, [onInputChange]);
 
-  const handlePhoneChange = (e) => {
+  const handlePhoneChange = useCallback((e) => {
     const val = e.target.value;
-    const cleanVal = val.replace(/[^0-9+]/g, "");
+    const cleanVal = val.replace(PHONE_CLEAN_REGEX, "");
     onInputChange("phone", cleanVal);
 
-    if (cleanVal && cleanVal.replace(/[^0-9]/g, "").length < 10) {
+    if (cleanVal && cleanVal.replace(PHONE_DIGIT_REGEX, "").length < 10) {
       setPhoneError(true);
     } else {
       setPhoneError(false);
     }
-  };
+  }, [onInputChange]);
+
+  const handleFullNameChange = useCallback((e) => onInputChange("fullName", e.target.value), [onInputChange]);
+  const handleAddressChange = useCallback((e) => onInputChange("address", e.target.value), [onInputChange]);
+  const handleLinkedinChange = useCallback((e) => onInputChange("linkedin", e.target.value), [onInputChange]);
 
   return (
     <div className="p-2 animate-in fade-in duration-300">
@@ -53,7 +65,7 @@ const SenderInfoForm = ({ formData, onInputChange, highlightEmpty }) => {
             placeholder="John Doe"
             className={`w-full px-3.5 py-2.5 border rounded-lg text-sm text-slate-900 focus:outline-none transition-all bg-white ${getBorderClass(formData.fullName)}`}
             value={formData.fullName}
-            onChange={(e) => onInputChange("fullName", e.target.value)}
+            onChange={handleFullNameChange}
           />
         </div>
 
@@ -98,7 +110,7 @@ const SenderInfoForm = ({ formData, onInputChange, highlightEmpty }) => {
             placeholder="123 Main St, City, State ZIP"
             className="w-full px-3.5 py-2.5 border border-slate-200 rounded-lg text-sm text-slate-900 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all bg-white"
             value={formData.address}
-            onChange={(e) => onInputChange("address", e.target.value)}
+            onChange={handleAddressChange}
           />
         </div>
 
@@ -112,12 +124,15 @@ const SenderInfoForm = ({ formData, onInputChange, highlightEmpty }) => {
             placeholder="linkedin.com/in/johndoe"
             className="w-full px-3.5 py-2.5 border border-slate-200 rounded-lg text-sm text-slate-900 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all bg-white"
             value={formData.linkedin}
-            onChange={(e) => onInputChange("linkedin", e.target.value)}
+            onChange={handleLinkedinChange}
           />
         </div>
       </div>
     </div>
   );
-};
+});
+
+SenderInfoForm.displayName = "SenderInfoForm";
 
 export default SenderInfoForm;
+

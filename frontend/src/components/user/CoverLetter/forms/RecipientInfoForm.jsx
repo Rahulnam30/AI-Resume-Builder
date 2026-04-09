@@ -1,12 +1,21 @@
+import { useCallback, memo } from "react";
 import { Building2 } from "lucide-react";
 
-const RecipientInfoForm = ({ formData, onInputChange, highlightEmpty }) => {
+const RecipientInfoForm = memo(({ formData, onInputChange, highlightEmpty }) => {
+  // Constants for styles
+  const ERROR_CLASSES = 'border-red-500 focus:border-red-500 focus:ring-4 focus:ring-red-500/10';
+  const DEFAULT_CLASSES = 'border-slate-200 focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10';
 
   // Helper to get border class for required fields
-  const getBorderClass = (value) => {
-    if (highlightEmpty && !value?.trim()) return 'border-red-500 focus:border-red-500 focus:ring-4 focus:ring-red-500/10';
-    return 'border-slate-200 focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10';
-  };
+  const getBorderClass = useCallback((value) => {
+    return (highlightEmpty && !value?.trim()) ? ERROR_CLASSES : DEFAULT_CLASSES;
+  }, [highlightEmpty]);
+
+  const handleRecipientNameChange = useCallback((e) => onInputChange("recipientName", e.target.value), [onInputChange]);
+  const handleRecipientTitleChange = useCallback((e) => onInputChange("recipientTitle", e.target.value), [onInputChange]);
+  const handleCompanyNameChange = useCallback((e) => onInputChange("companyName", e.target.value), [onInputChange]);
+  const handleCompanyAddressChange = useCallback((e) => onInputChange("companyAddress", e.target.value), [onInputChange]);
+
   return (
     <div className="p-2 animate-in fade-in duration-300">
       {/* Recipient Information */}
@@ -16,6 +25,7 @@ const RecipientInfoForm = ({ formData, onInputChange, highlightEmpty }) => {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-x-5 gap-y-4">
+        {/* Hiring Manager's Name */}
         <div className="flex flex-col gap-1.5">
           <label className="block text-sm font-semibold text-slate-700">
             Hiring Manager's Name
@@ -23,13 +33,14 @@ const RecipientInfoForm = ({ formData, onInputChange, highlightEmpty }) => {
           <input
             type="text"
             placeholder="Jane Smith"
-            className="w-full px-3.5 py-2.5 border border-slate-200 rounded-lg text-sm text-slate-900 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all bg-white"
+            className={`w-full px-3.5 py-2.5 border rounded-lg text-sm text-slate-900 focus:outline-none transition-all bg-white ${DEFAULT_CLASSES}`}
             value={formData.recipientName}
-            onChange={(e) => onInputChange("recipientName", e.target.value)}
+            onChange={handleRecipientNameChange}
           />
           <small className="text-xs text-slate-400">Leave blank to use "Hiring Manager"</small>
         </div>
 
+        {/* Hiring Manager's Title */}
         <div className="flex flex-col gap-1.5">
           <label className="block text-sm font-semibold text-slate-700">
             Hiring Manager's Title
@@ -37,12 +48,13 @@ const RecipientInfoForm = ({ formData, onInputChange, highlightEmpty }) => {
           <input
             type="text"
             placeholder="HR Director"
-            className="w-full px-3.5 py-2.5 border border-slate-200 rounded-lg text-sm text-slate-900 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all bg-white"
+            className={`w-full px-3.5 py-2.5 border rounded-lg text-sm text-slate-900 focus:outline-none transition-all bg-white ${DEFAULT_CLASSES}`}
             value={formData.recipientTitle}
-            onChange={(e) => onInputChange("recipientTitle", e.target.value)}
+            onChange={handleRecipientTitleChange}
           />
         </div>
 
+        {/* Company Name */}
         <div className="flex flex-col gap-1.5">
           <label className="block text-sm font-semibold text-slate-700">
             Company Name <span className="text-red-500">*</span>
@@ -52,10 +64,11 @@ const RecipientInfoForm = ({ formData, onInputChange, highlightEmpty }) => {
             placeholder="Acme Corporation"
             className={`w-full px-3.5 py-2.5 border rounded-lg text-sm text-slate-900 focus:outline-none transition-all bg-white ${getBorderClass(formData.companyName)}`}
             value={formData.companyName}
-            onChange={(e) => onInputChange("companyName", e.target.value)}
+            onChange={handleCompanyNameChange}
           />
         </div>
 
+        {/* Company Address */}
         <div className="flex flex-col gap-1.5">
           <label className="block text-sm font-semibold text-slate-700">
             Company Address
@@ -63,14 +76,17 @@ const RecipientInfoForm = ({ formData, onInputChange, highlightEmpty }) => {
           <input
             type="text"
             placeholder="456 Business Ave, City, State ZIP"
-            className="w-full px-3.5 py-2.5 border border-slate-200 rounded-lg text-sm text-slate-900 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all bg-white"
+            className={`w-full px-3.5 py-2.5 border rounded-lg text-sm text-slate-900 focus:outline-none transition-all bg-white ${DEFAULT_CLASSES}`}
             value={formData.companyAddress}
-            onChange={(e) => onInputChange("companyAddress", e.target.value)}
+            onChange={handleCompanyAddressChange}
           />
         </div>
       </div>
     </div>
   );
-};
+});
+
+RecipientInfoForm.displayName = "RecipientInfoForm";
 
 export default RecipientInfoForm;
+

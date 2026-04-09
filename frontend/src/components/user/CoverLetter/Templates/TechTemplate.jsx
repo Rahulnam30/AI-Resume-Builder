@@ -1,7 +1,12 @@
-import React from "react";
-import { formatExternalUrl, formatMailto, formatTel } from "../../Templates/socialUtils";
+import React, { memo, useMemo } from "react";
 
-const TechTemplate = ({ formData }) => {
+// Move static functions outside
+const formatUrl = (url) => {
+  if (!url) return "";
+  return url.startsWith('http') ? url : `https://${url}`;
+};
+
+const TechTemplate = memo(({ formData }) => {
   const {
     fullName, email, phone, address, linkedin, website, github, extraLinks,
     recipientName, recipientTitle, companyName, companyAddress,
@@ -9,6 +14,72 @@ const TechTemplate = ({ formData }) => {
     openingParagraph, bodyParagraph1, bodyParagraph2, closingParagraph,
     salutation, customSalutation
   } = formData || {};
+
+  const socialLinks = useMemo(() => {
+    const links = [];
+    if (email) links.push(<div key="email" className="flex items-center gap-2"><span className="code-style">email:</span> {email}</div>);
+    if (phone) links.push(<div key="phone" className="flex items-center gap-2"><span className="code-style">phone:</span> {phone}</div>);
+    
+    const otherLinks = [];
+    if (linkedin) {
+      otherLinks.push(
+        <a key="linkedin" href={formatUrl(linkedin)} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">
+          LinkedIn
+        </a>
+      );
+    }
+    if (website) {
+      otherLinks.push(
+        <span key="website">
+          {otherLinks.length > 0 && " | "}
+          <a href={formatUrl(website)} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">
+            Website
+          </a>
+        </span>
+      );
+    }
+    if (github) {
+      otherLinks.push(
+        <span key="github">
+          {otherLinks.length > 0 && " | "}
+          <a href={formatUrl(github)} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">
+            GitHub
+          </a>
+        </span>
+      );
+    }
+    if (extraLinks) {
+      extraLinks.forEach((link, index) => {
+        if (link.label && link.url) {
+          otherLinks.push(
+            <span key={`extra-${index}`}>
+              {otherLinks.length > 0 && " | "}
+              <a href={formatUrl(link.url)} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">
+                {link.label}
+              </a>
+            </span>
+          );
+        }
+      });
+    }
+
+    if (otherLinks.length > 0) {
+      links.push(
+        <div key="social" className="flex items-center gap-2 underline decoration-blue-500/20">
+          <span className="code-style">link:</span> {otherLinks}
+        </div>
+      );
+    }
+
+    if (address) {
+      links.push(
+        <div key="address" className="flex items-center gap-2 italic">
+          <span className="code-style">addr:</span> {address}
+        </div>
+      );
+    }
+    return links;
+  }, [email, phone, linkedin, website, github, extraLinks, address]);
 
   return (
     <div className="w-full bg-[#0f172a] p-16 text-slate-300 font-mono leading-relaxed min-h-[297mm] flex flex-col relative overflow-hidden">
@@ -29,10 +100,7 @@ const TechTemplate = ({ formData }) => {
           {fullName || "DEV_NAME"}
         </h1>
         <div className="grid grid-cols-2 gap-4 text-[10px] opacity-60 max-w-md">
-          <div className="flex items-center gap-2"><span className="code-style">email:</span> {email}</div>
-          <div className="flex items-center gap-2"><span className="code-style">phone:</span> {phone}</div>
-          <div className="flex items-center gap-2 underline decoration-blue-500/20"><span className="code-style">link:</span> {linkedin && <a href={linkedin.startsWith('http') ? linkedin : `https://${linkedin}`} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">LinkedIn</a>}{website && <span> | <a href={website.startsWith('http') ? website : `https://${website}`} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">Website</a></span>}{github && <span> | <a href={github.startsWith('http') ? github : `https://${github}`} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">GitHub</a></span>}{extraLinks?.map((link, index) => (link.label && link.url && <span key={index}> | <a href={link.url.startsWith('http') ? link.url : `https://${link.url}`} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">{link.label}</a></span>))}</div>
-          <div className="flex items-center gap-2 italic"><span className="code-style">addr:</span> {address}</div>
+          {socialLinks}
         </div>
       </div>
 
@@ -55,20 +123,21 @@ const TechTemplate = ({ formData }) => {
            </div>
 
            <div className="w-2/3 space-y-8 template-content">
-              <div className="text-xs font-bold p-4 bg-slate-900/50 rounded-lg border border-slate-800">
-                 {/* Job summary acts like a docstring */}
-                 <p className="text-slate-500 italic">/**</p>
-                 <p className="text-slate-500 italic text-[10px] pl-4">* {jobSummary || "Seeking a role that utilizes core engineering principles..."}</p>
-                 <p className="text-slate-500 italic">*/</p>
-              </div>
+              {(jobSummary || jobDescription) && (
+                <div className="text-xs font-bold p-4 bg-slate-900/50 rounded-lg border border-slate-800">
+                  <p className="text-slate-500 italic">/**</p>
+                  <p className="text-slate-500 italic text-[10px] pl-4">* {jobSummary || jobDescription || "Seeking a role that utilizes core engineering principles..."}</p>
+                  <p className="text-slate-500 italic">*/</p>
+                </div>
+              )}
 
               <div className="space-y-6 text-sm antialiased">
                 <p className="text-blue-400 font-bold tracking-widest uppercase text-[10px]">class CoverLetter extends Professional {'{'}</p>
                 <div className="pl-6 space-y-6 border-l border-slate-800">
-                  <p className="text-white font-medium">{openingParagraph}</p>
-                  <p>{bodyParagraph1}</p>
-                  <p>{bodyParagraph2}</p>
-                  <p>{closingParagraph}</p>
+                  <p className="text-white font-medium">{openingParagraph || "I am writing to express my interest in the position..."}</p>
+                  {bodyParagraph1 && <p>{bodyParagraph1}</p>}
+                  {bodyParagraph2 && <p>{bodyParagraph2}</p>}
+                  {closingParagraph && <p>{closingParagraph}</p>}
                 </div>
                 <p className="text-blue-400 font-bold tracking-widest uppercase text-[10px]">{'}'}</p>
               </div>
@@ -86,6 +155,9 @@ const TechTemplate = ({ formData }) => {
       </div>
     </div>
   );
-};
+});
+
+TechTemplate.displayName = "TechTemplate";
 
 export default TechTemplate;
+

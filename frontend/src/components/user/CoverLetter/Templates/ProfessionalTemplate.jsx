@@ -1,7 +1,12 @@
-import React from "react";
-import { formatExternalUrl, formatMailto, formatTel } from "../../Templates/socialUtils";
+import React, { memo, useMemo } from "react";
 
-const ProfessionalTemplate = ({ formData }) => {
+// Move static functions outside
+const formatUrl = (url) => {
+  if (!url) return "";
+  return url.startsWith('http') ? url : `https://${url}`;
+};
+
+const ProfessionalTemplate = memo(({ formData }) => {
   const {
     fullName, email, phone, address, linkedin, website, github, extraLinks,
     recipientName, recipientTitle, companyName, companyAddress,
@@ -9,6 +14,55 @@ const ProfessionalTemplate = ({ formData }) => {
     openingParagraph, bodyParagraph1, bodyParagraph2, closingParagraph,
     salutation, customSalutation
   } = formData || {};
+
+  const formattedDate = useMemo(() => {
+    return new Date().toLocaleDateString('en-US', { 
+      year: 'numeric', 
+      month: 'long', 
+      day: 'numeric' 
+    });
+  }, []);
+
+  const memoizedExtraLinks = useMemo(() => {
+    return extraLinks?.map((link, index) => {
+      if (!link.label || !link.url) return null;
+      return (
+        <span key={index}>
+          • <a href={formatUrl(link.url)} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">
+            {link.label}
+          </a>
+        </span>
+      );
+    });
+  }, [extraLinks]);
+
+  const socialLinks = useMemo(() => {
+    const links = [];
+    if (email) links.push(<span key="email">{email}</span>);
+    if (phone) links.push(<span key="phone">• {phone}</span>);
+    if (linkedin) {
+      links.push(
+        <span key="linkedin">
+          • <a href={formatUrl(linkedin)} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">LinkedIn</a>
+        </span>
+      );
+    }
+    if (website) {
+      links.push(
+        <span key="website">
+          • <a href={formatUrl(website)} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">Website</a>
+        </span>
+      );
+    }
+    if (github) {
+      links.push(
+        <span key="github">
+          • <a href={formatUrl(github)} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">GitHub</a>
+        </span>
+      );
+    }
+    return links;
+  }, [email, phone, linkedin, website, github]);
 
   return (
     <div className="w-full bg-white p-12 text-slate-900 font-serif leading-relaxed min-h-[297mm]">
@@ -21,19 +75,15 @@ const ProfessionalTemplate = ({ formData }) => {
       <div className="text-center mb-10 border-b-2 border-slate-900 pb-6">
         <h1 className="text-3xl font-bold uppercase tracking-tight mb-2">{fullName || "Your Name"}</h1>
         <div className="flex justify-center flex-wrap gap-x-4 gap-y-1 text-sm text-slate-600">
-          {email && <span>{email}</span>}
-          {phone && <span>• {phone}</span>}
-          {linkedin && <span>• <a href={linkedin.startsWith('http') ? linkedin : `https://${linkedin}`} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">LinkedIn</a></span>}
-          {website && <span>• <a href={website.startsWith('http') ? website : `https://${website}`} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">Website</a></span>}
-          {github && <span>• <a href={github.startsWith('http') ? github : `https://${github}`} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">GitHub</a></span>}
-          {extraLinks?.map((link, index) => (link.label && link.url && <span key={index}>• <a href={link.url.startsWith('http') ? link.url : `https://${link.url}`} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">{link.label}</a></span>))}
+          {socialLinks}
+          {memoizedExtraLinks}
         </div>
         {address && <p className="text-sm text-slate-500 mt-1">{address}</p>}
       </div>
 
       {/* Date & Ref */}
       <div className="flex justify-between mb-8 text-sm italic text-slate-500">
-        <div>{new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</div>
+        <div>{formattedDate}</div>
         {jobReference && <div>Ref: {jobReference}</div>}
       </div>
 
@@ -61,9 +111,9 @@ const ProfessionalTemplate = ({ formData }) => {
       <div className="space-y-6 text-[15px] template-content">
         <p className="font-bold">Dear {recipientName || "Hiring Manager"},</p>
         <p>{openingParagraph || "I am writing to express my interest in the position..."}</p>
-        <p>{bodyParagraph1}</p>
-        <p>{bodyParagraph2}</p>
-        <p>{closingParagraph}</p>
+        {bodyParagraph1 && <p>{bodyParagraph1}</p>}
+        {bodyParagraph2 && <p>{bodyParagraph2}</p>}
+        {closingParagraph && <p>{closingParagraph}</p>}
       </div>
 
       {/* Closing */}
@@ -73,6 +123,9 @@ const ProfessionalTemplate = ({ formData }) => {
       </div>
     </div>
   );
-};
+});
+
+ProfessionalTemplate.displayName = "ProfessionalTemplate";
 
 export default ProfessionalTemplate;
+

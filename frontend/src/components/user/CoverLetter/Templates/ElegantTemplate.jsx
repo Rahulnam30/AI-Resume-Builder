@@ -1,7 +1,12 @@
-import React from "react";
-import { formatExternalUrl, formatMailto, formatTel } from "../../Templates/socialUtils";
+import React, { memo, useMemo } from "react";
 
-const ElegantTemplate = ({ formData }) => {
+// Move static functions outside
+const formatUrl = (url) => {
+  if (!url) return "";
+  return url.startsWith('http') ? url : `https://${url}`;
+};
+
+const ElegantTemplate = memo(({ formData }) => {
   const {
     fullName, email, phone, address, linkedin, website, github, extraLinks,
     recipientName, recipientTitle, companyName, companyAddress,
@@ -10,7 +15,60 @@ const ElegantTemplate = ({ formData }) => {
     salutation, customSalutation
   } = formData || {};
 
-  const exportDate = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+  const exportDate = useMemo(() => {
+    return new Date().toLocaleDateString('en-US', { 
+      year: 'numeric', 
+      month: 'long', 
+      day: 'numeric' 
+    });
+  }, []);
+
+  const socialLinks = useMemo(() => {
+    const links = [];
+    if (email) links.push(<span key="email">{email}</span>);
+    if (phone) links.push(<span key="phone">{phone}</span>);
+    if (linkedin) {
+      links.push(
+        <span key="linkedin" className="truncate max-w-[150px]">
+          <a href={formatUrl(linkedin)} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">
+            LinkedIn
+          </a>
+        </span>
+      );
+    }
+    if (website) {
+      links.push(
+        <span key="website" className="truncate max-w-[150px]">
+          <a href={formatUrl(website)} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">
+            Website
+          </a>
+        </span>
+      );
+    }
+    if (github) {
+      links.push(
+        <span key="github" className="truncate max-w-[150px]">
+          <a href={formatUrl(github)} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">
+            GitHub
+          </a>
+        </span>
+      );
+    }
+    if (extraLinks) {
+      extraLinks.forEach((link, index) => {
+        if (link.label && link.url) {
+          links.push(
+            <span key={`extra-${index}`} className="truncate max-w-[150px]">
+              <a href={formatUrl(link.url)} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">
+                {link.label}
+              </a>
+            </span>
+          );
+        }
+      });
+    }
+    return links;
+  }, [email, phone, linkedin, website, github, extraLinks]);
 
   return (
     <div className="p-16 bg-[#fffcf5] text-stone-800 font-serif leading-loose min-h-[297mm] shadow-inner flex flex-col antialiased">
@@ -23,14 +81,9 @@ const ElegantTemplate = ({ formData }) => {
       <header className="border-b-[3px] border-double border-stone-300 pb-12 mb-16 relative">
         <h1 className="text-5xl font-light tracking-widest text-stone-900 mb-6 text-center italic">{fullName || "your name"}</h1>
         <div className="flex justify-center gap-12 text-[10px] font-bold uppercase tracking-[0.3em] text-stone-400 flex-wrap">
-           <span>{email}</span>
-           <span>{phone}</span>
-           {linkedin && <span className="truncate max-w-[150px]"><a href={linkedin.startsWith('http') ? linkedin : `https://${linkedin}`} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">LinkedIn</a></span>}
-           {website && <span className="truncate max-w-[150px]"><a href={website.startsWith('http') ? website : `https://${website}`} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">Website</a></span>}
-           {github && <span className="truncate max-w-[150px]"><a href={github.startsWith('http') ? github : `https://${github}`} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">GitHub</a></span>}
-           {extraLinks?.map((link, index) => (link.label && link.url && <span key={index} className="truncate max-w-[150px]"><a href={link.url.startsWith('http') ? link.url : `https://${link.url}`} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">{link.label}</a></span>))}
+           {socialLinks}
         </div>
-        <div className="text-center mt-3 text-[10px] text-stone-300 uppercase tracking-widest">{address}</div>
+        {address && <div className="text-center mt-3 text-[10px] text-stone-300 uppercase tracking-widest">{address}</div>}
         <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 bg-[#fffcf5] px-8 text-stone-300">
            <span className="text-lg">✧</span>
         </div>
@@ -63,10 +116,10 @@ const ElegantTemplate = ({ formData }) => {
            </div>
 
            <p className="indent-0 text-stone-900 font-bold italic text-lg decoration-stone-100 underline decoration-8 underline-offset-[-2px]">Dear {recipientName || "Hiring Manager"},</p>
-           <p>{openingParagraph}</p>
-           <p>{bodyParagraph1}</p>
-           <p>{bodyParagraph2}</p>
-           <p>{closingParagraph}</p>
+           {openingParagraph && <p>{openingParagraph}</p>}
+           {bodyParagraph1 && <p>{bodyParagraph1}</p>}
+           {bodyParagraph2 && <p>{bodyParagraph2}</p>}
+           {closingParagraph && <p>{closingParagraph}</p>}
         </div>
 
         <div className="mt-auto pt-24 pb-8 flex flex-col items-end">
@@ -77,6 +130,8 @@ const ElegantTemplate = ({ formData }) => {
       </div>
     </div>
   );
-};
+});
+
+ElegantTemplate.displayName = "ElegantTemplate";
 
 export default ElegantTemplate;

@@ -1,15 +1,15 @@
 import { User, Briefcase, FileText, Send, Building2, Eye, EyeOff } from "lucide-react";
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useCallback, memo } from "react";
 
-const tabs = [
+const tabs = Object.freeze([
   { id: "sender", label: "Personal", icon: User },
   { id: "recipient", label: "Recipient", icon: Building2 },
   { id: "job", label: "Job Details", icon: Briefcase },
   { id: "body", label: "Content", icon: FileText },
   { id: "closing", label: "Closing", icon: Send },
-];
+]);
 
-const CoverLetterFormTabs = ({
+const CoverLetterFormTabs = memo(({
   activeSection,
   setActiveSection,
   showPreview = false,
@@ -34,6 +34,10 @@ const CoverLetterFormTabs = ({
     }
   }, [activeSection]);
 
+  const handleTabClick = useCallback((id) => {
+    setActiveSection(id);
+  }, [setActiveSection]);
+
   return (
     <div className="bg-white rounded-t-2xl px-4 py-3 border-b border-slate-100 flex flex-col gap-3">
       {/* Top Row: Tabs + Mobile Preview */}
@@ -54,7 +58,7 @@ const CoverLetterFormTabs = ({
                 <div
                   key={id}
                   data-testid={`tab-${id}`}
-                  onClick={() => setActiveSection(id)}
+                  onClick={() => handleTabClick(id)}
                   className={`flex items-center gap-2 py-1.5 px-3 rounded-lg text-sm font-medium whitespace-nowrap transition-all select-none cursor-pointer ${active
                       ? "text-blue-700 bg-blue-50 shadow-sm border border-blue-100"
                       : "text-slate-500 border border-transparent hover:text-slate-800 hover:bg-slate-50"
@@ -108,6 +112,9 @@ const CoverLetterFormTabs = ({
       </div>
     </div>
   );
-};
+});
+
+CoverLetterFormTabs.displayName = "CoverLetterFormTabs";
 
 export default CoverLetterFormTabs;
+

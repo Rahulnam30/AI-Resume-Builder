@@ -1,7 +1,13 @@
-import React from "react";
-import { formatExternalUrl, formatMailto, formatTel } from "../../Templates/socialUtils";
+import React, { memo, useMemo } from "react";
+import { formatMailto, formatTel } from "../../Templates/socialUtils";
 
-const ModernTemplate = ({ formData }) => {
+// Move static functions outside
+const formatUrl = (url) => {
+  if (!url) return "";
+  return url.startsWith('http') ? url : `https://${url}`;
+};
+
+const ModernTemplate = memo(({ formData }) => {
   const {
     fullName, email, phone, address, linkedin, website, github, extraLinks,
     recipientName, recipientTitle, companyName, companyAddress,
@@ -10,7 +16,68 @@ const ModernTemplate = ({ formData }) => {
     salutation, customSalutation
   } = formData || {};
 
-  const exportDate = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+  const exportDate = useMemo(() => {
+    return new Date().toLocaleDateString('en-US', { 
+      year: 'numeric', 
+      month: 'long', 
+      day: 'numeric' 
+    });
+  }, []);
+
+  const nameParts = useMemo(() => {
+    if (!fullName) return { first: "YOUR", rest: "NAME" };
+    const parts = fullName.split(' ');
+    return {
+      first: parts[0],
+      rest: parts.slice(1).join(' ')
+    };
+  }, [fullName]);
+
+  const socialLinks = useMemo(() => {
+    const links = [];
+    if (linkedin) {
+      links.push(
+        <a key="linkedin" href={formatUrl(linkedin)} target="_blank" rel="noopener noreferrer" className="text-blue-400 underline">
+          LinkedIn
+        </a>
+      );
+    }
+    if (website) {
+      links.push(
+        <span key="website">
+          {links.length > 0 && " | "}
+          <a href={formatUrl(website)} target="_blank" rel="noopener noreferrer" className="text-blue-400 underline">
+            Website
+          </a>
+        </span>
+      );
+    }
+    if (github) {
+      links.push(
+        <span key="github">
+          {links.length > 0 && " | "}
+          <a href={formatUrl(github)} target="_blank" rel="noopener noreferrer" className="text-blue-400 underline">
+            GitHub
+          </a>
+        </span>
+      );
+    }
+    if (extraLinks) {
+      extraLinks.forEach((link, index) => {
+        if (link.label && link.url) {
+          links.push(
+            <span key={`extra-${index}`}>
+              {links.length > 0 && " | "}
+              <a href={formatUrl(link.url)} target="_blank" rel="noopener noreferrer" className="text-blue-400 underline">
+                {link.label}
+              </a>
+            </span>
+          );
+        }
+      });
+    }
+    return links;
+  }, [linkedin, website, github, extraLinks]);
 
   return (
     <div className="bg-slate-50 min-h-[297mm] flex font-sans leading-normal">
@@ -23,8 +90,8 @@ const ModernTemplate = ({ formData }) => {
       <div className="w-1/3 bg-slate-900 p-10 text-slate-300 space-y-8 flex flex-col">
         <div>
           <h1 className="text-2xl font-black text-white leading-tight uppercase tracking-tighter">
-            {fullName?.split(' ')[0] || "YOUR"}<br/>
-            <span className="text-blue-400">{fullName?.split(' ').slice(1).join(' ') || "NAME"}</span>
+            {nameParts.first}<br/>
+            <span className="text-blue-400">{nameParts.rest}</span>
           </h1>
           <div className="h-1 w-10 bg-blue-500 mt-4"></div>
         </div>
@@ -32,10 +99,12 @@ const ModernTemplate = ({ formData }) => {
         <div className="space-y-4 text-xs">
           <div className="opacity-60 text-[9px] uppercase font-bold tracking-widest text-slate-400">Contact Details</div>
           <div className="space-y-2">
-            <p className="break-all font-medium text-slate-200"><a href={formatMailto(email)} className="hover:underline">{email}</a></p>
-            <p className="font-medium text-slate-200"><a href={formatTel(phone)} className="hover:underline">{phone}</a></p>
-            <p className="whitespace-pre-line leading-relaxed">{address}</p>
-            <p className="text-blue-400 font-bold mt-2">{linkedin && <a href={linkedin.startsWith('http') ? linkedin : `https://${linkedin}`} target="_blank" rel="noopener noreferrer" className="text-blue-400 underline">LinkedIn</a>}{website && <span> | <a href={website.startsWith('http') ? website : `https://${website}`} target="_blank" rel="noopener noreferrer" className="text-blue-400 underline">Website</a></span>}{github && <span> | <a href={github.startsWith('http') ? github : `https://${github}`} target="_blank" rel="noopener noreferrer" className="text-blue-400 underline">GitHub</a></span>}{extraLinks?.map((link, index) => (link.label && link.url && <span key={index}> | <a href={link.url.startsWith('http') ? link.url : `https://${link.url}`} target="_blank" rel="noopener noreferrer" className="text-blue-400 underline">{link.label}</a></span>))}</p>
+            {email && <p className="break-all font-medium text-slate-200"><a href={formatMailto(email)} className="hover:underline">{email}</a></p>}
+            {phone && <p className="font-medium text-slate-200"><a href={formatTel(phone)} className="hover:underline">{phone}</a></p>}
+            {address && <p className="whitespace-pre-line leading-relaxed">{address}</p>}
+            <p className="text-blue-400 font-bold mt-2">
+              {socialLinks}
+            </p>
           </div>
         </div>
 
@@ -76,9 +145,9 @@ const ModernTemplate = ({ formData }) => {
           <h3 className="text-xl font-black text-slate-900">Dear {recipientName || "Hiring Manager"},</h3>
           <p className="font-medium">{openingParagraph || "I'm reaching out regarding my strong interest..."}</p>
           <div className="space-y-4 text-slate-600 antialiased">
-            <p>{bodyParagraph1}</p>
-            <p>{bodyParagraph2}</p>
-            <p>{closingParagraph}</p>
+            {bodyParagraph1 && <p>{bodyParagraph1}</p>}
+            {bodyParagraph2 && <p>{bodyParagraph2}</p>}
+            {closingParagraph && <p>{closingParagraph}</p>}
           </div>
         </div>
 
@@ -92,6 +161,9 @@ const ModernTemplate = ({ formData }) => {
       </div>
     </div>
   );
-};
+});
+
+ModernTemplate.displayName = "ModernTemplate";
 
 export default ModernTemplate;
+

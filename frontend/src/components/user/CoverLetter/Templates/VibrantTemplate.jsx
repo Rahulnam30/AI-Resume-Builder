@@ -1,7 +1,12 @@
-import React from "react";
-import { formatExternalUrl, formatMailto, formatTel } from "../../Templates/socialUtils";
+import React, { memo, useMemo } from "react";
 
-const VibrantTemplate = ({ formData }) => {
+// Move static functions outside
+const formatUrl = (url) => {
+  if (!url) return "";
+  return url.startsWith('http') ? url : `https://${url}`;
+};
+
+const VibrantTemplate = memo(({ formData }) => {
   const {
     fullName, email, phone, address, linkedin, website, github, extraLinks,
     recipientName, recipientTitle, companyName, companyAddress,
@@ -9,6 +14,53 @@ const VibrantTemplate = ({ formData }) => {
     openingParagraph, bodyParagraph1, bodyParagraph2, closingParagraph,
     salutation, customSalutation
   } = formData || {};
+
+  const socialLinks = useMemo(() => {
+    const links = [];
+    if (email) links.push(<div key="email" className="bg-slate-900 text-white px-3 py-1 rounded-sm">{email}</div>);
+    if (phone) links.push(<div key="phone" className="py-1 border-b-2 border-slate-100">{phone}</div>);
+    if (linkedin) {
+      links.push(
+        <div key="linkedin" className="py-1 border-b-2 border-slate-100 italic">
+          <a href={formatUrl(linkedin)} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">
+            LinkedIn
+          </a>
+        </div>
+      );
+    }
+    if (website) {
+      links.push(
+        <div key="website" className="py-1 border-b-2 border-slate-100 italic">
+          <a href={formatUrl(website)} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">
+            Website
+          </a>
+        </div>
+      );
+    }
+    if (github) {
+      links.push(
+        <div key="github" className="py-1 border-b-2 border-slate-100 italic">
+          <a href={formatUrl(github)} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">
+            GitHub
+          </a>
+        </div>
+      );
+    }
+    if (extraLinks) {
+      extraLinks.forEach((link, index) => {
+        if (link.label && link.url) {
+          links.push(
+            <div key={`extra-${index}`} className="py-1 border-b-2 border-slate-100 italic">
+              <a href={formatUrl(link.url)} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">
+                {link.label}
+              </a>
+            </div>
+          );
+        }
+      });
+    }
+    return links;
+  }, [email, phone, linkedin, website, github, extraLinks]);
 
   return (
     <div className="w-full bg-[#fff] min-h-[297mm] flex font-sans leading-relaxed relative overflow-hidden">
@@ -27,12 +79,7 @@ const VibrantTemplate = ({ formData }) => {
             {fullName || "Hello World"}
           </h1>
           <div className="flex flex-wrap gap-x-8 gap-y-2 mt-8 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">
-             <div className="bg-slate-900 text-white px-3 py-1 rounded-sm">{email}</div>
-             <div className="py-1 border-b-2 border-slate-100">{phone}</div>
-             {linkedin && <div className="py-1 border-b-2 border-slate-100 italic"><a href={linkedin.startsWith('http') ? linkedin : `https://${linkedin}`} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">LinkedIn</a></div>}
-             {website && <div className="py-1 border-b-2 border-slate-100 italic"><a href={website.startsWith('http') ? website : `https://${website}`} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">Website</a></div>}
-             {github && <div className="py-1 border-b-2 border-slate-100 italic"><a href={github.startsWith('http') ? github : `https://${github}`} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">GitHub</a></div>}
-             {extraLinks?.map((link, index) => (link.label && link.url && <div key={index} className="py-1 border-b-2 border-slate-100 italic"><a href={link.url.startsWith('http') ? link.url : `https://${link.url}`} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">{link.label}</a></div>))}
+             {socialLinks}
           </div>
         </header>
 
@@ -41,10 +88,10 @@ const VibrantTemplate = ({ formData }) => {
              <div className="space-y-6 text-xl font-bold text-slate-800 antialiased">
                 <p className="text-4xl text-purple-600 font-black leading-none italic mb-4">Dear {recipientName || "Hiring Lead"},</p>
                 <div className="space-y-8 text-lg leading-relaxed font-medium text-slate-600">
-                  <p className="text-slate-900 text-2xl font-black border-l-8 border-orange-400 pl-6 py-2 bg-orange-50/30">{openingParagraph}</p>
-                  <p>{bodyParagraph1}</p>
-                  <p>{bodyParagraph2}</p>
-                  <p>{closingParagraph}</p>
+                   <p className="text-slate-900 text-2xl font-black border-l-8 border-orange-400 pl-6 py-2 bg-orange-50/30">{openingParagraph || "I am writing to express my interest in the position..."}</p>
+                   {bodyParagraph1 && <p>{bodyParagraph1}</p>}
+                   {bodyParagraph2 && <p>{bodyParagraph2}</p>}
+                   {closingParagraph && <p>{closingParagraph}</p>}
                 </div>
              </div>
           </div>
@@ -86,6 +133,9 @@ const VibrantTemplate = ({ formData }) => {
       </div>
     </div>
   );
-};
+});
+
+VibrantTemplate.displayName = "VibrantTemplate";
 
 export default VibrantTemplate;
+

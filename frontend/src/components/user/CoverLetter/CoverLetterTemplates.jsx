@@ -1,15 +1,29 @@
-import { useState, useMemo, useRef, useEffect } from "react";
+import React, { useState, useMemo, useRef, useEffect, useCallback, memo } from "react";
 import {
-  Check, Eye, ChevronLeft, ChevronRight, X,
+  Check, Eye, X,
   Maximize2, Minimize2, ZoomIn, ZoomOut, Search, Sparkles
 } from "lucide-react";
 import { createPortal } from "react-dom";
 import CoverLetterTemplatesMap from "./CoverLetterTemplatesMap";
 import axiosInstance from "../../../api/axios";
+import { COVER_LETTER_TEMPLATES } from "./CoverLetterRegistry";
+
+/* ─── constants ─────────────────────────────────────────────────────────── */
+const CATEGORIES = Object.freeze(['All Examples', 'Professional', 'Modern', 'Creative', 'Minimal', 'Elegant']);
 
 /* ----------------------------- Card ----------------------------- */
-const TemplateCard = ({ template, isSelected, displayData, onPreview, onUse }) => {
+const TemplateCard = memo(({ template, isSelected, displayData, onPreview, onUse }) => {
   const TemplateComponent = CoverLetterTemplatesMap[template.id];
+
+  const handlePreviewClick = useCallback((e) => {
+    e.stopPropagation();
+    onPreview(template);
+  }, [onPreview, template]);
+
+  const handleUseClick = useCallback((e) => {
+    e.stopPropagation();
+    onUse(template.id);
+  }, [onUse, template.id]);
 
   return (
     <div className="min-w-[280px] w-[280px] bg-white border border-slate-200 rounded-xl p-2 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col flex-shrink-0 select-none overflow-hidden group">
@@ -33,7 +47,7 @@ const TemplateCard = ({ template, isSelected, displayData, onPreview, onUse }) =
         {/* Preview Button (Top Right) */}
         <div className="absolute top-2 right-2 z-10">
           <button
-            onClick={(e) => { e.stopPropagation(); onPreview(template); }}
+            onClick={handlePreviewClick}
             className="bg-black/50 hover:bg-black/80 backdrop-blur-md text-white text-xs px-3 py-1.5 rounded-full font-medium flex items-center gap-1.5 transition-all shadow-sm cursor-pointer border border-white/10"
           >
             <Eye size={12} /> Preview
@@ -43,7 +57,7 @@ const TemplateCard = ({ template, isSelected, displayData, onPreview, onUse }) =
         {/* Use Template Button (Bottom) */}
         <div className="absolute bottom-16 left-2 z-10">
           <button
-            onClick={(e) => { e.stopPropagation(); onUse(template.id); }}
+            onClick={handleUseClick}
             className="bg-blue-600 hover:bg-blue-700 text-white text-xs px-4 py-2 rounded-full font-medium flex items-center gap-1.5 transition-all shadow-lg cursor-pointer"
           >
             <Check size={12} /> Use Template
@@ -59,25 +73,44 @@ const TemplateCard = ({ template, isSelected, displayData, onPreview, onUse }) =
       </div>
     </div>
   );
-};
+});
+TemplateCard.displayName = "TemplateCard";
 
 /* ------------------------ Preview Modal Component ------------------------ */
-const PreviewModalComponent = ({ template, zoomLevel, displayData, onZoomChange, onClose, onUse }) => {
+const PreviewModalComponent = memo(({ template, zoomLevel, displayData, onZoomChange, onClose, onUse }) => {
   const modalContentRef = useRef(null);
   const [isExpanded, setIsExpanded] = useState(false);
   const TemplateComponent = CoverLetterTemplatesMap[template.id];
 
-  const handleZoomIn = (e) => { e?.stopPropagation(); onZoomChange(Math.min(200, zoomLevel + 10)); };
-  const handleZoomOut = (e) => { e?.stopPropagation(); onZoomChange(Math.max(50, zoomLevel - 10)); };
-  const handleZoomChange = (e, value) => {
-    e?.stopPropagation();
-    const newValue = value !== undefined ? value : Number(e.target.value);
-    onZoomChange(Math.max(50, Math.min(200, newValue)));
-  };
+  const handleZoomIn = useCallback((e) => { 
+    e?.stopPropagation(); 
+    onZoomChange(Math.min(200, zoomLevel + 10)); 
+  }, [onZoomChange, zoomLevel]);
 
-  const handleBackdropClick = (e) => {
+  const handleZoomOut = useCallback((e) => { 
+    e?.stopPropagation(); 
+    onZoomChange(Math.max(50, zoomLevel - 10)); 
+  }, [onZoomChange, zoomLevel]);
+
+  const handleZoomChange = useCallback((e) => {
+    e?.stopPropagation();
+    onZoomChange(Math.max(50, Math.min(200, Number(e.target.value))));
+  }, [onZoomChange]);
+
+  const handleBackdropClick = useCallback((e) => {
     if (modalContentRef.current && !modalContentRef.current.contains(e.target)) onClose();
-  };
+  }, [onClose]);
+
+  const toggleExpand = useCallback((e) => {
+    e.stopPropagation();
+    setIsExpanded(!isExpanded);
+  }, [isExpanded]);
+
+  const handleUseFromModal = useCallback((e) => {
+    e.stopPropagation();
+    onUse(template.id);
+    onClose();
+  }, [onUse, template.id, onClose]);
 
   useEffect(() => {
     const handleEscape = (e) => {
@@ -86,6 +119,8 @@ const PreviewModalComponent = ({ template, zoomLevel, displayData, onZoomChange,
     window.addEventListener('keydown', handleEscape);
     return () => window.removeEventListener('keydown', handleEscape);
   }, [onClose]);
+
+  const resetZoom = useCallback(() => onZoomChange(100), [onZoomChange]);
 
   return (
     <div
@@ -107,7 +142,7 @@ const PreviewModalComponent = ({ template, zoomLevel, displayData, onZoomChange,
 
         <div className="flex items-center gap-3">
           <button
-            onClick={(e) => { e.stopPropagation(); setIsExpanded(!isExpanded); }}
+            onClick={toggleExpand}
             className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
             title={isExpanded ? "Collapse View" : "Full View"}
           >
@@ -120,7 +155,14 @@ const PreviewModalComponent = ({ template, zoomLevel, displayData, onZoomChange,
                 <ZoomOut size={16} />
               </button>
               <div className="hidden sm:flex items-center gap-2 px-2">
-                <input type="range" min="50" max="200" value={zoomLevel} onChange={(e) => handleZoomChange(e)} className="w-24 h-1 cursor-pointer accent-blue-500" />
+                <input 
+                  type="range" 
+                  min="50" 
+                  max="200" 
+                  value={zoomLevel} 
+                  onChange={handleZoomChange} 
+                  className="w-24 h-1 cursor-pointer accent-blue-500" 
+                />
               </div>
               <button onClick={handleZoomIn} className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">
                 <ZoomIn size={16} />
@@ -130,13 +172,13 @@ const PreviewModalComponent = ({ template, zoomLevel, displayData, onZoomChange,
           )}
 
           <button
-            onClick={(e) => { e.stopPropagation(); onUse(template.id); onClose(); }}
+            onClick={handleUseFromModal}
             className="flex px-4 py-2 bg-blue-600 text-white text-sm font-bold rounded-lg hover:bg-blue-700 transition items-center gap-2 shadow-sm"
           >
             <Check size={14} /> Use Template
           </button>
 
-          <button onClick={(e) => { e.stopPropagation(); onClose(); }} className="p-2 text-slate-500 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition">
+          <button onClick={onClose} className="p-2 text-slate-500 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition">
             <X size={18} />
           </button>
         </div>
@@ -167,16 +209,16 @@ const PreviewModalComponent = ({ template, zoomLevel, displayData, onZoomChange,
             <span className="text-slate-300">•</span>
             <span>Refined Design System</span>
           </div>
-          <button onClick={() => onZoomChange(100)} className="text-sm font-bold text-blue-600 hover:text-blue-700 px-4 py-2 hover:bg-blue-50 rounded-xl transition">Reset View</button>
+          <button onClick={resetZoom} className="text-sm font-bold text-blue-600 hover:text-blue-700 px-4 py-2 hover:bg-blue-50 rounded-xl transition">Reset View</button>
         </div>
       )}
     </div>
   );
-};
+});
+PreviewModalComponent.displayName = "PreviewModalComponent";
 
 /* ─────────────────────────────────────────────────────────
    HELPERS: decode the JWT to get the current user's ID
-   (matches CoverLetterBuilder)
 ───────────────────────────────────────────────────────── */
 const getLoggedInUserId = () => {
   try {
@@ -190,8 +232,6 @@ const getLoggedInUserId = () => {
   }
 };
 
-import { COVER_LETTER_TEMPLATES } from "./CoverLetterRegistry";
-
 const CoverLetterTemplates = ({ selectedTemplate, onSelectTemplate, formData: propFormData }) => {
   const [previewTemplate, setPreviewTemplate] = useState(null);
   const [zoomLevel, setZoomLevel] = useState(100);
@@ -203,17 +243,19 @@ const CoverLetterTemplates = ({ selectedTemplate, onSelectTemplate, formData: pr
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    let isMounted = true;
     const fetchStatuses = async () => {
       try {
         const res = await axiosInstance.get('/api/template-visibility');
-        setStatuses(res.data || {});
+        if (isMounted) setStatuses(res.data || {});
       } catch (error) {
         console.error("Failed to fetch template statuses", error);
       } finally {
-        setLoading(false);
+        if (isMounted) setLoading(false);
       }
     };
     fetchStatuses();
+    return () => { isMounted = false; };
   }, []);
 
   useEffect(() => {
@@ -242,8 +284,6 @@ const CoverLetterTemplates = ({ selectedTemplate, onSelectTemplate, formData: pr
     return () => { document.body.style.overflow = 'unset'; };
   }, [previewTemplate]);
 
-  const categories = ['All Examples', 'Professional', 'Modern', 'Creative', 'Minimal', 'Elegant'];
-
   const filteredTemplates = useMemo(() => {
     return COVER_LETTER_TEMPLATES.filter(tpl => {
       // 1. Filter by visibility status from admin (default active: true)
@@ -256,18 +296,26 @@ const CoverLetterTemplates = ({ selectedTemplate, onSelectTemplate, formData: pr
     });
   }, [activeCategory, searchQuery, statuses]);
 
-  const handleUseTemplate = (templateId) => {
+  const handleUseTemplate = useCallback((templateId) => {
     if (onSelectTemplate) {
       onSelectTemplate(templateId);
     }
-  };
+  }, [onSelectTemplate]);
+
+  const handlePreview = useCallback((tpl) => {
+    setPreviewTemplate(tpl);
+  }, []);
+
+  const handleClosePreview = useCallback(() => {
+    setPreviewTemplate(null);
+  }, []);
 
   return (
     <div className="w-full bg-[#f8fafc] font-jakarta pb-20">
       <div className="max-w-7xl mx-auto px-6 mt-12 pb-12">
         {/* Category Pills */}
         <div className="flex flex-wrap items-center justify-center gap-3 mb-8 px-4">
-          {categories.map(cat => (
+          {CATEGORIES.map(cat => (
             <button
               key={cat}
               onClick={() => setActiveCategory(cat)}
@@ -312,7 +360,7 @@ const CoverLetterTemplates = ({ selectedTemplate, onSelectTemplate, formData: pr
                   template={tpl}
                   displayData={displayData}
                   isSelected={selectedTemplate === tpl.id}
-                  onPreview={setPreviewTemplate}
+                  onPreview={handlePreview}
                   onUse={handleUseTemplate}
                 />
               ))}
@@ -336,7 +384,7 @@ const CoverLetterTemplates = ({ selectedTemplate, onSelectTemplate, formData: pr
           displayData={displayData}
           zoomLevel={zoomLevel}
           onZoomChange={setZoomLevel}
-          onClose={() => setPreviewTemplate(null)}
+          onClose={handleClosePreview}
           onUse={handleUseTemplate}
         />,
         document.body
@@ -345,4 +393,5 @@ const CoverLetterTemplates = ({ selectedTemplate, onSelectTemplate, formData: pr
   );
 };
 
-export default CoverLetterTemplates;
+export default memo(CoverLetterTemplates);
+

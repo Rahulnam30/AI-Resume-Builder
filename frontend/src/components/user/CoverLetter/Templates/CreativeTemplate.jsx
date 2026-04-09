@@ -1,7 +1,12 @@
-import React from "react";
-import { formatExternalUrl, formatMailto, formatTel } from "../../Templates/socialUtils";
+import React, { memo, useMemo } from "react";
 
-const CreativeTemplate = ({ formData }) => {
+// Move static functions outside
+const formatUrl = (url) => {
+  if (!url) return "";
+  return url.startsWith('http') ? url : `https://${url}`;
+};
+
+const CreativeTemplate = memo(({ formData }) => {
   const {
     fullName, email, phone, address, linkedin, website, github, extraLinks,
     recipientName, recipientTitle, companyName, companyAddress,
@@ -10,7 +15,63 @@ const CreativeTemplate = ({ formData }) => {
     salutation, customSalutation
   } = formData || {};
 
-  const exportDate = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+  const exportDate = useMemo(() => {
+    return new Date().toLocaleDateString('en-US', { 
+      year: 'numeric', 
+      month: 'long', 
+      day: 'numeric' 
+    });
+  }, []);
+
+  const socialLinks = useMemo(() => {
+    const links = [];
+    if (email) links.push(<span key="email">{email}</span>);
+    if (phone) links.push(<span key="phone">{phone}</span>);
+    if (linkedin) {
+      links.push(
+        <span key="linkedin" className="truncate max-w-[200px]">
+          <a href={formatUrl(linkedin)} target="_blank" rel="noopener noreferrer" className="text-white underline">
+            LinkedIn
+          </a>
+        </span>
+      );
+    }
+    if (website) {
+      links.push(
+        <span key="website" className="truncate max-w-[200px]">
+          <a href={formatUrl(website)} target="_blank" rel="noopener noreferrer" className="text-white underline">
+            Website
+          </a>
+        </span>
+      );
+    }
+    if (github) {
+      links.push(
+        <span key="github" className="truncate max-w-[200px]">
+          <a href={formatUrl(github)} target="_blank" rel="noopener noreferrer" className="text-white underline">
+            GitHub
+          </a>
+        </span>
+      );
+    }
+    if (extraLinks) {
+      extraLinks.forEach((link, index) => {
+        if (link.label && link.url) {
+          links.push(
+            <span key={`extra-${index}`} className="truncate max-w-[200px]">
+              <a href={formatUrl(link.url)} target="_blank" rel="noopener noreferrer" className="text-white underline">
+                {link.label}
+              </a>
+            </span>
+          );
+        }
+      });
+    }
+    if (address) {
+      links.push(<span key="address" className="truncate max-w-[200px]">{address}</span>);
+    }
+    return links;
+  }, [email, phone, linkedin, website, github, extraLinks, address]);
 
   return (
     <div className="bg-white min-h-[297mm] p-0 font-sans border-[16px] border-emerald-500 overflow-hidden flex flex-col">
@@ -24,13 +85,7 @@ const CreativeTemplate = ({ formData }) => {
           {fullName || "Your Name"}
         </h1>
         <div className="flex flex-wrap gap-x-6 gap-y-2 text-xs font-bold opacity-90 uppercase tracking-widest">
-          <span>{email}</span>
-          <span>{phone}</span>
-          {linkedin && <span className="truncate max-w-[200px]"><a href={linkedin.startsWith('http') ? linkedin : `https://${linkedin}`} target="_blank" rel="noopener noreferrer" className="text-white underline">LinkedIn</a></span>}
-          {website && <span className="truncate max-w-[200px]"><a href={website.startsWith('http') ? website : `https://${website}`} target="_blank" rel="noopener noreferrer" className="text-white underline">Website</a></span>}
-          {github && <span className="truncate max-w-[200px]"><a href={github.startsWith('http') ? github : `https://${github}`} target="_blank" rel="noopener noreferrer" className="text-white underline">GitHub</a></span>}
-          {extraLinks?.map((link, index) => (link.label && link.url && <span key={index} className="truncate max-w-[200px]"><a href={link.url.startsWith('http') ? link.url : `https://${link.url}`} target="_blank" rel="noopener noreferrer" className="text-white underline">{link.label}</a></span>))}
-          <span className="truncate max-w-[200px]">{address}</span>
+          {socialLinks}
         </div>
       </div>
 
@@ -71,11 +126,11 @@ const CreativeTemplate = ({ formData }) => {
           )}
 
           <div className="space-y-6 text-[16px] antialiased">
-            <p>{openingParagraph}</p>
+            {openingParagraph && <p>{openingParagraph}</p>}
             <div className="space-y-4 text-slate-600">
-               <p>{bodyParagraph1}</p>
-               <p>{bodyParagraph2}</p>
-               <p>{closingParagraph}</p>
+               {bodyParagraph1 && <p>{bodyParagraph1}</p>}
+               {bodyParagraph2 && <p>{bodyParagraph2}</p>}
+               {closingParagraph && <p>{closingParagraph}</p>}
             </div>
           </div>
         </div>
@@ -89,6 +144,9 @@ const CreativeTemplate = ({ formData }) => {
       </div>
     </div>
   );
-};
+});
+
+CreativeTemplate.displayName = "CreativeTemplate";
 
 export default CreativeTemplate;
+

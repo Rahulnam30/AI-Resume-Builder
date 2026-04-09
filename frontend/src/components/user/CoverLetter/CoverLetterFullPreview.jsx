@@ -1,25 +1,32 @@
+import React, { memo, useMemo, useCallback } from "react";
 import { ArrowLeft, Download, Printer, Share2 } from "lucide-react";
 import CoverLetterTemplatesMap from "./CoverLetterTemplatesMap";
 
-const CoverLetterFullPreview = ({
+const CoverLetterFullPreview = memo(({
   formData,
   selectedTemplate,
   setActiveTab,
 }) => {
-  const exportDate = new Date().toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
+  const exportDate = useMemo(() => {
+    return new Date().toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+  }, []);
 
-  const handleDownload = () => {
+  const handleDownload = useCallback(() => {
     // Placeholder for download functionality
     console.log("Downloading cover letter...");
-  };
+  }, []);
 
-  const handlePrint = () => {
+  const handlePrint = useCallback(() => {
     window.print();
-  };
+  }, []);
+
+  const handleBack = useCallback(() => {
+    setActiveTab("builder");
+  }, [setActiveTab]);
 
   const TemplateComponent = CoverLetterTemplatesMap[selectedTemplate] || CoverLetterTemplatesMap.professional;
 
@@ -39,7 +46,7 @@ const CoverLetterFullPreview = ({
       <div className="full-preview-toolbar">
         <button
           className="toolbar-btn back"
-          onClick={() => setActiveTab("builder")}
+          onClick={handleBack}
         >
           <ArrowLeft size={18} />
           Back to Editor
@@ -67,6 +74,9 @@ const CoverLetterFullPreview = ({
       </div>
     </div>
   );
-};
+});
+
+CoverLetterFullPreview.displayName = "CoverLetterFullPreview";
 
 export default CoverLetterFullPreview;
+

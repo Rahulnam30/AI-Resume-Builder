@@ -1,4 +1,4 @@
-export const COVER_LETTER_TEMPLATES = [
+export const COVER_LETTER_TEMPLATES = Object.freeze([
     { id: 'professional', name: 'Professional Template', category: 'Professional', level: 'Any Level' },
     { id: 'corporate', name: 'Corporate Template', category: 'Professional', level: 'Executive' },
     { id: 'modern', name: 'Modern Template', category: 'Modern', level: 'Mid Level' },
@@ -9,4 +9,4 @@ export const COVER_LETTER_TEMPLATES = [
     { id: 'clean', name: 'Clean Template', category: 'Minimal', level: 'Clean Level' },
     { id: 'elegant', name: 'Elegant Template', category: 'Elegant', level: 'Executive' },
     { id: 'classic', name: 'Classic Template', category: 'Elegant', level: 'Formal' }
-];
+]);

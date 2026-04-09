@@ -1,14 +1,97 @@
-import React from "react";
-import { formatExternalUrl, formatMailto, formatTel } from "../../Templates/socialUtils";
+import React, { memo, useMemo } from "react";
 
-const ClassicTemplate = ({ formData }) => {
+// Move static functions outside if possible, but keep within file as per rules
+const formatUrl = (url) => {
+  if (!url) return "";
+  return url.startsWith('http') ? url : `https://${url}`;
+};
+
+const ClassicTemplate = memo(({ formData }) => {
   const {
     fullName, email, phone, address, linkedin, website, github, extraLinks,
     recipientName, recipientTitle, companyName, companyAddress,
-    jobTitle, jobReference, jobSummary, jobDescription,
+    jobTitle, jobReference, jobSummary,
     openingParagraph, bodyParagraph1, bodyParagraph2, closingParagraph,
     salutation, customSalutation
   } = formData || {};
+
+  const formattedDate = useMemo(() => {
+    return new Date().toLocaleDateString('en-US', { 
+      year: 'numeric', 
+      month: 'long', 
+      day: 'numeric' 
+    });
+  }, []);
+
+  const socialLinks = useMemo(() => {
+    const contactLinks = [];
+    if (phone) {
+      contactLinks.push(<span key="phone">Contact: {phone}</span>);
+    }
+    if (email) {
+      if (contactLinks.length > 0) {
+        contactLinks.push(<span key="mail-sep" className="text-gray-200">|</span>);
+      }
+      contactLinks.push(<span key="email">Electronic Mail: {email}</span>);
+    }
+
+    const otherLinks = [];
+    if (linkedin) {
+      otherLinks.push(
+        <a key="linkedin" href={formatUrl(linkedin)} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">
+          LinkedIn
+        </a>
+      );
+    }
+    if (website) {
+      otherLinks.push(
+        <span key="website">
+          {otherLinks.length > 0 && " | "}
+          <a href={formatUrl(website)} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">
+            Website
+          </a>
+        </span>
+      );
+    }
+    if (github) {
+      otherLinks.push(
+        <span key="github">
+          {otherLinks.length > 0 && " | "}
+          <a href={formatUrl(github)} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">
+            GitHub
+          </a>
+        </span>
+      );
+    }
+    if (extraLinks) {
+      extraLinks.forEach((link, index) => {
+        if (link.label && link.url) {
+          otherLinks.push(
+            <span key={`extra-${index}`}>
+              {otherLinks.length > 0 && " | "}
+              <a href={formatUrl(link.url)} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">
+                {link.label}
+              </a>
+            </span>
+          );
+        }
+      });
+    }
+
+    const profileLinks = [];
+    if (otherLinks.length > 0) {
+      profileLinks.push(<span key="profiles" className="truncate max-w-[200px]">Profile: {otherLinks}</span>);
+    }
+
+    if (address) {
+      if (profileLinks.length > 0) {
+        profileLinks.push(<span key="addr-sep" className="text-gray-200">|</span>);
+      }
+      profileLinks.push(<span key="address" className="whitespace-pre-line underline decoration-gray-100">Residing at: {address}</span>);
+    }
+
+    return { contactLinks, profileLinks };
+  }, [email, phone, linkedin, website, github, extraLinks, address]);
 
   return (
     <div className="w-full bg-white p-20 text-gray-900 font-serif leading-relaxed min-h-[297mm] flex flex-col border-[24px] border-double border-gray-100">
@@ -23,14 +106,10 @@ const ClassicTemplate = ({ formData }) => {
         <h1 className="text-5xl font-bold tracking-tight text-gray-900 mb-8 uppercase decoration-gray-200 underline decoration-1 underline-offset-8 decoration-dashed">{fullName || "Mr./Ms. Candidate"}</h1>
         <div className="flex flex-col items-center gap-2 text-xs font-semibold italic text-gray-500">
            <div className="flex gap-12">
-              <span>Contact: <a href={formatTel(phone)} className="hover:underline">{phone}</a></span>
-              <span className="text-gray-200">|</span>
-              <span>Electronic Mail: <a href={formatMailto(email)} className="hover:underline">{email}</a></span>
+              {socialLinks.contactLinks}
            </div>
            <div className="flex gap-12 mt-1 flex-wrap">
-              <span className="truncate max-w-[200px]">Profile: {linkedin && <a href={linkedin.startsWith('http') ? linkedin : `https://${linkedin}`} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">LinkedIn</a>}{website && <span> | <a href={website.startsWith('http') ? website : `https://${website}`} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">Website</a></span>}{github && <span> | <a href={github.startsWith('http') ? github : `https://${github}`} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">GitHub</a></span>}{extraLinks?.map((link, index) => (link.label && link.url && <span key={index}> | <a href={link.url.startsWith('http') ? link.url : `https://${link.url}`} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">{link.label}</a></span>))}</span>
-              <span className="text-gray-200">|</span>
-              <span className="whitespace-pre-line underline decoration-gray-100">Residing at: {address}</span>
+              {socialLinks.profileLinks}
            </div>
         </div>
       </header>
@@ -46,7 +125,7 @@ const ClassicTemplate = ({ formData }) => {
          </div>
          <div className="text-right">
             <p className="text-[10px] font-bold uppercase tracking-widest text-gray-300 mb-2 italic">Calendar Date</p>
-            <p className="text-sm font-bold text-gray-900">{new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
+            <p className="text-sm font-bold text-gray-900">{formattedDate}</p>
             {jobReference && <div className="mt-8 text-[9px] font-black px-4 py-2 border border-gray-100 bg-gray-50 uppercase tracking-widest shadow-inner">Serial: {jobReference}</div>}
          </div>
       </div>
@@ -63,10 +142,10 @@ const ClassicTemplate = ({ formData }) => {
             <p className="indent-0 text-xl font-bold italic text-gray-900 underline decoration-gray-50 decoration-8 underline-offset-[-4px]">
                Honorable {recipientName || "Member of the Search Committee"},
             </p>
-            <p>{openingParagraph}</p>
-            <p>{bodyParagraph1}</p>
-            <p>{bodyParagraph2}</p>
-            <p>{closingParagraph}</p>
+            {openingParagraph && <p>{openingParagraph}</p>}
+            {bodyParagraph1 && <p>{bodyParagraph1}</p>}
+            {bodyParagraph2 && <p>{bodyParagraph2}</p>}
+            {closingParagraph && <p>{closingParagraph}</p>}
          </div>
       </div>
 
@@ -81,6 +160,9 @@ const ClassicTemplate = ({ formData }) => {
       </div>
     </div>
   );
-};
+});
+
+ClassicTemplate.displayName = "ClassicTemplate";
 
 export default ClassicTemplate;
+

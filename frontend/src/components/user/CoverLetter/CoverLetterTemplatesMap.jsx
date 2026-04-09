@@ -1,27 +1,28 @@
-import ProfessionalTemplate from "./Templates/ProfessionalTemplate";
-import ModernTemplate from "./Templates/ModernTemplate";
-import CreativeTemplate from "./Templates/CreativeTemplate";
-import MinimalTemplate from "./Templates/MinimalTemplate";
-import ElegantTemplate from "./Templates/ElegantTemplate";
-import CorporateTemplate from "./Templates/CorporateTemplate";
-import TechTemplate from "./Templates/TechTemplate";
-import VibrantTemplate from "./Templates/VibrantTemplate";
-import CleanTemplate from "./Templates/CleanTemplate";
-import ClassicTemplate from "./Templates/ClassicTemplate";
+import React, { lazy, Suspense, memo } from "react";
 
-const CoverLetterTemplatesMap = {
-  professional: ProfessionalTemplate,
-  modern: ModernTemplate,
-  creative: CreativeTemplate,
-  minimal: MinimalTemplate,
-  elegant: ElegantTemplate,
-  corporate: CorporateTemplate,
-  tech: TechTemplate,
-  vibrant: VibrantTemplate,
-  clean: CleanTemplate,
-  classic: ClassicTemplate,
-  // Fallback
-  default: ProfessionalTemplate
+const withSuspense = (LazyComponent) => {
+  return memo(function SuspenseWrapper(props) {
+    return (
+      <Suspense fallback={<div className="flex justify-center items-center p-8 text-gray-500">Loading Template...</div>}>
+        <LazyComponent {...props} />
+      </Suspense>
+    );
+  });
 };
+
+const CoverLetterTemplatesMap = Object.freeze({
+  professional: withSuspense(lazy(() => import("./Templates/ProfessionalTemplate"))),
+  modern: withSuspense(lazy(() => import("./Templates/ModernTemplate"))),
+  creative: withSuspense(lazy(() => import("./Templates/CreativeTemplate"))),
+  minimal: withSuspense(lazy(() => import("./Templates/MinimalTemplate"))),
+  elegant: withSuspense(lazy(() => import("./Templates/ElegantTemplate"))),
+  corporate: withSuspense(lazy(() => import("./Templates/CorporateTemplate"))),
+  tech: withSuspense(lazy(() => import("./Templates/TechTemplate"))),
+  vibrant: withSuspense(lazy(() => import("./Templates/VibrantTemplate"))),
+  clean: withSuspense(lazy(() => import("./Templates/CleanTemplate"))),
+  classic: withSuspense(lazy(() => import("./Templates/ClassicTemplate"))),
+  // Fallback
+  default: withSuspense(lazy(() => import("./Templates/ProfessionalTemplate")))
+});
 
 export default CoverLetterTemplatesMap;

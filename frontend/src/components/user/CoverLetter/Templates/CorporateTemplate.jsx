@@ -1,7 +1,12 @@
-import React from "react";
-import { formatExternalUrl, formatMailto, formatTel } from "../../Templates/socialUtils";
+import React, { memo, useMemo } from "react";
 
-const CorporateTemplate = ({ formData }) => {
+// Move static functions outside
+const formatUrl = (url) => {
+  if (!url) return "";
+  return url.startsWith('http') ? url : `https://${url}`;
+};
+
+const CorporateTemplate = memo(({ formData }) => {
   const {
     fullName, email, phone, address, linkedin, website, github, extraLinks,
     recipientName, recipientTitle, companyName, companyAddress,
@@ -9,6 +14,60 @@ const CorporateTemplate = ({ formData }) => {
     openingParagraph, bodyParagraph1, bodyParagraph2, closingParagraph,
     salutation, customSalutation
   } = formData || {};
+
+  const formattedDate = useMemo(() => {
+    return new Date().toLocaleDateString('en-US', { 
+      year: 'numeric', 
+      month: 'long', 
+      day: 'numeric' 
+    });
+  }, []);
+
+  const socialLinks = useMemo(() => {
+    const links = [];
+    if (linkedin) {
+      links.push(
+        <a key="linkedin" href={formatUrl(linkedin)} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">
+          LinkedIn
+        </a>
+      );
+    }
+    if (website) {
+      links.push(
+        <span key="website">
+          {links.length > 0 && " | "}
+          <a href={formatUrl(website)} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">
+            Website
+          </a>
+        </span>
+      );
+    }
+    if (github) {
+      links.push(
+        <span key="github">
+          {links.length > 0 && " | "}
+          <a href={formatUrl(github)} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">
+            GitHub
+          </a>
+        </span>
+      );
+    }
+    if (extraLinks) {
+      extraLinks.forEach((link, index) => {
+        if (link.label && link.url) {
+          links.push(
+            <span key={`extra-${index}`}>
+              {links.length > 0 && " | "}
+              <a href={formatUrl(link.url)} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">
+                {link.label}
+              </a>
+            </span>
+          );
+        }
+      });
+    }
+    return links;
+  }, [linkedin, website, github, extraLinks]);
 
   return (
     <div className="w-full bg-white p-16 text-gray-800 font-sans leading-snug min-h-[297mm] flex flex-col border-t-[12px] border-blue-900">
@@ -24,10 +83,12 @@ const CorporateTemplate = ({ formData }) => {
           <p className="text-sm font-bold text-gray-400 tracking-[0.2em] uppercase">{jobTitle || "Professional Title"}</p>
         </div>
         <div className="text-right text-xs space-y-1 font-medium text-gray-500">
-          <p>{email}</p>
-          <p>{phone}</p>
-          <p className="truncate max-w-[200px]">{linkedin && <a href={linkedin.startsWith('http') ? linkedin : `https://${linkedin}`} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">LinkedIn</a>}{website && <span> | <a href={website.startsWith('http') ? website : `https://${website}`} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">Website</a></span>}{github && <span> | <a href={github.startsWith('http') ? github : `https://${github}`} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">GitHub</a></span>}{extraLinks?.map((link, index) => (link.label && link.url && <span key={index}> | <a href={link.url.startsWith('http') ? link.url : `https://${link.url}`} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">{link.label}</a></span>))}</p>
-          <p className="whitespace-pre-line underline decoration-blue-100">{address}</p>
+          {email && <p>{email}</p>}
+          {phone && <p>{phone}</p>}
+          <p className="truncate max-w-[200px]">
+            {socialLinks}
+          </p>
+          {address && <p className="whitespace-pre-line underline decoration-blue-100">{address}</p>}
         </div>
       </div>
 
@@ -47,16 +108,16 @@ const CorporateTemplate = ({ formData }) => {
       <div className="flex-1 space-y-10">
         <div className="flex justify-between items-end border-b border-gray-50 pb-4">
           <h2 className="text-sm font-black uppercase tracking-[0.1em] text-gray-900">Letter of Intent</h2>
-          <span className="text-[10px] font-bold text-gray-300">{new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
+          <span className="text-[10px] font-bold text-gray-300">{formattedDate}</span>
         </div>
 
         <div className="space-y-6 text-[15px] leading-relaxed text-gray-700 template-content">
           <p className="font-black text-gray-900">Dear {recipientName || "Hiring Manager"},</p>
-          <p className="font-medium text-gray-800 leading-normal">{openingParagraph}</p>
+          {openingParagraph && <p className="font-medium text-gray-800 leading-normal">{openingParagraph}</p>}
           <div className="space-y-4">
-            <p>{bodyParagraph1}</p>
-            <p>{bodyParagraph2}</p>
-            <p>{closingParagraph}</p>
+            {bodyParagraph1 && <p>{bodyParagraph1}</p>}
+            {bodyParagraph2 && <p>{bodyParagraph2}</p>}
+            {closingParagraph && <p>{closingParagraph}</p>}
           </div>
         </div>
 
@@ -77,6 +138,9 @@ const CorporateTemplate = ({ formData }) => {
       </div>
     </div>
   );
-};
+});
+
+CorporateTemplate.displayName = "CorporateTemplate";
 
 export default CorporateTemplate;
+

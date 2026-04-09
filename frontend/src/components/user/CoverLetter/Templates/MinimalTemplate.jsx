@@ -1,16 +1,77 @@
-import React from "react";
-import { formatExternalUrl, formatMailto, formatTel } from "../../Templates/socialUtils";
+import React, { memo, useMemo } from "react";
 
-const MinimalTemplate = ({ formData }) => {
+// Move static functions outside
+const formatUrl = (url) => {
+  if (!url) return "";
+  return url.startsWith('http') ? url : `https://${url}`;
+};
+
+const MinimalTemplate = memo(({ formData }) => {
   const {
     fullName, email, phone, address, linkedin, website, github, extraLinks,
     recipientName, recipientTitle, companyName, companyAddress,
-    jobTitle, jobReference, jobSummary, jobDescription,
+    jobTitle, jobReference,
     openingParagraph, bodyParagraph1, bodyParagraph2, closingParagraph,
     salutation, customSalutation
   } = formData || {};
 
-  const exportDate = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+  const exportDate = useMemo(() => {
+    return new Date().toLocaleDateString('en-US', { 
+      year: 'numeric', 
+      month: 'long', 
+      day: 'numeric' 
+    });
+  }, []);
+
+  const socialLinks = useMemo(() => {
+    const links = [];
+    if (email) links.push(<span key="email">{email}</span>);
+    if (phone) links.push(<span key="phone">{phone}</span>);
+    if (linkedin) {
+      links.push(
+        <span key="linkedin" className="truncate max-w-[150px]">
+          <a href={formatUrl(linkedin)} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">
+            LinkedIn
+          </a>
+        </span>
+      );
+    }
+    if (website) {
+      links.push(
+        <span key="website" className="truncate max-w-[150px]">
+          <a href={formatUrl(website)} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">
+            Website
+          </a>
+        </span>
+      );
+    }
+    if (github) {
+      links.push(
+        <span key="github" className="truncate max-w-[150px]">
+          <a href={formatUrl(github)} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">
+            GitHub
+          </a>
+        </span>
+      );
+    }
+    if (extraLinks) {
+      extraLinks.forEach((link, index) => {
+        if (link.label && link.url) {
+          links.push(
+            <span key={`extra-${index}`} className="truncate max-w-[150px]">
+              <a href={formatUrl(link.url)} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">
+                {link.label}
+              </a>
+            </span>
+          );
+        }
+      });
+    }
+    if (address) {
+      links.push(<span key="address" className="truncate max-w-[150px] italic">{address}</span>);
+    }
+    return links;
+  }, [email, phone, linkedin, website, github, extraLinks, address]);
 
   return (
     <div className="p-16 bg-white text-slate-700 font-sans leading-relaxed min-h-[297mm] flex flex-col antialiased">
@@ -23,13 +84,7 @@ const MinimalTemplate = ({ formData }) => {
       <div className="mb-20">
         <h1 className="text-4xl font-light text-slate-900 tracking-tight lowercase mb-4">{fullName || "your name"}</h1>
         <div className="flex flex-wrap gap-x-6 gap-y-1 text-xs text-slate-400 font-medium">
-          <span>{email}</span>
-          <span>{phone}</span>
-          {linkedin && <span className="truncate max-w-[150px]"><a href={linkedin.startsWith('http') ? linkedin : `https://${linkedin}`} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">LinkedIn</a></span>}
-          {website && <span className="truncate max-w-[150px]"><a href={website.startsWith('http') ? website : `https://${website}`} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">Website</a></span>}
-          {github && <span className="truncate max-w-[150px]"><a href={github.startsWith('http') ? github : `https://${github}`} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">GitHub</a></span>}
-          {extraLinks?.map((link, index) => (link.label && link.url && <span key={index} className="truncate max-w-[150px]"><a href={link.url.startsWith('http') ? link.url : `https://${link.url}`} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">{link.label}</a></span>))}
-          <span className="truncate max-w-[150px] italic">{address}</span>
+          {socialLinks}
         </div>
       </div>
 
@@ -52,10 +107,10 @@ const MinimalTemplate = ({ formData }) => {
         <div className="space-y-8 text-[15px] template-content">
           <p className="text-slate-900 font-bold">Dear {recipientName || "Hiring Manager"},</p>
           <div className="space-y-6">
-            <p className="first-letter:text-2xl first-letter:font-bold first-letter:text-slate-900 first-letter:mr-1">{openingParagraph}</p>
-            <p>{bodyParagraph1}</p>
-            <p>{bodyParagraph2}</p>
-            <p>{closingParagraph}</p>
+            {openingParagraph && <p className="first-letter:text-2xl first-letter:font-bold first-letter:text-slate-900 first-letter:mr-1">{openingParagraph}</p>}
+            {bodyParagraph1 && <p>{bodyParagraph1}</p>}
+            {bodyParagraph2 && <p>{bodyParagraph2}</p>}
+            {closingParagraph && <p>{closingParagraph}</p>}
           </div>
         </div>
 
@@ -66,6 +121,9 @@ const MinimalTemplate = ({ formData }) => {
       </div>
     </div>
   );
-};
+});
+
+MinimalTemplate.displayName = "MinimalTemplate";
 
 export default MinimalTemplate;
+

@@ -1,17 +1,32 @@
+import { useCallback, memo, useMemo } from "react";
 import { Send } from "lucide-react";
 import { formatExternalUrl, formatMailto, formatTel } from "../../Templates/socialUtils";
 
-const ClosingForm = ({ formData, onInputChange, highlightEmpty }) => {
-  const salutationOptions = [
-    { value: "Sincerely", label: "Sincerely" },
-    { value: "Best regards", label: "Best regards" },
-    { value: "Kind regards", label: "Kind regards" },
-    { value: "Respectfully", label: "Respectfully" },
-    { value: "Thank you", label: "Thank you" },
-    { value: "Warm regards", label: "Warm regards" },
-    { value: "With appreciation", label: "With appreciation" },
-    { value: "custom", label: "Custom..." },
-  ];
+const SALUTATION_OPTIONS = Object.freeze([
+  { value: "Sincerely", label: "Sincerely" },
+  { value: "Best regards", label: "Best regards" },
+  { value: "Kind regards", label: "Kind regards" },
+  { value: "Respectfully", label: "Respectfully" },
+  { value: "Thank you", label: "Thank you" },
+  { value: "Warm regards", label: "Warm regards" },
+  { value: "With appreciation", label: "With appreciation" },
+  { value: "custom", label: "Custom..." },
+]);
+
+const ClosingForm = memo(({ formData, onInputChange, highlightEmpty }) => {
+  // Style constants
+  const ERROR_CLASSES = 'border-red-500 focus:border-red-500 focus:ring-4 focus:ring-red-500/10';
+  const DEFAULT_CLASSES = 'border-slate-200 focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10';
+
+  const handleSalutationChange = useCallback((e) => onInputChange("salutation", e.target.value), [onInputChange]);
+  const handleCustomSalutationChange = useCallback((e) => onInputChange("customSalutation", e.target.value), [onInputChange]);
+  const handleLetterDateChange = useCallback((e) => onInputChange("letterDate", e.target.value), [onInputChange]);
+
+  const displaySalutation = useMemo(() => {
+    return formData.salutation === "custom" ? formData.customSalutation : formData.salutation;
+  }, [formData.salutation, formData.customSalutation]);
+
+  const defaultDate = useMemo(() => new Date().toISOString().split("T")[0], []);
 
   return (
     <div className="p-2 animate-in fade-in duration-300">
@@ -30,11 +45,11 @@ const ClosingForm = ({ formData, onInputChange, highlightEmpty }) => {
             Salutation <span className="text-red-500">*</span>
           </label>
           <select
-            className={`w-full px-3.5 py-2.5 border rounded-lg text-sm text-slate-900 focus:outline-none transition-all bg-white ${highlightEmpty && !formData.salutation?.trim() ? 'border-red-500 focus:border-red-500 focus:ring-4 focus:ring-red-500/10' : 'border-slate-200 focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10'}`}
+            className={`w-full px-3.5 py-2.5 border rounded-lg text-sm text-slate-900 focus:outline-none transition-all bg-white ${highlightEmpty && !formData.salutation?.trim() ? ERROR_CLASSES : DEFAULT_CLASSES}`}
             value={formData.salutation}
-            onChange={(e) => onInputChange("salutation", e.target.value)}
+            onChange={handleSalutationChange}
           >
-            {salutationOptions.map((option) => (
+            {SALUTATION_OPTIONS.map((option) => (
               <option key={option.value} value={option.value}>
                 {option.label}
               </option>
@@ -50,11 +65,9 @@ const ClosingForm = ({ formData, onInputChange, highlightEmpty }) => {
             <input
               type="text"
               placeholder="Your custom closing"
-              className="w-full px-3.5 py-2.5 border border-slate-200 rounded-lg text-sm text-slate-900 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all bg-white"
+              className={`w-full px-3.5 py-2.5 border rounded-lg text-sm text-slate-900 focus:outline-none transition-all bg-white ${DEFAULT_CLASSES}`}
               value={formData.customSalutation}
-              onChange={(e) =>
-                onInputChange("customSalutation", e.target.value)
-              }
+              onChange={handleCustomSalutationChange}
             />
           </div>
         )}
@@ -65,10 +78,7 @@ const ClosingForm = ({ formData, onInputChange, highlightEmpty }) => {
         <h4 className="text-sm font-semibold text-slate-700 mb-3">Signature Preview</h4>
         <div className="bg-white rounded-lg p-4 border border-slate-200">
           <p className="text-sm text-slate-800 italic mb-1">
-            {formData.salutation === "custom"
-              ? formData.customSalutation
-              : formData.salutation}
-            ,
+            {displaySalutation},
           </p>
           <p className="text-sm font-semibold text-slate-900">{formData.fullName || "Your Name"}</p>
           {formData.email && (
@@ -109,15 +119,16 @@ const ClosingForm = ({ formData, onInputChange, highlightEmpty }) => {
         </label>
         <input
           type="date"
-          className="w-full px-3.5 py-2.5 border border-slate-200 rounded-lg text-sm text-slate-900 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all bg-white"
-          value={
-            formData.letterDate || new Date().toISOString().split("T")[0]
-          }
-          onChange={(e) => onInputChange("letterDate", e.target.value)}
+          className={`w-full px-3.5 py-2.5 border rounded-lg text-sm text-slate-900 focus:outline-none transition-all bg-white ${DEFAULT_CLASSES}`}
+          value={formData.letterDate || defaultDate}
+          onChange={handleLetterDateChange}
         />
       </div>
     </div>
   );
-};
+});
+
+ClosingForm.displayName = "ClosingForm";
 
 export default ClosingForm;
+
