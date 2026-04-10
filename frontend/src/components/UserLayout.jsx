@@ -1,8 +1,9 @@
+import { memo } from "react";
 import { Outlet } from "react-router-dom";
 import UserNavBar from "./UserNavBar/UserNavBar";
 import Sidebar from "./Sidebar/UserSidebar";
 
-export default function UserLayout() {
+const UserLayout = memo(function UserLayout() {
   return (
     <div className="flex min-h-screen bg-gray-50">
       {/* Sidebar – desktop */}
@@ -19,4 +20,6 @@ export default function UserLayout() {
       </div>
     </div>
   );
-}
+});
+
+export default UserLayout;
