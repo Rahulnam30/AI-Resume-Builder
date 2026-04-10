@@ -24,6 +24,80 @@ import {
   User,
 } from "lucide-react";
 
+const features = [
+    {
+      name: "AI Resume Checker",
+      path: "/resume-checker",
+      icon: CheckCircle,
+      colorClass: "text-blue-500",
+      hoverClass: "hover:bg-blue-50",
+    },
+    {
+      name: "Categorized Templates",
+      path: "/TemplatesFeature",
+      icon: Layout,
+      colorClass: "text-emerald-500",
+      hoverClass: "hover:bg-emerald-50",
+    },
+    {
+      name: "ATS Score Checker",
+      path: "/ats-checker",
+      icon: FileSearch,
+      colorClass: "text-purple-500",
+      hoverClass: "hover:bg-purple-50",
+    },
+    {
+      name: "Guilded AI Builder",
+      path: "/AI-builder",
+      icon: Zap,
+      colorClass: "text-cyan-500",
+      hoverClass: "hover:bg-cyan-50",
+    },
+    {
+      name: "Content Enhancement",
+      path: "/content-enhance",
+      icon: Edit3,
+      colorClass: "text-rose-500",
+      hoverClass: "hover:bg-rose-50",
+    },
+    {
+      name: "Live Quality Scoring",
+      path: "/score-checker",
+      icon: BarChart3,
+      colorClass: "text-amber-500",
+      hoverClass: "hover:bg-amber-50",
+    },
+    {
+      name: "Resume Manager",
+      path: "/resume-hub",
+      icon: Layers,
+      colorClass: "text-indigo-500",
+      hoverClass: "hover:bg-indigo-50",
+    },
+    {
+      name: "Growth Insights",
+      path: "/growths",
+      icon: Activity,
+      colorClass: "text-green-500",
+      hoverClass: "hover:bg-green-50",
+    },
+    {
+      name: "CV Formatting",
+      path: "/cv",
+      icon: Palette,
+      colorClass: "text-violet-500",
+      hoverClass: "hover:bg-violet-50",
+    },
+    {
+      name: "Cover Letter Builder",
+      path: "/cover-letter",
+      icon: PenTool,
+      colorClass: "text-teal-500",
+      hoverClass: "hover:bg-teal-50",
+    },
+  ];
+
+
 export default function NavBar() {
   const navigate = useNavigate();
   const isLoggedIn =
@@ -107,80 +181,7 @@ export default function NavBar() {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
-
-  const features = [
-    {
-      name: "AI Resume Checker",
-      path: "/resume-checker",
-      icon: CheckCircle,
-      colorClass: "text-blue-500",
-      hoverClass: "hover:bg-blue-50",
-    },
-    {
-      name: "Categorized Templates",
-      path: "/TemplatesFeature",
-      icon: Layout,
-      colorClass: "text-emerald-500",
-      hoverClass: "hover:bg-emerald-50",
-    },
-    {
-      name: "ATS Score Checker",
-      path: "/ats-checker",
-      icon: FileSearch,
-      colorClass: "text-purple-500",
-      hoverClass: "hover:bg-purple-50",
-    },
-    {
-      name: "Guilded AI Builder",
-      path: "/AI-builder",
-      icon: Zap,
-      colorClass: "text-cyan-500",
-      hoverClass: "hover:bg-cyan-50",
-    },
-    {
-      name: "Content Enhancement",
-      path: "/content-enhance",
-      icon: Edit3,
-      colorClass: "text-rose-500",
-      hoverClass: "hover:bg-rose-50",
-    },
-    {
-      name: "Live Quality Scoring",
-      path: "/score-checker",
-      icon: BarChart3,
-      colorClass: "text-amber-500",
-      hoverClass: "hover:bg-amber-50",
-    },
-    {
-      name: "Resume Manager",
-      path: "/resume-hub",
-      icon: Layers,
-      colorClass: "text-indigo-500",
-      hoverClass: "hover:bg-indigo-50",
-    },
-    {
-      name: "Growth Insights",
-      path: "/growths",
-      icon: Activity,
-      colorClass: "text-green-500",
-      hoverClass: "hover:bg-green-50",
-    },
-    {
-      name: "CV Formatting",
-      path: "/cv",
-      icon: Palette,
-      colorClass: "text-violet-500",
-      hoverClass: "hover:bg-violet-50",
-    },
-    {
-      name: "Cover Letter Builder",
-      path: "/cover-letter",
-      icon: PenTool,
-      colorClass: "text-teal-500",
-      hoverClass: "hover:bg-teal-50",
-    },
-  ];
-
+  
   return (
     <>
       {/* Desktop & Mobile NavBar */}
