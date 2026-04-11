@@ -164,7 +164,7 @@ const ProfileOverview = () => {
                       className="social-link"
                     >
                       <Link size={16} />
-                      {link.label || "Link"}
+                      {link.label ? link.label : link.url}
                     </a>
                   )
                 ))}

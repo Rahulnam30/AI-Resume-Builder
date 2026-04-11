@@ -146,7 +146,7 @@ const EditProfile = () => {
       ...formData,
       extraLinks: [
         ...formData.extraLinks,
-        { label: "Enter Platform", url: "" }
+        { label: "", url: "" }
       ]
     });
 
@@ -313,84 +313,68 @@ const EditProfile = () => {
                     onChange={handleChange}
                   />
 
+                  {/* Extra Links */}
                   {formData.extraLinks.map((link, index) => (
 
-                    <div key={index} style={{ marginTop: "12px" }}>
-
-                      <label
-                        contentEditable
-                        suppressContentEditableWarning
-                        onBlur={(e) =>
-                          updateExtraLink(index, "label", e.target.innerText)
-                        }
-                      >
-                        {link.label}
-                      </label>
+                    <div key={index} style={{ marginTop: "12px", display: "flex", flexDirection: "column", gap: "6px", padding: "10px", background: "#f8fafc", borderRadius: "8px", border: "1px solid #e2e8f0" }}>
 
                       <input
                         type="text"
-                        placeholder="Enter link"
+                        placeholder="Platform name (e.g. Instagram, Twitter)"
+                        value={link.label}
+                        onChange={(e) =>
+                          updateExtraLink(index, "label", e.target.value)
+                        }
+                        style={{ padding: "6px 10px", borderRadius: "6px", border: "1px solid #d1d5db", fontSize: "0.85rem", color: "#1e293b" }}
+                      />
+
+                      <input
+                        type="text"
+                        placeholder="Enter link (e.g. https://instagram.com/yourprofile)"
                         value={link.url}
                         onChange={(e) =>
                           updateExtraLink(index, "url", e.target.value)
                         }
+                        style={{ padding: "6px 10px", borderRadius: "6px", border: "1px solid #d1d5db", fontSize: "0.85rem", color: "#1e293b" }}
                       />
 
-                      <div style={{ marginTop: "6px", display: "flex", gap: "6px" }}>
-
-                        <button
-                          type="button"
-                          onClick={addLink}
-                          style={{
-                            background: "#0f172a",
-                            color: "white",
-                            border: "none",
-                            padding: "4px 10px",
-                            borderRadius: "4px",
-                            cursor: "pointer"
-                          }}
-                        >
-                          Add More
-                        </button>
-
-                        <button
-                          type="button"
-                          onClick={() => removeLink(index)}
-                          style={{
-                            background: "#ef4444",
-                            color: "white",
-                            border: "none",
-                            padding: "4px 10px",
-                            borderRadius: "4px",
-                            cursor: "pointer"
-                          }}
-                        >
-                          Remove
-                        </button>
-
-                      </div>
+                      <button
+                        type="button"
+                        onClick={() => removeLink(index)}
+                        style={{
+                          alignSelf: "flex-end",
+                          background: "#ef4444",
+                          color: "white",
+                          border: "none",
+                          padding: "4px 10px",
+                          borderRadius: "4px",
+                          cursor: "pointer",
+                          fontSize: "0.8rem"
+                        }}
+                      >
+                        Remove
+                      </button>
 
                     </div>
 
                   ))}
 
-                  {formData.extraLinks.length === 0 && (
-                    <button
-                      type="button"
-                      onClick={addLink}
-                      style={{
-                        marginTop: "10px",
-                        background: "#0f172a",
-                        color: "white",
-                        border: "none",
-                        padding: "6px 12px",
-                        borderRadius: "4px",
-                        cursor: "pointer"
-                      }}
-                    >
-                      Add Link
-                    </button>
-                  )}
+                  <button
+                    type="button"
+                    onClick={addLink}
+                    style={{
+                      marginTop: "10px",
+                      background: "#0f172a",
+                      color: "white",
+                      border: "none",
+                      padding: "6px 12px",
+                      borderRadius: "4px",
+                      cursor: "pointer",
+                      fontSize: "0.85rem"
+                    }}
+                  >
+                    + Add Link
+                  </button>
 
                 </div>
               </div>
