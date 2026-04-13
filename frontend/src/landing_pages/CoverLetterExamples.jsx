@@ -151,9 +151,11 @@ const CoverLetterExamples = () => {
         <div className="max-w-7xl mx-auto">
           {filteredExamples.length > 0 ? (
             <div className="relative group/main">
-              <button onClick={() => scroll("left")} className="absolute left-0 top-1/2 -translate-y-1/2 z-10 w-12 h-12 bg-white shadow-xl rounded-full flex items-center justify-center text-[#0077cc] border border-gray-100 opacity-0 group-hover/main:opacity-100 transition-opacity duration-300 -translate-x-6 hover:bg-[#0077cc] hover:text-white">
-                <ChevronLeft size={24} />
-              </button>
+              {filteredExamples.length > 1 && (
+                <button onClick={() => scroll("left")} className="absolute left-0 top-1/2 -translate-y-1/2 z-10 w-12 h-12 bg-white shadow-xl rounded-full flex items-center justify-center text-[#0077cc] border border-gray-100 opacity-100 md:opacity-0 md:group-hover/main:opacity-100 transition-opacity duration-300 -translate-x-6 hover:bg-[#0077cc] hover:text-white">
+                  <ChevronLeft size={24} />
+                </button>
+              )}
               <div ref={scrollContainerRef} className="flex gap-8 px-4 py-10 overflow-x-auto snap-x snap-mandatory scroll-smooth scrollbar-hide" style={{ perspective: "1000px" }}>
                 {filteredExamples.map((example, idx) => (
                   <motion.div key={example.id} variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }} className="min-w-[320px] max-w-[320px] snap-center group flex flex-col items-center flex-shrink-0" style={{ animationDelay: `${idx * 50}ms` }}>
@@ -170,9 +172,11 @@ const CoverLetterExamples = () => {
                   </motion.div>
                 ))}
               </div>
-              <button onClick={() => scroll("right")} className="absolute right-0 top-1/2 -translate-y-1/2 z-10 w-12 h-12 bg-white shadow-xl rounded-full flex items-center justify-center text-[#0077cc] border border-gray-100 opacity-0 group-hover/main:opacity-100 transition-opacity duration-300 translate-x-6 hover:bg-[#0077cc] hover:text-white">
-                <ChevronRight size={24} />
-              </button>
+              {filteredExamples.length > 1 && (
+                <button onClick={() => scroll("right")} className="absolute right-0 top-1/2 -translate-y-1/2 z-10 w-12 h-12 bg-white shadow-xl rounded-full flex items-center justify-center text-[#0077cc] border border-gray-100 opacity-100 md:opacity-0 md:group-hover/main:opacity-100 transition-opacity duration-300 translate-x-6 hover:bg-[#0077cc] hover:text-white">
+                  <ChevronRight size={24} />
+                </button>
+              )}
             </div>
           ) : (
             <div className="text-center py-20 bg-white rounded-[3rem] border border-dashed border-gray-200 shadow-sm">

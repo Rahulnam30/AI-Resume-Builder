@@ -267,10 +267,10 @@ const AdminTemplateSection = React.memo(function AdminTemplateSection({
       </div>
 
       <div className="relative group/section">
-        {showControls && (
+        {showControls && items.length > 1 && (
           <button
             onClick={() => scroll("left")}
-            className="absolute left-0 top-1/2 -translate-y-1/2 -ml-4 z-10 w-10 h-10 bg-white border border-slate-200 shadow-lg rounded-full flex items-center justify-center text-slate-700 opacity-0 group-hover/section:opacity-100 transition-all duration-200 hover:bg-slate-50 hover:scale-110 disabled:opacity-0"
+            className="absolute left-0 top-1/2 -translate-y-1/2 -ml-4 z-10 w-10 h-10 bg-white border border-slate-200 shadow-lg rounded-full flex items-center justify-center text-slate-700 opacity-100 md:opacity-0 md:group-hover/section:opacity-100 transition-all duration-200 hover:bg-slate-50 hover:scale-110 disabled:opacity-0"
           >
             <ChevronLeft size={20} />
           </button>
@@ -295,10 +295,10 @@ const AdminTemplateSection = React.memo(function AdminTemplateSection({
           ))}
         </div>
 
-        {showControls && (
+        {showControls && items.length > 1 && (
           <button
             onClick={() => scroll("right")}
-            className="absolute right-0 top-1/2 -translate-y-1/2 -mr-4 z-10 w-10 h-10 bg-white border border-slate-200 shadow-lg rounded-full flex items-center justify-center text-slate-700 opacity-0 group-hover/section:opacity-100 transition-all duration-200 hover:bg-slate-50 hover:scale-110"
+            className="absolute right-0 top-1/2 -translate-y-1/2 -mr-4 z-10 w-10 h-10 bg-white border border-slate-200 shadow-lg rounded-full flex items-center justify-center text-slate-700 opacity-100 md:opacity-0 md:group-hover/section:opacity-100 transition-all duration-200 hover:bg-slate-50 hover:scale-110"
           >
             <ChevronRight size={20} />
           </button>
