@@ -2,6 +2,7 @@
 import React from 'react';
 import './JessicaClaire7.css';
 import { formatExternalUrl, formatMailto, formatTel, getVisibleExtraLinks } from './socialUtils';
+import { formatMonthYear } from '../../../utils/dateUtils';
 
 const JessicaClaire7 = ({ data }) => {
     const {
@@ -115,7 +116,7 @@ const JessicaClaire7 = ({ data }) => {
                             {experience.map((job, index) => (
                                 <div key={index} className="paragraph">
                                     <span className="dispBlk">
-                                        <span>{job.startDate} - {job.endDate || "Current"}</span>
+                                        <span>{formatMonthYear(job.startDate)} — {formatMonthYear(job.endDate) || "Present"}</span>
                                     </span>
                                     <span className="dispBlk">
                                         <span className="txt-bold">{job.title}</span>, <span className="txt-bold">{job.company}</span>, <span>{job.location}</span>
@@ -156,9 +157,13 @@ const JessicaClaire7 = ({ data }) => {
                             </div>
                             {education.map((edu, index) => (
                                 <div key={index} className="paragraph">
-                                    <span className="dispBlk">{edu.graduationDate}</span>
+                                    {(edu.startDate || edu.graduationDate) && (
+                                        <span className="dispBlk">
+                                            {formatMonthYear(edu.startDate)} — {formatMonthYear(edu.graduationDate) || "Present"}
+                                        </span>
+                                    )}
                                     <span className="dispBlk">
-                                        <span className="txt-bold">{edu.degree}</span>, {edu.subject}
+                                        <span className="txt-bold">{edu.degree}</span>
                                     </span>
                                     <span className="dispBlk txt-bold">{edu.school}</span>
                                     <span className="dispBlk">{edu.location}</span>

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import MonthYearPicker from "../../MonthYearPicker";
 import { Check, EditIcon, GraduationCap, Plus, Trash2 } from "lucide-react";
 import { getCompletionStatus } from "../completion";
+import { formatMonthYear } from "../../../../utils/dateUtils";
 
 const EducationForm = ({ formData, setFormData, highlightEmpty }) => {
   const [editingId, setEditingId] = useState(null);
@@ -39,26 +40,6 @@ const EducationForm = ({ formData, setFormData, highlightEmpty }) => {
     }));
     setEditingId(id);
   };
-
-  function formatMonthYear(value) {
-    if (!value) return "";
-    const [year, month] = value.split("-");
-    const months = [
-      "Jan",
-      "Feb",
-      "Mar",
-      "Apr",
-      "May",
-      "Jun",
-      "Jul",
-      "Aug",
-      "Sep",
-      "Oct",
-      "Nov",
-      "Dec",
-    ];
-    return `${months[Number(month) - 1]}-${year}`;
-  }
 
   const removeEducation = (id) => {
     setFormData((prev) => ({
@@ -101,11 +82,11 @@ const EducationForm = ({ formData, setFormData, highlightEmpty }) => {
               <div className="w-full mt-2 text-left">
                 <div className="w-[90%] flex gap-4 justify-start items-center break-all">
                   <span className="text-left text-md font-semibold">
-                    {edu.school}
+                    {edu.school || "School Name"}
                   </span>
                 </div>
                 <span className="text-sm font-medium break-words">
-                  {edu.degree}
+                  {edu.degree || "Degree"}
                 </span>
                 <div className="w-full py-1 flex gap-2 justify-between items-center">
                   <div className="">
@@ -115,10 +96,10 @@ const EducationForm = ({ formData, setFormData, highlightEmpty }) => {
                       </span>
                     )}
                   </div>
-                  {edu?.startDate && edu?.graduationDate && (
+                  {(edu?.startDate || edu?.graduationDate) && (
                     <span className="text-xs text-slate-500">
-                      {formatMonthYear(edu?.startDate)} -{" "}
-                      {formatMonthYear(edu?.graduationDate)}
+                      {formatMonthYear(edu?.startDate, { short: true }) || "Start Date"} -{" "}
+                      {formatMonthYear(edu?.graduationDate, { short: true }) || "Graduation Date"}
                     </span>
                   )}
                 </div>

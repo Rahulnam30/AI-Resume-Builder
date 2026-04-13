@@ -2,6 +2,7 @@
 import React from 'react';
 import './JessicaClaire9.css';
 import { formatExternalUrl, formatMailto, formatTel, getVisibleExtraLinks } from './socialUtils';
+import { formatMonthYear } from '../../../utils/dateUtils';
 
 const JessicaClaire9 = ({ data }) => {
     const {
@@ -55,7 +56,7 @@ const JessicaClaire9 = ({ data }) => {
                             {experience.map((job, index) => (
                                 <div key={index} className="paragraph">
                                     <span className="dispBlk">
-                                        <span className="jobtitle">{job.title}</span>, <span>{job.startDate} - {job.endDate || "Current"}</span>
+                                        <span className="jobtitle">{job.title}</span>, <span>{formatMonthYear(job.startDate)} — {formatMonthYear(job.endDate) || "Present"}</span>
                                     </span>
                                     <span className="dispBlk">
                                         <span className="companyname">{job.company}</span>, <span>{job.location}</span>
@@ -97,9 +98,13 @@ const JessicaClaire9 = ({ data }) => {
                             {education.map((edu, index) => (
                                 <div key={index} className="paragraph">
                                     <span className="dispBlk jobtitle">{edu.degree}</span>
-                                    <span className="dispBlk">{edu.subject}</span>
                                     <span className="dispBlk companyname">{edu.school}</span>
-                                    <span className="dispBlk">{edu.location}, {edu.graduationDate}</span>
+                                    <span className="dispBlk">
+                                        {edu.location}
+                                        {(edu.startDate || edu.graduationDate) && (
+                                            <span>, {formatMonthYear(edu.startDate)} — {formatMonthYear(edu.graduationDate) || "Present"}</span>
+                                        )}
+                                    </span>
                                     {edu.gpa && <span className="dispBlk">GPA: {edu.gpa}</span>}
                                 </div>
                             ))}

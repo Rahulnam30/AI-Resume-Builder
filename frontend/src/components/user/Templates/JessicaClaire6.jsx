@@ -2,6 +2,7 @@
 import React from 'react';
 import './JessicaClaire6.css';
 import { formatExternalUrl, formatMailto, formatTel, getVisibleExtraLinks } from './socialUtils';
+import { formatMonthYear } from '../../../utils/dateUtils';
 
 const JessicaClaire6 = ({ data }) => {
     const {
@@ -104,7 +105,7 @@ const JessicaClaire6 = ({ data }) => {
                             <div key={index} className="paragraph">
                                 <div className="singlecolumn">
                                     <span className="dispBlk">
-                                        <span className="txt-bold txt-caps">{job.title}</span>, <span>{job.startDate} - {job.endDate || "Current"}</span>
+                                        <span className="txt-bold txt-caps">{job.title}</span>, <span>{formatMonthYear(job.startDate)} — {formatMonthYear(job.endDate) || "Present"}</span>
                                     </span>
                                     <span className="dispBlk">
                                         <span className="txt-bold">{job.company}</span>, <span>{job.location}</span>
@@ -150,12 +151,16 @@ const JessicaClaire6 = ({ data }) => {
                             <div key={index} className="paragraph">
                                 <div className="singlecolumn">
                                     <span className="dispBlk">
-                                        <span className="txt-bold">{edu.degree}</span>: <span>{edu.subject}</span>
+                                        <span className="txt-bold">{edu.degree}</span>
                                     </span>
                                     <span className="dispBlk">
                                         <span className="txt-bold">{edu.school}</span> - <span>{edu.location}</span>
                                     </span>
-                                    <span className="dispBlk">{edu.graduationDate}</span>
+                                    {(edu.startDate || edu.graduationDate) && (
+                                        <span className="dispBlk">
+                                            {formatMonthYear(edu.startDate)} — {formatMonthYear(edu.graduationDate) || "Present"}
+                                        </span>
+                                    )}
                                     {edu.gpa && <span className="dispBlk">GPA: {edu.gpa}</span>}
                                 </div>
                             </div>
@@ -163,7 +168,7 @@ const JessicaClaire6 = ({ data }) => {
                     </div>
                 )}
 
-                {certifications && certifications.length > 0 && (
+                {certifications && certifications.length > 0 && ( 
                     <div className="section">
                         <div className="heading">
                             <div className="sectiontitle">Certifications</div>

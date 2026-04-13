@@ -2,6 +2,7 @@
 import React from 'react';
 import './JessicaClaire5.css';
 import { formatExternalUrl, formatMailto, formatTel, getVisibleExtraLinks } from './socialUtils';
+import { formatMonthYear } from '../../../utils/dateUtils';
 
 const JessicaClaire5 = ({ data }) => {
     const {
@@ -114,7 +115,7 @@ const JessicaClaire5 = ({ data }) => {
                             <div key={index} className="paragraph">
                                 <div className="singlecolumn">
                                     <span className="dispBlk">
-                                        <span className="txtBold txtCaps">{job.title}</span>, <span>{job.startDate} to {job.endDate || "Current"}</span>
+                                        <span className="txtBold txtCaps">{job.title}</span>, <span>{formatMonthYear(job.startDate)} — {formatMonthYear(job.endDate) || "Present"}</span>
                                     </span>
                                     <span className="dispBlk">
                                         <span className="txtBold">{job.company}</span>, <span>{job.location}</span>
@@ -163,7 +164,10 @@ const JessicaClaire5 = ({ data }) => {
                                         <span className="txtBold">{edu.school}</span>, <span>{edu.location}</span>
                                     </span>
                                     <span className="dispBlk">
-                                        <span className="txtBold">{edu.degree}</span>{edu.subject && <span>, {edu.subject}</span>}, <span>{edu.graduationDate}</span>
+                                        <span className="txtBold">{edu.degree}</span>
+                                        {(edu.startDate || edu.graduationDate) && (
+                                            <span>, {formatMonthYear(edu.startDate)} — {formatMonthYear(edu.graduationDate) || "Present"}</span>
+                                        )}
                                     </span>
                                     {edu.gpa && <span className="dispBlk">GPA: {edu.gpa}</span>}
                                 </div>

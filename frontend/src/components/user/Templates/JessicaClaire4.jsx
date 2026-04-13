@@ -2,6 +2,7 @@
 import React from 'react';
 import './JessicaClaire4.css';
 import { formatExternalUrl, formatMailto, formatTel, getVisibleExtraLinks } from './socialUtils';
+import { formatMonthYear } from '../../../utils/dateUtils';
 
 const JessicaClaire4 = ({ data }) => {
     const {
@@ -63,7 +64,7 @@ const JessicaClaire4 = ({ data }) => {
                                         <span>{job.location}</span>
                                     </span>
                                     <span className="paddedline txtItl">
-                                        <span>{job.startDate} - {job.endDate || "Current"}</span>
+                                        <span>{formatMonthYear(job.startDate)} — {formatMonthYear(job.endDate) || "Present"}</span>
                                     </span>
                                     <div style={{ marginTop: '12px' }}>
                                         <p>{job.description}</p>
@@ -131,11 +132,13 @@ const JessicaClaire4 = ({ data }) => {
                             </div>
                             {education.map((edu, index) => (
                                 <div key={index} className="paragraph">
-                                    <span className="paddedline txtItl">{edu.graduationDate ? edu.graduationDate.split('/').pop() : ''}</span>
+                                    <span className="paddedline txtItl">
+                                        {formatMonthYear(edu.startDate)} — {formatMonthYear(edu.graduationDate) || "Present"}
+                                    </span>
                                     <span className="paddedline txtBold">{edu.school}</span>
                                     <span className="paddedline">{edu.location}</span>
                                     <span className="paddedline" style={{ marginTop: '6px' }}>
-                                        <span className="txtBold">{edu.degree}</span>: {edu.subject}
+                                        <span className="txtBold">{edu.degree}</span>
                                     </span>
                                     {edu.gpa && <span className="paddedline">GPA: {edu.gpa}</span>}
                                 </div>

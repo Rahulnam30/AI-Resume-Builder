@@ -2,6 +2,7 @@
 import React from 'react';
 import './JessicaClaire3.css';
 import { formatExternalUrl, formatMailto, formatTel, getVisibleExtraLinks } from './socialUtils';
+import { formatMonthYear } from '../../../utils/dateUtils';
 
 const JessicaClaire3 = ({ data }) => {
     const {
@@ -100,7 +101,9 @@ const JessicaClaire3 = ({ data }) => {
                                     <div className="singlecolumn">
                                         <span className="dispBlk">
                                             <span className="txtBold">{edu.degree}</span>: <span>{edu.school}</span>
-                                            {edu.graduationDate && <span>, {edu.graduationDate}</span>}
+                                            {(edu.startDate || edu.graduationDate) && (
+                                                <span>, {formatMonthYear(edu.startDate)} — {formatMonthYear(edu.graduationDate) || "Present"}</span>
+                                            )}
                                         </span>
                                         <span className="dispBlk">
                                             <span>{edu.school}</span>
@@ -166,7 +169,7 @@ const JessicaClaire3 = ({ data }) => {
                                 <div key={index} className="paragraph">
                                     <div className="singlecolumn">
                                         <span className="dispBlk">
-                                            <span className="txtBold">{job.title}</span>, <span>{job.startDate} to {job.endDate || "Current"}</span>
+                                            <span className="txtBold">{job.title}</span>, <span>{formatMonthYear(job.startDate)} — {formatMonthYear(job.endDate) || "Present"}</span>
                                         </span>
                                         <span className="dispBlk">
                                             <span className="txtBold">{job.company}</span> - <span>{job.location}</span>

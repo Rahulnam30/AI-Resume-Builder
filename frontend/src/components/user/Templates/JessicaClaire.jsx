@@ -2,6 +2,7 @@ import React from 'react';
 import './JessicaClaire.css';
 import SocialLinks from "../CV/components/SocialLinks";
 import { formatMailto, formatTel } from './socialUtils';
+import { formatMonthYear } from '../../../utils/dateUtils';
 
 const JessicaClaire = ({ data }) => {
     const {
@@ -82,7 +83,7 @@ const JessicaClaire = ({ data }) => {
                                             </span>
                                             <span className="paddedline txtItl" style={{ display: 'inline' }}>
                                                 <span className="jobdates">
-                                                    {job.startDate} to {job.endDate || "Current"}
+                                                    {formatMonthYear(job.startDate)} — {formatMonthYear(job.endDate) || "Present"}
                                                 </span>
                                             </span>
                                         </div>
@@ -228,7 +229,9 @@ const JessicaClaire = ({ data }) => {
                                             <span className="degree">{edu.degree}</span>
                                             {edu.school && <span>: </span>}
                                             <span>{edu.school}</span>
-                                            {edu.graduationDate && <span>, {edu.graduationDate}</span>}
+                                            {(edu.startDate || edu.graduationDate) && (
+                                                <span>, {formatMonthYear(edu.startDate)} — {formatMonthYear(edu.graduationDate) || "Present"}</span>
+                                            )}
                                         </span>
                                         <span className="paddedline">
                                             <span>{edu.location}</span>

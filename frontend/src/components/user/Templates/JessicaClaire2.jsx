@@ -2,6 +2,7 @@
 import React from 'react';
 import './JessicaClaire2.css';
 import { formatExternalUrl, formatMailto, formatTel, getVisibleExtraLinks } from './socialUtils';
+import { formatMonthYear } from '../../../utils/dateUtils';
 
 const JessicaClaire2 = ({ data }) => {
     const {
@@ -120,7 +121,7 @@ const JessicaClaire2 = ({ data }) => {
                                     </span>
                                     <span className="paddedline" style={{ display: 'inline' }}>
                                         <span className="jobdates">
-                                            {job.startDate} to {job.endDate || "Current"}
+                                            {formatMonthYear(job.startDate)} — {formatMonthYear(job.endDate) || "Present"}
                                         </span>
                                     </span>
                                 </div>
@@ -207,7 +208,10 @@ const JessicaClaire2 = ({ data }) => {
                         <div key={edu.id} className="paragraph">
                             <div className="singlecolumn">
                                 <span className="paddedline">
-                                    <span className="degree">{edu.degree}</span>: <span>{edu.school}</span>, {edu.graduationDate}
+                                    <span className="degree">{edu.degree}</span>: <span>{edu.school}</span>
+                                    {(edu.startDate || edu.graduationDate) && (
+                                        <span>, {formatMonthYear(edu.startDate)} — {formatMonthYear(edu.graduationDate) || "Present"}</span>
+                                    )}
                                 </span>
                                 <span className="paddedline">
                                     <span>{edu.location}</span>

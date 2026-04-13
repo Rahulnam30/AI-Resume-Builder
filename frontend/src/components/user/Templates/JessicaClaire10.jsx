@@ -2,6 +2,7 @@
 import React from 'react';
 import './JessicaClaire10.css';
 import { formatExternalUrl, formatMailto, formatTel, getVisibleExtraLinks } from './socialUtils';
+import { formatMonthYear } from '../../../utils/dateUtils';
 
 const JessicaClaire10 = ({ data }) => {
     const {
@@ -103,7 +104,7 @@ const JessicaClaire10 = ({ data }) => {
                                         <span className="jobtitle">{job.title}</span>
                                     </span>
                                     <span className="dispBlk">
-                                        <span className="jobdates">{job.startDate} to {job.endDate || "Current"}</span>
+                                        <span className="jobdates">{formatMonthYear(job.startDate)} — {formatMonthYear(job.endDate) || "Present"}</span>
                                     </span>
                                     <span className="dispBlk">
                                         <span className="companyname">{job.company}</span> - <span>{job.location}</span>
@@ -148,8 +149,12 @@ const JessicaClaire10 = ({ data }) => {
                         <div className="section-content-box">
                             {education.map((edu, index) => (
                                 <div key={index} className="paragraph">
-                                    <span className="dispBlk jobtitle">{edu.degree}: {edu.subject}</span>
-                                    <span className="dispBlk jobdates">{edu.graduationDate}</span>
+                                    <span className="dispBlk jobtitle">{edu.degree}</span>
+                                    {(edu.startDate || edu.graduationDate) && (
+                                        <span className="dispBlk jobdates">
+                                            {formatMonthYear(edu.startDate)} — {formatMonthYear(edu.graduationDate) || "Present"}
+                                        </span>
+                                    )}
                                     <span className="dispBlk companyname">{edu.school}</span>
                                     <span className="dispBlk">{edu.location}</span>
                                     {edu.gpa && <span className="dispBlk">GPA: {edu.gpa}</span>}

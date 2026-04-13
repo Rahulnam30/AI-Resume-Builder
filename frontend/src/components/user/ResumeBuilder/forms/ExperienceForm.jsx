@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import { getCompletionStatus } from "./../completion";
 import axiosInstance from "../../../../api/axios";
+import { formatMonthYear } from "../../../../utils/dateUtils";
 
 const ExperienceForm = ({ formData, setFormData, highlightEmpty }) => {
   const [editingId, setEditingId] = useState(null);
@@ -66,28 +67,7 @@ const ExperienceForm = ({ formData, setFormData, highlightEmpty }) => {
         exp.id === id ? { ...exp, [field]: value } : exp,
       ),
     }));
-    console.log("ddd");
   };
-
-  function formatMonthYear(value) {
-    if (!value) return "";
-    const [year, month] = value.split("-");
-    const months = [
-      "Jan",
-      "Feb",
-      "Mar",
-      "Apr",
-      "May",
-      "Jun",
-      "Jul",
-      "Aug",
-      "Sep",
-      "Oct",
-      "Nov",
-      "Dec",
-    ];
-    return `${months[Number(month) - 1]}${year}`;
-  }
 
   const handleAIEnhance = async (id) => {
     try {
@@ -167,21 +147,19 @@ const ExperienceForm = ({ formData, setFormData, highlightEmpty }) => {
                   <div className="flex justify-start items-center break-all md:flex-row flex-col md:gap-4">
                     <div className="flex gap-4 justify-start items-center text-left md:w-[68%] w-full">
                       <span className="text-left text-md font-semibold">
-                        {exp.company}
+                        {exp.company || "Company"}
                       </span>
                     </div>
                     <div className="text-right md:w-[32%] w-full">
-                      {exp?.startDate && exp?.endDate && (
+                      {(exp?.startDate || exp?.endDate) && (
                         <span className="text-xs text-slate-500">
-                          {formatMonthYear(exp?.startDate)} -{" "}
-                          {!/[a-zA-Z]/.test(exp?.endDate)
-                            ? formatMonthYear(exp?.endDate)
-                            : exp?.endDate}
+                          {formatMonthYear(exp?.startDate, { short: true }) || "Start Date"} -{" "}
+                          {formatMonthYear(exp?.endDate, { short: true }) || "End Date"}
                         </span>
                       )}
                     </div>
                   </div>
-                  <span className="text-sm font-medium">{exp.title}</span>
+                  <span className="text-sm font-medium">{exp.title || "Job Title"}</span>
                   <div className="w-full py-1 flex gap-2 justify-between items-center">
                     <div className="">
                       {exp?.description && (
