@@ -156,9 +156,9 @@ const CoverLetterExamples = () => {
                   <ChevronLeft size={24} />
                 </button>
               )}
-              <div ref={scrollContainerRef} className="flex gap-8 px-4 py-10 overflow-x-auto snap-x snap-mandatory scroll-smooth scrollbar-hide" style={{ perspective: "1000px" }}>
+              <div ref={scrollContainerRef} className="flex gap-4 px-4 py-10 overflow-x-auto snap-x snap-mandatory scroll-smooth scrollbar-hide" style={{ perspective: "1000px" }}>
                 {filteredExamples.map((example, idx) => (
-                  <motion.div key={example.id} variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }} className="min-w-[320px] max-w-[320px] snap-center group flex flex-col items-center flex-shrink-0" style={{ animationDelay: `${idx * 50}ms` }}>
+                  <motion.div key={example.id} variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }} className="min-w-[280px] max-w-[280px] snap-center group flex flex-col items-center flex-shrink-0" style={{ animationDelay: `${idx * 50}ms` }}>
                     <div className="relative w-full bg-white shadow-2xl shadow-slate-200/50 overflow-hidden group-hover:scale-[1.1] transition-transform duration-300 ease-out cursor-pointer">
                       <div className="bg-slate-100 w-full aspect-[3/4] overflow-hidden">
                         <img src={example.image} alt={example.title} className="w-full h-full object-cover object-top hover:opacity-95 transition-opacity" />
