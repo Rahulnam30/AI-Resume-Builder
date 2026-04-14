@@ -148,8 +148,7 @@ export const getProfile = async (req, res) => {
         up.location,
         up.bio,
         up.github,
-        up.linkedin,
-        up.extra_links
+        up.linkedin
       FROM users u
       LEFT JOIN user_profiles up ON up.user_id = u.id
       WHERE u.id = $1
@@ -175,7 +174,7 @@ export const getProfile = async (req, res) => {
         bio: result.rows[0].bio || "",
         github: result.rows[0].github || "",
         linkedin: result.rows[0].linkedin || "",
-        extraLinks: result.rows[0].extra_links || [],
+        extraLinks: [],
       },
     });
 
@@ -198,7 +197,6 @@ export const updateProfile = async (req, res) => {
       bio,
       github,
       linkedin,
-      extraLinks,
     } = req.body;
 
     const userResult = await client.query(
@@ -248,8 +246,6 @@ export const updateProfile = async (req, res) => {
       [userId]
     );
 
-    const extraLinksJson = JSON.stringify(Array.isArray(extraLinks) ? extraLinks : []);
-
     if (existingProfileResult.rowCount > 0) {
       await client.query(
         `
@@ -260,19 +256,18 @@ export const updateProfile = async (req, res) => {
           location = COALESCE($3, location),
           bio = COALESCE($4, bio),
           github = COALESCE($5, github),
-          linkedin = COALESCE($6, linkedin),
-          extra_links = $7::jsonb
-        WHERE user_id = $8
+          linkedin = COALESCE($6, linkedin)
+        WHERE user_id = $7
         `,
-        [fullName, phone, location, bio, github, linkedin, extraLinksJson, userId]
+        [fullName, phone, location, bio, github, linkedin, userId]
       );
     } else {
       await client.query(
         `
-        INSERT INTO user_profiles (id, user_id, full_name, phone, location, bio, github, linkedin, extra_links)
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9::jsonb)
+        INSERT INTO user_profiles (id, user_id, full_name, phone, location, bio, github, linkedin)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
         `,
-        [crypto.randomUUID(), userId, fullName || "", phone || "", location || "", bio || "", github || "", linkedin || "", extraLinksJson]
+        [crypto.randomUUID(), userId, fullName || "", phone || "", location || "", bio || "", github || "", linkedin || ""]
       );
     }
 
@@ -290,8 +285,7 @@ export const updateProfile = async (req, res) => {
         up.location,
         up.bio,
         up.github,
-        up.linkedin,
-        up.extra_links
+        up.linkedin
       FROM users u
       LEFT JOIN user_profiles up ON up.user_id = u.id
       WHERE u.id = $1
@@ -318,7 +312,7 @@ export const updateProfile = async (req, res) => {
         bio: row.bio || "",
         github: row.github || "",
         linkedin: row.linkedin || "",
-        extraLinks: row.extra_links || [],
+        extraLinks: [],
       },
     });
 
@@ -474,6 +468,22 @@ export const updateUser = async (req, res) => {
 export const deleteUser = async (req, res) => {
   try {
     const targetUserId = req.params.id;
+    const requesterResult = await pool.query(
+      `SELECT id, is_admin FROM users WHERE id = $1`,
+      [req.userId]
+    );
+
+    if (requesterResult.rowCount === 0) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    const requester = requesterResult.rows[0];
+    const isSelfDelete = requester.id === targetUserId;
+
+    if (!requester.is_admin && !isSelfDelete) {
+      return res.status(403).json({ message: "You can only delete your own account" });
+    }
+
     const userResult = await pool.query(
       `SELECT id, username, email FROM users WHERE id = $1`,
       [targetUserId]
@@ -493,9 +503,20 @@ export const deleteUser = async (req, res) => {
         crypto.randomUUID(),
         req.userId,
         "USER_DELETED",
-        `${user.username || user.email} account was deleted`,
+        isSelfDelete
+          ? `${user.username || user.email} deleted their account`
+          : `${user.username || user.email} account was deleted by admin`,
         "user",
       ]
+    );
+
+    await pool.query(
+      `
+      INSERT INTO user_deletion_events (deleted_user_id, deleted_by_user_id, deleted_by_admin, created_at)
+      VALUES ($1, $2, $3, NOW())
+      ON CONFLICT (deleted_user_id) DO NOTHING
+      `,
+      [targetUserId, req.userId, Boolean(requester.is_admin && !isSelfDelete)]
     );
 
     await pool.query(`DELETE FROM users WHERE id = $1`, [targetUserId]);

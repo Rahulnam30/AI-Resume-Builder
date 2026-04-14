@@ -260,6 +260,12 @@ export const getAnalyticsStats = async (req, res) => {
     const last7Days = new Date();
     last7Days.setDate(last7Days.getDate() - 7);
 
+    const previous30Days = new Date();
+    previous30Days.setDate(previous30Days.getDate() - 60);
+
+    const previous7Days = new Date();
+    previous7Days.setDate(previous7Days.getDate() - 14);
+
     const lastSixMonths = new Date();
     lastSixMonths.setMonth(lastSixMonths.getMonth() - 5);
     lastSixMonths.setDate(1);
@@ -276,11 +282,31 @@ export const getAnalyticsStats = async (req, res) => {
       revenueResult,
       resumeTemplatesResult,
       resumeDownloadsResult,
-      cvDownloadsResult
+      cvDownloadsResult,
+      previousNewUsersResult,
+      previousActiveUsersResult,
+      previousPaidUsersResult,
+      paidUsersResult
     ] = await Promise.all([
       pool.query("SELECT COUNT(*)::int AS count FROM users WHERE created_at >= $1", [last30Days]),
       pool.query("SELECT COUNT(*)::int AS count FROM users WHERE last_login >= $1 AND is_admin = false", [last7Days]),
-      pool.query("SELECT COUNT(*)::int AS count FROM notifications WHERE type = 'USER_DELETED'"),
+      pool.query(`
+        WITH inactive_users AS (
+          SELECT COUNT(*)::int AS count
+          FROM users
+          WHERE is_admin = false
+            AND is_active = false
+        ),
+        deleted_events AS (
+          SELECT COUNT(*)::int AS count
+          FROM user_deletion_events
+        )
+        SELECT (
+          (SELECT count FROM inactive_users)
+          +
+          (SELECT count FROM deleted_events)
+        )::int AS count
+      `),
       pool.query("SELECT name FROM plans"),
       pool.query("SELECT plan AS id, COUNT(*)::int AS count FROM users WHERE is_admin = false GROUP BY 1"),
       pool.query(`
@@ -336,7 +362,11 @@ export const getAnalyticsStats = async (req, res) => {
         WHERE type = 'cv' AND action = 'download' AND template IS NOT NULL AND template != ''
         GROUP BY 1
         ORDER BY count DESC
-      `)
+      `),
+      pool.query("SELECT COUNT(*)::int AS count FROM users WHERE created_at >= $1 AND created_at < $2", [previous30Days, last30Days]),
+      pool.query("SELECT COUNT(*)::int AS count FROM users WHERE last_login >= $1 AND last_login < $2 AND is_admin = false", [previous7Days, last7Days]),
+      pool.query("SELECT COUNT(*)::int AS count FROM users WHERE plan != 'Free' AND is_admin = false AND created_at >= $1 AND created_at < $2", [previous30Days, last30Days]),
+      pool.query("SELECT COUNT(*)::int AS count FROM users WHERE plan != 'Free' AND is_admin = false")
     ]);
 
     const newUsersLast30Days = newUsersResult.rows[0]?.count || 0;
@@ -581,22 +611,42 @@ export const getAnalyticsStats = async (req, res) => {
     const uptimeDeduction = (100 - parseFloat(apiSuccessRate)) * 0.01;
     const systemUptime = Math.max(99.90, baseUptime - uptimeDeduction).toFixed(2);
 
+    // ──── CALCULATE PERCENTAGE CHANGES ─────
+    const previousNewUsers = previousNewUsersResult.rows[0]?.count || 0;
+    const userGrowthChange = previousNewUsers > 0 
+      ? Number((((newUsersLast30Days - previousNewUsers) / previousNewUsers) * 100).toFixed(1))
+      : (newUsersLast30Days > 0 ? 100 : 0);
+
+    const previousActiveUsers = previousActiveUsersResult.rows[0]?.count || 0;
+    const activeUsersChange = previousActiveUsers > 0
+      ? Number((((activeUsersLast7Days - previousActiveUsers) / previousActiveUsers) * 100).toFixed(1))
+      : (activeUsersLast7Days > 0 ? 100 : 0);
+
+    const currentPaidUsers = Number(paidUsersResult.rows[0]?.count || 0);
+    const previousPaidUsers = previousPaidUsersResult.rows[0]?.count || 0;
+    const conversionsChange = previousPaidUsers > 0
+      ? Number((((currentPaidUsers - previousPaidUsers) / previousPaidUsers) * 100).toFixed(1))
+      : (currentPaidUsers > 0 ? 100 : 0);
+
     res.status(200).json({
       userGrowth: {
         count: Number(newUsersLast30Days),
+        change: userGrowthChange,
         note: "New users in last 30 days",
       },
       conversions: {
-        count: totalPaidUsers,
+        count: currentPaidUsers,
+        change: conversionsChange,
         note: "Total paid subscriptions",
       },
       activeUsers: {
         count: Number(activeUsersLast7Days),
+        change: activeUsersChange,
         note: "Active last 7 days",
       },
       deletedUsers: {
         count: Number(deletedUsersCount),
-        note: "Total deleted accounts",
+        note: "Inactive or deleted accounts",
       },
       mostUsedResumeTemplates,
       mostUsedCvTemplates,

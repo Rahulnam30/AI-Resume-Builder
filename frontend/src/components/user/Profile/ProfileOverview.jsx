@@ -18,10 +18,12 @@ import "./EditProfile.css";
 import UserNavBar from "../UserNavBar/UserNavBar";
 import axios from "../../../api/axios";
 import toast from "react-hot-toast";
+import DangerZone from "./DangerZone";
 
 const ProfileOverview = () => {
   const navigate = useNavigate();
   const [profileData, setProfileData] = useState({
+    id: "",
     fullName: "",
     email: "",
     phone: "",
@@ -41,6 +43,7 @@ const ProfileOverview = () => {
         const res = await axios.get("/api/user/profile");
         if (res.data?.user) {
           setProfileData({
+            id: res.data.user.id || "",
             fullName: res.data.user.fullName || "",
             email: res.data.user.email || "",
             phone: res.data.user.phone || "",
@@ -258,6 +261,10 @@ const ProfileOverview = () => {
               </div>
             </div>
           </div>
+        </div>
+
+        <div className="mt-6">
+          <DangerZone userId={profileData.id} />
         </div>
       </div>
     </div>

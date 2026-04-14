@@ -12,17 +12,13 @@ const apiTracker = async (req, res, next) => {
 
     try {
       const userId = req.userId || null;
-      let pgUserId = null;
-
-      if (userId && isUUID(userId)) {
-        pgUserId = userId;
-      }
+      const pgUserId = userId && isUUID(userId) ? userId : null;
 
       await pool.query(
         `
         INSERT INTO api_metrics
         (endpoint, method, status_code, response_time, user_id, ip_address, user_agent, request_size, response_size, error_message, created_at, updated_at)
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, NOW(), NOW())
+        VALUES ($1, $2, $3, $4, (SELECT id FROM users WHERE id = $5), $6, $7, $8, $9, $10, NOW(), NOW())
         `,
         [
           req.originalUrl || req.url,

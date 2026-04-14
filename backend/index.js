@@ -118,10 +118,23 @@ const bootstrapAdmin = async () => {
   }
 };
 
+const ensureDeletionEventsTable = async () => {
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS user_deletion_events (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      deleted_user_id UUID NOT NULL UNIQUE,
+      deleted_by_user_id UUID,
+      deleted_by_admin BOOLEAN NOT NULL DEFAULT false,
+      created_at TIMESTAMP NOT NULL DEFAULT NOW()
+    )
+  `);
+};
+
 // 🚨 FIX: Connect DB BEFORE starting server, not inside listen callback
 const startServer = async () => {
   try {
     await connectDB(); // Wait for DB connection
+    await ensureDeletionEventsTable();
     await bootstrapAdmin(); // Ensure admin exists
     pool.query("SELECT 1")
   .then(() => console.log("✅ PostgreSQL ready"))
