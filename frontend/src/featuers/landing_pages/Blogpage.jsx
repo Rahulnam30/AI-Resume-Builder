@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from "react-router-dom";
 import { Search, ChevronDown, Calendar, Sparkles, Loader2, Check, AlertCircle, Mail } from 'lucide-react';
 import NavBar from '../../components/NavBar';
 import Footer from "./Footer";
@@ -14,6 +15,7 @@ const fadeUp = {
   },
 };
 const BlogPage = () => {
+  const navigate = useNavigate();
   const [activeCategory, setActiveCategory] = useState("All Articles");
   const [searchQuery, setSearchQuery] = useState("");
   const [expandedPosts, setExpandedPosts] = useState({});
@@ -63,7 +65,9 @@ const BlogPage = () => {
 
   const categories = [
     "All Articles",
-    ...Array.from(new Set(blogPosts.map((post) => post.category).filter(Boolean))),
+    ...Array.from(
+      new Set(blogPosts.map((post) => post.category).filter(Boolean)),
+    ),
   ];
 
   const filteredPosts = blogPosts.filter((post) => {
@@ -215,77 +219,89 @@ const BlogPage = () => {
         )}
 
         {isLoadingBlogs ? (
-          <div className="py-20 text-center font-semibold text-gray-500">Loading blogs...</div>
+          <div className="py-20 text-center font-semibold text-gray-500">
+            Loading blogs...
+          </div>
         ) : (
-        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-          {filteredPosts.map((post, index) => (
-            <motion.article
-              key={post.id || post._id}
-              variants={fadeUp}
-              initial="hidden"
-              whileInView="show"
-              viewport={{ once: true }}
-              className="overflow-hidden transition-all duration-300 bg-white border border-gray-100 shadow-sm cursor-pointer rounded-[2rem] hover:shadow-2xl hover:-translate-y-2 group"
-            >
-              <div className="relative h-56 overflow-hidden">
-                <img
-                  src={post.image || "https://via.placeholder.com/600x400?text=No+Image"}
-                  alt={post.title}
-                  className="object-cover w-full h-full transition-transform duration-500 group-hover:scale-110"
-                />
-                <div className="absolute top-4 left-4">
-                  <span className="px-4 py-1.5 bg-white text-[#0077cc] text-xs font-black uppercase tracking-widest rounded-lg shadow-lg">
-                    {post.category}
-                  </span>
-                </div>
-              </div>
-
-              <div className="p-8">
-                <div className="flex items-center gap-4 mb-4 text-xs font-bold tracking-widest text-gray-400 uppercase">
-                  <span className="flex items-center gap-1">
-                    <Calendar className="w-3.5 h-3.5" />
-                    {post.date}
-                  </span>
-                  <span>•</span>
-                  <span>{post.readTime}</span>
-                </div>
-
-                <h3 className="mb-4 text-xl font-black leading-tight text-[#1a2e52] transition-colors group-hover:text-[#0077cc] font-jakarta">
-                  {post.title}
-                </h3>
-
-                <p className="mb-4 text-sm font-medium leading-relaxed text-gray-400 line-clamp-3">
-                  {post.excerpt}
-                </p>
-
-                <div
-                  className={`overflow-hidden transition-all duration-300 ease-in-out ${
-                    expandedPosts[post.id]
-                      ? "max-h-40 opacity-100 mb-4"
-                      : "max-h-0 opacity-0"
-                  }`}
-                >
-                  <p className="text-sm font-medium leading-relaxed text-gray-500">
-                    {post.detail}
-                  </p>
-                </div>
-
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    togglePost(post.id || post._id);
-                  }}
-                  className="inline-flex items-center gap-2 font-bold text-[#0077cc] transition-all hover:gap-3"
-                >
-                  {expandedPosts[post.id || post._id] ? "Show Less" : "Read More"}
-                  <ChevronDown
-                    className={`w-4 h-4 transition-transform duration-300 ${expandedPosts[post.id || post._id] ? "rotate-180" : ""}`}
+          <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+            {filteredPosts.map((post, index) => (
+              <motion.article
+                key={post.id || post._id}
+                variants={fadeUp}
+                initial="hidden"
+                whileInView="show"
+                viewport={{ once: true }}
+                onClick={() =>
+                  navigate(`/blog/${post._id || post.id}`, {
+                    state: { blog: post },
+                  })
+                }
+                className="overflow-hidden transition-all duration-300 bg-white border border-gray-100 shadow-sm cursor-pointer rounded-[2rem] hover:shadow-2xl hover:-translate-y-2 group"
+              >
+                <div className="relative h-56 overflow-hidden">
+                  <img
+                    src={
+                      post.image ||
+                      "https://via.placeholder.com/600x400?text=No+Image"
+                    }
+                    alt={post.title}
+                    className="object-cover w-full h-full transition-transform duration-500 group-hover:scale-110"
                   />
-                </button>
-              </div>
-            </motion.article>
-          ))}
-        </div>
+                  <div className="absolute top-4 left-4">
+                    <span className="px-4 py-1.5 bg-white text-[#0077cc] text-xs font-black uppercase tracking-widest rounded-lg shadow-lg">
+                      {post.category}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="p-8">
+                  <div className="flex items-center gap-4 mb-4 text-xs font-bold tracking-widest text-gray-400 uppercase">
+                    <span className="flex items-center gap-1">
+                      <Calendar className="w-3.5 h-3.5" />
+                      {post.date}
+                    </span>
+                    <span>•</span>
+                    <span>{post.readTime}</span>
+                  </div>
+
+                  <h3 className="mb-4 text-xl font-black leading-tight text-[#1a2e52] transition-colors group-hover:text-[#0077cc] font-jakarta">
+                    {post.title}
+                  </h3>
+
+                  <p className="mb-4 text-sm font-medium leading-relaxed text-gray-400 line-clamp-3">
+                    {post.excerpt}
+                  </p>
+
+                  <div
+                    className={`overflow-hidden transition-all duration-300 ease-in-out ${
+                      expandedPosts[post.id]
+                        ? "max-h-40 opacity-100 mb-4"
+                        : "max-h-0 opacity-0"
+                    }`}
+                  >
+                    <p className="text-sm font-medium leading-relaxed text-gray-500">
+                      {post.detail}
+                    </p>
+                  </div>
+
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      togglePost(post.id || post._id);
+                    }}
+                    className="inline-flex items-center gap-2 font-bold text-[#0077cc] transition-all hover:gap-3"
+                  >
+                    {expandedPosts[post.id || post._id]
+                      ? "Show Less"
+                      : "Read More"}
+                    <ChevronDown
+                      className={`w-4 h-4 transition-transform duration-300 ${expandedPosts[post.id || post._id] ? "rotate-180" : ""}`}
+                    />
+                  </button>
+                </div>
+              </motion.article>
+            ))}
+          </div>
         )}
 
         {!isLoadingBlogs && filteredPosts.length === 0 && (

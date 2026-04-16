@@ -15,6 +15,7 @@ import HelpCenter from "./featuers/landing_pages/HelpCenter";
 import About from "./featuers/landing_pages/About";
 import Pricing from "./featuers/landing_pages/Pricing";
 import BlogPage from "./featuers/landing_pages/Blogpage";
+import BlogDetail from "./featuers/landing_pages/BlogDetail";
 import CareersPage from "./featuers/landing_pages/Careerpage";
 import ATSCheckerPage from "./featuers/landing_pages/ATSChecker";
 import TemplatesFeature from "./featuers/landing_pages/TemplatesFeature";
@@ -26,7 +27,7 @@ import GrowthInsightsPage from "./featuers/landing_pages/GrowthInsights";
 import AICoverLetterPage from "./featuers/landing_pages/CoverLetter";
 import CoverLetterExamples from "./featuers/landing_pages/CoverLetterExamples";
 import CVFormattingPage from "./featuers/landing_pages/CV";
-import WritingCoverLetter from "./featuers/landing_pages/WritingCoverLetter"
+import WritingCoverLetter from "./featuers/landing_pages/WritingCoverLetter";
 
 import ScrollToTop from "./featuers/ScrollToTop";
 import RequireAuth from "./featuers/RequireAuth";
@@ -76,43 +77,73 @@ function App() {
             <Route path="/verify-email" element={<VerifyEmail />} />
             <Route path="/forgot-password" element={<ForgotPasswordPage />} />
 
-              <Route path="/" element={<Home />} />
-              <Route path="/contact" element={<Contact />} />
-              <Route path="/HelpCenter" element={<HelpCenter />} />
-              <Route path="/about" element={<About />} />
-              <Route path="/pricing" element={<Pricing />} />
-              <Route path="/blog" element={<BlogPage />} />
-              <Route path="/ats-checker" element={<ATSCheckerPage />} />
-              <Route path="/AI-builder" element={<AIBuilderPage />} />
-              <Route path="/content-enhance" element={<AIContentEnhancementPage />} />
-              <Route path="/score-checker" element={<ScoreChecker />} />
-              <Route path="/resume-hub" element={<ResumeHubPage />} />
-              <Route path="/growths" element={<GrowthInsightsPage />} />
-              <Route path="/careers" element={<CareersPage />} />
-              <Route path="/resume-examples" element={<ResumeExamplesPage />} />
-              <Route path="/how-to-write-a-resume" element={<ResumeGuide />} />
-              <Route path="/cover-letter-templates" element={<CoverLetterTemplates />} />
-              <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-              <Route path="/faq" element={<Faq />} />
-              <Route path="/resume-checker" element={<ResumeChecker />} />
-              <Route path="/terms" element={<Terms />} />
-              <Route path="/help-center" element={<HelpCenter />} />
-              <Route path="/ats-checker" element={<ATSCheckerPage />} />
-              <Route path="/TemplatesFeature" element={<TemplatesFeature />} />
-              <Route path="/AI-builder" element={<AIBuilderPage />} />
-              <Route path="/content-enhance" element={<AIContentEnhancementPage />} />
-              <Route path="/score-checker" element={<ScoreChecker />} />
-              <Route path="/resume-hub" element={<ResumeHubPage />} />
-              <Route path="/growths" element={<GrowthInsightsPage />} />
-              <Route path="/cover-letter" element={<AICoverLetterPage />} />
-              <Route path="/cover-letter-examples" element={<CoverLetterExamples />} />
-              <Route path="/cv" element={<CVFormattingPage />} />
-              <Route path="/WritingCoverLetter" element={<WritingCoverLetter />} />
+            <Route path="/" element={<Home />} />
+            <Route path="/contact" element={<Contact />} />
+            <Route path="/HelpCenter" element={<HelpCenter />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/pricing" element={<Pricing />} />
+            <Route path="/blog" element={<BlogPage />} />
+            <Route path="/blog/:id" element={<BlogDetail />} />
+            <Route path="/ats-checker" element={<ATSCheckerPage />} />
+            <Route path="/AI-builder" element={<AIBuilderPage />} />
+            <Route
+              path="/content-enhance"
+              element={<AIContentEnhancementPage />}
+            />
+            <Route path="/score-checker" element={<ScoreChecker />} />
+            <Route path="/resume-hub" element={<ResumeHubPage />} />
+            <Route path="/growths" element={<GrowthInsightsPage />} />
+            <Route path="/careers" element={<CareersPage />} />
+            <Route path="/resume-examples" element={<ResumeExamplesPage />} />
+            <Route path="/how-to-write-a-resume" element={<ResumeGuide />} />
+            <Route
+              path="/cover-letter-templates"
+              element={<CoverLetterTemplates />}
+            />
+            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+            <Route path="/faq" element={<Faq />} />
+            <Route path="/resume-checker" element={<ResumeChecker />} />
+            <Route path="/terms" element={<Terms />} />
+            <Route path="/help-center" element={<HelpCenter />} />
+            <Route path="/ats-checker" element={<ATSCheckerPage />} />
+            <Route path="/TemplatesFeature" element={<TemplatesFeature />} />
+            <Route path="/AI-builder" element={<AIBuilderPage />} />
+            <Route
+              path="/content-enhance"
+              element={<AIContentEnhancementPage />}
+            />
+            <Route path="/score-checker" element={<ScoreChecker />} />
+            <Route path="/resume-hub" element={<ResumeHubPage />} />
+            <Route path="/growths" element={<GrowthInsightsPage />} />
+            <Route path="/cover-letter" element={<AICoverLetterPage />} />
+            <Route
+              path="/cover-letter-examples"
+              element={<CoverLetterExamples />}
+            />
+            <Route path="/cv" element={<CVFormattingPage />} />
+            <Route
+              path="/WritingCoverLetter"
+              element={<WritingCoverLetter />}
+            />
             {/* ================= USER DASHBOARD ROUTES ================= */}
-            <Route path="/user/*" element={<RequireAuth allowedRoles={['user']}><UserRoutes /></RequireAuth>} />
+            <Route
+              path="/user/*"
+              element={
+                <RequireAuth allowedRoles={["user"]}>
+                  <UserRoutes />
+                </RequireAuth>
+              }
+            />
 
             {/* ================= ADMIN ROUTES ================= */}
-            <Route path="/admin" element={<RequireAuth allowedRoles={['admin']}><AdminLayout /></RequireAuth>}>
+            <Route
+              path="/admin"
+              element={
+                <RequireAuth allowedRoles={["admin"]}>
+                  <AdminLayout />
+                </RequireAuth>
+              }
+            >
               <Route index element={<AdminDashboard />} />
               <Route path="manage-templates" element={<AdminTemplates />} />
 
@@ -132,53 +163,54 @@ function App() {
           </Route>
         </Routes>
       </div>
-      <Toaster 
+      <Toaster
         position="top-right"
         toastOptions={{
           duration: 3000,
           style: {
-            background: '#ffffff',
-            color: '#1f2937',
-            border: '1px solid #e5e7eb',
-            borderRadius: '10px',
-            boxShadow: '0 10px 25px rgba(0, 0, 0, 0.1)',
-            fontFamily: "'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
-            fontSize: '14px',
-            fontWeight: '500',
-            padding: '12px 16px',
-            minHeight: '48px'
+            background: "#ffffff",
+            color: "#1f2937",
+            border: "1px solid #e5e7eb",
+            borderRadius: "10px",
+            boxShadow: "0 10px 25px rgba(0, 0, 0, 0.1)",
+            fontFamily:
+              "'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
+            fontSize: "14px",
+            fontWeight: "500",
+            padding: "12px 16px",
+            minHeight: "48px",
           },
           success: {
             duration: 3000,
             iconTheme: {
-              primary: '#10b981',
-              secondary: '#ffffff',
+              primary: "#10b981",
+              secondary: "#ffffff",
             },
             style: {
-              background: '#ffffff',
-              color: '#065f46',
-              border: '1px solid #10b981',
-            }
+              background: "#ffffff",
+              color: "#065f46",
+              border: "1px solid #10b981",
+            },
           },
           error: {
             duration: 4000,
             iconTheme: {
-              primary: '#ef4444',
-              secondary: '#ffffff',
+              primary: "#ef4444",
+              secondary: "#ffffff",
             },
             style: {
-              background: '#ffffff',
-              color: '#991b1b',
-              border: '1px solid #ef4444',
-            }
+              background: "#ffffff",
+              color: "#991b1b",
+              border: "1px solid #ef4444",
+            },
           },
           loading: {
             style: {
-              background: '#ffffff',
-              color: '#0f172a',
-              border: '1px solid #0f172a',
-            }
-          }
+              background: "#ffffff",
+              color: "#0f172a",
+              border: "1px solid #0f172a",
+            },
+          },
         }}
       />
     </>
