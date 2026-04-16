@@ -23,7 +23,7 @@ export const getDashboardSummary = async (req, res) => {
 
         // 3. Find Last Edited Document
         const lastEditedResult = await pool.query(
-            "SELECT id, title, updated_at FROM resumes WHERE user_id = $1 ORDER BY updated_at DESC LIMIT 1",
+            "SELECT id, title, updated_at AT TIME ZONE 'UTC' AS updated_at FROM resumes WHERE user_id = $1 ORDER BY updated_at DESC LIMIT 1",
             [userId]
         );
         
@@ -43,7 +43,7 @@ export const getDashboardSummary = async (req, res) => {
 
         // - Add recent resumes (created/edited)
         const recentResumesResult = await pool.query(
-            "SELECT id, title, created_at, updated_at FROM resumes WHERE user_id = $1 ORDER BY updated_at DESC LIMIT 10",
+            "SELECT id, title, created_at AT TIME ZONE 'UTC' AS created_at, updated_at AT TIME ZONE 'UTC' AS updated_at FROM resumes WHERE user_id = $1 ORDER BY updated_at DESC LIMIT 10",
             [userId]
         );
         
@@ -74,7 +74,7 @@ export const getDashboardSummary = async (req, res) => {
 
         // - Add recent downloads
         const recentDownloadsResult = await pool.query(
-            "SELECT id, name, type, format, created_at, download_date FROM downloads WHERE user_id = $1 AND action = 'download' ORDER BY created_at DESC LIMIT 10",
+            "SELECT id, name, type, format, created_at AT TIME ZONE 'UTC' AS created_at, CASE WHEN download_date IS NOT NULL THEN download_date AT TIME ZONE 'UTC' ELSE NULL END AS download_date FROM downloads WHERE user_id = $1 AND action = 'download' ORDER BY created_at DESC LIMIT 10",
             [userId]
         );
         
@@ -95,7 +95,7 @@ export const getDashboardSummary = async (req, res) => {
 
         // - Add recent ATS scans
         const recentScansResult = await pool.query(
-            `SELECT a.id, a.created_at, a.score, coalesce(r.title, 'Resume Profile') as "resumeTitle", r.id as cv_id 
+            `SELECT a.id, a.created_at AT TIME ZONE 'UTC' AS created_at, a.score, coalesce(r.title, 'Resume Profile') as "resumeTitle", r.id as cv_id 
              FROM ats_scores a 
              LEFT JOIN resumes r ON a.cv_id = r.id 
              WHERE a.user_id = $1 
