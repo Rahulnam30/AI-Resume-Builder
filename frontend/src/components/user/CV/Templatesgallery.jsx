@@ -10,7 +10,6 @@ export const templates = [
   { id: "professional", name: "Professional", category: "Traditional" },
   { id: "modern", name: "Modern Blue", category: "Contemporary" },
   { id: "creative", name: "Creative", category: "Creative" },
-  { id: "minimal", name: "Minimal", category: "Traditional" },
   { id: "executive", name: "Executive", category: "Traditional" },
   { id: "academic", name: "Academic", category: "Traditional" },
   { id: "twoColumn", name: "Two Column", category: "Traditional" },
