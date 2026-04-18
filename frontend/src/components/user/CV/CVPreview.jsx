@@ -3,7 +3,7 @@ import ReactDOM from "react-dom";
 import { Eye, Maximize2, Minimize2, ZoomIn, ZoomOut, RotateCcw, Download, ChevronLeft, ChevronRight, FileText, Printer, Layers, CheckCircle2, Circle, Menu, X } from "lucide-react";
 import CVTemplates from "./Cvtemplates";
 import PaginatedPreview from "./PaginatedPreview";
-import mergeWithSampleData, { hasAnyUserData } from "../../../utils/Datahelpers";
+import mergeWithSampleData, { hasAnyUserData, getFilteredDisplayData } from "../../../utils/Datahelpers";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 
@@ -96,19 +96,16 @@ const CVPreview = ({ formData, selectedTemplate, isMaximized, onToggleMaximize }
   const hasUserEnteredTechnicalSkills = useMemo(() => (formData?.skills?.technical?.length ?? 0) > 0, [formData?.skills?.technical]);
   const hasUserEnteredSoftSkills = useMemo(() => (formData?.skills?.soft?.length ?? 0) > 0, [formData?.skills?.soft]);
 
-  /* ─── merge + filter display data ─────────────────────────────────────── */
+  /* ─── filtered display data for WYSIWYG ─────────────────────────────────────── */
   const displayData = useMemo(() => {
-    const merged = mergeWithSampleData(formData);
-    merged.linkedin = formData.linkedin || ""; merged.website = formData.website || ""; merged.github = formData.github || "";
-    merged.extraLinks = (formData.extraLinks || []).filter(link => link?.url?.trim() !== "" && link?.label?.trim() !== "");
-    if (!hasUserEnteredExperience && Array.isArray(merged.experience)) merged.experience = [];
-    if (!hasUserEnteredEducation && Array.isArray(merged.education)) merged.education = [];
-    if (!hasUserEnteredProjects && Array.isArray(merged.projects)) merged.projects = [];
-    if (!hasUserEnteredCertifications && Array.isArray(merged.certifications)) merged.certifications = [];
-    if (!hasUserEnteredTechnicalSkills) merged.skills = { ...merged.skills, technical: [] };
-    if (!hasUserEnteredSoftSkills) merged.skills = { ...merged.skills, soft: [] };
-    return merged;
-  }, [formData, hasUserEnteredExperience, hasUserEnteredEducation, hasUserEnteredProjects, hasUserEnteredCertifications, hasUserEnteredTechnicalSkills, hasUserEnteredSoftSkills]);
+    const filtered = getFilteredDisplayData(formData);
+    // Add additional fields that might be needed
+    filtered.linkedin = formData.linkedin || ""; 
+    filtered.website = formData.website || ""; 
+    filtered.github = formData.github || "";
+    filtered.extraLinks = (formData.extraLinks || []).filter(link => link?.url?.trim() !== "" && link?.label?.trim() !== "");
+    return filtered;
+  }, [formData]);
 
   const isUserData = useMemo(() => hasAnyUserData(formData), [formData]);
   const effectiveZoom = useMemo(() => clamp(manualZoom * fitZoom, ZOOM_MIN, ZOOM_MAX), [manualZoom, fitZoom]);

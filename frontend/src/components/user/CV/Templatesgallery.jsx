@@ -2,7 +2,7 @@ import React, { useState, useMemo, useRef, useEffect, useCallback, memo } from "
 import { Check, Eye, ChevronLeft, ChevronRight, X, Maximize2, Minimize2, ZoomIn, ZoomOut } from "lucide-react";
 import axiosInstance from "../../../api/axios";
 import CVTemplates from "./Cvtemplates";
-import mergeWithSampleData, { hasAnyUserData } from "../../../utils/Datahelpers";
+import mergeWithSampleData, { hasAnyUserData, getFilteredDisplayData } from "../../../utils/Datahelpers";
 import { createPortal } from "react-dom";
 
 /* ─── constants ─────────────────────────────────────────────────────────── */
@@ -194,7 +194,7 @@ const TemplatesGallery = memo(({ selectedTemplate, onSelectTemplate, formData })
     return () => { cancelled = true; };
   }, []);
 
-  const displayData = useMemo(() => mergeWithSampleData(formData), [formData]);
+  const displayData = useMemo(() => getFilteredDisplayData(formData), [formData]);
   const showingUserData = useMemo(() => hasAnyUserData(formData), [formData]);
   const activeTemplates = useMemo(() => templates.filter((t) => statuses[t.id] !== false), [statuses]);
   const filtered = useMemo(() => ({

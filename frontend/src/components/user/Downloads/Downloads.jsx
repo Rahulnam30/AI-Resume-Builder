@@ -1,1175 +1,2394 @@
 import React, { useCallback, useEffect, useMemo, useReducer, useRef, useState } from "react";
+
 import axiosInstance from "../../../api/axios";
+
 import {
+
   FiDownload,
+
   FiFile,
+
   FiTrash2,
+
   FiSearch,
+
   FiFileText,
+
   FiEye,
+
   FiClock,
+
   FiFolder,
+
   FiEdit,
+
   FiRefreshCw,
+
   FiChevronLeft,
+
   FiChevronRight,
+
   FiX,
+
   FiRotateCcw,
+
 } from "react-icons/fi";
 
+
+
 import {  ZoomIn, ZoomOut, X } from "lucide-react";
+
 import { motion, AnimatePresence } from "framer-motion";
+
 import UserNavBar from "../UserNavBar/UserNavBar";
+
 import MobilePreview from "./MobilePreview";
 
+
+
 // ═══════════════════════════════════════════════════════════
+
 // CONSTANTS & CONFIGURATION
+
 // ═══════════════════════════════════════════════════════════
+
 const API_CONFIG = {
+
   DOWNLOADS_ENDPOINT: "/api/downloads",
+
   DOWNLOADS_LIMIT: 50,
+
   INITIAL_PAGE: 1,
+
 };
 
+
+
 const ITEMS_PER_PAGE = 9;
+
 const A4_WIDTH_PX = 900;
 
 
+
+
+
 const ZOOM_CONFIG = {
+
   MIN: 50,
+
   MAX: 200,
+
   DEFAULT: 100,
+
   STEP: 10,
+
 };
+
+
 
 const TYPE_META = {
+
   resume: { icon: "#2563eb", bg: "#eff6ff", label: "Resume" },
+
   "cover-letter": { icon: "#7c3aed", bg: "#f5f3ff", label: "Cover Letter" },
+
   cv: { icon: "#059669", bg: "#ecfdf5", label: "CV" },
+
   document: { icon: "#d97706", bg: "#fffbeb", label: "Document" },
+
 };
+
+
 
 const STAT_ITEMS = [
+
   { key: "All", label: "Total Files", icon: "FiFolder", color: "#2563eb", bg: "#eff6ff" },
+
   { key: "resume", label: "Resumes", icon: "FiFileText", color: "#059669", bg: "#ecfdf5" },
+
   { key: "cover-letter", label: "Cover Letters", icon: "FiEdit", color: "#7c3aed", bg: "#f5f3ff" },
+
   { key: "cv", label: "CVs", icon: "FiFile", color: "#d97706", bg: "#fffbeb" },
+
 ];
 
+
+
 // ═══════════════════════════════════════════════════════════
+
 // UTILITY FUNCTIONS
+
 // ═══════════════════════════════════════════════════════════
 
+
+
 /**
+
  * Format relative time (e.g., "2m ago", "3d ago")
+
  */
+
 const formatDate = (dateString) => {
+
   const date = new Date(dateString);
+
   const diff = Date.now() - date;
+
   const m = Math.floor(diff / 60000);
+
   const h = Math.floor(diff / 3600000);
+
   const d = Math.floor(diff / 86400000);
+
   if (m < 60) return `${m}m ago`;
+
   if (h < 24) return `${h}h ago`;
+
   if (d < 7) return `${d}d ago`;
+
   return date.toLocaleDateString("en-US", {
+
     month: "short",
+
     day: "numeric",
+
     year: "numeric",
+
   });
+
 };
 
+
+
 /**
+
  * Transform API response to component format
+
  */
+
 const transformDownloadData = (apiDownloads) => {
+
   return apiDownloads.map((d) => ({
+
     id: d._id?.toString?.() || d.id,
+
     name: d.name,
+
     type: d.type,
+
     format: (d.format || (d.type === "cover-letter" ? "DOCX" : "PDF")).toUpperCase(),
+
     size: d.size || (d.type === "cover-letter" ? "150 KB" : "250 KB"),
+
     views: d.views || 0,
+
     downloadDate: d.downloadDate,
+
     template: d.template,
+
   }));
+
 };
 
+
+
 /**
+
  * Get type metadata with fallback
+
  */
+
 const getTypeMeta = (type) => TYPE_META[type] || { icon: "#6b7280", bg: "#f9fafb", label: type };
 
+
+
 /**
+
  * Calculate statistics from downloads array
+
  */
+
 const calculateStats = (downloads) => ({
+
   total: downloads.length,
+
   resumes: downloads.filter((d) => d.type === "resume").length,
+
   coverLetters: downloads.filter((d) => d.type === "cover-letter").length,
+
   cvs: downloads.filter((d) => d.type === "cv").length,
+
 });
 
+
+
 /**
+
  * Filter downloads based on criteria
+
  */
+
 const filterDownloads = (downloads, { searchTerm, activeFormat, activeType, sortBy }) => {
+
   let filtered = [...downloads];
 
+
+
   if (activeFormat !== "All") {
+
     filtered = filtered.filter((d) => d.format === activeFormat);
+
   }
+
+
 
   if (activeType !== "All") {
+
     filtered = filtered.filter((d) => d.type === activeType);
+
   }
+
+
 
   if (searchTerm) {
+
     filtered = filtered.filter(
+
       (d) =>
+
         d.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+
         (d.template && d.template.toLowerCase().includes(searchTerm.toLowerCase()))
+
     );
+
   }
+
+
 
   if (sortBy === "recent") {
+
     filtered.sort((a, b) => new Date(b.downloadDate) - new Date(a.downloadDate));
+
   } else if (sortBy === "name") {
+
     filtered.sort((a, b) => a.name.localeCompare(b.name));
+
   }
+
+
 
   return filtered;
+
 };
+
+
 
 /**
+
  * Get paginated items from filtered array
+
  */
+
 const getPaginatedItems = (filteredDownloads, currentPage, itemsPerPage) => {
+
   const start = (currentPage - 1) * itemsPerPage;
+
   return filteredDownloads.slice(start, start + itemsPerPage);
+
 };
 
+
+
 // ═══════════════════════════════════════════════════════════
+
 // STATE REDUCER FOR FILTER/SEARCH
+
 // ═══════════════════════════════════════════════════════════
+
+
 
 const filterReducer = (state, action) => {
+
   switch (action.type) {
+
     case "SET_SEARCH":
+
       return { ...state, searchTerm: action.payload, currentPage: 1 };
+
     case "SET_SORT":
+
       return { ...state, sortBy: action.payload };
+
     case "SET_FORMAT":
+
       return { ...state, activeFormat: action.payload, currentPage: 1 };
+
     case "SET_TYPE":
+
       return { ...state, activeType: action.payload, currentPage: 1 };
+
     case "SET_PAGE":
+
       return { ...state, currentPage: action.payload };
+
     case "RESET_FILTERS":
+
       return {
+
         searchTerm: "",
+
         activeFormat: "All",
+
         activeType: "All",
+
         sortBy: "recent",
+
         currentPage: 1,
+
       };
+
     default:
+
       return state;
+
   }
+
 };
+
+
 
 const INITIAL_FILTER_STATE = {
+
   searchTerm: "",
+
   activeFormat: "All",
+
   activeType: "All",
+
   sortBy: "recent",
+
   currentPage: 1,
+
 };
 
+
+
 const Downloads = () => {
+
   // Preview & Zoom states
+
   const [zoomLevel, setZoomLevel] = useState(ZOOM_CONFIG.DEFAULT);
+
   const [previewDocument, setPreviewDocument] = useState(null);
+
   const [previewLoading, setPreviewLoading] = useState(false);
+
   const [isFullscreen, setIsFullscreen] = useState(false);
+
   const previewViewportRef = useRef(null);
+
   const [previewViewportWidth, setPreviewViewportWidth] = useState(0);
 
+
+
   // Data & UI states
+
   const [downloads, setDownloads] = useState([]);
+
   const [loading, setLoading] = useState(true);
+
   const [isRefreshing, setIsRefreshing] = useState(false);
+
   const [openMenuId, setOpenMenuId] = useState(null);
+
   const [deletingId, setDeletingId] = useState(null);
 
+
+
   // Filter state (consolidated with reducer)
+
   const [filterState, dispatch] = useReducer(filterReducer, INITIAL_FILTER_STATE);
+
   const { searchTerm, activeFormat, activeType, sortBy, currentPage } = filterState;
 
+
+
   useEffect(() => {
+
     if (!previewDocument) return;
+
     const el = previewViewportRef.current;
+
     if (!el) return;
 
+
+
     const update = () => setPreviewViewportWidth(el.clientWidth || 0);
+
     update();
 
+
+
     const ro = new ResizeObserver(update);
+
     ro.observe(el);
+
     return () => ro.disconnect();
+
   }, [previewDocument]);
 
+
+
   // Consolidate keyboard & click handlers
+
   useEffect(() => {
+
     const handleKeyDown = (e) => {
+
       if (!previewDocument) return;
 
+
+
       if ((e.ctrlKey || e.metaKey) && (e.key === "+" || e.key === "-")) {
+
         e.preventDefault();
+
         if (e.key === "+") setZoomLevel((z) => Math.min(ZOOM_CONFIG.MAX, z + ZOOM_CONFIG.STEP));
+
         if (e.key === "-") setZoomLevel((z) => Math.max(ZOOM_CONFIG.MIN, z - ZOOM_CONFIG.STEP));
+
       }
+
+
 
       if ((e.ctrlKey || e.metaKey) && e.key === "0") {
+
         e.preventDefault();
+
         setZoomLevel(ZOOM_CONFIG.DEFAULT);
+
       }
+
     };
+
+
 
     const handleClickOutside = (e) => {
+
       if (
+
         openMenuId &&
+
         !e.target.closest(".menu-trigger") &&
+
         !e.target.closest(".menu-dropdown")
+
       ) {
+
         setOpenMenuId(null);
+
       }
+
     };
+
+
 
     window.addEventListener("keydown", handleKeyDown);
+
     document.addEventListener("mousedown", handleClickOutside);
 
+
+
     return () => {
+
       window.removeEventListener("keydown", handleKeyDown);
+
       document.removeEventListener("mousedown", handleClickOutside);
+
     };
+
   }, [previewDocument, openMenuId]);
 
+
+
   useEffect(() => {
+
     fetchDownloads();
+
   }, []);
+
+
 
   // Optimized fetch with transformDownloadData
+
   const fetchDownloads = useCallback(async () => {
+
     try {
+
       setIsRefreshing(true);
+
       setLoading(true);
+
       const response = await axiosInstance.get(
+
         `${API_CONFIG.DOWNLOADS_ENDPOINT}?limit=${API_CONFIG.DOWNLOADS_LIMIT}&page=${API_CONFIG.INITIAL_PAGE}`
+
       );
+
       const { downloads: bd } = response.data;
+
       setDownloads(transformDownloadData(bd));
+
     } catch (err) {
+
       console.error(err);
+
       setDownloads([]);
+
     } finally {
+
       setLoading(false);
+
       setIsRefreshing(false);
+
     }
+
   }, []);
+
+
 
   // Optimized handlers with useCallback
+
   const handleView = useCallback(
+
     async (download) => {
+
       try {
+
         setPreviewLoading(true);
+
         setOpenMenuId(null);
+
         const response = await axiosInstance.get(`${API_CONFIG.DOWNLOADS_ENDPOINT}/${download.id}`);
+
         setPreviewDocument({ ...download, html: response.data.html });
+
       } catch (err) {
+
         console.error("Preview error:", err);
+
         setPreviewDocument(download);
+
       } finally {
+
         setPreviewLoading(false);
+
       }
+
     },
+
     []
+
   );
 
-  const handleDownload = useCallback(async (download) => {
-    try {
-      const url =
-        download.format === "DOCX"
-          ? `${API_CONFIG.DOWNLOADS_ENDPOINT}/${download.id}/word`
-          : `${API_CONFIG.DOWNLOADS_ENDPOINT}/${download.id}/pdf`;
-      const res = await axiosInstance.get(url, { responseType: "blob" });
-      const blob = new Blob([res.data], {
-        type:
-          download.format === "PDF"
-            ? "application/pdf"
-            : "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+
+
+const handleDownload = useCallback(async (download) => {
+
+  try {
+
+    // For resume/CV downloads, use fresh HTML from current preview
+
+    let downloadId = download.id;
+
+    if (download.type === 'resume' || download.type === 'cv') {
+
+      const freshHtml = previewDocument?.html || download.html;
+
+      // Create temporary download entry with fresh HTML
+
+      const tempDownloadResponse = await axiosInstance.post(API_CONFIG.DOWNLOADS_ENDPOINT, {
+
+        name: download.name,
+
+        type: download.type,
+
+        format: download.format,
+
+        html: freshHtml,
+
+        template: download.template
+
       });
-      const link = document.createElement("a");
-      link.href = window.URL.createObjectURL(blob);
-      link.download = `${download.name.replace(/[^a-zA-Z0-9.-]/g, "_")}.${download.format.toLowerCase()}`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      window.URL.revokeObjectURL(link.href);
-    } catch {
-      alert("Download failed. Please try again.");
+
+      downloadId = tempDownloadResponse.data.id;
+
     }
-  }, []);
+
+    const url =
+
+      download.format === "DOCX"
+
+        ? `${API_CONFIG.DOWNLOADS_ENDPOINT}/${downloadId}/word`
+
+        : `${API_CONFIG.DOWNLOADS_ENDPOINT}/${downloadId}/pdf`;
+
+    const res = await axiosInstance.get(url, { responseType: "blob" });
+
+    const blob = new Blob([res.data], {
+
+      type:
+
+        download.format === "PDF"
+
+          ? "application/pdf"
+
+          : "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+
+    });
+
+    const link = document.createElement("a");
+
+    link.href = window.URL.createObjectURL(blob);
+
+    link.download = `${download.name.replace(/[^a-zA-Z0-9.-]/g, "_")}.${download.format.toLowerCase()}`;
+
+    document.body.appendChild(link);
+
+    link.click();
+
+    document.body.removeChild(link);
+
+    window.URL.revokeObjectURL(link.href);
+
+    // Clean up temporary download entry if we created one
+
+    if (downloadId !== download.id) {
+
+      try {
+
+        await axiosInstance.delete(`${API_CONFIG.DOWNLOADS_ENDPOINT}/${downloadId}`);
+
+      } catch (cleanupError) {
+
+        console.warn("Could not clean up temporary download:", cleanupError);
+
+      }
+
+    }
+
+  } catch {
+
+    alert("Download failed. Please try again.");
+
+  }
+
+}, [previewDocument]);
+
+
 
   const handleDelete = useCallback(
+
     async (id) => {
+
       setDeletingId(id);
+
       try {
+
         await axiosInstance.delete(`${API_CONFIG.DOWNLOADS_ENDPOINT}/${id}`);
+
         setDownloads((prev) => prev.filter((d) => d.id !== id));
+
       } catch (err) {
+
         console.error(err);
+
       } finally {
+
         setDeletingId(null);
+
         setOpenMenuId(null);
+
       }
+
     },
+
     []
+
   );
+
+
 
   // Memoized calculations
+
   const stats = useMemo(() => calculateStats(downloads), [downloads]);
 
+
+
   const filteredDownloads = useMemo(
+
     () =>
+
       filterDownloads(downloads, {
+
         searchTerm,
+
         activeFormat,
+
         activeType,
+
         sortBy,
+
       }),
+
     [downloads, searchTerm, activeFormat, activeType, sortBy]
+
   );
 
+
+
   const currentPageItems = useMemo(
+
     () => getPaginatedItems(filteredDownloads, currentPage, ITEMS_PER_PAGE),
+
     [filteredDownloads, currentPage]
+
   );
+
+
 
   const totalPages = Math.ceil(filteredDownloads.length / ITEMS_PER_PAGE);
 
+
+
   const fitScale = useMemo(() => {
+
     if (previewViewportWidth < 520) return 1;
+
     const available = Math.max(0, previewViewportWidth);
+
     return available ? Math.min(1, available / A4_WIDTH_PX) : 1;
+
   }, [previewViewportWidth]);
 
+
+
   const effectiveScale = useMemo(() => {
+
     return (zoomLevel / 100) * fitScale;
+
   }, [zoomLevel, fitScale]);
 
+
+
   const TypeIcon = ({ type, size = 15 }) => {
+
     const map = { resume: FiFileText, "cover-letter": FiEdit, cv: FiFile };
+
     const Icon = map[type] || FiFile;
+
     return <Icon size={size} />;
+
   };
+
+
 
   if (loading) {
+
     return (
+
       <div className="flex items-center justify-center h-screen bg-gray-50">
+
         <div className="text-center">
+
           <div className="w-9 h-9 border-2 border-gray-900 border-t-transparent rounded-full animate-spin mx-auto mb-3" />
+
           <p className="text-xs text-gray-400 font-medium">
+
             Loading documents...
+
           </p>
+
         </div>
+
       </div>
+
     );
+
   }
 
+
+
   /* ─── STAT CARDS ─── */
+
   const StatCards = () => {
+
     const items = [
+
       {
+
         key: "All",
+
         label: "Total Files",
+
         value: stats.total,
+
         icon: <FiFolder size={14} />,
+
         color: "#2563eb",
+
         bg: "#eff6ff",
+
       },
+
       {
+
         key: "resume",
+
         label: "Resumes",
+
         value: stats.resumes,
+
         icon: <FiFileText size={14} />,
+
         color: "#059669",
+
         bg: "#ecfdf5",
+
       },
+
       {
+
         key: "cover-letter",
+
         label: "Cover Letters",
+
         value: stats.coverLetters,
+
         icon: <FiEdit size={14} />,
+
         color: "#7c3aed",
+
         bg: "#f5f3ff",
+
       },
+
       {
+
         key: "cv",
+
         label: "CVs",
+
         value: stats.cvs,
+
         icon: <FiFile size={14} />,
+
         color: "#d97706",
+
         bg: "#fffbeb",
+
       },
+
     ];
 
+
+
     return (
+
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
+
         {items.map(({ key, label, value, icon, color, bg }) => {
+
           const active = activeType === key;
+
           return (
+
             <motion.button
+
               key={key}
+
               onClick={() =>
+
                 dispatch({ type: "SET_TYPE", payload: active && key !== "All" ? "All" : key })
+
               }
+
               whileHover={{ y: -1 }}
+
               whileTap={{ scale: 0.98 }}
+
               className="text-left w-full rounded-2xl p-4 border-2 transition-all duration-150"
+
               style={{
+
                 background: active ? bg : "#fff",
+
                 borderColor: active ? color + "40" : "#f1f5f9",
+
                 boxShadow: active
+
                   ? `0 0 0 3px ${color}14, 0 2px 8px rgba(0,0,0,0.06)`
+
                   : "0 1px 3px rgba(0,0,0,0.04)",
+
               }}
+
             >
+
               <div className="flex items-center justify-between mb-3">
+
                 <div className="flex items-center gap-2">
+
                   <div
+
                     className="w-7 h-7 rounded-lg flex items-center justify-center"
+
                     style={{ backgroundColor: bg, color }}
+
                   >
+
                     {icon}
+
                   </div>
+
                   <span className="text-[11px] font-semibold text-gray-500 leading-tight">
+
                     {label}
+
                   </span>
+
                 </div>
+
                 {active && (
+
                   <span
+
                     className="w-2 h-2 rounded-full flex-shrink-0"
+
                     style={{ backgroundColor: color }}
+
                   />
+
                 )}
+
               </div>
+
               <p
+
                 className="text-2xl font-bold"
+
                 style={{ color: active ? color : "#111827" }}
+
               >
+
                 {value}
+
               </p>
+
             </motion.button>
+
           );
+
         })}
+
       </div>
+
     );
+
   };
+
+
 
   /* ─── DOCUMENT CARD ─── */
+
   const DocumentCard = ({ download }) => {
+
     const isDeleting = deletingId === download.id;
+
     const isMenuOpen = openMenuId === download.id;
+
     const tc = getTypeMeta(download.type);
 
+
+
     const templateLabel = download.template
+
       ? download.template.length > 24
+
         ? download.template.slice(0, 24) + "…"
+
         : download.template
+
       : null;
 
+
+
     return (
+
       <motion.div
+
         initial={{ opacity: 0, y: 10 }}
+
         animate={{ opacity: 1, y: 0 }}
+
         whileHover={{ y: -3, boxShadow: "0 12px 32px rgba(0,0,0,0.09)" }}
+
         transition={{ duration: 0.18 }}
+
         className="bg-white rounded-2xl border border-gray-100 overflow-hidden group transition-all duration-200 relative flex flex-col"
+
         style={{ boxShadow: "0 1px 4px rgba(0,0,0,0.05)" }}
+
       >
+
         {/* Coloured header band */}
+
         <div
+
           className="px-4 pt-4 pb-3 flex items-start gap-3"
+
           style={{
+
             background: `linear-gradient(135deg, ${tc.bg} 0%, #fff 100%)`,
+
             borderBottom: `1px solid ${tc.icon}18`,
+
           }}
+
         >
+
           {/* Large type icon */}
+
           <div
+
             className="w-10 h-10 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-sm"
+
             style={{
+
               backgroundColor: "#fff",
+
               color: tc.icon,
+
               border: `1.5px solid ${tc.icon}22`,
+
             }}
+
           >
+
             <TypeIcon type={download.type} size={17} />
+
           </div>
+
+
 
           <div className="flex-1 min-w-0">
+
             <div className="flex items-center gap-1.5 mb-0.5 flex-wrap">
+
               <span
+
                 className="text-[10px] font-bold uppercase tracking-wide px-1.5 py-0.5 rounded-md"
+
                 style={{ backgroundColor: tc.icon + "18", color: tc.icon }}
+
               >
+
                 {tc.label}
+
               </span>
+
               <span
+
                 className="text-[10px] font-bold px-1.5 py-0.5 rounded-md"
+
                 style={{
+
                   backgroundColor:
+
                     download.format === "PDF" ? "#fef2f2" : "#eff6ff",
+
                   color: download.format === "PDF" ? "#ef4444" : "#3b82f6",
+
                 }}
+
               >
+
                 {download.format}
+
               </span>
+
             </div>
+
             <h3 className="font-semibold text-gray-900 text-sm leading-snug break-words">
+
               {download.name}
+
             </h3>
+
           </div>
 
+
+
         </div>
+
+
 
         {/* Meta strip */}
+
         <div className="px-4 py-2.5 flex items-center gap-3 border-b border-gray-50 flex-wrap">
+
           <span className="flex items-center gap-1 text-[11px] text-gray-400">
+
             <FiClock size={10} className="text-gray-300" />
+
             {formatDate(download.downloadDate)}
+
           </span>
+
           <span className="w-px h-3 bg-gray-100" />
+
           <span className="text-[11px] text-gray-400">{download.size}</span>
+
           {download.views > 0 && (
+
             <>
+
               <span className="w-px h-3 bg-gray-100" />
+
               <span className="flex items-center gap-1 text-[11px] text-gray-400">
+
                 <FiEye size={10} className="text-gray-300" />
+
                 {download.views} view{download.views !== 1 ? "s" : ""}
+
               </span>
+
             </>
+
           )}
+
         </div>
+
+
 
         {/* Template label */}
+
         <div className="px-4 py-3 flex-1">
+
           {templateLabel ? (
+
             <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-gray-50 border border-gray-100">
+
               <FiFolder size={11} className="text-gray-300 flex-shrink-0" />
+
               <span className="text-[11px] text-gray-500 font-medium truncate">
+
                 {templateLabel}
+
               </span>
+
             </div>
+
           ) : (
+
             <div className="flex items-center gap-2 px-3 py-2 rounded-xl border border-dashed border-gray-200 bg-gray-50/50">
+
               <FiFile size={11} className="text-gray-200 flex-shrink-0" />
+
               <span className="text-[11px] text-gray-300 italic">
+
                 No template info
+
               </span>
+
             </div>
+
           )}
+
         </div>
+
+
 
         {/* Action Row */}
+
         <div className="px-4 pb-4 flex gap-2">
+
           {/* Preview — full width */}
+
           <button
+
             onClick={() => handleView(download)}
+
             className="flex-1 py-2 text-[11px] font-semibold text-gray-600 bg-gray-50 hover:bg-gray-100 rounded-xl transition-colors flex items-center justify-center gap-1.5 border border-gray-100"
+
           >
+
             <FiEye size={11} /> Preview
+
           </button>
+
+
 
           {/* Delete icon only */}
+
           <button
+
             onClick={() => handleDelete(download.id)}
+
             disabled={isDeleting}
+
             className="w-9 h-9 flex-shrink-0 flex items-center justify-center rounded-xl border border-red-100 text-red-400 hover:text-red-600 hover:bg-red-50 hover:border-red-200 transition-all disabled:opacity-40"
+
           >
+
             {isDeleting ? (
+
               <div className="w-3 h-3 border border-red-300 border-t-transparent rounded-full animate-spin" />
+
             ) : (
+
               <FiTrash2 size={12} />
+
             )}
+
           </button>
+
         </div>
 
+
+
         {isDeleting && (
+
           <div className="absolute inset-0 bg-white/70 backdrop-blur-sm rounded-2xl flex items-center justify-center">
+
             <div className="flex items-center gap-2 text-xs text-gray-400">
+
               <div className="w-3.5 h-3.5 border-2 border-gray-300 border-t-transparent rounded-full animate-spin" />
+
               Removing...
+
             </div>
+
           </div>
+
         )}
+
       </motion.div>
+
     );
+
   };
 
+
+
   return (
+
     <>
+
       <UserNavBar />
+
           <div className="min-h-screen flex flex-col md:pt-0 pt-16" style={{ backgroundColor: "#f8f9fb" }}>  
+
           <div className="flex-1 w-full px-4 sm:px-6 lg:px-10 py-8">
+
           {/* Header */}
+
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
+
             <div>
+
               <h1 className="text-3xl font-bold text-gray-900">My Documents</h1>
+
               <p className="text-xs text-gray-400 mt-0.5">
+
                 Manage, preview and download your professional files
+
               </p>
+
             </div>
+
             <button
+
               onClick={fetchDownloads}
+
               disabled={isRefreshing}
+
               className="inline-flex items-center gap-2 px-4 py-2 bg-gray-900 text-white text-xs font-semibold rounded-xl hover:bg-gray-800 transition-colors disabled:opacity-50 self-start sm:self-auto"
+
             >
+
               <FiRefreshCw
+
                 size={12}
+
                 className={isRefreshing ? "animate-spin" : ""}
+
               />
+
               Refresh
+
             </button>
+
           </div>
+
+
 
           <StatCards />
 
+
+
           {/* Search + Format + Sort */}
+
           <div
+
             className="bg-white border border-gray-100 rounded-2xl px-4 py-3 mb-4 flex flex-col sm:flex-row gap-3"
+
             style={{ boxShadow: "0 1px 4px rgba(0,0,0,0.04)" }}
+
           >
+
             <div className="relative flex-1">
+
               <FiSearch
+
                 className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+
                 size={13}
+
               />
+
               <input
+
                 type="text"
+
                 placeholder="Search documents..."
+
                 value={searchTerm}
+
                 onChange={(e) => dispatch({ type: "SET_SEARCH", payload: e.target.value })}
+
                 className="w-full pl-9 pr-8 py-2 bg-gray-50 border border-gray-100 rounded-xl text-xs text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-100 focus:border-blue-200"
+
               />
+
               {searchTerm && (
+
                 <button
+
                   onClick={() => dispatch({ type: "SET_SEARCH", payload: "" })}
+
                   className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+
                 >
+
                   <FiX size={12} />
+
                 </button>
+
               )}
+
             </div>
+
             <div className="flex items-center gap-1 bg-gray-50 rounded-xl p-1 border border-gray-100 self-start sm:self-auto">
+
               {["All", "PDF", "DOCX"].map((fmt) => (
+
                 <button
+
                   key={fmt}
+
                   onClick={() => dispatch({ type: "SET_FORMAT", payload: fmt })}
+
                   className={`px-3 py-1.5 text-[11px] font-bold rounded-lg transition-all ${
+
                     activeFormat === fmt
+
                       ? "bg-white text-gray-900 shadow-sm border border-gray-100"
+
                       : "text-gray-400 hover:text-gray-700"
+
                   }`}
+
                 >
+
                   {fmt}
+
                 </button>
+
               ))}
+
             </div>
+
             <select
+
               value={sortBy}
+
               onChange={(e) => dispatch({ type: "SET_SORT", payload: e.target.value })}
+
               className="px-3 py-2 bg-gray-50 border border-gray-100 rounded-xl text-xs text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-100 cursor-pointer self-start sm:self-auto"
+
             >
+
               <option value="recent">Latest first</option>
+
               <option value="name">A → Z</option>
+
             </select>
+
           </div>
 
+
+
           {/* Active filter chips */}
+
           {(activeType !== "All" || activeFormat !== "All" || searchTerm) && (
+
             <div className="flex items-center gap-2 mb-4 flex-wrap">
+
               <span className="text-[11px] text-gray-400">Filtering:</span>
+
               {activeType !== "All" && (
+
                 <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-blue-50 text-blue-700 text-[11px] font-semibold rounded-full border border-blue-100">
+
                   {getTypeMeta(activeType).label}
+
                   <button onClick={() => dispatch({ type: "SET_TYPE", payload: "All" })}>
+
                     <FiX size={9} />
+
                   </button>
+
                 </span>
+
               )}
+
               {activeFormat !== "All" && (
+
                 <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-gray-100 text-gray-700 text-[11px] font-semibold rounded-full">
+
                   {activeFormat}
+
                   <button onClick={() => dispatch({ type: "SET_FORMAT", payload: "All" })}>
+
                     <FiX size={9} />
+
                   </button>
+
                 </span>
+
               )}
+
               {searchTerm && (
+
                 <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-gray-100 text-gray-700 text-[11px] font-semibold rounded-full">
+
                   "{searchTerm}"
+
                   <button onClick={() => dispatch({ type: "SET_SEARCH", payload: "" })}>
+
                     <FiX size={9} />
+
                   </button>
+
                 </span>
+
               )}
+
               <button
+
                 onClick={() => dispatch({ type: "RESET_FILTERS" })}
+
                 className="text-[11px] text-gray-400 hover:text-gray-700 underline underline-offset-2 ml-1"
+
               >
+
                 Clear all
+
               </button>
+
             </div>
+
           )}
+
+
+
+
 
 
 
           {/* Grid */}
+
           {filteredDownloads.length === 0 ? (
+
             <motion.div
+
               initial={{ opacity: 0 }}
+
               animate={{ opacity: 1 }}
+
               className="text-center py-20 bg-white border border-gray-100 rounded-2xl"
+
             >
+
               <div className="w-14 h-14 bg-gray-50 rounded-2xl flex items-center justify-center mx-auto mb-4 border border-gray-100">
+
                 <FiFolder className="text-gray-200" size={26} />
+
               </div>
+
               <h3 className="text-base font-semibold text-gray-800 mb-1">
+
                 {searchTerm ? "No documents found" : "No downloads yet"}
+
               </h3>
+
               <p className="text-xs text-gray-400 max-w-xs mx-auto mb-5">
+
                 {searchTerm
+
                   ? "Try different keywords or clear filters."
+
                   : "Create your first professional resume to see it here."}
+
               </p>
+
               {!searchTerm && (
+
                 <button
+
                   onClick={() =>
+
                     (window.location.href = "/user/resume-builder")
+
                   }
+
                   className="px-5 py-2 bg-gray-900 text-white text-xs font-semibold rounded-xl hover:bg-gray-800 transition-colors"
+
                 >
+
                   Create Resume
+
                 </button>
+
               )}
+
             </motion.div>
+
           ) : (
+
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+
               {currentPageItems.map((download, i) => (
+
                 <motion.div
+
                   key={download.id}
+
                   initial={{ opacity: 0 }}
+
                   animate={{ opacity: 1 }}
+
                   transition={{ delay: i * 0.04 }}
+
                 >
+
                   <DocumentCard download={download} />
+
                 </motion.div>
+
               ))}
+
             </div>
+
           )}
+
+
 
           {/* Pagination */}
+
           {totalPages > 1 && (
+
             <div className="flex items-center justify-center gap-1.5 mt-8">
+
               <button
+
                 onClick={() => dispatch({ type: "SET_PAGE", payload: Math.max(1, currentPage - 1) })}
+
                 disabled={currentPage === 1}
+
                 className="w-8 h-8 flex items-center justify-center rounded-xl border border-gray-100 bg-white text-gray-400 hover:bg-gray-50 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+
               >
+
                 <FiChevronLeft size={14} />
+
               </button>
+
               {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => {
+
                 let p;
+
                 if (totalPages <= 5) p = i + 1;
+
                 else if (currentPage <= 3) p = i + 1;
+
                 else if (currentPage >= totalPages - 2) p = totalPages - 4 + i;
+
                 else p = currentPage - 2 + i;
+
                 return (
+
                   <button
+
                     key={p}
+
                     onClick={() => dispatch({ type: "SET_PAGE", payload: p })}
+
                     className={`w-8 h-8 flex items-center justify-center rounded-xl text-xs font-bold transition-all ${
+
                       currentPage === p
+
                         ? "bg-gray-900 text-white"
+
                         : "bg-white border border-gray-100 text-gray-500 hover:bg-gray-50"
+
                     }`}
+
                   >
+
                     {p}
+
                   </button>
+
                 );
+
               })}
+
               <button
+
                 onClick={() =>
+
                   dispatch({ type: "SET_PAGE", payload: Math.min(totalPages, currentPage + 1) })
+
                 }
+
                 disabled={currentPage === totalPages}
+
                 className="w-8 h-8 flex items-center justify-center rounded-xl border border-gray-100 bg-white text-gray-400 hover:bg-gray-50 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+
               >
+
                 <FiChevronRight size={14} />
+
               </button>
+
             </div>
+
           )}
 
+
+
           
+
         </div>
+
         <footer className="text-center py-4 bg-white border-t text-sm text-gray-600">
+
     © {new Date().getFullYear()} ResumeAI Inc. All rights reserved.
+
   </footer>
+
       </div>
 
+
+
       {/* ========== PREVIEW MODAL (FLOATING + MOBILE RESPONSIVE) ========== */}
+
       <AnimatePresence>
+
         {previewDocument && (
+
           <>
+
             {/* Desktop Preview - Only show on large screens */}
+
             <motion.div
+
               initial={{ opacity: 0 }}
+
               animate={{ opacity: 1 }}
+
               exit={{ opacity: 0 }}
+
               className="hidden lg:flex fixed inset-0 z-[10000] bg-white items-center justify-center"
+
               onClick={() => {
+
                 setPreviewDocument(null);
+
                 setIsFullscreen(false);
+
                 setZoomLevel(ZOOM_CONFIG.DEFAULT);
+
                 dispatch({ type: "SET_PAGE", payload: 1 });
+
               }}
+
               role="dialog"
+
               aria-modal="true"
+
             >
+
               <motion.div
+
                 initial={{ scale: 0.98, opacity: 0 }}
+
                 animate={{ scale: 1, opacity: 1 }}
+
                 exit={{ scale: 0.98, opacity: 0 }}
+
                 transition={{ duration: 0.12 }}
+
                 onClick={(e) => e.stopPropagation()}
+
                 className="fixed inset-0 w-screen h-screen bg-white flex flex-col overflow-hidden z-[10001]"
+
               >
+
               <div className="flex items-center justify-between gap-2 px-3 sm:px-4 py-2 bg-white border-b border-gray-200">
+
                 {/* LEFT SECTION */}
+
                 <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+
                   {/* Eye Icon + Preview Text */}
+
                   <div className="flex items-center gap-1.5">
+
                     <svg
+
                       className="w-4 h-4 text-gray-700"
+
                       fill="none"
+
                       stroke="currentColor"
+
                       viewBox="0 0 24 24"
+
                     >
+
                       <path
+
                         strokeLinecap="round"
+
                         strokeLinejoin="round"
+
                         strokeWidth={2}
+
                         d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+
                       />
+
                       <path
+
                         strokeLinecap="round"
+
                         strokeLinejoin="round"
+
                         strokeWidth={2}
+
                         d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+
                       />
+
                     </svg>
+
                     <span className="text-sm font-semibold text-gray-800">
+
                       Preview
+
                     </span>
+
                   </div>
+
+
 
                   {/* Template Name */}
+
                   <span className="hidden sm:inline text-sm text-gray-500 truncate max-w-[180px]">
+
                     {previewDocument.template || "professional"}
+
                   </span>
+
+
 
                   {/* Sample Badge */}
+
                   <span className="text-[10px] px-2 py-0.5 bg-blue-50 text-blue-600 rounded-full font-medium border border-blue-200">
+
                     {previewDocument.type === "cover-letter"
+
                       ? "Your data"
+
                       : "Sample"}
+
                   </span>
+
+
 
                   {/* Pages Count */}
+
                   <div className="hidden sm:flex items-center gap-1 text-gray-400">
+
                     <svg
+
                       className="w-3.5 h-3.5"
+
                       fill="none"
+
                       stroke="currentColor"
+
                       viewBox="0 0 24 24"
+
                     >
+
                       <path
+
                         strokeLinecap="round"
+
                         strokeLinejoin="round"
+
                         strokeWidth={2}
+
                         d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
+
                       />
+
                     </svg>
+
                     <span className="text-xs">{totalPages || 1}p</span>
+
                   </div>
+
                 </div>
+
+
 
                 {/* RIGHT SECTION */}
+
                 <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
+
                   {/* Page Navigation */}
+
                   <div className="hidden sm:flex items-center gap-0.5">
+
                     <button
+
                       onClick={(e) => {
+
                         e.stopPropagation();
+
                         if (currentPage > 1) dispatch({ type: "SET_PAGE", payload: currentPage - 1 });
+
                       }}
+
                       className="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded transition-colors"
+
                     >
+
                       <FiChevronLeft size={14} />
+
                     </button>
+
                     <div className="flex items-center gap-1.5 px-3 py-1 bg-gray-100 rounded">
+
                       <span className="text-xs font-medium text-gray-700">
+
                         {currentPage}
+
                       </span>
+
                       <span className="text-xs text-gray-400">/</span>
+
                       <span className="text-xs font-medium text-gray-700">
+
                         {totalPages || 1}
+
                       </span>
+
                     </div>
+
                     <button
+
                       onClick={(e) => {
+
                         e.stopPropagation();
+
                         if (currentPage < (totalPages || 1))
+
                           dispatch({ type: "SET_PAGE", payload: currentPage + 1 });
+
                       }}
+
                       className="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded transition-colors"
+
                     >
+
                       <FiChevronRight size={14} />
+
                     </button>
+
                   </div>
+
+
 
                   {/* Divider */}
+
                   <div className="hidden sm:block h-4 w-px bg-gray-300" />
 
+
+
                   {/* Zoom Controls */}
+
                   <div className="flex items-center gap-2">
+
                     {/* Zoom Out */}
+
                     <button
+
                       onClick={(e) => {
+
                         e.stopPropagation();
+
                         setZoomLevel((z) => Math.max(ZOOM_CONFIG.MIN, z - ZOOM_CONFIG.STEP));
+
                       }}
+
                       className="p-1.5 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+
                     >
+
                       <ZoomOut size={14} />
+
                     </button>
+
+
 
                     {/* Zoom Slider - BLUE COLOR */}
+
                     <div className="hidden sm:flex items-center gap-2 px-2">
+
                       <input
+
                         type="range"
+
                         min={ZOOM_CONFIG.MIN}
+
                         max={ZOOM_CONFIG.MAX}
+
                         value={zoomLevel}
+
                         onChange={(e) => {
+
                           e.stopPropagation();
+
                           setZoomLevel(Number(e.target.value));
+
                         }}
+
                         onClick={(e) => e.stopPropagation()}
+
                         className="w-24 h-1 cursor-pointer"
+
                         style={{
+
                           accentColor: "#3b82f6",
+
                           background: "transparent",
+
                         }}
+
                       />
+
                     </div>
+
+
 
                     {/* Zoom In */}
+
                     <button
+
                       onClick={(e) => {
+
                         e.stopPropagation();
+
                         setZoomLevel((z) => Math.min(ZOOM_CONFIG.MAX, z + ZOOM_CONFIG.STEP));
+
                       }}
+
                       className="p-1.5 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+
                     >
+
                       <ZoomIn size={14} />
+
                     </button>
+
+
 
                     {/* Zoom Percentage */}
+
                     <span className="hidden sm:inline text-xs text-gray-600 font-medium bg-gray-100 px-2 py-1 rounded">
+
                       {zoomLevel}%
+
                     </span>
 
+
+
                     {/* Reset Zoom */}
+
                     <button
+
                       onClick={(e) => {
+
                         e.stopPropagation();
+
                         setZoomLevel(ZOOM_CONFIG.DEFAULT);
+
                       }}
+
                       className="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+
                     >
+
                       <FiRotateCcw size={14} />
+
                     </button>
+
+
 
                     {/* Divider */}
+
                     <div className="hidden sm:block h-4 w-px bg-gray-300" />
 
+
+
                     {/* Download Icon */}
+
                     <button
+
                       onClick={(e) => {
+
                         e.stopPropagation(); // ✅ Prevent modal close
+
                         handleDownload(previewDocument);
+
                         setPreviewDocument(null);
+
                       }}
+
                       className="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+
                     >
+
                       <FiDownload size={16} />
+
                     </button>
+
                   </div>
+
                   <button
+
                     onClick={(e) => {
+
                       e.stopPropagation();
+
                       setPreviewDocument(null);
+
                       setIsFullscreen(false);
+
                       setZoomLevel(ZOOM_CONFIG.DEFAULT);
+
                       dispatch({ type: "SET_PAGE", payload: 1 });
+
                     }}
+
                     className="p-2 hover:bg-gray-100 text-gray-600 rounded-lg transition-colors"
+
                     title="Close"
+
                     aria-label="Close"
+
                   >
+
                     <X size={16} />
+
                   </button>
+
                 </div>
+
               </div>
+
+
 
               {/* Main Content Area */}
+
               <div className="flex-1 flex overflow-hidden min-h-0">
+
                 {/* Preview Content */}
+
                 <div
+
                   ref={previewViewportRef}
+
                   className="flex-1 overflow-auto bg-gray-50 p-0 sm:p-6"
+
                 >
+
                   {previewLoading ? (
+
                     <div className="flex items-center justify-center h-full">
+
                       <div className="w-10 h-10 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin" />
+
                     </div>
+
                   ) : previewDocument?.html ? (
+
                     <div className="flex justify-center">
+
                       <div
+
                         className="bg-white shadow-lg"
+
                         style={{
+
                           width:
+
                             previewViewportWidth < 520
+
                               ? `${previewViewportWidth * 0.98}px`
+
                               : `${A4_WIDTH_PX}px`,
+
                           minHeight: "1123px",
+
                           padding: "56px 48px",
+
                           fontFamily: "'Times New Roman', Times, serif",
+
                           fontSize: "11pt",
+
                           lineHeight: "1.6",
+
                           color: "#1f2937",
+
                           boxSizing: "border-box",
+
                           transform: `scale(${effectiveScale})`,
+
                           transformOrigin: "top center",
+
                           marginBottom: "24px",
+
                         }}
+
                         onClick={(e) => e.stopPropagation()}
+
                       >
+
                         <div
+
                           dangerouslySetInnerHTML={{
+
                             __html: previewDocument.html,
+
                           }}
+
                         />
+
                       </div>
+
                     </div>
+
                   ) : (
+
                     <div className="text-center text-gray-400 py-20">
+
                       <FiFile size={64} className="mx-auto mb-4" />
+
                       <p>Preview not available</p>
+
                     </div>
+
                   )}
+
                 </div>
+
+
 
                 {/* RIGHT SIDEBAR - Page Thumbnails */}
+
                 <div className="hidden md:block w-20 bg-white border-l border-gray-200 p-3 overflow-y-auto">
+
                   <div className="space-y-3">
+
                     {/* Page 1 (Active) */}
+
                     <div className="cursor-pointer rounded-lg overflow-hidden border-2 border-blue-500 shadow-sm">
+
                       <div className="bg-gray-900 text-white text-xs font-medium text-center py-8">
+
                         1
+
                       </div>
+
                     </div>
+
+
 
                     {/* Page 2 */}
+
                     <div className="cursor-pointer rounded-lg overflow-hidden border border-gray-200 hover:border-gray-300">
+
                       <div className="bg-white text-gray-400 text-xs font-medium text-center py-8">
+
                         2
+
                       </div>
+
                     </div>
+
                   </div>
+
                 </div>
+
               </div>
+
+
 
               {/* BOTTOM STATUS BAR */}
+
               <div className="px-3 sm:px-4 py-1.5 bg-white border-t border-gray-200 flex items-center justify-between text-[10px] text-gray-400">
+
                 <div className="flex items-center gap-3">
+
                   <span>A4</span>
+
                   <span>•</span>
+
                   <span>210 × 297 mm</span>
+
                   <span>•</span>
+
                   <span>PDF ready</span>
+
                 </div>
+
                 <div className="flex items-center gap-4">
+
                   <span className="hover:text-gray-600 cursor-pointer">
+
                     {Math.round(effectiveScale * 100)}%
+
                   </span>
+
                 </div>
+
               </div>
 
+
+
               {/* Escape Key Handler */}
+
               <FullScreenEscape
+
                 onClose={() => {
+
                   setPreviewDocument(null);
+
                   setIsFullscreen(false);
+
                   setZoomLevel(ZOOM_CONFIG.DEFAULT);
+
                   dispatch({ type: "SET_PAGE", payload: 1 });
+
                 }}
+
               />
-            </motion.div>
+
             </motion.div>
 
+            </motion.div>
+
+
+
             {/* Mobile Preview - Only show on small screens */}
+
             <MobilePreview
+
               show={true}
+
               document={previewDocument}
+
               onClose={() => {
+
                 setPreviewDocument(null);
+
                 setIsFullscreen(false);
+
                 setZoomLevel(ZOOM_CONFIG.DEFAULT);
+
                 dispatch({ type: "SET_PAGE", payload: 1 });
+
               }}
+
               onDownload={handleDownload}
+
             />
+
           </>
+
         )}
+
       </AnimatePresence>
+
     </>
+
   );
+
 };
+
+
 
 export default Downloads;
 
+
+
 /* ========== HELPER: Escape Key Listener ========== */
+
 const FullScreenEscape = ({ onClose }) => {
+
   useEffect(() => {
+
     const handleEsc = (e) => {
+
       if (e.key === "Escape") onClose();
+
     };
+
     document.addEventListener("keydown", handleEsc);
+
     return () => document.removeEventListener("keydown", handleEsc);
+
   }, [onClose]);
+
   return null;
+
 };
+

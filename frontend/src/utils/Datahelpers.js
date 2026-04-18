@@ -207,12 +207,12 @@ export const mergeWithSampleData = (userData) => {
       technical:
         userData.skills?.technical?.length > 0
           ? userData.skills.technical
-          : sample.skills.technical,
+          : (userData.skills?.hasOwnProperty('technical') ? [] : sample.skills.technical),
 
       soft:
         userData.skills?.soft?.length > 0
           ? userData.skills.soft
-          : sample.skills.soft,
+          : (userData.skills?.hasOwnProperty('soft') ? [] : sample.skills.soft),
     },
   };
 };
@@ -277,6 +277,15 @@ export const getFilteredDisplayData = (formData) => {
   }
   if (!hasUserEnteredCertifications && Array.isArray(merged.certifications)) {
     merged.certifications = [];
+  }
+
+  // Handle skills properly - check if user has explicitly deleted skills
+  if (formData?.skills?.hasOwnProperty('technical') || formData?.skills?.hasOwnProperty('soft')) {
+    // User has interacted with skills, use their data (even if empty)
+    merged.skills = {
+      technical: formData.skills?.technical || [],
+      soft: formData.skills?.soft || []
+    };
   }
 
   return {

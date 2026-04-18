@@ -210,7 +210,8 @@ const MobilePreview = memo(({
               <button
                 onClick={(e) => {
                   e.stopPropagation();
-                  onDownload(document);
+                  // Pass the document with current preview HTML for fresh download
+                  onDownload({ ...document, html: html });
                 }}
                 className="w-8 h-8 rounded-full bg-blue-100 hover:bg-blue-200 flex items-center justify-center text-blue-600 transition-colors"
                 title="Download"
