@@ -3,6 +3,7 @@ import express from "express";
 import isAuth from "../middlewares/isAuth.js";
 import {
   forgotPassword,
+  resetPassword,
   login,
   register,
   changePassword,
@@ -18,6 +19,7 @@ const authRouter = express.Router();
 authRouter.post("/register", register);
 authRouter.post("/login", login);
 authRouter.post("/forgot-password", forgotPassword);
+authRouter.post("/reset-password", resetPassword);
 authRouter.put("/change-password", isAuth, changePassword);
 
 // Email Verification routes

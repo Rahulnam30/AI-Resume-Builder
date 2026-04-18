@@ -3,6 +3,7 @@ import jwt from "jsonwebtoken";
 import { genrateToken } from "../config/token.js";
 import { pool } from "../config/postgresdb.js";
 import nodemailer from "nodemailer";
+
 /* ================= REGISTER ================= */
 export const register = async (req, res) => {
   try {
@@ -159,6 +160,7 @@ export const login = async (req, res) => {
     });
   }
 };
+
 /* ================= FORGOT PASSWORD ================= */
 export const forgotPassword = async (req, res) => {
   try {
@@ -173,16 +175,107 @@ export const forgotPassword = async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
-    // future me email logic
-    res.status(200).json({
-      success: true,
-      message: "Password reset link sent (simulated)",
+    const token = crypto.randomUUID();
+    const expiresAt = new Date();
+    expiresAt.setHours(expiresAt.getHours() + 1); // 1 hour expiration
+
+    await pool.query(
+      `INSERT INTO password_resets (email, token, expires_at)
+       VALUES ($1, $2, $3)
+       ON CONFLICT (email) DO UPDATE SET token = EXCLUDED.token, expires_at = EXCLUDED.expires_at`,
+      [email, token, expiresAt]
+    );
+
+    const clientUrl = process.env.CLIENT_URL || "http://localhost:5173";
+    const resetLink = `${clientUrl}/reset-password?token=${token}`;
+
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
+      },
     });
+
+    const mailOptions = {
+      from: process.env.EMAIL_USER || '"UptoSkills AI" <no-reply@uptoskills.com>',
+      to: email,
+      subject: "Password Reset Request - UptoSkills AI Resume Builder",
+      html: `
+        <div style="font-family: Arial, sans-serif; padding: 20px; text-align: center; max-width: 500px; margin: 0 auto; border: 1px solid #ddd; border-radius: 10px;">
+          <h2 style="color: #1a2e52;">Reset Your Password</h2>
+          <p style="font-size: 16px; color: #333;">We received a request to reset the password for your account.</p>
+          <p style="font-size: 14px; color: #555;">Please click the button below to reset your password. This link will expire in 1 hour.</p>
+          <a href="${resetLink}" style="display: inline-block; padding: 12px 24px; margin: 20px 0; background-color: #2563eb; color: #fff; text-decoration: none; border-radius: 5px; font-weight: bold; font-size: 16px;">Reset Password</a>
+          <p style="font-size: 12px; color: #999;">If the button doesn't work, copy and paste this link into your browser: <br/>${resetLink}</p>
+          <p style="font-size: 12px; color: #999;">If you didn't request a password reset, you can safely ignore this email.</p>
+          <br/>
+          <p style="font-size: 14px; color: #777;">Best Regards,<br/><strong>The UptoSkills Team</strong></p>
+        </div>
+      `,
+    };
+
+    if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+      console.warn("⚠️ Email credentials missing. Check .env");
+      return res.status(200).json({ success: true, message: "Simulated password reset link. Token: " + token });
+    }
+
+    await transporter.sendMail(mailOptions);
+    res.status(200).json({ success: true, message: "Password reset link sent to your email" });
   } catch (error) {
+    console.error("forgotPassword error:", error);
     res.status(500).json({
-      message: "Forgot password failed",
+      message: "Failed to send password reset email",
       error: error.message,
     });
+  }
+};
+
+/* ================= RESET PASSWORD ================= */
+export const resetPassword = async (req, res) => {
+  try {
+    const { token, newPassword } = req.body;
+    
+    if (!token || !newPassword) {
+      return res.status(400).json({ message: "Token and new password are required" });
+    }
+
+    if (newPassword.length < 6) {
+      return res.status(400).json({ message: "Password must be at least 6 characters long" });
+    }
+
+    const result = await pool.query(
+      "SELECT * FROM password_resets WHERE token = $1",
+      [token]
+    );
+
+    if (result.rowCount === 0) {
+      return res.status(400).json({ message: "Invalid or expired reset token" });
+    }
+
+    const resetRequest = result.rows[0];
+
+    if (new Date() > new Date(resetRequest.expires_at)) {
+      await pool.query("DELETE FROM password_resets WHERE email = $1", [resetRequest.email]);
+      return res.status(400).json({ message: "Reset token has expired" });
+    }
+
+    const hashedPass = await bcrypt.hash(newPassword, 10);
+    
+    await pool.query(
+      "UPDATE users SET password = $1 WHERE email = $2",
+      [hashedPass, resetRequest.email]
+    );
+
+    await pool.query(
+      "DELETE FROM password_resets WHERE email = $1",
+      [resetRequest.email]
+    );
+
+    res.status(200).json({ success: true, message: "Password has been successfully reset" });
+  } catch (error) {
+    console.error("resetPassword error:", error);
+    res.status(500).json({ message: "Failed to reset password", error: error.message });
   }
 };
 
@@ -339,7 +432,7 @@ export const checkVerificationStatus = async (req, res) => {
     );
 
     if (result.rowCount === 0) {
-      return res.status(200).json({ is_verified: false });
+      return res.status(200).json({ is_verified: false }); // or return error if strict
     }
 
     res.status(200).json({ is_verified: result.rows[0].is_verified });

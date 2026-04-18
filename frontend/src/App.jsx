@@ -8,6 +8,7 @@ import BuilderPage from "./featuers/landing_pages/Builder";
 import LoginPage from "./featuers/landing_pages/login";
 import RegisterPage from "./featuers/landing_pages/Register";
 import ForgotPasswordPage from "./featuers/landing_pages/ForgotPassword";
+import ResetPasswordPage from "./featuers/landing_pages/ResetPassword";
 import VerifyEmail from "./featuers/landing_pages/VerifyEmail";
 import TemplateEditor from "./featuers/landing_pages/TemplateEditor";
 import Contact from "./featuers/landing_pages/Contact";
@@ -76,6 +77,7 @@ function App() {
             <Route path="/register" element={<RegisterPage />} />
             <Route path="/verify-email" element={<VerifyEmail />} />
             <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+            <Route path="/reset-password" element={<ResetPasswordPage />} />
 
             <Route path="/" element={<Home />} />
             <Route path="/contact" element={<Contact />} />

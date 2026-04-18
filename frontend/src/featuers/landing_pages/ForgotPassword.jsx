@@ -10,7 +10,7 @@ export default function ForgotPassword() {
 
   const handleForgotPassword = async () => {
     try {
-      const response = await axiosInstance.post(`/api/forgot-password`, {
+      const response = await axiosInstance.post(`/api/auth/forgot-password`, {
         email,
       });
       console.log('Forgot password request successful:', response.data);
@@ -34,7 +34,7 @@ export default function ForgotPassword() {
         <div className="flex w-full h-full mx-auto overflow-hidden bg-white rounded-lg shadow-lg">
           <div className="hidden w-1/2 lg:block">
             <img
-              src={images.forgot || '/forgot.png'}
+              src={images.resumeexample || '/resumeexample.jpg'}
               alt="forgotpasswordpage"
               className="object-cover w-full h-full"
             />
