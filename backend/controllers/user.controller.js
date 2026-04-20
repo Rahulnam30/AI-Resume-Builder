@@ -148,7 +148,8 @@ export const getProfile = async (req, res) => {
         up.location,
         up.bio,
         up.github,
-        up.linkedin
+        up.linkedin,
+        up.extra_links
       FROM users u
       LEFT JOIN user_profiles up ON up.user_id = u.id
       WHERE u.id = $1
@@ -174,7 +175,7 @@ export const getProfile = async (req, res) => {
         bio: result.rows[0].bio || "",
         github: result.rows[0].github || "",
         linkedin: result.rows[0].linkedin || "",
-        extraLinks: [],
+        extraLinks: result.rows[0].extra_links || [],
       },
     });
 
@@ -197,6 +198,7 @@ export const updateProfile = async (req, res) => {
       bio,
       github,
       linkedin,
+      extraLinks,
     } = req.body;
 
     const userResult = await client.query(
@@ -256,18 +258,19 @@ export const updateProfile = async (req, res) => {
           location = COALESCE($3, location),
           bio = COALESCE($4, bio),
           github = COALESCE($5, github),
-          linkedin = COALESCE($6, linkedin)
+          linkedin = COALESCE($6, linkedin),
+          extra_links = COALESCE($8, extra_links)
         WHERE user_id = $7
         `,
-        [fullName, phone, location, bio, github, linkedin, userId]
+        [fullName, phone, location, bio, github, linkedin, userId, extraLinks ? JSON.stringify(extraLinks) : null]
       );
     } else {
       await client.query(
         `
-        INSERT INTO user_profiles (id, user_id, full_name, phone, location, bio, github, linkedin)
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+        INSERT INTO user_profiles (id, user_id, full_name, phone, location, bio, github, linkedin, extra_links)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
         `,
-        [crypto.randomUUID(), userId, fullName || "", phone || "", location || "", bio || "", github || "", linkedin || ""]
+        [crypto.randomUUID(), userId, fullName || "", phone || "", location || "", bio || "", github || "", linkedin || "", extraLinks ? JSON.stringify(extraLinks) : '[]']
       );
     }
 
@@ -285,7 +288,8 @@ export const updateProfile = async (req, res) => {
         up.location,
         up.bio,
         up.github,
-        up.linkedin
+        up.linkedin,
+        up.extra_links
       FROM users u
       LEFT JOIN user_profiles up ON up.user_id = u.id
       WHERE u.id = $1
@@ -312,7 +316,7 @@ export const updateProfile = async (req, res) => {
         bio: row.bio || "",
         github: row.github || "",
         linkedin: row.linkedin || "",
-        extraLinks: [],
+        extraLinks: row.extra_links || [],
       },
     });
 
