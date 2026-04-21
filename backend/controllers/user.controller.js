@@ -12,7 +12,7 @@ export const getDashboardData = async (req, res) => {
       [userId]
     );
     const userObj = userResult.rows[0] || {};
-
+ 
     const oneWeekAgo = new Date();
     oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
 
@@ -113,7 +113,15 @@ export const getUserName = async (req, res) => {
 export const getAllUsers = async (req, res) => {
   try {
     const result = await pool.query(
-      "SELECT id, username, email, is_admin as \"isAdmin\", admin_request_status as \"adminRequestStatus\", is_active as \"isActive\", plan, last_login as \"lastLogin\", created_at as \"createdAt\", profile_views as \"profileViews\" FROM users ORDER BY created_at DESC"
+      `SELECT 
+        u.id, u.username, u.email, u.is_admin as "isAdmin", 
+        u.admin_request_status as "adminRequestStatus", u.is_active as "isActive", 
+        p.name as plan, u.plan_id as "planId",
+        u.last_login as "lastLogin", u.created_at as "createdAt", 
+        u.profile_views as "profileViews" 
+       FROM users u
+       LEFT JOIN plans p ON u.plan_id = p.plan_id
+       ORDER BY u.created_at DESC`
     );
 
     // Ensure frontend gets Mongoose-compatible properties (specifically _id)
@@ -358,12 +366,12 @@ export const changePassword = async (req, res) => {
 
 export const updateUser = async (req, res) => {
   try {
-    const { username, email, isAdmin, isActive, plan } = req.body;
+    const { username, email, isAdmin, isActive, plan, planId } = req.body;
     const targetUserId = req.params.id;
 
     const existingUserResult = await pool.query(
       `
-      SELECT id, username, email, is_admin, is_active, plan, created_at, admin_request_status
+      SELECT id, username, email, is_admin, is_active, plan, plan_id, created_at, admin_request_status
       FROM users
       WHERE id = $1
       `,
@@ -399,9 +407,10 @@ export const updateUser = async (req, res) => {
         is_admin = COALESCE($3, is_admin),
         is_active = COALESCE($4, is_active),
         plan = COALESCE($5, plan),
-        created_at = COALESCE($6, created_at),
+        plan_id = COALESCE($6, plan_id),
+        created_at = COALESCE($7, created_at),
         updated_at = NOW()
-      WHERE id = $7
+      WHERE id = $8
       RETURNING
         id,
         id AS "_id",
@@ -410,6 +419,7 @@ export const updateUser = async (req, res) => {
         is_admin AS "isAdmin",
         is_active AS "isActive",
         plan,
+        plan_id AS "planId",
         created_at AS "createdAt",
         admin_request_status AS "adminRequestStatus"
       `,
@@ -419,6 +429,7 @@ export const updateUser = async (req, res) => {
         typeof isAdmin === "boolean" ? isAdmin : null,
         typeof isActive === "boolean" ? isActive : null,
         plan ?? null,
+        planId ?? null,
         req.body.createdAt ?? null,
         targetUserId,
       ]
